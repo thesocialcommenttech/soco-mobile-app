@@ -26,9 +26,8 @@ import {
   LearnMoreLinks,
   ReloadInstructions
 } from 'react-native/Libraries/NewAppScreen';
-import { Provider, useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
 import store from '~/src/store';
-import { IRootReducer } from '~/src/store/reducers';
 
 const Section: React.FC<{
   title: string;

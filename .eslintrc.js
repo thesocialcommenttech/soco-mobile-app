@@ -10,8 +10,8 @@ module.exports = {
         '@typescript-eslint/no-shadow': ['error'],
         'no-shadow': 'off',
         'no-undef': 'off',
-        'comma-dangle': ['error', 'never'],
-        'prettier/prettier': ['error', { printWidth: true }]
+        'comma-dangle': ['error', 'never']
+        // 'prettier/prettier': 'warn'
       }
     }
   ]
