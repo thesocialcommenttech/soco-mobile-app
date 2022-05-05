@@ -1,0 +1,6 @@
+#!/bin/bash
+# this is git hook which run before every commit
+# and run lint to correct the lint and formatting of the code
+
+
+npm run lint
