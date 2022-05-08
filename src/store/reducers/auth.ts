@@ -1,7 +1,7 @@
 import {
   deleteAuthCredentials,
   setAuthCredentials
-} from '~/src/lib/auth-credentials';
+} from '../../lib/auth-credentials';
 import { AuthActionTypes, AuthAction } from '../actions/auth';
 
 export interface IUserData {
