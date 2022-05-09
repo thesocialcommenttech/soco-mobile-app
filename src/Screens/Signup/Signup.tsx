@@ -59,8 +59,7 @@ const SignUpScreen = ({ navigation }) => {
             />
             <ButtonWithLoader
                 text="SignUp"
-                onPress={onSignUp}
-            />
+                onPress={onSignUp} btnStyle={undefined} />
         </View>
     );
 };

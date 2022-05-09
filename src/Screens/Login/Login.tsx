@@ -7,6 +7,7 @@ import validation from '../../utils/validation';
 import { showError } from '../../utils/helperFunction';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { TextInput } from 'react-native-paper';
+import { loginAction } from '../../store/actions/auth';
 
 const LoginScreen = ({ navigation }) => {
     const [state, setState] = useState({
@@ -19,6 +20,7 @@ const LoginScreen = ({ navigation }) => {
         const error = validation({
             email,
             password,
+            userName: undefined
         });
         if (error) {
             showError(error);

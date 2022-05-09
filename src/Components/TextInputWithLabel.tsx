@@ -5,47 +5,29 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 const TextInputWithLabel = (
     {
-        label,
-        value,
-        onChangeText,
-        placeholder,
-        textStyle,
-        isSecureTextEntry,
-        inputStyle,
-        right,
         ...props
     }
 ) => {
     return (
         <View>
-            {/* <Text style={styles.label}>{label}</Text> */}
             <TextInput
                 mode="outlined"
-                onChangeText={onChangeText}
-                secureTextEntry={isSecureTextEntry}
+                onChangeText={props.onChangeText}
+                secureTextEntry={props.isSecureTextEntry}
                 label={<Text style={
                     { ...styles.label }
-                }>{label.toUpperCase()}</Text>}
-                placeholder={label}
-                style={[styles.input, inputStyle]}
+                }>{props.label.toUpperCase()}</Text>}
+                placeholder={props.label}
+                style={[styles.input, props.inputStyle]}
                 placeholderTextColor="#99969F"
                 // underlineColor='transparent'
                 underlineColorAndroid={'transparent'}
                 outlineColor='#DCDCDC'
                 activeOutlineColor='#000'
-                right={right}
+                right={props.right}
                 {...props}
-
             >
             </TextInput>
-            {/* {isSecureTextEntry?<TouchableOpacity onPress={props.Eyelick}>
-                <Icon
-                    name={props.showIcon}
-                    size={props.showIconSize}
-                    color={props.showIconColor}
-                />
-            </TouchableOpacity>:<></>} */}
-
         </View>
     );
 };
