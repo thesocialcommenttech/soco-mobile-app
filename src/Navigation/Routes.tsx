@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -9,11 +8,11 @@ import AuthStack from './AuthStack';
 const Stack = createNativeStackNavigator();
 
 export default function Routes() {
-    return (
-        <NavigationContainer>
-            <Stack.Navigator>
-                {false ? MainStack(Stack) : AuthStack(Stack)}
-            </Stack.Navigator>
-        </NavigationContainer>
-    );
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        {false ? MainStack(Stack) : AuthStack(Stack)}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }

@@ -1,25 +1,10 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View
-} from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions
-} from 'react-native/Libraries/NewAppScreen';
 import { Provider } from 'react-redux';
 import Routes from './src/Navigation/Routes';
 import store from './src/store';
-import FlashMessage from "react-native-flash-message";
+import FlashMessage from 'react-native-flash-message';
 
 const App = () => {
   // const isDarkMode = useColorScheme() === 'dark';
@@ -40,7 +25,7 @@ const App = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   sectionContainer: {
     marginTop: 32,
