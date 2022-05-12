@@ -1,8 +1,8 @@
 import * as React from 'react';
-import ForgotPasswordScreen from '../Screens/Login/ForgotPassword';
+import ForgotPasswordScreen from '../screens/login/forgotPassword';
 
-import LoginScreen from '../Screens/Login/Login';
-import RegisterScreen from '../Screens/Register/Register';
+import LoginScreen from '../screens/login/login';
+import RegisterScreen from '../screens/register/register';
 
 export default function (Stack) {
   return (

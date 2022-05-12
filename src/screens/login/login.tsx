@@ -8,11 +8,12 @@ import {
   View
 } from 'react-native';
 import React, { useState } from 'react';
-import TextInputWithLabel from '../../Components/TextInputWithLabel';
-import ButtonWithLoader from '../../Components/ButtonWithLoader';
+import TextInputWithLabel from '../../components/textInputWithLabel';
+import ButtonWithLoader from '../../components/buttonWithLoader';
 import { TextInput } from 'react-native-paper';
 import { Formik } from 'formik';
-import * as Yup from 'yup';
+import { object, string } from 'yup';
+var logo = require('../../assets/images/logos/Untitled.png');
 
 const LoginScreen = ({ navigation }) => {
   const [isSecure, setIsSecure] = useState(true);
@@ -30,15 +31,25 @@ const LoginScreen = ({ navigation }) => {
       resetForm: () => void;
     }
   ) => {
-    console.log(values);
     setTimeout(() => {
       formikActions.setSubmitting(false);
       formikActions.resetForm();
     }, 1000);
   };
 
+  const LoginSchema = object().shape({
+    email: string()
+      .email('Invalid Email address')
+      .required('Email is Required'),
+    password: string().required('Password is Required')
+  });
+
   const onForgotPassword = () => {
     navigation.navigate('ForgotPassword');
+  };
+
+  const goToRegister = () => {
+    navigation.navigate('Register');
   };
 
   const Eyelick = () => {
@@ -48,20 +59,11 @@ const LoginScreen = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
-        <Image
-          style={styles.logo}
-          source={require('../../assets/images/logos/Untitled.png')}
-        />
+        <Image style={styles.logo} source={logo} />
         <Text style={styles.login}>Login</Text>
-
         <Formik
           initialValues={state}
-          validationSchema={Yup.object().shape({
-            email: Yup.string()
-              .email('Invalid Email address')
-              .required('Email is Required'),
-            password: Yup.string().required('Password is Required')
-          })}
+          validationSchema={LoginSchema}
           onSubmit={onLogin}
         >
           {({
@@ -74,7 +76,6 @@ const LoginScreen = ({ navigation }) => {
             handleSubmit
           }) => {
             const { email, password } = values;
-            // console.log(email, password);
             return (
               <>
                 <TextInputWithLabel
@@ -121,10 +122,7 @@ const LoginScreen = ({ navigation }) => {
         </TouchableOpacity>
         <View style={styles.txtAcct}>
           <Text style={styles.dontAcc}>Don't have an account? </Text>
-          <TouchableOpacity
-            style={styles.txtCr}
-            onPress={() => navigation.navigate('Register')}
-          >
+          <TouchableOpacity style={styles.txtCr} onPress={goToRegister}>
             <Text style={styles.crAcc}>Create Account</Text>
           </TouchableOpacity>
         </View>

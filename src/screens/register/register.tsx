@@ -8,38 +8,79 @@ import {
   View
 } from 'react-native';
 import React, { useState } from 'react';
-import TextInputWithLabel from '../../Components/TextInputWithLabel';
-import ButtonWithLoader from '../../Components/ButtonWithLoader';
+import TextInputWithLabel from '../../components/textInputWithLabel';
+import ButtonWithLoader from '../../components/buttonWithLoader';
 import { TextInput } from 'react-native-paper';
 import { Formik } from 'formik';
-import * as Yup from 'yup';
+import { object, string, boolean } from 'yup';
 import { CheckBox } from '@rneui/base';
+var logo = require('../../assets/images/logos/Untitled.png');
+
+const CustomCheckBox = (props: any) => {
+  return (
+    <>
+      <CheckBox
+        checked={props.checked}
+        onPress={props.onPress}
+        onBlur={props.onBlur}
+        title="By sign up you agree to the terms and condition and privacy policy"
+        titleProps={{
+          style: styles.titleProps
+        }}
+        containerStyle={styles.checkboxContainer}
+        size={18}
+        checkedColor="black"
+        uncheckedColor="black"
+      />
+      {props.errorTxt && <Text style={styles.error}>{props.errorTxt}</Text>}
+    </>
+  );
+};
 
 const RegisterScreen = (
   {
     /* navigation */
   }
 ) => {
-  const [isSecure, setIsSecure] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
+  const [isSecure, setIsSecure] = useState(true);
   const state = {
     isLoading: false,
     name: '',
     userName: '',
     email: '',
     password: '',
-    referralCode: ''
+    referralCode: '',
+    isChecked: false
   };
 
-  const onRegister = () => {
-    // const checkValid = isValidData();
-    // if (checkValid) {
-    //     navigation.navigate('Signup');
-    // }
-    // else {
-    //     return;
-    // }
+  const onRegister = (
+    values: any,
+    formikActions: {
+      setSubmitting: (arg0: boolean) => void;
+      resetForm: () => void;
+    }
+  ) => {
+    console.log('values', values);
+    setTimeout(() => {
+      formikActions.setSubmitting(false);
+      formikActions.resetForm();
+      setIsChecked(false);
+    }, 1000);
   };
+
+  const RegisterSchema = object().shape({
+    email: string()
+      .email('Invalid email address')
+      .required('Email is Required'),
+    password: string().required('Password is Required'),
+    name: string().required('Name is Required'),
+    userName: string().required('Username is Required'),
+    isChecked: boolean().oneOf(
+      [true],
+      'You must agree to the terms and conditions'
+    )
+  });
 
   const Eyelick = () => {
     setIsSecure(!isSecure);
@@ -50,31 +91,24 @@ const RegisterScreen = (
       <View style={styles.outContainer}>
         <ScrollView>
           <View style={styles.container}>
-            <Image
-              style={styles.logo}
-              source={require('../../assets/images/logos/Untitled.png')}
-            />
+            <Image style={styles.logo} source={logo} />
             <Text style={styles.login}>Register</Text>
-
             <Formik
               initialValues={state}
-              validationSchema={Yup.object().shape({
-                email: Yup.string()
-                  .email('Invalid email address')
-                  .required('Email is Required'),
-                password: Yup.string().required('Password is Required'),
-                name: Yup.string().required('Name is Required'),
-                userName: Yup.string().required('UserName is Required'),
-                referralCode: Yup.string().required('ReferralCode is Required')
-              })}
-              onSubmit={values => {
-                console.log(values);
-              }}
+              validationSchema={RegisterSchema}
+              onSubmit={onRegister}
             >
-              {({ values, errors, touched, handleChange, handleBlur }) => {
+              {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                isSubmitting,
+                handleSubmit
+              }) => {
                 const { email, password, name, userName, referralCode } =
                   values;
-                console.log(email, password, name, userName, referralCode);
                 return (
                   <>
                     <TextInputWithLabel
@@ -127,40 +161,33 @@ const RegisterScreen = (
                       placeholder="Referral (Optional)"
                       label="Referral (Optional)"
                       inputStyle={styles.refTB}
-                      onChangeText={handleChange('email')}
+                      onChangeText={handleChange('referralCode')}
                       value={referralCode}
                       errorTxt={touched.referralCode && errors.referralCode}
                       onBlur={handleBlur('referralCode')}
                     />
                     <View>
-                      <CheckBox
+                      <CustomCheckBox
                         checked={isChecked}
-                        onPress={() => setIsChecked(!isChecked)}
-                        title="By sign up you agree to the terms and condition and privacy policy"
-                        titleProps={{
-                          style: styles.titleProps
+                        onPress={() => {
+                          setIsChecked(!isChecked);
+                          values.isChecked = !values.isChecked;
+                          handleChange('isChecked');
                         }}
-                        // textStyle={styles.checkbox}
-                        containerStyle={styles.checkboxContainer}
-                        // checkedIcon="check-box"
-                        // uncheckedIcon="check-box-outline-blank"
-                        size={18}
-                        checkedColor="black"
-                        uncheckedColor="black"
+                        onBlur={handleBlur('isChecked')}
+                        errorTxt={touched.isChecked && errors.isChecked}
                       />
-                      {/* <Text style={styles.checkboxText}>I agree to the </Text> */}
                     </View>
+                    <ButtonWithLoader
+                      text="Register"
+                      onPress={handleSubmit}
+                      btnStyle={styles.registerBtn}
+                      submitting={isSubmitting}
+                    />
                   </>
                 );
               }}
             </Formik>
-
-            <ButtonWithLoader
-              text="Register"
-              onPress={onRegister}
-              btnStyle={styles.registerBtn}
-              submitting={undefined}
-            />
           </View>
         </ScrollView>
       </View>
@@ -275,5 +302,16 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     color: 'black',
     marginLeft: '5%'
+  },
+  error: {
+    fontSize: 12,
+    fontFamily: 'Roboto-Regular',
+    fontWeight: '400',
+    fontStyle: 'normal',
+    lineHeight: 14,
+    color: '#EE0000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: '3%'
   }
 });

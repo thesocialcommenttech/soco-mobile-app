@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import HomeScreen from '../Screens/Home/Home';
-import ProfileScreen from '../Screens/Profile/Profile';
+import HomeScreen from '../screens/home/home';
+import ProfileScreen from '../screens/profile/profile';
 
 export default function (Stack) {
   return (

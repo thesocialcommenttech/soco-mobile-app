@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Provider } from 'react-redux';
-import Routes from './src/Navigation/Routes';
+import Routes from './src/navigation/routes';
 import store from './src/store';
 import FlashMessage from 'react-native-flash-message';
 
