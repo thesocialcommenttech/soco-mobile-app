@@ -2,7 +2,8 @@ import * as React from 'react';
 import ForgotPasswordScreen from '../screens/login/forgotPassword';
 
 import LoginScreen from '../screens/login/login';
-import RegisterScreen from '../screens/register/register';
+import RegisterOneScreen from '../screens/register/registerone';
+import RegisterTwoScreen from '../screens/register/registertwo';
 
 export default function (Stack) {
   return (
@@ -18,8 +19,13 @@ export default function (Stack) {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Register"
-        component={RegisterScreen}
+        name="RegisterOne"
+        component={RegisterOneScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="RegisterTwo"
+        component={RegisterTwoScreen}
         options={{ headerShown: false }}
       />
     </>

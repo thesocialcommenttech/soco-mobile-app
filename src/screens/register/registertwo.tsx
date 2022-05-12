@@ -14,6 +14,11 @@ import { TextInput } from 'react-native-paper';
 import { Formik } from 'formik';
 import { object, string, boolean } from 'yup';
 import { CheckBox } from '@rneui/base';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  selectUserDetails,
+  setUserDetails
+} from '../../store/reducers/register';
 var logo = require('../../assets/images/logos/Untitled.png');
 
 const CustomCheckBox = (props: any) => {
@@ -37,39 +42,29 @@ const CustomCheckBox = (props: any) => {
   );
 };
 
-const RegisterScreen = (
-  {
-    /* navigation */
-  }
-) => {
+const RegisterTwoScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [isChecked, setIsChecked] = useState(false);
   const [isSecure, setIsSecure] = useState(true);
-  const state = {
-    isLoading: false,
-    name: '',
-    userName: '',
-    email: '',
-    password: '',
-    referralCode: '',
-    isChecked: false
-  };
+  const state = useSelector(selectUserDetails);
 
-  const onRegister = (
+  const onNext = (
     values: any,
     formikActions: {
       setSubmitting: (arg0: boolean) => void;
       resetForm: () => void;
     }
   ) => {
-    console.log('values', values);
+    dispatch(setUserDetails(values));
     setTimeout(() => {
       formikActions.setSubmitting(false);
       formikActions.resetForm();
       setIsChecked(false);
+      navigation.navigate('RegisterTwo');
     }, 1000);
   };
 
-  const RegisterSchema = object().shape({
+  const NextSchema = object().shape({
     email: string()
       .email('Invalid email address')
       .required('Email is Required'),
@@ -92,11 +87,12 @@ const RegisterScreen = (
         <ScrollView>
           <View style={styles.container}>
             <Image style={styles.logo} source={logo} />
-            <Text style={styles.login}>Register</Text>
+            <Text style={styles.register}>Register</Text>
+            <Text style={styles.perDet}>Personal Details</Text>
             <Formik
               initialValues={state}
-              validationSchema={RegisterSchema}
-              onSubmit={onRegister}
+              validationSchema={NextSchema}
+              onSubmit={onNext}
             >
               {({
                 values,
@@ -171,7 +167,7 @@ const RegisterScreen = (
                         checked={isChecked}
                         onPress={() => {
                           setIsChecked(!isChecked);
-                          values.isChecked = !values.isChecked;
+                          values = { ...values, isChecked: !isChecked };
                           handleChange('isChecked');
                         }}
                         onBlur={handleBlur('isChecked')}
@@ -181,7 +177,7 @@ const RegisterScreen = (
                     <ButtonWithLoader
                       text="Register"
                       onPress={handleSubmit}
-                      btnStyle={styles.registerBtn}
+                      btnStyle={styles.nextBtn}
                       submitting={isSubmitting}
                     />
                   </>
@@ -195,7 +191,7 @@ const RegisterScreen = (
   );
 };
 
-export default RegisterScreen;
+export default RegisterTwoScreen;
 
 const styles = StyleSheet.create({
   outContainer: {
@@ -213,7 +209,7 @@ const styles = StyleSheet.create({
     width: '57%',
     resizeMode: 'contain'
   },
-  login: {
+  register: {
     fontFamily: 'Roboto-Medium',
     fontSize: 32,
     fontWeight: '500',
@@ -221,7 +217,16 @@ const styles = StyleSheet.create({
     color: '#000',
     fontStyle: 'normal',
     lineHeight: 32,
-    marginTop: '10%'
+    marginTop: '3%'
+  },
+  perDet: {
+    fontFamily: 'Roboto-Regular',
+    fontSize: 16,
+    fontWeight: '400',
+    fontStyle: 'normal',
+    lineHeight: 16,
+    color: '#BDBDBD',
+    marginTop: '4%'
   },
   forPass: {
     fontFamily: 'Roboto-Regular',
@@ -250,7 +255,7 @@ const styles = StyleSheet.create({
     color: '#0063FF'
   },
   nameTB: {
-    marginTop: '8%'
+    marginTop: '5%'
   },
   usernameTB: {
     marginTop: '8%'
@@ -269,7 +274,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: '50%'
   },
-  registerBtn: {
+  nextBtn: {
     backgroundColor: '#FFCA12',
     height: 46,
     borderRadius: 8,
