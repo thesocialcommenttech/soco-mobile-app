@@ -42,12 +42,16 @@ const CustomCheckBox = (props: any) => {
   );
 };
 
-const RegisterOneScreen = ({ navigation }) => {
+const RegisterOneScreen = (
+  {
+    /* navigation */
+  }
+) => {
   const dispatch = useDispatch();
   const [isSecure, setIsSecure] = useState(true);
   const state = useSelector(selectUserDetails);
 
-  const onNext = (
+  const onRegister = (
     values: any,
     formikActions: {
       setSubmitting: (arg0: boolean) => void;
@@ -57,7 +61,7 @@ const RegisterOneScreen = ({ navigation }) => {
     dispatch(setUserDetails(values));
     setTimeout(() => {
       formikActions.setSubmitting(false);
-      navigation.navigate('RegisterTwo');
+      // navigation.navigate('RegisterTwo');
     }, 1000);
   };
 
@@ -89,7 +93,7 @@ const RegisterOneScreen = ({ navigation }) => {
             <Formik
               initialValues={state}
               validationSchema={NextSchema}
-              onSubmit={onNext}
+              onSubmit={onRegister}
             >
               {({
                 values,
@@ -258,19 +262,19 @@ const styles = StyleSheet.create({
     color: '#0063FF'
   },
   nameTB: {
-    marginTop: '5%'
+    marginTop: '-6%'
   },
   usernameTB: {
-    marginTop: '8%'
+    marginTop: '-6%'
   },
   emailTB: {
-    marginTop: '8%'
+    marginTop: '-6%'
   },
   passTB: {
-    marginTop: '8%'
+    marginTop: '-6%'
   },
   refTB: {
-    marginTop: '8%'
+    marginTop: '-6%'
   },
   eye: {
     justifyContent: 'center',

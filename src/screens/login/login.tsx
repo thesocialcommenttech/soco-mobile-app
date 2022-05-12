@@ -1,6 +1,7 @@
 import {
   Image,
   Keyboard,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -62,73 +63,75 @@ const LoginScreen = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
-        <Image style={styles.logo} source={logo} />
-        <Text style={styles.login}>Login</Text>
-        <Formik
-          initialValues={state}
-          validationSchema={LoginSchema}
-          onSubmit={onLogin}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            isSubmitting,
-            handleSubmit
-          }) => {
-            const { email, password } = values;
-            return (
-              <>
-                <TextInputWithLabel
-                  placeholder="Email"
-                  label="Email"
-                  inputStyle={styles.emailTB}
-                  onChangeText={handleChange('email')}
-                  value={email}
-                  errorTxt={touched.email && errors.email}
-                  onBlur={handleBlur('email')}
-                />
+        <ScrollView>
+          <Image style={styles.logo} source={logo} />
+          <Text style={styles.login}>Login</Text>
+          <Formik
+            initialValues={state}
+            validationSchema={LoginSchema}
+            onSubmit={onLogin}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              isSubmitting,
+              handleSubmit
+            }) => {
+              const { email, password } = values;
+              return (
+                <>
+                  <TextInputWithLabel
+                    placeholder="Email"
+                    label="Email"
+                    inputStyle={styles.emailTB}
+                    onChangeText={handleChange('email')}
+                    value={email}
+                    errorTxt={touched.email && errors.email}
+                    onBlur={handleBlur('email')}
+                  />
 
-                <TextInputWithLabel
-                  placeholder="Password"
-                  label="Password"
-                  isSecureTextEntry={isSecure}
-                  onBlur={handleBlur('password')}
-                  inputStyle={styles.passTB}
-                  errorTxt={touched.password && errors.password}
-                  right={
-                    <TextInput.Icon
-                      color="#0063ff"
-                      name={isSecure ? 'eye-outline' : 'eye-off-outline'}
-                      onPress={Eyelick}
-                      style={styles.eye}
-                    />
-                  }
-                  value={password}
-                  onChangeText={handleChange('password')}
-                />
-                <ButtonWithLoader
-                  text="Login"
-                  onPress={handleSubmit}
-                  btnStyle={styles.loginBtn}
-                  submitting={isSubmitting}
-                />
-              </>
-            );
-          }}
-        </Formik>
+                  <TextInputWithLabel
+                    placeholder="Password"
+                    label="Password"
+                    isSecureTextEntry={isSecure}
+                    onBlur={handleBlur('password')}
+                    inputStyle={styles.passTB}
+                    errorTxt={touched.password && errors.password}
+                    right={
+                      <TextInput.Icon
+                        color="#0063ff"
+                        name={isSecure ? 'eye-outline' : 'eye-off-outline'}
+                        onPress={Eyelick}
+                        style={styles.eye}
+                      />
+                    }
+                    value={password}
+                    onChangeText={handleChange('password')}
+                  />
+                  <ButtonWithLoader
+                    text="Login"
+                    onPress={handleSubmit}
+                    btnStyle={styles.loginBtn}
+                    submitting={isSubmitting}
+                  />
+                </>
+              );
+            }}
+          </Formik>
 
-        <TouchableOpacity onPress={onForgotPassword}>
-          <Text style={styles.forPass}>Forgot my password</Text>
-        </TouchableOpacity>
-        <View style={styles.txtAcct}>
-          <Text style={styles.dontAcc}>Don't have an account? </Text>
-          <TouchableOpacity style={styles.txtCr} onPress={goToRegister}>
-            <Text style={styles.crAcc}>Create Account</Text>
+          <TouchableOpacity style={styles.fmp} onPress={onForgotPassword}>
+            <Text style={styles.forPass}>Forgot my password</Text>
           </TouchableOpacity>
-        </View>
+          <View style={styles.txtAcct}>
+            <Text style={styles.dontAcc}>Don't have an account? </Text>
+            <TouchableOpacity style={styles.txtCr} onPress={goToRegister}>
+              <Text style={styles.crAcc}>Create Account</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -158,6 +161,9 @@ const styles = StyleSheet.create({
     lineHeight: 32,
     marginTop: '10%'
   },
+  fmp: {
+    alignSelf: 'flex-start'
+  },
   forPass: {
     fontFamily: 'Roboto-Regular',
     fontSize: 14,
@@ -185,10 +191,10 @@ const styles = StyleSheet.create({
     color: '#0063FF'
   },
   emailTB: {
-    marginTop: '8%'
+    marginTop: '-6%'
   },
   passTB: {
-    marginTop: '8%'
+    marginTop: '-6%'
   },
   eye: {
     justifyContent: 'center',
@@ -199,7 +205,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFCA12',
     height: 46,
     borderRadius: 8,
-    marginTop: '12%',
+    marginTop: '8%',
     alignItems: 'center',
     justifyContent: 'center'
   },

@@ -7,13 +7,19 @@ const initState: {
   password: string;
   referralCode: string;
   isChecked: boolean;
+  gender: string;
+  academics: string;
+  dob: Date;
 } = {
   name: '',
   userName: '',
   email: '',
   password: '',
   referralCode: '',
-  isChecked: false
+  isChecked: false,
+  gender: '',
+  academics: '',
+  dob: new Date()
 };
 
 export const registerSlice = createSlice({
@@ -27,6 +33,9 @@ export const registerSlice = createSlice({
       state.password = action.payload.password;
       state.referralCode = action.payload.referralCode;
       state.isChecked = action.payload.isChecked;
+      state.gender = action.payload.gender;
+      state.academics = action.payload.academics;
+      state.dob = action.payload.dob;
     }
   }
 });
@@ -41,6 +50,7 @@ export const selectUserDetails = (state: {
     password: string;
     referralCode: string;
     isChecked: boolean;
+    dob: Date;
   };
 }) => state.register;
 

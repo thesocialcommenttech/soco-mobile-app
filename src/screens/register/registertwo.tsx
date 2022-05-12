@@ -12,7 +12,7 @@ import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
 import { TextInput } from 'react-native-paper';
 import { Formik } from 'formik';
-import { object, string, boolean } from 'yup';
+import { object, string, date } from 'yup';
 import { CheckBox } from '@rneui/base';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -45,7 +45,6 @@ const CustomCheckBox = (props: any) => {
 const RegisterTwoScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [isChecked, setIsChecked] = useState(false);
-  const [isSecure, setIsSecure] = useState(true);
   const state = useSelector(selectUserDetails);
 
   const onNext = (
@@ -65,21 +64,10 @@ const RegisterTwoScreen = ({ navigation }) => {
   };
 
   const NextSchema = object().shape({
-    email: string()
-      .email('Invalid email address')
-      .required('Email is Required'),
-    password: string().required('Password is Required'),
-    name: string().required('Name is Required'),
-    userName: string().required('Username is Required'),
-    isChecked: boolean().oneOf(
-      [true],
-      'You must agree to the terms and conditions'
-    )
+    gender: string().required('Gender is required'),
+    academics: string().required('Academics is required'),
+    dob: date().required('Date of birth is required')
   });
-
-  const Eyelick = () => {
-    setIsSecure(!isSecure);
-  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -103,66 +91,10 @@ const RegisterTwoScreen = ({ navigation }) => {
                 isSubmitting,
                 handleSubmit
               }) => {
-                const { email, password, name, userName, referralCode } =
-                  values;
+                const { gender, academics, dob } = values;
                 return (
                   <>
-                    <TextInputWithLabel
-                      placeholder="Name"
-                      label="Name"
-                      inputStyle={styles.nameTB}
-                      onChangeText={handleChange('name')}
-                      value={name}
-                      errorTxt={touched.name && errors.name}
-                      onBlur={handleBlur('name')}
-                    />
-                    <TextInputWithLabel
-                      placeholder="Username"
-                      label="Username"
-                      inputStyle={styles.usernameTB}
-                      onChangeText={handleChange('userName')}
-                      value={userName}
-                      errorTxt={touched.userName && errors.userName}
-                      onBlur={handleBlur('userName')}
-                    />
-                    <TextInputWithLabel
-                      placeholder="Email"
-                      label="Email"
-                      inputStyle={styles.emailTB}
-                      onChangeText={handleChange('email')}
-                      value={email}
-                      errorTxt={touched.email && errors.email}
-                      onBlur={handleBlur('email')}
-                    />
-
-                    <TextInputWithLabel
-                      placeholder="Password"
-                      label="Password"
-                      isSecureTextEntry={isSecure}
-                      inputStyle={styles.passTB}
-                      right={
-                        <TextInput.Icon
-                          color="#0063ff"
-                          name={isSecure ? 'eye-outline' : 'eye-off-outline'}
-                          onPress={Eyelick}
-                          style={styles.eye}
-                        />
-                      }
-                      value={password}
-                      onChangeText={handleChange('password')}
-                      errorTxt={touched.password && errors.password}
-                      onBlur={handleBlur('password')}
-                    />
-                    <TextInputWithLabel
-                      placeholder="Referral (Optional)"
-                      label="Referral (Optional)"
-                      inputStyle={styles.refTB}
-                      onChangeText={handleChange('referralCode')}
-                      value={referralCode}
-                      errorTxt={touched.referralCode && errors.referralCode}
-                      onBlur={handleBlur('referralCode')}
-                    />
-                    <View>
+                    {/* <View>
                       <CustomCheckBox
                         checked={isChecked}
                         onPress={() => {
@@ -173,7 +105,7 @@ const RegisterTwoScreen = ({ navigation }) => {
                         onBlur={handleBlur('isChecked')}
                         errorTxt={touched.isChecked && errors.isChecked}
                       />
-                    </View>
+                    </View> */}
                     <ButtonWithLoader
                       text="Register"
                       onPress={handleSubmit}
