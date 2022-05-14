@@ -26,7 +26,9 @@ export default function (Stack) {
       <Stack.Screen
         name="RegisterTwo"
         component={RegisterTwoScreen}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false
+        }}
       />
     </>
   );

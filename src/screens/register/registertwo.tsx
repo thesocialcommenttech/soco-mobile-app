@@ -1,5 +1,4 @@
 import {
-  Image,
   Keyboard,
   ScrollView,
   StyleSheet,
@@ -10,106 +9,147 @@ import {
 import React, { useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
-import { TextInput } from 'react-native-paper';
 import { Formik } from 'formik';
-import { object, string, date } from 'yup';
-import { CheckBox } from '@rneui/base';
+import { object, string } from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectUserDetails,
   setUserDetails
 } from '../../store/reducers/register';
-var logo = require('../../assets/images/logos/Untitled.png');
-
-const CustomCheckBox = (props: any) => {
-  return (
-    <>
-      <CheckBox
-        checked={props.checked}
-        onPress={props.onPress}
-        onBlur={props.onBlur}
-        title="By sign up you agree to the terms and condition and privacy policy"
-        titleProps={{
-          style: styles.titleProps
-        }}
-        containerStyle={styles.checkboxContainer}
-        size={18}
-        checkedColor="black"
-        uncheckedColor="black"
-      />
-      {props.errorTxt && <Text style={styles.error}>{props.errorTxt}</Text>}
-    </>
-  );
-};
+import CustomRadioButton from '../../components/customRadioButton';
+import { TextInput } from 'react-native-paper';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import AntIcon from 'react-native-vector-icons/AntDesign';
 
 const RegisterTwoScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const [isChecked, setIsChecked] = useState(false);
   const state = useSelector(selectUserDetails);
 
-  const onNext = (
+  const [date, setDate] = useState(new Date());
+
+  const onChange = (event: any, selectedDate: any) => {
+    const currentDate = selectedDate;
+    console.log(currentDate);
+    setDate(currentDate);
+    dispatch(
+      setUserDetails({
+        ...state,
+        dob: currentDate.toLocaleDateString()
+      })
+    );
+  };
+
+  const showMode = currentMode => {
+    DateTimePickerAndroid.open({
+      value: date,
+      onChange,
+      mode: currentMode,
+      is24Hour: true
+    });
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const onRegister = (
     values: any,
     formikActions: {
       setSubmitting: (arg0: boolean) => void;
       resetForm: () => void;
     }
   ) => {
-    dispatch(setUserDetails(values));
+    console.log('values', values);
+    dispatch(
+      setUserDetails({
+        ...state,
+        gender: values.gender,
+        academics: values.academics
+      })
+    );
     setTimeout(() => {
       formikActions.setSubmitting(false);
       formikActions.resetForm();
-      setIsChecked(false);
       navigation.navigate('RegisterTwo');
     }, 1000);
   };
 
-  const NextSchema = object().shape({
+  const RegisterSchema = object().shape({
     gender: string().required('Gender is required'),
-    academics: string().required('Academics is required'),
-    dob: date().required('Date of birth is required')
+    academics: string().required('Academics is required')
   });
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.outContainer}>
+        <AntIcon
+          name="left"
+          size={20}
+          color="black"
+          style={styles.backBtn}
+          onPress={() => navigation.goBack()}
+        />
         <ScrollView>
           <View style={styles.container}>
-            <Image style={styles.logo} source={logo} />
-            <Text style={styles.register}>Register</Text>
             <Text style={styles.perDet}>Personal Details</Text>
             <Formik
               initialValues={state}
-              validationSchema={NextSchema}
-              onSubmit={onNext}
+              validationSchema={RegisterSchema}
+              onSubmit={onRegister}
             >
               {({
-                values,
                 errors,
                 touched,
-                handleChange,
                 handleBlur,
                 isSubmitting,
-                handleSubmit
+                handleSubmit,
+                setFieldValue
               }) => {
-                const { gender, academics, dob } = values;
                 return (
                   <>
-                    {/* <View>
-                      <CustomCheckBox
-                        checked={isChecked}
-                        onPress={() => {
-                          setIsChecked(!isChecked);
-                          values = { ...values, isChecked: !isChecked };
-                          handleChange('isChecked');
-                        }}
-                        onBlur={handleBlur('isChecked')}
-                        errorTxt={touched.isChecked && errors.isChecked}
-                      />
-                    </View> */}
+                    <CustomRadioButton
+                      label={'Gender'}
+                      option1="Male"
+                      option2="Female"
+                      onPress={(option: string) => {
+                        console.log(option);
+                        setFieldValue('gender', option);
+                      }}
+                      onBlur={handleBlur('gender')}
+                      errorTxt={touched.gender && errors.gender}
+                    />
+                    <CustomRadioButton
+                      label={'Academics'}
+                      option1="Graduate"
+                      option2="Undergraduate"
+                      onPress={(option: string) => {
+                        console.log(option);
+                        setFieldValue('academics', option);
+                      }}
+                      onBlur={handleBlur('academics')}
+                      errorTxt={touched.academics && errors.academics}
+                    />
+                    <TextInputWithLabel
+                      placeholder="dd/mm/yyyy"
+                      label="Date of Birth"
+                      inputStyle={styles.dobTB}
+                      value={date.toLocaleDateString()}
+                      errorTxt={touched.dob && errors.dob}
+                      onBlur={handleBlur('dob')}
+                      right={
+                        <TextInput.Icon
+                          color="#000"
+                          name={'calendar-blank'}
+                          style={styles.cal}
+                          onPress={showDatepicker}
+                        />
+                      }
+                      editable={false}
+                    />
                     <ButtonWithLoader
                       text="Register"
                       onPress={handleSubmit}
-                      btnStyle={styles.nextBtn}
+                      btnStyle={styles.registerBtn}
                       submitting={isSubmitting}
                     />
                   </>
@@ -136,10 +176,8 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     backgroundColor: '#fff'
   },
-  logo: {
-    marginTop: '5%',
-    width: '57%',
-    resizeMode: 'contain'
+  backBtn: {
+    padding: 20
   },
   register: {
     fontFamily: 'Roboto-Medium',
@@ -186,31 +224,18 @@ const styles = StyleSheet.create({
     lineHeight: 16.41,
     color: '#0063FF'
   },
-  nameTB: {
-    marginTop: '5%'
+  dobTB: {
+    marginTop: '-6%'
   },
-  usernameTB: {
-    marginTop: '8%'
-  },
-  emailTB: {
-    marginTop: '8%'
-  },
-  passTB: {
-    marginTop: '8%'
-  },
-  refTB: {
-    marginTop: '8%'
-  },
-  eye: {
+  cal: {
     justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: '50%'
+    alignItems: 'center'
   },
-  nextBtn: {
+  registerBtn: {
     backgroundColor: '#FFCA12',
     height: 46,
     borderRadius: 8,
-    marginTop: '6%',
+    marginTop: '12%',
     alignItems: 'center',
     justifyContent: 'center',
     bottom: '2%'

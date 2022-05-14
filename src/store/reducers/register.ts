@@ -9,7 +9,7 @@ const initState: {
   isChecked: boolean;
   gender: string;
   academics: string;
-  dob: Date;
+  dob: string;
 } = {
   name: '',
   userName: '',
@@ -19,7 +19,7 @@ const initState: {
   isChecked: false,
   gender: '',
   academics: '',
-  dob: new Date()
+  dob: new Date().toLocaleDateString()
 };
 
 export const registerSlice = createSlice({

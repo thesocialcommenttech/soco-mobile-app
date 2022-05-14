@@ -14,18 +14,17 @@ import ButtonWithLoader from '../../components/buttonWithLoader';
 import { TextInput } from 'react-native-paper';
 import { Formik } from 'formik';
 import { object, string } from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectUserDetails } from '../../store/reducers/login';
-import { setUserDetails } from '../../store/reducers/register';
 var logo = require('../../assets/images/logos/Untitled.png');
 
 const LoginScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
   const [isSecure, setIsSecure] = useState(true);
   const state: {
     email: string;
     password: string;
-  } = useSelector(selectUserDetails);
+  } = {
+    email: '',
+    password: ''
+  };
 
   const onLogin = (
     values: any,
@@ -34,7 +33,8 @@ const LoginScreen = ({ navigation }) => {
       resetForm: () => void;
     }
   ) => {
-    dispatch(setUserDetails(values));
+    // Will be replaced with API call to backend to authenticate the given emailid and password
+    // dispatch(setUserDetails(values));
     setTimeout(() => {
       formikActions.setSubmitting(false);
       formikActions.resetForm();

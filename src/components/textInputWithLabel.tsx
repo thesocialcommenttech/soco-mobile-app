@@ -22,6 +22,7 @@ const TextInputWithLabel = ({ ...props }) => {
         right={props.right}
         onBlur={props.onBlur}
         value={props.value}
+        editable={props.editable}
       />
       {props.errorTxt && <Text style={styles.error}>{props.errorTxt}</Text>}
       {/* <TextInput

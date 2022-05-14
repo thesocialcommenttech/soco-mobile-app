@@ -42,16 +42,12 @@ const CustomCheckBox = (props: any) => {
   );
 };
 
-const RegisterOneScreen = (
-  {
-    /* navigation */
-  }
-) => {
+const RegisterOneScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [isSecure, setIsSecure] = useState(true);
   const state = useSelector(selectUserDetails);
 
-  const onRegister = (
+  const onNext = (
     values: any,
     formikActions: {
       setSubmitting: (arg0: boolean) => void;
@@ -61,7 +57,7 @@ const RegisterOneScreen = (
     dispatch(setUserDetails(values));
     setTimeout(() => {
       formikActions.setSubmitting(false);
-      // navigation.navigate('RegisterTwo');
+      navigation.navigate('RegisterTwo');
     }, 1000);
   };
 
@@ -93,7 +89,7 @@ const RegisterOneScreen = (
             <Formik
               initialValues={state}
               validationSchema={NextSchema}
-              onSubmit={onRegister}
+              onSubmit={onNext}
             >
               {({
                 values,
@@ -113,7 +109,6 @@ const RegisterOneScreen = (
                   referralCode,
                   isChecked
                 } = values;
-                console.log(values);
                 return (
                   <>
                     <TextInputWithLabel
