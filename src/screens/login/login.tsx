@@ -12,11 +12,14 @@ import React, { useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
 import { TextInput } from 'react-native-paper';
-import { Formik } from 'formik';
+import { useFormik } from 'formik';
 import { object, string } from 'yup';
+import { useDispatch } from 'react-redux';
+import { setAuth } from '../../store/reducers/info';
 var logo = require('../../assets/images/logos/Untitled.png');
 
 const LoginScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [isSecure, setIsSecure] = useState(true);
   const state: {
     email: string;
@@ -35,10 +38,9 @@ const LoginScreen = ({ navigation }) => {
   ) => {
     // Will be replaced with API call to backend to authenticate the given emailid and password
     // dispatch(setUserDetails(values));
-    setTimeout(() => {
-      formikActions.setSubmitting(false);
-      formikActions.resetForm();
-    }, 1000);
+    console.log(values);
+    dispatch(setAuth(true));
+    formikActions.setSubmitting(false);
   };
 
   const LoginSchema = object().shape({
@@ -46,6 +48,12 @@ const LoginScreen = ({ navigation }) => {
       .email('Invalid Email address')
       .required('Email is Required'),
     password: string().required('Password is Required')
+  });
+
+  const formik = useFormik({
+    initialValues: state,
+    validationSchema: LoginSchema,
+    onSubmit: onLogin
   });
 
   const onForgotPassword = () => {
@@ -66,61 +74,40 @@ const LoginScreen = ({ navigation }) => {
         <ScrollView>
           <Image style={styles.logo} source={logo} />
           <Text style={styles.login}>Login</Text>
-          <Formik
-            initialValues={state}
-            validationSchema={LoginSchema}
-            onSubmit={onLogin}
-          >
-            {({
-              values,
-              errors,
-              touched,
-              handleChange,
-              handleBlur,
-              isSubmitting,
-              handleSubmit
-            }) => {
-              const { email, password } = values;
-              return (
-                <>
-                  <TextInputWithLabel
-                    placeholder="Email"
-                    label="Email"
-                    inputStyle={styles.emailTB}
-                    onChangeText={handleChange('email')}
-                    value={email}
-                    errorTxt={touched.email && errors.email}
-                    onBlur={handleBlur('email')}
-                  />
+          <TextInputWithLabel
+            placeholder="Email"
+            label="Email"
+            inputStyle={styles.emailTB}
+            onChangeText={formik.handleChange('email')}
+            value={formik.values.email}
+            errorTxt={formik.touched.email && formik.errors.email}
+            onBlur={formik.handleBlur('email')}
+          />
 
-                  <TextInputWithLabel
-                    placeholder="Password"
-                    label="Password"
-                    isSecureTextEntry={isSecure}
-                    onBlur={handleBlur('password')}
-                    inputStyle={styles.passTB}
-                    errorTxt={touched.password && errors.password}
-                    right={
-                      <TextInput.Icon
-                        color="#0063ff"
-                        name={isSecure ? 'eye-outline' : 'eye-off-outline'}
-                        onPress={Eyelick}
-                        style={styles.eye}
-                      />
-                    }
-                    value={password}
-                    onChangeText={handleChange('password')}
-                  />
-                  <ButtonWithLoader
-                    text="Login"
-                    onPress={handleSubmit}
-                    btnStyle={styles.loginBtn}
-                    submitting={isSubmitting}
-                  />
-                </>
-              );
-            }}
-          </Formik>
+          <TextInputWithLabel
+            placeholder="Password"
+            label="Password"
+            isSecureTextEntry={isSecure}
+            onBlur={formik.handleBlur('password')}
+            inputStyle={styles.passTB}
+            errorTxt={formik.touched.password && formik.errors.password}
+            right={
+              <TextInput.Icon
+                color="#0063ff"
+                name={isSecure ? 'eye-outline' : 'eye-off-outline'}
+                onPress={Eyelick}
+                style={styles.eye}
+              />
+            }
+            value={formik.values.password}
+            onChangeText={formik.handleChange('password')}
+          />
+          <ButtonWithLoader
+            text="Login"
+            onPress={formik.handleSubmit}
+            btnStyle={styles.loginBtn}
+            submitting={formik.isSubmitting}
+          />
 
           <TouchableOpacity style={styles.fmp} onPress={onForgotPassword}>
             <Text style={styles.forPass}>Forgot my password</Text>

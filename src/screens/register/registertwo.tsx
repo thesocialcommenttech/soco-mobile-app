@@ -9,7 +9,7 @@ import {
 import React, { useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
-import { Formik } from 'formik';
+import { useFormik } from 'formik';
 import { object, string } from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -20,6 +20,7 @@ import CustomRadioButton from '../../components/customRadioButton';
 import { TextInput } from 'react-native-paper';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
+import { setAuth } from '../../store/reducers/info';
 
 const RegisterTwoScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -52,13 +53,7 @@ const RegisterTwoScreen = ({ navigation }) => {
     showMode('date');
   };
 
-  const onRegister = (
-    values: any,
-    formikActions: {
-      setSubmitting: (arg0: boolean) => void;
-      resetForm: () => void;
-    }
-  ) => {
+  const onRegister = (values: any) => {
     console.log('values', values);
     dispatch(
       setUserDetails({
@@ -67,16 +62,19 @@ const RegisterTwoScreen = ({ navigation }) => {
         academics: values.academics
       })
     );
-    setTimeout(() => {
-      formikActions.setSubmitting(false);
-      formikActions.resetForm();
-      navigation.navigate('RegisterTwo');
-    }, 1000);
+    dispatch(setAuth(true));
+    navigation.navigate('RegisterTwo');
   };
 
   const RegisterSchema = object().shape({
     gender: string().required('Gender is required'),
     academics: string().required('Academics is required')
+  });
+
+  const formik = useFormik({
+    initialValues: state,
+    validationSchema: RegisterSchema,
+    onSubmit: onRegister
   });
 
   return (
@@ -92,70 +90,51 @@ const RegisterTwoScreen = ({ navigation }) => {
         <ScrollView>
           <View style={styles.container}>
             <Text style={styles.perDet}>Personal Details</Text>
-            <Formik
-              initialValues={state}
-              validationSchema={RegisterSchema}
-              onSubmit={onRegister}
-            >
-              {({
-                errors,
-                touched,
-                handleBlur,
-                isSubmitting,
-                handleSubmit,
-                setFieldValue
-              }) => {
-                return (
-                  <>
-                    <CustomRadioButton
-                      label={'Gender'}
-                      option1="Male"
-                      option2="Female"
-                      onPress={(option: string) => {
-                        console.log(option);
-                        setFieldValue('gender', option);
-                      }}
-                      onBlur={handleBlur('gender')}
-                      errorTxt={touched.gender && errors.gender}
-                    />
-                    <CustomRadioButton
-                      label={'Academics'}
-                      option1="Graduate"
-                      option2="Undergraduate"
-                      onPress={(option: string) => {
-                        console.log(option);
-                        setFieldValue('academics', option);
-                      }}
-                      onBlur={handleBlur('academics')}
-                      errorTxt={touched.academics && errors.academics}
-                    />
-                    <TextInputWithLabel
-                      placeholder="dd/mm/yyyy"
-                      label="Date of Birth"
-                      inputStyle={styles.dobTB}
-                      value={date.toLocaleDateString()}
-                      errorTxt={touched.dob && errors.dob}
-                      onBlur={handleBlur('dob')}
-                      right={
-                        <TextInput.Icon
-                          color="#000"
-                          name={'calendar-blank'}
-                          style={styles.cal}
-                          onPress={showDatepicker}
-                        />
-                      }
-                      editable={false}
-                    />
-                    <ButtonWithLoader
-                      text="Register"
-                      onPress={handleSubmit}
-                      btnStyle={styles.registerBtn}
-                      submitting={isSubmitting}
-                    />
-                  </>
-                );
+            <CustomRadioButton
+              label={'Gender'}
+              option1="Male"
+              option2="Female"
+              onPress={(option: string) => {
+                console.log(option);
+                formik.setFieldValue('gender', option);
               }}
-            </Formik>
+              onBlur={formik.handleBlur('gender')}
+              errorTxt={formik.touched.gender && formik.errors.gender}
+            />
+            <CustomRadioButton
+              label={'Academics'}
+              option1="Graduate"
+              option2="Undergraduate"
+              onPress={(option: string) => {
+                console.log(option);
+                formik.setFieldValue('academics', option);
+              }}
+              onBlur={formik.handleBlur('academics')}
+              errorTxt={formik.touched.academics && formik.errors.academics}
+            />
+            <TextInputWithLabel
+              placeholder="dd/mm/yyyy"
+              label="Date of Birth"
+              inputStyle={styles.dobTB}
+              value={date.toLocaleDateString()}
+              errorTxt={formik.touched.dob && formik.errors.dob}
+              onBlur={formik.handleBlur('dob')}
+              right={
+                <TextInput.Icon
+                  color="#000"
+                  name={'calendar-blank'}
+                  style={styles.cal}
+                  onPress={showDatepicker}
+                />
+              }
+              editable={false}
+            />
+            <ButtonWithLoader
+              text="Register"
+              onPress={formik.handleSubmit}
+              btnStyle={styles.registerBtn}
+              submitting={formik.isSubmitting}
+            />
           </View>
         </ScrollView>
       </View>

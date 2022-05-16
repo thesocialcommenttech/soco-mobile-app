@@ -1,12 +1,347 @@
-import { Text, View } from 'react-native';
-import React from 'react';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import React, { useState } from 'react';
+import TopBar from '../../components/topBar';
+import { Avatar } from '@rneui/base';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useSelector } from 'react-redux';
+import { selectUserInfo } from '../../store/reducers/info';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
+  // get backround and profile picture from background
+  const state = useSelector(selectUserInfo);
+  const [background] = useState(
+    'https://images.unsplash.com/photo-1651006450901-9f487bafe481?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80'
+  );
+  const [profile] = useState(
+    'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIADoAPQMBIgACEQEDEQH/xAAbAAACAgMBAAAAAAAAAAAAAAAEBQMGAAECB//EADYQAAIBAwIDBQUFCQAAAAAAAAECAwAEEQUhBhIxIlFhcYETQaGxwRQyM0KRFlNiZJKTstHw/8QAGAEBAQEBAQAAAAAAAAAAAAAAAwIEAAH/xAAeEQACAgICAwAAAAAAAAAAAAAAAQIREiEDMQRRgf/aAAwDAQACEQMRAD8AsyLf8vbeYr/GOb4NmtETEfgxMT3wAf44psrSfvGrOaU/mX1Wi+ja9CS8Z0nKGGJuUKBh2Q9PHNDEpJ2XtZjn3IVk+fLTDXr6LT7GW9uoY5BEM4xgk9AKK4d1CK+0mO6tYUti4wzEdo/8a8bo5K+hGYLaMg4kt2O4LQuh/Vc11zy45YdR5u4PMrfB9651PWNQ08uuoWRuYT0uB2iPPurNLePVrMzryREMVMchBx6jNcpWVKFdmz9tTmZo4mAU9owlc+qnHwoQ3soODb/0Tj6imSaSoaRlSE5QgNG2N6GbSbv+Y/u5+tVYeJZGYIma3zYQ5rl8Fj3AVqdgFNcUIeJ7eTUbeGzjK4knQPnu3P0z6UYtxHpQjtY7cmEYUcmc/EYPoc0I06Nr9vE8iqscLPuepJAH1rvVOINNtpVikdnwe24QlF8z0oZy2auKKqxpcPAwMTSISy59mx3I8qQ8JaQdON1dCUGK6ctFGPypns59Kla1tdRP26N/aBm5FOduvd7j49RinLskNuW5cIi5wozsO4V3FvZ55GqRIyIw3UHI64odioOASAO41PG3YU4O4zQdw2H2x605lsJkmCyMNskdKhurgBT5UVHphOGlfl8F/wBmpjYW5ideTdhgsdyPGrxIzPH+J7w/tMze0+6gznp02+eaPHEC21rYxiBJWdsSSb55Sfceua3xfwvdi8mvYU50Z8OF6rtvSV3woMg5WRMqpHTyrNKma4OUemXbhO4S4u7tIEMcEb8/L3tuBt44J/SrcDsKpPA0NxDpclxLCyCVlPT8uBirULnmj2O9LCFICc8pbC+bs58KWzSdrc0WZcoCcDakl7K3tNqtIOTLvjIYVyuDseh2qUff9aiWrDB5LVZyeZmSTGOdPeO4g7Glc3DVnNIrXBSQA9BEAT4Z9O6nh/EPnWMB7Q0bhFuxVySSpMhjiVFCooVRsFUYAHdQt3piSAvB2H+BphWzVoNlUuJGiDpJ2XXYjxqu6pqsVrMFkYZI95qx8S7Xu3vRfma8l4sYnVmBJwEFUkTJn//Z'
+  );
+  const [name] = useState('John Doe');
+  const [userName] = useState('@johndoe');
+  const [locked, setLocked] = useState(true);
+  const [bio] = useState(
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru.'
+  );
+  const [followers] = useState(32);
+  const [following] = useState(9);
+  const [views] = useState(245);
+
+  const onEditCaption = () => {
+    console.log('onEditCaption');
+  };
+
+  const onEditCover = () => {
+    console.log('onEditProfile');
+  };
+
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight: () => <HeaderRight />
+  //   });
+  // }, [navigation]);
+
   return (
-    <View>
-      <Text>ProfileScreen</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      <TopBar uri={profile} username={name} />
+      <View style={styles.images}>
+        <Image
+          source={{
+            uri: background
+          }}
+          style={styles.bgImage}
+        />
+        <View style={styles.avatarContainer}>
+          <Avatar
+            size={90}
+            rounded
+            title={name?.charAt(0)}
+            titleStyle={styles.avatarTitle}
+            source={{
+              uri: profile
+            }}
+            activeOpacity={0.7}
+            containerStyle={styles.avatar}
+          />
+        </View>
+        <TouchableOpacity style={styles.editCaption} onPress={onEditCaption}>
+          <Icon name="pencil-outline" size={20} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.editCover} onPress={onEditCover}>
+          <Icon name="camera-outline" size={20} color="#fff" />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.info}>
+        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.userName}>{userName}</Text>
+      </View>
+      <View style={styles.portfolioContainer}>
+        <TouchableOpacity style={styles.portfolio}>
+          <Text style={styles.portfolioText}>Portfolio</Text>
+        </TouchableOpacity>
+        <View style={styles.verticleLine} />
+        <TouchableOpacity
+          style={styles.portfolioLock}
+          onPress={() => setLocked(!locked)}
+        >
+          {locked ? (
+            <Icon name="lock-outline" size={20} color="#fff" />
+          ) : (
+            <Icon name="lock-off-outline" size={20} color="#fff" />
+          )}
+        </TouchableOpacity>
+      </View>
+      <View style={styles.bio}>
+        <Text style={styles.bioText}>{bio}</Text>
+      </View>
+      <View style={styles.updateBio}>
+        <TouchableOpacity style={styles.updateBioLink}>
+          <Icon name="pencil-outline" size={18} color="#0063FF" />
+          <Text style={styles.updateBioText}>Update Bio</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.stats}>
+        <View style={styles.statsItem}>
+          <Text style={styles.statsText}>{followers}</Text>
+          <Text style={styles.statsLabel}>Followers</Text>
+        </View>
+        <View style={styles.statsItem}>
+          <Text style={styles.statsText}>{following}</Text>
+          <Text style={styles.statsLabel}>Following</Text>
+        </View>
+        <View style={styles.statsItem}>
+          <Text style={styles.statsText}>{views}</Text>
+          <Text style={styles.statsLabel}>Views</Text>
+        </View>
+      </View>
+      <View style={styles.list}>
+        <View style={styles.listItem}>
+          <Text style={styles.listText}>
+            <Icon name="heart-outline" size={18} color="#0063FF" />
+          </Text>
+          <Text style={styles.listLabel}>Likes</Text>
+        </View>
+        <View style={styles.listItem}>
+          <Text style={styles.listText}>
+            <Icon name="message-outline" size={18} color="#0063FF" />
+          </Text>
+          <Text style={styles.listLabel}>Messages</Text>
+        </View>
+        <View style={styles.listItem}>
+          <Text style={styles.listText}>
+            <Icon name="bookmark-outline" size={18} color="#0063FF" />
+          </Text>
+          <Text style={styles.listLabel}>Bookmarks</Text>
+        </View>
+        <View style={styles.listItem}>
+          <Text style={styles.listText}>
+            <Icon name="share-outline" size={18} color="#0063FF" />
+          </Text>
+          <Text style={styles.listLabel}>Share</Text>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
 export default ProfileScreen;
+
+const styles = StyleSheet.create({
+  statusBar: {
+    backgroundColor: 'white',
+    height: '25%'
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff'
+  },
+  bgImage: {
+    position: 'absolute',
+    width: '100%',
+    height: '56%',
+    resizeMode: 'cover'
+  },
+  avatarContainer: {
+    alignSelf: 'center',
+    top: '40%',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  avatar: {
+    backgroundColor: 'white',
+    borderWidth: 4,
+    borderColor: 'white'
+  },
+  avatarTitle: {
+    color: 'black'
+  },
+  images: {
+    flex: 1,
+    flexDirection: 'column'
+  },
+  editCaption: {
+    position: 'absolute',
+    top: '42%',
+    left: '2%',
+    backgroundColor: 'rgba(15, 23, 36, 0.47)',
+    borderRadius: 5,
+    width: 35,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  editCover: {
+    position: 'absolute',
+    top: '42%',
+    right: '2%',
+    backgroundColor: 'rgba(15, 23, 36, 0.47)',
+    borderRadius: 5,
+    width: 35,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  info: {
+    marginTop: '-22%',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  name: {
+    fontSize: 23,
+    fontWeight: '700',
+    lineHeight: 26.95,
+    fontFamily: 'Roboto-Bold',
+    color: 'black'
+  },
+  userName: {
+    fontSize: 14,
+    fontWeight: '400',
+    fontFamily: 'Roboto-Regular',
+    lineHeight: 16.41,
+    color: '#7D7987'
+  },
+  portfolioContainer: {
+    flexDirection: 'row',
+    marginTop: '5%'
+  },
+  portfolio: {
+    backgroundColor: '#0063FF',
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 8,
+    height: 46,
+    justifyContent: 'center',
+    marginLeft: '8%',
+    width: '71%'
+  },
+  portfolioText: {
+    fontSize: 14,
+    fontWeight: '500',
+    fontFamily: 'Roboto-Regular',
+    lineHeight: 16.41,
+    color: '#fff',
+    marginLeft: '35%'
+  },
+  verticleLine: {
+    height: '100%',
+    width: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)'
+  },
+  portfolioLock: {
+    backgroundColor: '#0063FF',
+    borderTopRightRadius: 8,
+    borderBottomRightRadius: 8,
+    height: 46,
+    justifyContent: 'center',
+    marginRight: '8%',
+    width: '13%',
+    alignItems: 'center'
+  },
+  bio: {
+    marginTop: '5%',
+    marginLeft: '8%',
+    marginRight: '8%'
+  },
+  bioText: {
+    fontSize: 14,
+    fontWeight: '400',
+    fontFamily: 'Roboto-Regular',
+    lineHeight: 18.2,
+    color: '#7D7987',
+    textAlign: 'center'
+  },
+  updateBio: {
+    marginTop: '3%',
+    alignItems: 'center'
+  },
+  updateBioLink: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  updateBioText: {
+    fontSize: 14,
+    fontWeight: '400',
+    fontFamily: 'Roboto-Regular',
+    lineHeight: 16.41,
+    color: '#0063FF',
+    textAlign: 'center',
+    marginLeft: '1%'
+  },
+  stats: {
+    flexDirection: 'row',
+    marginTop: '8%',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  statsItem: {
+    flexDirection: 'column',
+    paddingHorizontal: '8%'
+  },
+  statsText: {
+    fontSize: 14,
+    fontWeight: '700',
+    fontFamily: 'Roboto-Regular',
+    lineHeight: 16.41,
+    color: 'black',
+    textAlign: 'center'
+  },
+  statsLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    fontFamily: 'Roboto-Regular',
+    lineHeight: 16.41,
+    color: '#7D7987',
+    marginTop: '2%',
+    textAlign: 'center'
+  },
+  list: {
+    marginTop: '8%',
+    marginLeft: '8%',
+    marginRight: '8%'
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: '5%'
+  },
+  listText: {
+    fontSize: 14,
+    fontWeight: '500',
+    fontFamily: 'Roboto-Regular',
+    lineHeight: 16.41,
+    color: '#0063FF'
+  },
+  listLabel: {
+    fontSize: 14,
+    fontWeight: '400',
+    fontFamily: 'Roboto-Regular',
+    lineHeight: 16.41,
+    color: '#7D7987'
+  }
+});

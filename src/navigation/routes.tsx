@@ -1,18 +1,12 @@
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import MainStack from './mainStack';
 import AuthStack from './authStack';
-
-const Stack = createNativeStackNavigator();
+import { useSelector } from 'react-redux';
+import { selectAuth } from '../store/reducers/info';
 
 export default function Routes() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {false ? MainStack(Stack) : AuthStack(Stack)}
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+  const user = useSelector(selectAuth);
+  console.log('user', user);
+  return <>{user ? <MainStack /> : <AuthStack />}</>;
 }

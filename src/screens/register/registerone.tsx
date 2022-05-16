@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
 import { TextInput } from 'react-native-paper';
-import { Formik } from 'formik';
+import { useFormik } from 'formik';
 import { object, string, boolean } from 'yup';
 import { CheckBox } from '@rneui/base';
 import { useDispatch, useSelector } from 'react-redux';
@@ -47,18 +47,9 @@ const RegisterOneScreen = ({ navigation }) => {
   const [isSecure, setIsSecure] = useState(true);
   const state = useSelector(selectUserDetails);
 
-  const onNext = (
-    values: any,
-    formikActions: {
-      setSubmitting: (arg0: boolean) => void;
-      resetForm: () => void;
-    }
-  ) => {
+  const onNext = (values: any) => {
     dispatch(setUserDetails(values));
-    setTimeout(() => {
-      formikActions.setSubmitting(false);
-      navigation.navigate('RegisterTwo');
-    }, 1000);
+    navigation.navigate('RegisterTwo');
   };
 
   const NextSchema = object().shape({
@@ -78,6 +69,12 @@ const RegisterOneScreen = ({ navigation }) => {
     setIsSecure(!isSecure);
   };
 
+  const formik = useFormik({
+    initialValues: state,
+    validationSchema: NextSchema,
+    onSubmit: onNext
+  });
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.outContainer}>
@@ -86,106 +83,79 @@ const RegisterOneScreen = ({ navigation }) => {
             <Image style={styles.logo} source={logo} />
             <Text style={styles.register}>Register</Text>
             <Text style={styles.accDet}>Account Details</Text>
-            <Formik
-              initialValues={state}
-              validationSchema={NextSchema}
-              onSubmit={onNext}
-            >
-              {({
-                values,
-                errors,
-                touched,
-                handleChange,
-                handleBlur,
-                isSubmitting,
-                handleSubmit,
-                setFieldValue
-              }) => {
-                const {
-                  email,
-                  password,
-                  name,
-                  userName,
-                  referralCode,
-                  isChecked
-                } = values;
-                return (
-                  <>
-                    <TextInputWithLabel
-                      placeholder="Name"
-                      label="Name"
-                      inputStyle={styles.nameTB}
-                      onChangeText={handleChange('name')}
-                      value={name}
-                      errorTxt={touched.name && errors.name}
-                      onBlur={handleBlur('name')}
-                    />
-                    <TextInputWithLabel
-                      placeholder="Username"
-                      label="Username"
-                      inputStyle={styles.usernameTB}
-                      onChangeText={handleChange('userName')}
-                      value={userName}
-                      errorTxt={touched.userName && errors.userName}
-                      onBlur={handleBlur('userName')}
-                    />
-                    <TextInputWithLabel
-                      placeholder="Email"
-                      label="Email"
-                      inputStyle={styles.emailTB}
-                      onChangeText={handleChange('email')}
-                      value={email}
-                      errorTxt={touched.email && errors.email}
-                      onBlur={handleBlur('email')}
-                    />
+            <TextInputWithLabel
+              placeholder="Name"
+              label="Name"
+              inputStyle={styles.nameTB}
+              onChangeText={formik.handleChange('name')}
+              value={formik.values.name}
+              errorTxt={formik.touched.name && formik.errors.name}
+              onBlur={formik.handleBlur('name')}
+            />
+            <TextInputWithLabel
+              placeholder="Username"
+              label="Username"
+              inputStyle={styles.usernameTB}
+              onChangeText={formik.handleChange('userName')}
+              value={formik.values.userName}
+              errorTxt={formik.touched.userName && formik.errors.userName}
+              onBlur={formik.handleBlur('userName')}
+            />
+            <TextInputWithLabel
+              placeholder="Email"
+              label="Email"
+              inputStyle={styles.emailTB}
+              onChangeText={formik.handleChange('email')}
+              value={formik.values.email}
+              errorTxt={formik.touched.email && formik.errors.email}
+              onBlur={formik.handleBlur('email')}
+            />
 
-                    <TextInputWithLabel
-                      placeholder="Password"
-                      label="Password"
-                      isSecureTextEntry={isSecure}
-                      inputStyle={styles.passTB}
-                      right={
-                        <TextInput.Icon
-                          color="#0063ff"
-                          name={isSecure ? 'eye-outline' : 'eye-off-outline'}
-                          onPress={Eyelick}
-                          style={styles.eye}
-                        />
-                      }
-                      value={password}
-                      onChangeText={handleChange('password')}
-                      errorTxt={touched.password && errors.password}
-                      onBlur={handleBlur('password')}
-                    />
-                    <TextInputWithLabel
-                      placeholder="Referral (Optional)"
-                      label="Referral (Optional)"
-                      inputStyle={styles.refTB}
-                      onChangeText={handleChange('referralCode')}
-                      value={referralCode}
-                      errorTxt={touched.referralCode && errors.referralCode}
-                      onBlur={handleBlur('referralCode')}
-                    />
-                    <View>
-                      <CustomCheckBox
-                        checked={isChecked}
-                        onPress={() => {
-                          setFieldValue('isChecked', !isChecked);
-                        }}
-                        onBlur={handleBlur('isChecked')}
-                        errorTxt={touched.isChecked && errors.isChecked}
-                      />
-                    </View>
-                    <ButtonWithLoader
-                      text="Next"
-                      onPress={handleSubmit}
-                      btnStyle={styles.nextBtn}
-                      submitting={isSubmitting}
-                    />
-                  </>
-                );
-              }}
-            </Formik>
+            <TextInputWithLabel
+              placeholder="Password"
+              label="Password"
+              isSecureTextEntry={isSecure}
+              inputStyle={styles.passTB}
+              right={
+                <TextInput.Icon
+                  color="#0063ff"
+                  name={isSecure ? 'eye-outline' : 'eye-off-outline'}
+                  onPress={Eyelick}
+                  style={styles.eye}
+                />
+              }
+              value={formik.values.password}
+              onChangeText={formik.handleChange('password')}
+              errorTxt={formik.touched.password && formik.errors.password}
+              onBlur={formik.handleBlur('password')}
+            />
+            <TextInputWithLabel
+              placeholder="Referral (Optional)"
+              label="Referral (Optional)"
+              inputStyle={styles.refTB}
+              onChangeText={formik.handleChange('referralCode')}
+              value={formik.values.referralCode}
+              errorTxt={
+                formik.touched.referralCode && formik.errors.referralCode
+              }
+              onBlur={formik.handleBlur('referralCode')}
+            />
+            <View>
+              <CustomCheckBox
+                checked={formik.values.isChecked}
+                onPress={() => {
+                  formik.setFieldValue('isChecked', !formik.values.isChecked);
+                }}
+                onBlur={formik.handleBlur('isChecked')}
+                errorTxt={formik.touched.isChecked && formik.errors.isChecked}
+              />
+            </View>
+            <ButtonWithLoader
+              text="Next"
+              onPress={formik.handleSubmit}
+              btnStyle={styles.nextBtn}
+              submitting={formik.isSubmitting}
+            />
           </View>
         </ScrollView>
       </View>
