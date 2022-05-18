@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import Routes from './src/navigation/routes';
 import FlashMessage from 'react-native-flash-message';
 import { store } from './src/store';
+import HomeScreen from './src/screens/home/home';
 
 const App = () => {
   // const isDarkMode = useColorScheme() === 'dark';
@@ -14,12 +15,19 @@ const App = () => {
   // };
 
   return (
-    <Provider store={store}>
-      <View style={styles.container}>
-        <Routes />
-        <FlashMessage position="top" />
-      </View>
-    </Provider>
+    // <Provider store={store}>
+    //   <View style={styles.container}>
+    //     <Routes />
+    //     <FlashMessage position="top" />
+    //   </View>
+    // </Provider>
+    <>
+    <HomeScreen>
+
+    </HomeScreen>
+    </>
+    
+    
   );
 };
 
