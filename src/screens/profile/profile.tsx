@@ -1,4 +1,5 @@
 import {
+  FlatList,
   Image,
   ScrollView,
   StyleSheet,
@@ -16,6 +17,7 @@ import { selectUserInfo } from '../../store/reducers/info';
 const ProfileScreen = ({ navigation }) => {
   // get backround and profile picture from background
   const state = useSelector(selectUserInfo);
+
   const [background] = useState(
     'https://images.unsplash.com/photo-1651006450901-9f487bafe481?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80'
   );
@@ -31,6 +33,16 @@ const ProfileScreen = ({ navigation }) => {
   const [followers] = useState(32);
   const [following] = useState(9);
   const [views] = useState(245);
+  const [activities] = useState({
+    All: 0,
+    Blogs: 0,
+    Artworks: 0,
+    Videos: 0,
+    Projects: 0,
+    Presentations: 0,
+    Articles: 0,
+    Links: 0
+  });
 
   const onEditCaption = () => {
     console.log('onEditCaption');
@@ -45,6 +57,57 @@ const ProfileScreen = ({ navigation }) => {
   //     headerRight: () => <HeaderRight />
   //   });
   // }, [navigation]);
+  const ITEMS = [
+    {
+      id: 1,
+      name: 'All',
+      count: activities.All
+    },
+    {
+      id: 2,
+      name: 'Blogs',
+      count: activities.Blogs
+    },
+    {
+      id: 3,
+      name: 'Artworks',
+      count: activities.Artworks
+    },
+    {
+      id: 4,
+      name: 'Videos',
+      count: activities.Videos
+    },
+    {
+      id: 5,
+      name: 'Projects',
+      count: activities.Projects
+    },
+    {
+      id: 6,
+      name: 'Presentations',
+      count: activities.Presentations
+    },
+    {
+      id: 7,
+      name: 'Articles',
+      count: activities.Articles
+    },
+    {
+      id: 8,
+      name: 'Links',
+      count: activities.Links
+    }
+  ];
+
+  const ItemRender = ({ actName, count }) => (
+    <TouchableOpacity style={styles.item}>
+      <Text style={styles.itemText}>{actName}</Text>
+      <View style={styles.circle}>
+        <Text style={styles.itemCount}>{count}</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <ScrollView style={styles.container}>
@@ -119,32 +182,37 @@ const ProfileScreen = ({ navigation }) => {
           <Text style={styles.statsLabel}>Views</Text>
         </View>
       </View>
-      <View style={styles.list}>
+      <FlatList
+        data={ITEMS}
+        style={styles.activity}
+        renderItem={({ item }) => (
+          <ItemRender actName={item.name} count={item.count} />
+        )}
+        keyExtractor={item => {
+          return item.id.toString();
+        }}
+        horizontal={true}
+      />
+      {/* <View style={styles.list}>
         <View style={styles.listItem}>
-          <Text style={styles.listText}>
-            <Icon name="heart-outline" size={18} color="#0063FF" />
-          </Text>
           <Text style={styles.listLabel}>Likes</Text>
         </View>
         <View style={styles.listItem}>
-          <Text style={styles.listText}>
-            <Icon name="message-outline" size={18} color="#0063FF" />
-          </Text>
           <Text style={styles.listLabel}>Messages</Text>
         </View>
         <View style={styles.listItem}>
-          <Text style={styles.listText}>
-            <Icon name="bookmark-outline" size={18} color="#0063FF" />
-          </Text>
           <Text style={styles.listLabel}>Bookmarks</Text>
         </View>
         <View style={styles.listItem}>
-          <Text style={styles.listText}>
-            <Icon name="share-outline" size={18} color="#0063FF" />
-          </Text>
           <Text style={styles.listLabel}>Share</Text>
         </View>
-      </View>
+        <View style={styles.listItem}>
+          <Text style={styles.listLabel}>Share</Text>
+        </View>
+        <View style={styles.listItem}>
+          <Text style={styles.listLabel}>Share</Text>
+        </View>
+      </View> */}
     </ScrollView>
   );
 };
@@ -321,14 +389,16 @@ const styles = StyleSheet.create({
   },
   list: {
     marginTop: '8%',
-    marginLeft: '8%',
-    marginRight: '8%'
+    paddingHorizontal: '8%',
+    // justifyContent: 'space-around',
+    alignItems: 'center',
+    flexDirection: 'row'
   },
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: '5%'
+    paddingHorizontal: '8%'
   },
   listText: {
     fontSize: 14,
@@ -343,5 +413,46 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Regular',
     lineHeight: 16.41,
     color: '#7D7987'
+  },
+  horizontalSeparator: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    marginTop: '8%',
+    marginBottom: '8%'
+  },
+  activity: {
+    flexGrow: 0,
+    marginTop: '6%',
+    marginHorizontal: '4%'
+  },
+  item: {
+    flexDirection: 'row',
+    // backgroundColor: '#000',
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  itemText: {
+    fontSize: 14,
+    color: '#7D7987',
+    textAlign: 'center'
+  },
+  circle: {
+    width: 26,
+    height: 24,
+    borderRadius: 100,
+    backgroundColor: '#FFF4CC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 5,
+    padding: 5
+  },
+  itemCount: {
+    fontSize: 14,
+    fontWeight: '500',
+    fontFamily: 'Roboto-Regular',
+    lineHeight: 14,
+    color: '#896A00',
+    textAlign: 'center'
   }
 });
