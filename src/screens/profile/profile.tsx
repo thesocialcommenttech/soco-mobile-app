@@ -11,8 +11,10 @@ import React, { useState } from 'react';
 import TopBar from '../../components/topBar';
 import { Avatar } from '@rneui/base';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon2 from 'react-native-vector-icons/MaterialIcons';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from '../../store/reducers/info';
+import { Card } from '@rneui/base';
 
 const ProfileScreen = ({ navigation }) => {
   // get backround and profile picture from background
@@ -97,6 +99,36 @@ const ProfileScreen = ({ navigation }) => {
       id: 8,
       name: 'Links',
       count: activities.Links
+    }
+  ];
+
+  const cardContents = [
+    {
+      id: 1,
+      name: 'John Doe',
+      profilePic: profile,
+      postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
+      postTitle: 'Python - An Installation Guide',
+      postDate: '24 Feb, 2022',
+      postTag: 'Artwork'
+    },
+    {
+      id: 2,
+      name: 'John Doe',
+      profilePic: profile,
+      postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
+      postTitle: 'Python - An Installation Guide',
+      postDate: '24 Feb, 2022',
+      postTag: 'Artwork'
+    },
+    {
+      id: 3,
+      name: 'John Doe',
+      profilePic: profile,
+      postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
+      postTitle: 'Python - An Installation Guide',
+      postDate: '24 Feb, 2022',
+      postTag: 'Artwork'
     }
   ];
 
@@ -193,26 +225,57 @@ const ProfileScreen = ({ navigation }) => {
         }}
         horizontal={true}
       />
-      {/* <View style={styles.list}>
-        <View style={styles.listItem}>
-          <Text style={styles.listLabel}>Likes</Text>
-        </View>
-        <View style={styles.listItem}>
-          <Text style={styles.listLabel}>Messages</Text>
-        </View>
-        <View style={styles.listItem}>
-          <Text style={styles.listLabel}>Bookmarks</Text>
-        </View>
-        <View style={styles.listItem}>
-          <Text style={styles.listLabel}>Share</Text>
-        </View>
-        <View style={styles.listItem}>
-          <Text style={styles.listLabel}>Share</Text>
-        </View>
-        <View style={styles.listItem}>
-          <Text style={styles.listLabel}>Share</Text>
-        </View>
-      </View> */}
+
+      {cardContents.map((u, i) => {
+        return (
+          <Card containerStyle={styles.cardContainer}>
+            <View>
+              <View style={styles.cardTitle}>
+                <View style={styles.profileinfo}>
+                  <Avatar
+                    size={36}
+                    rounded
+                    // title={name?.charAt(0)}
+                    // titleStyle={styles.avatarTitle}
+                    source={{
+                      uri: u.profilePic
+                    }}
+                    activeOpacity={0.7}
+                    containerStyle={styles.avatar2}
+                  />
+                  <Text style={styles.cardTitleText}>{name}</Text>
+                </View>
+                <TouchableOpacity>
+                  <Icon
+                    name="share-variant-outline"
+                    size={20}
+                    color="#7D7987"
+                  />
+                </TouchableOpacity>
+              </View>
+              <View key={i} style={styles.mainContent}>
+                <Image
+                  style={styles.postPic}
+                  resizeMode="cover"
+                  source={{ uri: u.postImage }}
+                />
+              </View>
+              <View style={styles.cardFooter}>
+                <Text style={styles.cardFooterText}>{u.postTitle}</Text>
+                <TouchableOpacity>
+                  <Icon2 name="more-vert" size={20} color="#7D7987" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.cardFooter2}>
+                <Text style={styles.cardFooterText2}>{u.postDate}</Text>
+                <View style={styles.tag}>
+                  <Text style={styles.tagText}>{u.postTag}</Text>
+                </View>
+              </View>
+            </View>
+          </Card>
+        );
+      })}
     </ScrollView>
   );
 };
@@ -231,19 +294,20 @@ const styles = StyleSheet.create({
   bgImage: {
     position: 'absolute',
     width: '100%',
-    height: '56%',
+    height: 200,
     resizeMode: 'cover'
   },
   avatarContainer: {
     alignSelf: 'center',
-    top: '40%',
+    marginTop: '42%',
+    // top: '40%',
     justifyContent: 'center',
     alignItems: 'center'
   },
   avatar: {
-    backgroundColor: 'white',
+    borderColor: 'white',
     borderWidth: 4,
-    borderColor: 'white'
+    backgroundColor: 'white'
   },
   avatarTitle: {
     color: 'black'
@@ -254,7 +318,7 @@ const styles = StyleSheet.create({
   },
   editCaption: {
     position: 'absolute',
-    top: '42%',
+    top: '65%',
     left: '2%',
     backgroundColor: 'rgba(15, 23, 36, 0.47)',
     borderRadius: 5,
@@ -265,7 +329,7 @@ const styles = StyleSheet.create({
   },
   editCover: {
     position: 'absolute',
-    top: '42%',
+    top: '65%',
     right: '2%',
     backgroundColor: 'rgba(15, 23, 36, 0.47)',
     borderRadius: 5,
@@ -275,7 +339,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   info: {
-    marginTop: '-22%',
+    marginTop: '4%',
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center'
@@ -283,7 +347,6 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 23,
     fontWeight: '700',
-    lineHeight: 26.95,
     fontFamily: 'Roboto-Bold',
     color: 'black'
   },
@@ -291,7 +354,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     fontFamily: 'Roboto-Regular',
-    lineHeight: 16.41,
     color: '#7D7987'
   },
   portfolioContainer: {
@@ -454,5 +516,86 @@ const styles = StyleSheet.create({
     lineHeight: 14,
     color: '#896A00',
     textAlign: 'center'
+  },
+  cardContainer: {
+    marginTop: '8%',
+    marginHorizontal: '4%',
+    borderRadius: 10,
+    marginBottom: '6%',
+    shadowColor: '#000',
+    padding: 20,
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 5
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
+    elevation: 7
+  },
+  profileinfo: {
+    flexDirection: 'row',
+    // justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  cardTitle: {
+    // backgroundColor: 'gray',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  cardTitleText: {
+    fontSize: 16,
+    fontWeight: '700',
+    fontFamily: 'Roboto-Regular',
+    marginLeft: '10%',
+    color: 'black'
+  },
+  avatar2: {
+    borderWidth: 1,
+    borderColor: '#fff'
+  },
+  mainContent: {
+    marginTop: '7%'
+  },
+  postPic: {
+    width: '100%',
+    height: 300,
+    borderRadius: 10
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: '9%'
+  },
+  cardFooterText: {
+    fontSize: 16,
+    fontWeight: '700',
+    fontFamily: 'Roboto-Regular',
+    lineHeight: 18.75,
+    color: '#000'
+  },
+  cardFooter2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: '7%'
+  },
+  cardFooterText2: {
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'Roboto-Regular',
+    color: '#7D7987'
+  },
+  tag: {
+    backgroundColor: '#F2F2F2',
+    borderRadius: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    marginLeft: '5%'
+  },
+  tagText: {
+    fontSize: 12,
+    fontWeight: '700',
+    fontFamily: 'Roboto-Regular',
+    color: '#000'
   }
 });

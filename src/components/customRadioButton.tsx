@@ -6,13 +6,11 @@ const CustomRadioButton = ({ ...props }) => {
   const [two, settwo] = React.useState(false);
 
   const selectOption1 = () => {
-    console.log('one');
     props.onPress(props.option1);
     setone(true);
     settwo(false);
   };
   const selectOption2 = () => {
-    console.log('two');
     props.onPress(props.option2);
     setone(false);
     settwo(true);

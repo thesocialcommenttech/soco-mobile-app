@@ -30,7 +30,6 @@ const RegisterTwoScreen = ({ navigation }) => {
 
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate;
-    console.log(currentDate);
     setDate(currentDate);
     dispatch(
       setUserDetails({
@@ -54,7 +53,6 @@ const RegisterTwoScreen = ({ navigation }) => {
   };
 
   const onRegister = (values: any) => {
-    console.log('values', values);
     dispatch(
       setUserDetails({
         ...state,
@@ -95,7 +93,6 @@ const RegisterTwoScreen = ({ navigation }) => {
               option1="Male"
               option2="Female"
               onPress={(option: string) => {
-                console.log(option);
                 formik.setFieldValue('gender', option);
               }}
               onBlur={formik.handleBlur('gender')}
@@ -106,7 +103,6 @@ const RegisterTwoScreen = ({ navigation }) => {
               option1="Graduate"
               option2="Undergraduate"
               onPress={(option: string) => {
-                console.log(option);
                 formik.setFieldValue('academics', option);
               }}
               onBlur={formik.handleBlur('academics')}

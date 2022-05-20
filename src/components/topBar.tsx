@@ -33,7 +33,6 @@ const TopBar = props => {
                   //   // uri: props.uri
                   uri: props.uri
                 }}
-                // onPress={() => console.log('Works!')}
                 activeOpacity={0.7}
                 containerStyle={styles.avatar}
                 onPress={toggle}
@@ -73,7 +72,7 @@ export default TopBar;
 const styles = StyleSheet.create({
   container: {
     alignSelf: 'stretch',
-    height: '8%',
+    height: 60,
     flexDirection: 'row',
     backgroundColor: '#0F1724',
     alignItems: 'center',
