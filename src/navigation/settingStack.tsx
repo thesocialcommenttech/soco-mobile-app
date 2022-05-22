@@ -3,14 +3,14 @@ import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import HomeScreen from '../screens/home/home';
-import InterestScreen from '../screens/Setting/Interest/Interest'
-import Subscriptions from '../screens/Setting/Subsciptions/Subscriptions';
-import Notification from '../screens/Setting/Notification/Notification';
-import Referals from '../screens/Setting/Referals/Referals';
+import InterestScreen from '../screens/Setting/interest/interest'
+import Subscriptions from '../screens/Setting/subsciptions/subscriptions';
+import Notification from '../screens/Setting/notification/Notification';
+import Referals from '../screens/Setting/Referals/referals';
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function Stack() {
+export default function settingStack() {
   return (
     <NavigationContainer>  
      <Tab.Navigator 
