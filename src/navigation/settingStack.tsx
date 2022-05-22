@@ -5,7 +5,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import HomeScreen from '../screens/home/home';
 import InterestScreen from '../screens/Setting/interest/interest'
 import Subscriptions from '../screens/Setting/subsciptions/subscriptions';
-import Notification from '../screens/Setting/notification/Notification';
+import Notification from '../screens/Setting/notification/notification';
 import Referals from '../screens/Setting/Referals/referals';
 
 const Tab = createMaterialTopTabNavigator();

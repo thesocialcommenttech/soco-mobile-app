@@ -2,7 +2,7 @@ import { StyleSheet, Text, View,Switch } from 'react-native'
 import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/Feather';
 
-export default function Notification() {
+export default function notification() {
 
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => {
