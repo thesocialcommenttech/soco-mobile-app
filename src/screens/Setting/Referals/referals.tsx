@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View,FlatList, TouchableOpacity } from 'react-native'
 import React, {useState} from 'react'
-import ReferalList from '../../../components/settingsComponents/ReferalsList'
+import ReferalList from '../../../components/settingsComponents/referalsList'
 import Clipboard from '@react-native-clipboard/clipboard';
 
 const Data = [
