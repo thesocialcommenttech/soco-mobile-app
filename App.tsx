@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import Routes from './src/navigation/routes';
 import FlashMessage from 'react-native-flash-message';
 import { store } from './src/store';
-import HomeScreen from './src/screens/home/home';
+import Stack from './src/navigation/settingStack';
 
 const App = () => {
   // const isDarkMode = useColorScheme() === 'dark';
@@ -22,9 +22,9 @@ const App = () => {
     //   </View>
     // </Provider>
     <>
-    <HomeScreen>
+    <Stack>
 
-    </HomeScreen>
+    </Stack>
     </>
     
     
