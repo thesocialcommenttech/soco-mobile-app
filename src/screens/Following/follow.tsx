@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View,FlatList, TouchableWithoutFeedback } from 'react-native'
 import React,{useState} from 'react'
-import FollowList from '../../components/followList';
+import FollowList from './followList'
 
 const Data = [
     {

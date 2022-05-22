@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View,TouchableWithoutFeedback,Image } from 'react-native'
 import React from 'react'
 
-export default function followList({title,userId,image}) {
+export default function followList({title,userId,image}:{title:string, userId:string, image:string}) {
   return (
     <> 
     <TouchableWithoutFeedback onPress={()=>{
