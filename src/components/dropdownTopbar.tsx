@@ -20,7 +20,6 @@ interface Props {
 }
 
 const DropdownTopbar: FC<Props> = props => {
-  console.log(props);
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
   const [dropdownTop, setDropdownTop] = useState(0);
@@ -77,12 +76,10 @@ const DropdownTopbar: FC<Props> = props => {
   //   };
 
   const toggleDropdown = (): void => {
-    console.log('HII');
     visible ? setVisible(false) : openDropdown();
   };
 
   const openDropdown = (): void => {
-    console.log(DropdownButton.current);
     DropdownButton.current.measure((_fx, _fy, _w, h, _px, py) => {
       setDropdownTop(py + h);
     });
@@ -90,7 +87,7 @@ const DropdownTopbar: FC<Props> = props => {
   };
 
   const onSelect = (item: { label: string; value: string }) => {
-    console.log('Selected', item);
+    // console.log('Selected', item);
   };
 
   const renderItem = ({ item }): ReactElement<any, any> => (

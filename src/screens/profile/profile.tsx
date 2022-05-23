@@ -1,5 +1,4 @@
 import {
-  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -65,13 +64,13 @@ const ProfileScreen = ({ navigation }) => {
   const [isPremium] = useState(true);
   const [percentProfile] = useState(75);
 
-  const onEditCaption = () => {
-    console.log('onEditCaption');
-  };
+  // const onEditCaption = () => {
+  //   console.log('onEditCaption');
+  // };
 
-  const onEditCover = () => {
-    console.log('onEditProfile');
-  };
+  // const onEditCover = () => {
+  //   console.log('onEditProfile');
+  // };
 
   // useLayoutEffect(() => {
   //   navigation.setOptions({
@@ -161,6 +160,7 @@ const ProfileScreen = ({ navigation }) => {
   );
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
+  const [modalVisible2, setModalVisible2] = useState(false);
   return (
     <View style={styles.outerContainer}>
       <ScrollView style={styles.container}>
@@ -199,7 +199,6 @@ const ProfileScreen = ({ navigation }) => {
               transparent={true}
               visible={modalVisible}
               onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
                 setModalVisible(!modalVisible);
               }}
             >
@@ -247,13 +246,73 @@ const ProfileScreen = ({ navigation }) => {
               <Icon name="pencil-outline" size={20} color="#fff" />
             </TouchableOpacity>
           </>
-          <TouchableOpacity
-            onPress={() => setModalVisible(true)}
-            style={styles.editCover}
-            // onPress={onEditCover}
-          >
-            <Icon name="camera-outline" size={20} color="#fff" />
-          </TouchableOpacity>
+          <>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible2}
+              onRequestClose={() => {
+                setModalVisible2(!modalVisible2);
+              }}
+            >
+              <View style={styles.modalView}>
+                <TouchableOpacity
+                  onPress={() => setModalVisible2(false)}
+                  style={styles.closeBtn}
+                >
+                  <Icon name="close" size={24} color="#C9D1D8" />
+                </TouchableOpacity>
+                <Text style={styles.proTitle}>Profile Picture</Text>
+                <View style={styles.profView}>
+                  <Image
+                    style={styles.profUpdatePic}
+                    resizeMode="cover"
+                    source={{ uri: profile }}
+                  />
+                  <TouchableOpacity style={styles.selProImg}>
+                    <Text style={styles.selProTxt}>SELECT IMAGE</Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  style={styles.updateImgBtn}
+                  onPress={() => {
+                    setModalVisible2(false);
+                  }}
+                >
+                  <Text style={styles.updateImgTxt}>
+                    Update Profile Picture
+                  </Text>
+                </TouchableOpacity>
+                <View style={styles.horizontalLine} />
+                <Text style={styles.covTitle}>Cover Picture</Text>
+                <View style={styles.covView}>
+                  <Image
+                    style={styles.covUpdatePic}
+                    resizeMode="cover"
+                    source={{ uri: background }}
+                  />
+                  <TouchableOpacity style={styles.selCovImg}>
+                    <Text style={styles.selCovTxt}>SELECT IMAGE</Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  style={styles.updateImgBtn1}
+                  onPress={() => {
+                    setModalVisible2(false);
+                  }}
+                >
+                  <Text style={styles.updateImgTxt1}>Update Cover Picture</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
+            <TouchableOpacity
+              onPress={() => setModalVisible2(true)}
+              style={styles.editCover}
+              // onPress={onEditCover}
+            >
+              <Icon name="camera-outline" size={20} color="#fff" />
+            </TouchableOpacity>
+          </>
         </View>
         <View style={styles.info}>
           <Text style={styles.name}>{name}</Text>
@@ -284,7 +343,6 @@ const ProfileScreen = ({ navigation }) => {
             transparent={true}
             visible={modalVisible1}
             onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
               setModalVisible1(!modalVisible1);
             }}
           >
@@ -878,5 +936,99 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     textAlign: 'center',
     padding: 4
+  },
+  proTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    fontFamily: 'Roboto-Regular',
+    color: '#000',
+    marginTop: '2%'
+  },
+  updateImgBtn: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    marginTop: '6%',
+    paddingVertical: '4%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#0063FF'
+  },
+  updateImgTxt: {
+    color: '#0063FF',
+    fontWeight: '700',
+    fontSize: 14,
+    fontFamily: 'Roboto-Regular'
+  },
+  covTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    fontFamily: 'Roboto-Regular',
+    color: '#000',
+    marginTop: '2%'
+  },
+  updateImgBtn1: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    marginTop: '9%',
+    paddingVertical: '4%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#0063FF'
+  },
+  updateImgTxt1: {
+    color: '#0063FF',
+    fontWeight: '700',
+    fontSize: 14,
+    fontFamily: 'Roboto-Regular'
+  },
+  horizontalLine: {
+    borderBottomColor: '#E2E5E9',
+    borderBottomWidth: 1,
+    marginTop: '8%',
+    marginBottom: '8%'
+  },
+  profView: {
+    flexDirection: 'row',
+    marginTop: '6%',
+    justifyContent: 'flex-start',
+    alignItems: 'center'
+  },
+  profUpdatePic: {
+    height: 90,
+    width: 90,
+    borderRadius: 100
+  },
+  selProImg: {
+    marginLeft: '8%'
+  },
+  selProTxt: {
+    color: '#7D7987',
+    fontFamily: 'Roboto',
+    fontWeight: '600',
+    fontSize: 16
+  },
+  covView: {
+    marginTop: '6%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20
+  },
+  covUpdatePic: {
+    height: 200,
+    width: 300,
+    marginLeft: '4%',
+    marginRight: '4%',
+    borderRadius: 8
+  },
+  selCovImg: {
+    marginTop: '6%'
+  },
+  selCovTxt: {
+    color: '#7D7987',
+    fontFamily: 'Roboto',
+    fontWeight: '600',
+    fontSize: 16
   }
 });
