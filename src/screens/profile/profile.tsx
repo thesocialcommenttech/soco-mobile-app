@@ -1,6 +1,9 @@
 import {
+  Alert,
+  Dimensions,
   FlatList,
   Image,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,13 +15,12 @@ import TopBar from '../../components/topBar';
 import { Avatar } from '@rneui/base';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
-import Icon3 from 'react-native-vector-icons/Octicons';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from '../../store/reducers/info';
 import { Card } from '@rneui/base';
-import Dropdown from '../../components/dropdownTopbar';
 import DropdownBottombutton from '../../components/dropdownBottombutton';
 import DropdownCreatePost from '../../components/dropdownCreatePost';
+import { TextInput } from 'react-native';
 
 const ProfileScreen = ({ navigation }) => {
   // get backround and profile picture from background
@@ -33,7 +35,16 @@ const ProfileScreen = ({ navigation }) => {
   const [name] = useState('John Doe');
   const [userName] = useState('@johndoe');
   const [locked, setLocked] = useState(true);
-  const [bio] = useState(
+  const [bio, setBio] = useState(
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru.'
+  );
+  const [caption, setCaption] = useState(
+    'Round Robert parker montepulciano chianti oaked wine afficionado.'
+  );
+  const [finCaption, setFinCaption] = useState(
+    'Round Robert parker montepulciano chianti oaked wine afficionado.'
+  );
+  const [finBio, setFinBio] = useState(
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru.'
   );
   const [followers] = useState(32);
@@ -49,6 +60,8 @@ const ProfileScreen = ({ navigation }) => {
     Articles: 0,
     Links: 0
   });
+  const [curLen, setCurLen] = useState(0);
+  const [curLen1, setCurLen1] = useState(0);
   const [isPremium] = useState(true);
   const [percentProfile] = useState(75);
 
@@ -146,7 +159,8 @@ const ProfileScreen = ({ navigation }) => {
       </View>
     </TouchableOpacity>
   );
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible1, setModalVisible1] = useState(false);
   return (
     <View style={styles.outerContainer}>
       <ScrollView style={styles.container}>
@@ -176,10 +190,68 @@ const ProfileScreen = ({ navigation }) => {
               containerStyle={styles.avatar}
             />
           </View>
-          <TouchableOpacity style={styles.editCaption} onPress={onEditCaption}>
-            <Icon name="pencil-outline" size={20} color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.editCover} onPress={onEditCover}>
+          <View style={styles.captionOnImg}>
+            <Text style={styles.captionOnImgTxt}>{finCaption}</Text>
+          </View>
+          <>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <View style={styles.modalView}>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  style={styles.closeBtn}
+                >
+                  <Icon name="close" size={24} color="#C9D1D8" />
+                </TouchableOpacity>
+                <Text style={styles.capTitle}>Caption</Text>
+                <TextInput
+                  style={styles.captionInput}
+                  onChangeText={text => {
+                    setCaption(text);
+                    setCurLen(text.length);
+                  }}
+                  value={caption}
+                  maxLength={150}
+                  multiline={true}
+                  placeholder={"Write what's in your mind"}
+                  placeholderTextColor={'gray'}
+                  spellCheck={false}
+                  autoCorrect={false}
+                  autoComplete="off"
+                  autoCapitalize="none"
+                />
+                <Text style={styles.maxChar}>Max Characters: {curLen}/150</Text>
+                <TouchableOpacity
+                  style={styles.updateBtn}
+                  onPress={() => {
+                    setFinCaption(caption);
+                    setModalVisible(false);
+                  }}
+                >
+                  <Text style={styles.updateTxt}>Update</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
+            <TouchableOpacity
+              style={styles.editCaption}
+              onPress={() => setModalVisible(true)}
+              // onPress={onEditCaption}
+            >
+              <Icon name="pencil-outline" size={20} color="#fff" />
+            </TouchableOpacity>
+          </>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={styles.editCover}
+            // onPress={onEditCover}
+          >
             <Icon name="camera-outline" size={20} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -206,12 +278,63 @@ const ProfileScreen = ({ navigation }) => {
         <View style={styles.bio}>
           <Text style={styles.bioText}>{bio}</Text>
         </View>
-        <View style={styles.updateBio}>
-          <TouchableOpacity style={styles.updateBioLink}>
-            <Icon name="pencil-outline" size={18} color="#0063FF" />
-            <Text style={styles.updateBioText}>Update Bio</Text>
-          </TouchableOpacity>
-        </View>
+        <>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible1}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+              setModalVisible1(!modalVisible1);
+            }}
+          >
+            <View style={styles.modalView1}>
+              <TouchableOpacity
+                onPress={() => setModalVisible1(false)}
+                style={styles.closeBtn1}
+              >
+                <Icon name="close" size={24} color="#C9D1D8" />
+              </TouchableOpacity>
+              <Text style={styles.bioTitle}>Bio</Text>
+              <TextInput
+                style={styles.bioInput}
+                onChangeText={text => {
+                  setBio(text);
+                  setCurLen1(text.length);
+                }}
+                value={bio}
+                maxLength={150}
+                multiline={true}
+                placeholder={'Write about yourself'}
+                placeholderTextColor={'gray'}
+                spellCheck={false}
+                autoCorrect={false}
+                autoComplete="off"
+                autoCapitalize="none"
+              />
+              <Text style={styles.maxChar1}>Max Characters: {curLen1}/150</Text>
+              <TouchableOpacity
+                style={styles.updateBtn1}
+                onPress={() => {
+                  setFinBio(bio);
+                  setModalVisible1(false);
+                }}
+              >
+                <Text style={styles.updateTxt1}>Update</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+          <View style={styles.updateBio}>
+            <TouchableOpacity
+              style={styles.updateBioLink}
+              onPress={() => setModalVisible1(!modalVisible1)}
+            >
+              <Icon name="pencil-outline" size={18} color="#0063FF" />
+              <Text style={styles.updateBioText}>Update Bio</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+
         <View style={styles.stats}>
           <View style={styles.statsItem}>
             <Text style={styles.statsText}>{followers}</Text>
@@ -627,18 +750,133 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: '3%',
     right: '5%'
+  },
+  modalView: {
+    backgroundColor: 'white',
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
+    padding: 20
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center'
+  },
+  closeBtn: {
+    color: '#C9D1D8',
+    alignSelf: 'flex-end'
+  },
+  capTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    fontFamily: 'Roboto-Regular',
+    color: '#000',
+    marginTop: '2%'
+  },
+  captionInput: {
+    backgroundColor: 'white',
+    marginTop: '8%',
+    borderColor: '#DCDCDC',
+    color: 'black',
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 20,
+    height: '22%',
+    textAlignVertical: 'top',
+    fontFamily: 'Roboto',
+    lineHeight: 21
+  },
+  maxChar: {
+    marginTop: '5%',
+    color: '#BDBDBD',
+    fontSize: 14,
+    fontFamily: 'Roboto'
+  },
+  updateBtn: {
+    backgroundColor: '#0063FF',
+    borderRadius: 8,
+    marginTop: '6%',
+    paddingVertical: '4%',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  updateTxt: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 14,
+    fontFamily: 'Roboto-Regular'
+  },
+  maxChar1: {
+    marginTop: '5%',
+    color: '#BDBDBD',
+    fontSize: 14,
+    fontFamily: 'Roboto'
+  },
+  updateBtn1: {
+    backgroundColor: '#0063FF',
+    borderRadius: 8,
+    marginTop: '6%',
+    paddingVertical: '4%',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  updateTxt1: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 14,
+    fontFamily: 'Roboto-Regular'
+  },
+  closeBtn1: {
+    color: '#C9D1D8',
+    alignSelf: 'flex-end'
+  },
+  bioTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    fontFamily: 'Roboto-Regular',
+    color: '#000',
+    marginTop: '2%'
+  },
+  bioInput: {
+    backgroundColor: 'white',
+    marginTop: '8%',
+    borderColor: '#DCDCDC',
+    color: 'black',
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 20,
+    height: '22%',
+    textAlignVertical: 'top',
+    fontFamily: 'Roboto',
+    lineHeight: 21
+  },
+  modalView1: {
+    backgroundColor: 'white',
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
+    padding: 20
+  },
+  captionOnImg: {
+    position: 'absolute',
+    top: '6%',
+    marginLeft: '5%',
+    backgroundColor: 'rrgba(0, 0, 0, 0.6)',
+    borderRadius: 3,
+    width: '90%',
+    // height: 35,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  captionOnImgTxt: {
+    color: 'white',
+    fontSize: 14,
+    fontFamily: 'Roboto',
+    lineHeight: 21,
+    textAlign: 'center',
+    padding: 4
   }
-  // stickyButton: {
-  //   position: 'absolute',
-  //   backgroundColor: '#FFCA12',
-  //   borderRadius: 250,
-  //   right: '5%',
-  //   bottom: '3%',
-  //   width: 60,
-  //   height: 60,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   shadowColor: '#000',
-  //   elevation: 7
-  // }
 });
