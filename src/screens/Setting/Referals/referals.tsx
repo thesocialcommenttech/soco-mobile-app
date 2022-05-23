@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,FlatList, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View,FlatList, TouchableOpacity, ToastAndroid } from 'react-native'
 import React, {useState} from 'react'
 import ReferalList from '../../../components/settingsComponents/referalsList'
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -43,7 +43,10 @@ export default function Referals() {
   const copyToClipboard = (text) => {
     Clipboard.setString(text);
   };
-
+ 
+  const showToast = () => {
+    ToastAndroid.show("Code copied to Clipboard", ToastAndroid.SHORT);
+  };
 
   return (
     <View style={styles.container}>
@@ -52,7 +55,10 @@ export default function Referals() {
           <Text style={styles.heading}>Your Refferal Code</Text> 
           </View>
           <View style={styles.codebox}>
-            <TouchableOpacity onPress={()=>copyToClipboard(code)}>
+            <TouchableOpacity onPress={()=>{
+              copyToClipboard(code)
+              showToast()
+            }}>
             <Text style={styles.code}>{code}</Text>
             </TouchableOpacity>
           
