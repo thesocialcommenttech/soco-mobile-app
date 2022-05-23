@@ -12,9 +12,13 @@ import TopBar from '../../components/topBar';
 import { Avatar } from '@rneui/base';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
+import Icon3 from 'react-native-vector-icons/Octicons';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from '../../store/reducers/info';
 import { Card } from '@rneui/base';
+import Dropdown from '../../components/dropdownTopbar';
+import DropdownBottombutton from '../../components/dropdownBottombutton';
+import DropdownCreatePost from '../../components/dropdownCreatePost';
 
 const ProfileScreen = ({ navigation }) => {
   // get backround and profile picture from background
@@ -45,6 +49,8 @@ const ProfileScreen = ({ navigation }) => {
     Articles: 0,
     Links: 0
   });
+  const [isPremium] = useState(true);
+  const [percentProfile] = useState(75);
 
   const onEditCaption = () => {
     console.log('onEditCaption');
@@ -61,42 +67,42 @@ const ProfileScreen = ({ navigation }) => {
   // }, [navigation]);
   const ITEMS = [
     {
-      id: 1,
+      id: '1',
       name: 'All',
       count: activities.All
     },
     {
-      id: 2,
+      id: '2',
       name: 'Blogs',
       count: activities.Blogs
     },
     {
-      id: 3,
+      id: '3',
       name: 'Artworks',
       count: activities.Artworks
     },
     {
-      id: 4,
+      id: '4',
       name: 'Videos',
       count: activities.Videos
     },
     {
-      id: 5,
+      id: '5',
       name: 'Projects',
       count: activities.Projects
     },
     {
-      id: 6,
+      id: '6',
       name: 'Presentations',
       count: activities.Presentations
     },
     {
-      id: 7,
+      id: '7',
       name: 'Articles',
       count: activities.Articles
     },
     {
-      id: 8,
+      id: '8',
       name: 'Links',
       count: activities.Links
     }
@@ -104,7 +110,7 @@ const ProfileScreen = ({ navigation }) => {
 
   const cardContents = [
     {
-      id: 1,
+      id: '1',
       name: 'John Doe',
       profilePic: profile,
       postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
@@ -113,7 +119,7 @@ const ProfileScreen = ({ navigation }) => {
       postTag: 'Artwork'
     },
     {
-      id: 2,
+      id: '2',
       name: 'John Doe',
       profilePic: profile,
       postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
@@ -122,7 +128,7 @@ const ProfileScreen = ({ navigation }) => {
       postTag: 'Artwork'
     },
     {
-      id: 3,
+      id: '3',
       name: 'John Doe',
       profilePic: profile,
       postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
@@ -142,147 +148,166 @@ const ProfileScreen = ({ navigation }) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <TopBar uri={profile} username={name} />
-      <View style={styles.images}>
-        <Image
-          source={{
-            uri: background
-          }}
-          style={styles.bgImage}
+    <View style={styles.outerContainer}>
+      <ScrollView style={styles.container}>
+        <TopBar
+          uri={profile}
+          username={name}
+          premium={isPremium}
+          percentProfile={percentProfile}
         />
-        <View style={styles.avatarContainer}>
-          <Avatar
-            size={90}
-            rounded
-            title={name?.charAt(0)}
-            titleStyle={styles.avatarTitle}
+        <View style={styles.images}>
+          <Image
             source={{
-              uri: profile
+              uri: background
             }}
-            activeOpacity={0.7}
-            containerStyle={styles.avatar}
+            style={styles.bgImage}
           />
+          <View style={styles.avatarContainer}>
+            <Avatar
+              size={90}
+              rounded
+              title={name?.charAt(0)}
+              titleStyle={styles.avatarTitle}
+              source={{
+                uri: profile
+              }}
+              activeOpacity={0.7}
+              containerStyle={styles.avatar}
+            />
+          </View>
+          <TouchableOpacity style={styles.editCaption} onPress={onEditCaption}>
+            <Icon name="pencil-outline" size={20} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.editCover} onPress={onEditCover}>
+            <Icon name="camera-outline" size={20} color="#fff" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.editCaption} onPress={onEditCaption}>
-          <Icon name="pencil-outline" size={20} color="#fff" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.editCover} onPress={onEditCover}>
-          <Icon name="camera-outline" size={20} color="#fff" />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.info}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.userName}>{userName}</Text>
-      </View>
-      <View style={styles.portfolioContainer}>
-        <TouchableOpacity style={styles.portfolio}>
-          <Text style={styles.portfolioText}>Portfolio</Text>
-        </TouchableOpacity>
-        <View style={styles.verticleLine} />
-        <TouchableOpacity
-          style={styles.portfolioLock}
-          onPress={() => setLocked(!locked)}
-        >
-          {locked ? (
-            <Icon name="lock-outline" size={20} color="#fff" />
-          ) : (
-            <Icon name="lock-off-outline" size={20} color="#fff" />
+        <View style={styles.info}>
+          <Text style={styles.name}>{name}</Text>
+          <Text style={styles.userName}>{userName}</Text>
+        </View>
+        <View style={styles.portfolioContainer}>
+          <TouchableOpacity style={styles.portfolio}>
+            <Text style={styles.portfolioText}>Portfolio</Text>
+          </TouchableOpacity>
+          <View style={styles.verticleLine} />
+          <TouchableOpacity
+            style={styles.portfolioLock}
+            onPress={() => setLocked(!locked)}
+          >
+            {locked ? (
+              <Icon name="lock-outline" size={20} color="#fff" />
+            ) : (
+              <Icon name="lock-off-outline" size={20} color="#fff" />
+            )}
+          </TouchableOpacity>
+        </View>
+        <View style={styles.bio}>
+          <Text style={styles.bioText}>{bio}</Text>
+        </View>
+        <View style={styles.updateBio}>
+          <TouchableOpacity style={styles.updateBioLink}>
+            <Icon name="pencil-outline" size={18} color="#0063FF" />
+            <Text style={styles.updateBioText}>Update Bio</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.stats}>
+          <View style={styles.statsItem}>
+            <Text style={styles.statsText}>{followers}</Text>
+            <Text style={styles.statsLabel}>Followers</Text>
+          </View>
+          <View style={styles.statsItem}>
+            <Text style={styles.statsText}>{following}</Text>
+            <Text style={styles.statsLabel}>Following</Text>
+          </View>
+          <View style={styles.statsItem}>
+            <Text style={styles.statsText}>{views}</Text>
+            <Text style={styles.statsLabel}>Views</Text>
+          </View>
+        </View>
+        {/* <Text style={{ color: 'black' }}>jdnfkjdvn</Text> */}
+        <FlatList
+          data={ITEMS}
+          style={styles.activity}
+          renderItem={({ item }) => (
+            <ItemRender actName={item.name} count={item.count} />
           )}
-        </TouchableOpacity>
-      </View>
-      <View style={styles.bio}>
-        <Text style={styles.bioText}>{bio}</Text>
-      </View>
-      <View style={styles.updateBio}>
-        <TouchableOpacity style={styles.updateBioLink}>
-          <Icon name="pencil-outline" size={18} color="#0063FF" />
-          <Text style={styles.updateBioText}>Update Bio</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.stats}>
-        <View style={styles.statsItem}>
-          <Text style={styles.statsText}>{followers}</Text>
-          <Text style={styles.statsLabel}>Followers</Text>
-        </View>
-        <View style={styles.statsItem}>
-          <Text style={styles.statsText}>{following}</Text>
-          <Text style={styles.statsLabel}>Following</Text>
-        </View>
-        <View style={styles.statsItem}>
-          <Text style={styles.statsText}>{views}</Text>
-          <Text style={styles.statsLabel}>Views</Text>
-        </View>
-      </View>
-      <FlatList
-        data={ITEMS}
-        style={styles.activity}
-        renderItem={({ item }) => (
-          <ItemRender actName={item.name} count={item.count} />
-        )}
-        keyExtractor={item => {
-          return item.id.toString();
-        }}
-        horizontal={true}
-      />
+          keyExtractor={item => {
+            return item.id.toString();
+          }}
+          horizontal={true}
+        />
+        <DropdownCreatePost label={'Create Post'} />
 
-      {cardContents.map((u, i) => {
-        return (
-          <Card containerStyle={styles.cardContainer}>
-            <View>
-              <View style={styles.cardTitle}>
-                <View style={styles.profileinfo}>
-                  <Avatar
-                    size={36}
-                    rounded
-                    // title={name?.charAt(0)}
-                    // titleStyle={styles.avatarTitle}
-                    source={{
-                      uri: u.profilePic
-                    }}
-                    activeOpacity={0.7}
-                    containerStyle={styles.avatar2}
-                  />
-                  <Text style={styles.cardTitleText}>{name}</Text>
+        {cardContents.map((u, i) => {
+          return (
+            <Card containerStyle={styles.cardContainer}>
+              <View>
+                <View style={styles.cardTitle}>
+                  <View style={styles.profileinfo}>
+                    <Avatar
+                      size={36}
+                      rounded
+                      // title={name?.charAt(0)}
+                      // titleStyle={styles.avatarTitle}
+                      source={{
+                        uri: u.profilePic
+                      }}
+                      activeOpacity={0.7}
+                      containerStyle={styles.avatar2}
+                    />
+                    <Text style={styles.cardTitleText}>{name}</Text>
+                  </View>
+                  <TouchableOpacity>
+                    <Icon
+                      name="share-variant-outline"
+                      size={20}
+                      color="#7D7987"
+                    />
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity>
-                  <Icon
-                    name="share-variant-outline"
-                    size={20}
-                    color="#7D7987"
+                <View key={i} style={styles.mainContent}>
+                  <Image
+                    style={styles.postPic}
+                    resizeMode="cover"
+                    source={{ uri: u.postImage }}
                   />
-                </TouchableOpacity>
-              </View>
-              <View key={i} style={styles.mainContent}>
-                <Image
-                  style={styles.postPic}
-                  resizeMode="cover"
-                  source={{ uri: u.postImage }}
-                />
-              </View>
-              <View style={styles.cardFooter}>
-                <Text style={styles.cardFooterText}>{u.postTitle}</Text>
-                <TouchableOpacity>
-                  <Icon2 name="more-vert" size={20} color="#7D7987" />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.cardFooter2}>
-                <Text style={styles.cardFooterText2}>{u.postDate}</Text>
-                <View style={styles.tag}>
-                  <Text style={styles.tagText}>{u.postTag}</Text>
+                </View>
+                <View style={styles.cardFooter}>
+                  <Text style={styles.cardFooterText}>{u.postTitle}</Text>
+                  <TouchableOpacity>
+                    <Icon2 name="more-vert" size={20} color="#7D7987" />
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.cardFooter2}>
+                  <Text style={styles.cardFooterText2}>{u.postDate}</Text>
+                  <View style={styles.tag}>
+                    <Text style={styles.tagText}>{u.postTag}</Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          </Card>
-        );
-      })}
-    </ScrollView>
+            </Card>
+          );
+        })}
+      </ScrollView>
+      <DropdownBottombutton label={undefined} />
+      {/* <View style={styles.stickyButton}>
+        <TouchableOpacity>
+          <Icon3 name="plus" size={25} color="#000" style={styles.plus} />
+        </TouchableOpacity>
+      </View> */}
+    </View>
   );
 };
 
 export default ProfileScreen;
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+    backgroundColor: '#fff'
+  },
   statusBar: {
     backgroundColor: 'white',
     height: '25%'
@@ -597,5 +622,23 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontFamily: 'Roboto-Regular',
     color: '#000'
+  },
+  plusPos: {
+    position: 'absolute',
+    bottom: '3%',
+    right: '5%'
   }
+  // stickyButton: {
+  //   position: 'absolute',
+  //   backgroundColor: '#FFCA12',
+  //   borderRadius: 250,
+  //   right: '5%',
+  //   bottom: '3%',
+  //   width: 60,
+  //   height: 60,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   shadowColor: '#000',
+  //   elevation: 7
+  // }
 });
