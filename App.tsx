@@ -1,10 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-
-import { Provider } from 'react-redux';
-import Routes from './src/navigation/routes';
-import FlashMessage from 'react-native-flash-message';
-import { store } from './src/store';
+//import { StyleSheet } from 'react-native';
 import Stack from './src/navigation/settingStack';
 
 const App = () => {
@@ -22,35 +17,31 @@ const App = () => {
     //   </View>
     // </Provider>
     <>
-    <Stack>
-
-    </Stack>
+      <Stack />
     </>
-    
-    
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600'
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400'
-  },
-  highlight: {
-    fontWeight: '700'
-  }
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1
+//   },
+//   sectionContainer: {
+//     marginTop: 32,
+//     paddingHorizontal: 24
+//   },
+//   sectionTitle: {
+//     fontSize: 24,
+//     fontWeight: '600'
+//   },
+//   sectionDescription: {
+//     marginTop: 8,
+//     fontSize: 18,
+//     fontWeight: '400'
+//   },
+//   highlight: {
+//     fontWeight: '700'
+//   }
+// });
 
 export default App;
