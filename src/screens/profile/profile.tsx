@@ -126,6 +126,7 @@ const ProfileScreen = ({ navigation }) => {
       name: 'John Doe',
       profilePic: profile,
       postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
+      subTitle: '',
       postTitle: 'Python - An Installation Guide',
       postDate: '24 Feb, 2022',
       postTag: 'Artwork'
@@ -136,6 +137,8 @@ const ProfileScreen = ({ navigation }) => {
       profilePic: profile,
       postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
       postTitle: 'Python - An Installation Guide',
+      subTitle:
+        "Trumpthechumps Mango Mussolini I'm with Her tangerine tornado The Clown Prince if Ivanka weren't my daughter...",
       postDate: '24 Feb, 2022',
       postTag: 'Artwork'
     },
@@ -145,6 +148,7 @@ const ProfileScreen = ({ navigation }) => {
       profilePic: profile,
       postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
       postTitle: 'Python - An Installation Guide',
+      subTitle: '',
       postDate: '24 Feb, 2022',
       postTag: 'Artwork'
     }
@@ -438,7 +442,7 @@ const ProfileScreen = ({ navigation }) => {
                       activeOpacity={0.7}
                       containerStyle={styles.avatar2}
                     />
-                    <Text style={styles.cardTitleText}>{name}</Text>
+                    <Text style={styles.cardTitleText}>{u.name}</Text>
                   </View>
                   <TouchableOpacity>
                     <Icon
@@ -461,6 +465,9 @@ const ProfileScreen = ({ navigation }) => {
                     <Icon2 name="more-vert" size={20} color="#7D7987" />
                   </TouchableOpacity>
                 </View>
+                {u.subTitle !== '' && (
+                  <Text style={styles.subTitle}>{u.subTitle}</Text>
+                )}
                 <View style={styles.cardFooter2}>
                   <Text style={styles.cardFooterText2}>{u.postDate}</Text>
                   <View style={styles.tag}>
@@ -730,12 +737,6 @@ const styles = StyleSheet.create({
     marginBottom: '6%',
     shadowColor: '#000',
     padding: 20,
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 5
-    // },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 3.84,
     elevation: 7
   },
   profileinfo: {
@@ -1030,5 +1031,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: '600',
     fontSize: 16
+  },
+  subTitle: {
+    fontFamily: 'Inter',
+    fontSize: 12,
+    lineHeight: 14.52,
+    color: 'black',
+    marginTop: '4%'
   }
 });
