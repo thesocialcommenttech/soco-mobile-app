@@ -1,6 +1,19 @@
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import React, { useState } from 'react';
 import TopBar from '../../components/topBar';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon2 from 'react-native-vector-icons/MaterialIcons';
+import Icon3 from 'react-native-vector-icons/Ionicons';
+import { Avatar, Card } from '@rneui/base';
+import { TextInput } from 'react-native';
 
 const DiscoverScreen = () => {
   const [profile] = useState(
@@ -9,6 +22,105 @@ const DiscoverScreen = () => {
   const [name] = useState('John Doe');
   const [isPremium] = useState(true);
   const [percentProfile] = useState(75);
+  const [searchText, setSearchText] = useState('');
+  const cardContents = [
+    {
+      id: '1',
+      name: 'John Doe',
+      profilePic: profile,
+      postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
+      postTitle: 'Python - An Installation Guide',
+      subTitle: '',
+      postDate: '24 Feb, 2022',
+      postTag: 'Artwork',
+      views: 26
+    },
+    {
+      id: '2',
+      name: 'John Doe',
+      profilePic: profile,
+      postImage:
+        'https://www.ucl.ac.uk/students/sites/students/files/plants.png',
+      postTitle: 'Python - An Installation Guide',
+      subTitle:
+        "Trumpthechumps Mango Mussolini I'm with Her tangerine tornado The Clown Prince if Ivanka weren't my daughter...",
+      postDate: '24 Feb, 2022',
+      postTag: 'Blog',
+      views: 26
+    },
+    {
+      id: '3',
+      name: 'John Doe',
+      profilePic: profile,
+      postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
+      postTitle: 'Python - An Installation Guide',
+      subTitle: '',
+      postDate: '24 Feb, 2022',
+      postTag: 'Artwork',
+      views: 26
+    }
+  ];
+
+  const ITEMS = [
+    {
+      id: '1',
+      name: 'All'
+    },
+    {
+      id: '2',
+      name: 'Blogs'
+    },
+    {
+      id: '3',
+      name: 'Artworks'
+    },
+    {
+      id: '4',
+      name: 'Videos'
+    },
+    {
+      id: '5',
+      name: 'Projects'
+    },
+    {
+      id: '6',
+      name: 'Presentations'
+    },
+    {
+      id: '7',
+      name: 'Articles'
+    },
+    {
+      id: '8',
+      name: 'Links'
+    }
+  ];
+
+  const [selectedTags, setSelectedTags] = useState(new Set());
+  const ItemRender = ({ actName }) => {
+    const [selected, setSelected] = useState(false);
+    return (
+      <TouchableOpacity
+        style={selected ? styles.itemSelected : styles.item}
+        onPress={() => {
+          if (selected === false && !selectedTags.has(actName)) {
+            selectedTags.add(actName);
+          } else if (selected === true && selectedTags.has(actName)) {
+            selectedTags.delete(actName);
+          }
+          // console.log(selectedTags);
+          setSelected(!selected);
+        }}
+      >
+        <Text style={selected ? styles.itemTextSelected : styles.itemText}>
+          {actName}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const seperator = () => <View style={styles.padd} />;
+
   return (
     <View style={styles.outerContainer}>
       <TopBar
@@ -17,6 +129,93 @@ const DiscoverScreen = () => {
         premium={isPremium}
         percentProfile={percentProfile}
       />
+      <View style={styles.searchInput}>
+        <TextInput
+          style={styles.inputt}
+          onChangeText={text => {
+            setSearchText(text);
+          }}
+          value={searchText}
+          placeholder={'Search'}
+          placeholderTextColor={'gray'}
+          spellCheck={false}
+          autoCorrect={false}
+          autoComplete="off"
+          autoCapitalize="none"
+        />
+        <TouchableOpacity style={styles.filtIcon}>
+          <Icon name="filter-outline" size={25} color="#0063FF" />
+        </TouchableOpacity>
+      </View>
+      <FlatList
+        data={ITEMS}
+        style={styles.activity}
+        renderItem={({ item }) => <ItemRender actName={item.name} />}
+        keyExtractor={item => {
+          return item.id.toString();
+        }}
+        horizontal={true}
+        ItemSeparatorComponent={seperator}
+      />
+      <ScrollView>
+        {cardContents.map((u, i) => {
+          return (
+            <Card key={i} containerStyle={styles.cardContainer}>
+              <View>
+                <View style={styles.cardTitle}>
+                  <View style={styles.profileinfo}>
+                    <Avatar
+                      size={36}
+                      rounded
+                      // title={name?.charAt(0)}
+                      // titleStyle={styles.avatarTitle}
+                      source={{
+                        uri: u.profilePic
+                      }}
+                      activeOpacity={0.7}
+                      containerStyle={styles.avatar2}
+                    />
+                    <Text style={styles.cardTitleText}>{u.name}</Text>
+                  </View>
+                  <TouchableOpacity>
+                    <Icon
+                      name="share-variant-outline"
+                      size={20}
+                      color="#7D7987"
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View key={i} style={styles.mainContent}>
+                  <Image
+                    style={styles.postPic}
+                    resizeMode="cover"
+                    source={{ uri: u.postImage }}
+                  />
+                </View>
+                <View style={styles.cardFooter}>
+                  <Text style={styles.cardFooterText}>{u.postTitle}</Text>
+                  <TouchableOpacity>
+                    <Icon2 name="more-vert" size={20} color="#7D7987" />
+                  </TouchableOpacity>
+                </View>
+                {u.subTitle !== '' && (
+                  <Text style={styles.subTitle}>{u.subTitle}</Text>
+                )}
+                <View style={styles.cardFooter2}>
+                  <Text style={styles.cardFooterText2}>{u.postDate}</Text>
+                  <View style={styles.tag}>
+                    <Text style={styles.tagText}>{u.postTag}</Text>
+                  </View>
+                  <View style={styles.eyeView}>
+                    <Icon3 name="eye-outline" size={19} color="#7D7987" />
+                    <Text style={styles.viewNum}>{u.views}</Text>
+                  </View>
+                </View>
+              </View>
+            </Card>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 };
@@ -27,5 +226,160 @@ const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
     backgroundColor: '#fff'
+  },
+  cardContainer: {
+    padding: 20,
+    width: '100%',
+    marginLeft: '0%',
+    marginTop: '0%',
+    borderTopColor: 'white',
+    paddingTop: 15
+  },
+  profileinfo: {
+    flexDirection: 'row',
+    // justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  cardTitle: {
+    // backgroundColor: 'gray',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  avatar2: {
+    borderWidth: 1,
+    borderColor: '#fff'
+  },
+  cardTitleText: {
+    fontSize: 16,
+    fontWeight: '700',
+    fontFamily: 'Roboto-Regular',
+    marginLeft: '10%',
+    color: 'black'
+  },
+  mainContent: {
+    marginTop: '5%'
+  },
+  postPic: {
+    width: '100%',
+    minHeight: 300,
+    borderRadius: 10
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: '9%'
+  },
+  cardFooterText: {
+    fontSize: 16,
+    fontWeight: '700',
+    fontFamily: 'Roboto-Regular',
+    lineHeight: 18.75,
+    color: '#000'
+  },
+  cardFooter2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: '7%'
+  },
+  cardFooterText2: {
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'Roboto-Regular',
+    color: '#7D7987'
+  },
+  tag: {
+    backgroundColor: '#F2F2F2',
+    borderRadius: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    marginLeft: '5%'
+  },
+  tagText: {
+    fontSize: 12,
+    fontWeight: '700',
+    fontFamily: 'Roboto-Regular',
+    color: '#000'
+  },
+  eyeView: {
+    flexDirection: 'row',
+    marginLeft: '35%',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  viewNum: {
+    color: 'black',
+    fontSize: 16,
+    marginLeft: '2%',
+    lineHeight: 18.75,
+    fontFamily: 'Roboto'
+  },
+  subTitle: {
+    fontFamily: 'Inter',
+    fontSize: 12,
+    lineHeight: 14.52,
+    color: 'black',
+    marginTop: '4%'
+  },
+  searchInput: {
+    backgroundColor: 'white',
+    marginTop: '4%',
+    marginHorizontal: '4%',
+    borderColor: '#DCDCDC',
+    color: 'black',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 20,
+    paddingRight: 12,
+    fontFamily: 'Roboto',
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around'
+  },
+  inputt: {
+    width: '90%'
+  },
+  filtIcon: {
+    alignItems: 'center',
+    zIndex: 999,
+    justifyContent: 'center'
+  },
+  activity: {
+    flexGrow: 0,
+    marginTop: '4%',
+    marginBottom: '4%',
+    marginHorizontal: '4%',
+    height: 45
+  },
+  item: {
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#DCDCDC',
+    borderWidth: 1,
+    borderRadius: 30
+  },
+  itemSelected: {
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#DCDCDC',
+    borderWidth: 1,
+    borderRadius: 30,
+    backgroundColor: '#0063FF'
+  },
+  itemText: {
+    fontSize: 14,
+    color: '#7D7987',
+    textAlign: 'center'
+  },
+  itemTextSelected: {
+    fontSize: 14,
+    color: '#FFF',
+    textAlign: 'center'
+  },
+  padd: {
+    padding: 5
   }
 });

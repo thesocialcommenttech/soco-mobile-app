@@ -69,7 +69,7 @@ const HomeScreen = () => {
       <ScrollView>
         {cardContents.map((u, i) => {
           return (
-            <Card containerStyle={styles.cardContainer}>
+            <Card key={i} containerStyle={styles.cardContainer}>
               <View>
                 <View style={styles.cardTitle}>
                   <View style={styles.profileinfo}>
