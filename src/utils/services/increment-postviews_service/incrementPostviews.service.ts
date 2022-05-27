@@ -5,7 +5,7 @@ export function incrementPostviews(): Promise<
   AxiosResponse<IncrementPostViewsResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/login',
+    url: '/user/post/increment-view',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
