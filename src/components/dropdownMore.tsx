@@ -9,54 +9,29 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import Icon3 from 'react-native-vector-icons/Octicons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 
-interface Props {
-  label: any;
-  // data: Array<{ label: string; value: string }>;
-  // onSelect: (item: { label: string; value: string }) => void;
-}
-
-const DropdownCreatePost: FC<Props> = props => {
+const DropdownMore = () => {
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
   const [dropdownTop, setDropdownTop] = useState(0);
-  const [selected, setSelected] = useState(undefined);
+  const [dropdownRight, setDropdownRight] = useState(0);
+  const [selected, setSelected] = useState('All');
   const data = [
     {
-      label: 'Blog',
-      isNew: false,
-      value: '1'
+      label: 'Edit',
+      value: '1',
+      icon: 'pencil'
     },
     {
-      label: 'Artwork',
-      isNew: false,
-      value: '2'
-    },
-    {
-      label: 'Skill Video',
-      isNew: false,
-      value: '3'
-    },
-    {
-      label: 'Project',
-      isNew: false,
-      value: '4'
-    },
-    {
-      label: 'Article',
-      isNew: true,
-      value: '5'
-    },
-    {
-      label: 'Presentation',
-      isNew: false,
-      value: '6'
+      label: 'Delete',
+      value: '2',
+      icon: 'delete-outline'
     }
   ];
 
-  // const windowWidth = Dimensions.get('window').width;
-  const windowHeight = Dimensions.get('window').height;
+  const windowWidth = Dimensions.get('window').width;
 
   const openDropdown = (): void => {
     DropdownButton.current.measure((fx, fy, width, height, px, py) => {
@@ -67,12 +42,14 @@ const DropdownCreatePost: FC<Props> = props => {
       // console.log('X offset to page: ' + px);
       // console.log('Y offset to page: ' + py);
       setDropdownTop(height + py);
+      setDropdownRight(windowWidth - px - width);
     });
 
     setVisible(true);
   };
 
   const onSelect = (item: { label: string; value: string }) => {
+    setSelected(item.label);
     // console.log('Selected', item);
   };
 
@@ -84,12 +61,8 @@ const DropdownCreatePost: FC<Props> = props => {
             style={styles.item3}
             onPress={() => onItemPress(item)}
           >
+            <Icon2 name={item.icon} size={20} color="#000" />
             <Text style={styles.buttonText1}>{item.label}</Text>
-            {item.isNew && (
-              <View style={styles.newView}>
-                <Text style={styles.newText}>New</Text>
-              </View>
-            )}
           </TouchableOpacity>
         )}
         {item.value !== '1' ? (
@@ -97,12 +70,8 @@ const DropdownCreatePost: FC<Props> = props => {
             style={styles.item}
             onPress={() => onItemPress(item)}
           >
+            <Icon2 name={item.icon} size={20} color="#000" />
             <Text style={styles.buttonText1}>{item.label}</Text>
-            {item.isNew && (
-              <View style={styles.newView}>
-                <Text style={styles.newText}>New</Text>
-              </View>
-            )}
           </TouchableOpacity>
         ) : (
           <></>
@@ -123,16 +92,16 @@ const DropdownCreatePost: FC<Props> = props => {
           visible ? setVisible(false) : openDropdown();
         }}
         ref={DropdownButton}
-        style={styles.button}
       >
-        <Text style={styles.buttonText}>{props.label}</Text>
-        <Icon3 name="chevron-down" size={20} color="#000" />
+        <Icon name="more-vert" size={20} color="#7D7987" />
       </TouchableOpacity>
       <Modal visible={visible} transparent animationType="none">
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
-        <View style={[styles.dropdown, { top: dropdownTop }]}>
+        <View
+          style={[styles.dropdown, { top: dropdownTop, right: dropdownRight }]}
+        >
           <FlatList
             data={data}
             renderItem={renderItem}
@@ -146,26 +115,25 @@ const DropdownCreatePost: FC<Props> = props => {
 
 const styles = StyleSheet.create({
   buttonText: {
-    color: '#000',
+    color: '#7D7987',
     fontSize: 14,
     fontFamily: 'Roboto-Medium',
-    fontWeight: '700',
-    marginRight: '2%'
+    fontWeight: '600',
+    marginRight: '2%',
+    marginLeft: '5%'
   },
   buttonText1: {
     color: '#000',
     fontSize: 14,
     fontFamily: 'Roboto-Medium',
     fontWeight: '500',
-    marginRight: '2%'
+    marginRight: '2%',
+    marginLeft: '5%'
   },
   dropdown: {
     position: 'absolute',
     backgroundColor: 'white',
-    marginLeft: '6%',
-    marginRight: '6%',
-    width: '88%',
-    height: '40%',
+    width: '40%',
     borderRadius: 12,
     zIndex: 999,
     // paddingTop: '8%',
@@ -175,18 +143,15 @@ const styles = StyleSheet.create({
   item: {
     // paddingHorizontal: '1%'
     flexDirection: 'row',
-    paddingBottom: '10%'
-  },
-  item2: {
-    // paddingHorizontal: '1%'
-    flexDirection: 'row',
-    paddingBottom: '25%'
+    paddingBottom: '15%',
+    paddingLeft: '5%'
   },
   item3: {
     // paddingHorizontal: '1%'
     flexDirection: 'row',
-    paddingTop: '10%',
-    paddingBottom: '10%'
+    paddingTop: '15%',
+    paddingBottom: '15%',
+    paddingLeft: '5%'
   },
   avatar: {
     backgroundColor: 'white',
@@ -208,17 +173,6 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'rgba(0,0,0,0.5)'
   },
-  button: {
-    paddingVertical: 10,
-    backgroundColor: '#FFCA12',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginLeft: '6%',
-    marginRight: '6%',
-    marginTop: '4%',
-    borderRadius: 10
-  },
   pad: {
     height: '5%'
   },
@@ -235,4 +189,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default DropdownCreatePost;
+export default DropdownMore;

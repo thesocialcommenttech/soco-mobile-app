@@ -19,6 +19,7 @@ const MainStack = () => {
           name="HomeTab"
           component={HomeStack}
           options={{
+            tabBarHideOnKeyboard: true,
             headerShown: false,
             tabBarLabel: 'Home',
             tabBarLabelStyle: {
@@ -50,6 +51,7 @@ const MainStack = () => {
           name="DiscoverTab"
           component={DiscoverStack}
           options={{
+            tabBarHideOnKeyboard: true,
             headerShown: false,
             tabBarLabel: 'Discover',
             tabBarLabelStyle: {
@@ -81,6 +83,7 @@ const MainStack = () => {
           name="PortfolioTab"
           component={PortfolioStack}
           options={{
+            tabBarHideOnKeyboard: true,
             headerShown: false,
             tabBarLabel: 'Portfolio',
             tabBarLabelStyle: {
@@ -112,6 +115,7 @@ const MainStack = () => {
           name="ProfileTab"
           component={ProfileStack}
           options={{
+            tabBarHideOnKeyboard: true,
             headerShown: false,
             tabBarLabel: 'Profile',
             tabBarLabelStyle: {

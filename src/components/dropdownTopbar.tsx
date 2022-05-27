@@ -13,17 +13,12 @@ import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/Ionicons';
 import CircularProgress from './circularIndicator';
 
-interface Props {
-  label: any;
-  // data: Array<{ label: string; value: string }>;
-  // onSelect: (item: { label: string; value: string }) => void;
-}
-
-const DropdownTopbar: FC<Props> = props => {
+const DropdownTopbar = props => {
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
   const [dropdownTop, setDropdownTop] = useState(0);
   const [selected, setSelected] = useState(undefined);
+
   const data1 = [
     {
       label: 'Internships/Jobs',
@@ -68,6 +63,20 @@ const DropdownTopbar: FC<Props> = props => {
       subLabel: null,
       isNew: false,
       value: '6'
+    },
+    {
+      label: 'Drafts',
+      icon: 'email-open',
+      subLabel: null,
+      isNew: false,
+      value: '7'
+    },
+    {
+      label: 'Trash',
+      icon: 'delete-outline',
+      subLabel: null,
+      isNew: false,
+      value: '8'
     }
   ];
 
@@ -91,7 +100,10 @@ const DropdownTopbar: FC<Props> = props => {
   };
 
   const renderItem = ({ item }): ReactElement<any, any> => (
-    <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => onItemPress(item, props.label.navigation)}
+    >
       {item.label !== 'Settings' && (
         <Icon1 name={item.icon} size={17} color="#000" />
       )}
@@ -113,10 +125,16 @@ const DropdownTopbar: FC<Props> = props => {
       </View>
     </TouchableOpacity>
   );
-  const onItemPress = (item): void => {
+  const onItemPress = (item, navigation): void => {
     // setSelected(item);
     // onSelect(item);
     setVisible(false);
+    if (item.label === 'Drafts') {
+      navigation.navigate('Drafts');
+    }
+    if (item.label === 'Trash') {
+      navigation.navigate('Trash');
+    }
   };
 
   return (

@@ -338,7 +338,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around'
   },
   inputt: {
-    width: '90%'
+    width: '90%',
+    color: 'black'
   },
   filtIcon: {
     alignItems: 'center',
