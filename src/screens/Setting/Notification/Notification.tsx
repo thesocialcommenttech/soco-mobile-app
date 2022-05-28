@@ -2,8 +2,7 @@ import { StyleSheet, Text, View, Switch } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 
-export default function notification() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export default function Notification() {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => {
     setIsEnabled(previousState => !previousState);
