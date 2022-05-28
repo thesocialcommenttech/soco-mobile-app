@@ -104,8 +104,7 @@ const Data1 = [
   }
 ];
 
-export default function follow() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export default function Follow() {
   const [flag, setFlag] = useState(true);
 
   return (
