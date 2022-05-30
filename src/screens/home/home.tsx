@@ -104,9 +104,6 @@ const HomeScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.cardFooter}>
                   <Text style={styles.cardFooterText}>{u.postTitle}</Text>
-                  <TouchableOpacity>
-                    <Icon2 name="more-vert" size={20} color="#7D7987" />
-                  </TouchableOpacity>
                 </View>
                 {u.subTitle !== '' && (
                   <Text style={styles.subTitle}>{u.subTitle}</Text>
@@ -215,7 +212,7 @@ const styles = StyleSheet.create({
   },
   eyeView: {
     flexDirection: 'row',
-    marginLeft: '35%',
+    marginLeft: 'auto',
     justifyContent: 'space-between',
     alignItems: 'center'
   },

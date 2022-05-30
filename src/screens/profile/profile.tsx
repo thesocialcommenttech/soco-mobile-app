@@ -20,6 +20,7 @@ import { Card } from '@rneui/base';
 import DropdownBottombutton from '../../components/dropdownBottombutton';
 import DropdownCreatePost from '../../components/dropdownCreatePost';
 import { TextInput } from 'react-native';
+import DropdownMore from '../../components/dropdownMore';
 
 const ProfileScreen = ({ navigation }) => {
   // get backround and profile picture from background
@@ -461,9 +462,11 @@ const ProfileScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.cardFooter}>
                   <Text style={styles.cardFooterText}>{u.postTitle}</Text>
-                  <TouchableOpacity>
+                  <DropdownMore />
+
+                  {/* <TouchableOpacity>
                     <Icon2 name="more-vert" size={20} color="#7D7987" />
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                 </View>
                 {u.subTitle !== '' && (
                   <Text style={styles.subTitle}>{u.subTitle}</Text>

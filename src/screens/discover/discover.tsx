@@ -194,9 +194,6 @@ const DiscoverScreen = () => {
                 </View>
                 <View style={styles.cardFooter}>
                   <Text style={styles.cardFooterText}>{u.postTitle}</Text>
-                  <TouchableOpacity>
-                    <Icon2 name="more-vert" size={20} color="#7D7987" />
-                  </TouchableOpacity>
                 </View>
                 {u.subTitle !== '' && (
                   <Text style={styles.subTitle}>{u.subTitle}</Text>
