@@ -5,38 +5,38 @@ import SettingTab from '../../../components/settingsComponents/SettingTab';
 const Data = [
   {
     id: 1,
-    title: 'Profile',
-    name: 'user-o'
+    name: 'Profile',
+    icon: 'user-o'
   },
   {
     id: 2,
-    title: 'Password',
-    name: 'key'
+    name: 'Password',
+    icon: 'key'
   },
   {
     id: 3,
-    title: 'Interests',
-    name: 'heart-o'
+    name: 'Interests',
+    icon: 'heart-o'
   },
   {
     id: 4,
-    title: 'Referral',
-    name: 'gift'
+    name: 'Referral',
+    icon: 'gift'
   },
   {
     id: 5,
-    title: 'Wallet',
-    name: 'wallet-outline'
+    name: 'Wallet',
+    icon: 'wallet-outline'
   },
   {
     id: 6,
-    title: 'Subscription',
-    name: 'rupee'
+    name: 'Subscription',
+    icon: 'rupee'
   },
   {
     id: 7,
-    title: 'Notification',
-    name: 'bell-o'
+    name: 'Notification',
+    icon: 'bell-o'
   }
 ];
 
@@ -51,7 +51,7 @@ export default function mainSettingScreen() {
           data={Data}
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
-            <SettingTab title={item.title} name={item.name} />
+            <SettingTab name={item.name} icon={item.icon} />
           )}
         />
       </View>

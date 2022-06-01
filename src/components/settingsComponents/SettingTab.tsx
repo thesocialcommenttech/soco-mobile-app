@@ -5,10 +5,10 @@ import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 
 export default function SettingTab({
-  title,
-  name
+  name,
+  icon
 }: {
-  title: string;
+  icon: string;
   name: string;
 }) {
   const navigation = useNavigation();
@@ -24,12 +24,12 @@ export default function SettingTab({
           <View style={styles.information}>
             <View style={styles.more}>
               <View style={styles.icon}>
-                {name === 'wallet-outline'
-                  ? [<Icon1 name={name} size={23} color="black" />]
-                  : [<Icon name={name} size={23} color="black" />]}
+                {icon === 'wallet-outline'
+                  ? [<Icon1 name={icon} size={23} color="black" />]
+                  : [<Icon name={icon} size={23} color="black" />]}
               </View>
               <View style={styles.name}>
-                <Text style={styles.nametext}>{title}</Text>
+                <Text style={styles.nametext}>{name}</Text>
               </View>
             </View>
             <View style={styles.rightIcon}>
