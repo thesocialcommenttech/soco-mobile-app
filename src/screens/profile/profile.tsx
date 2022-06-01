@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   FlatList,
   Image,
   Modal,
@@ -13,7 +12,7 @@ import React, { useState } from 'react';
 import TopBar from '../../components/topBar';
 import { Avatar } from '@rneui/base';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon2 from 'react-native-vector-icons/MaterialIcons';
+import Icon3 from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from '../../store/reducers/info';
 import { Card } from '@rneui/base';
@@ -130,7 +129,8 @@ const ProfileScreen = ({ navigation }) => {
       subTitle: '',
       postTitle: 'Python - An Installation Guide',
       postDate: '24 Feb, 2022',
-      postTag: 'Artwork'
+      postTag: 'Artwork',
+      views: 26
     },
     {
       id: '2',
@@ -141,7 +141,8 @@ const ProfileScreen = ({ navigation }) => {
       subTitle:
         "Trumpthechumps Mango Mussolini I'm with Her tangerine tornado The Clown Prince if Ivanka weren't my daughter...",
       postDate: '24 Feb, 2022',
-      postTag: 'Artwork'
+      postTag: 'Artwork',
+      views: 26
     },
     {
       id: '3',
@@ -151,7 +152,8 @@ const ProfileScreen = ({ navigation }) => {
       postTitle: 'Python - An Installation Guide',
       subTitle: '',
       postDate: '24 Feb, 2022',
-      postTag: 'Artwork'
+      postTag: 'Artwork',
+      views: 26
     }
   ];
 
@@ -174,6 +176,7 @@ const ProfileScreen = ({ navigation }) => {
           username={name}
           premium={isPremium}
           percentProfile={percentProfile}
+          navigation={navigation}
         />
         <View style={styles.images}>
           <Image
@@ -412,7 +415,6 @@ const ProfileScreen = ({ navigation }) => {
             <Text style={styles.statsLabel}>Views</Text>
           </View>
         </View>
-        {/* <Text style={{ color: 'black' }}>jdnfkjdvn</Text> */}
         <FlatList
           data={ITEMS}
           style={styles.activity}
@@ -425,7 +427,7 @@ const ProfileScreen = ({ navigation }) => {
           horizontal={true}
         />
         <DropdownCreatePost label={'Create Post'} />
-
+        <View style={styles.padd} />
         {cardContents.map((u, i) => {
           return (
             <Card key={i} containerStyle={styles.cardContainer}>
@@ -463,10 +465,6 @@ const ProfileScreen = ({ navigation }) => {
                 <View style={styles.cardFooter}>
                   <Text style={styles.cardFooterText}>{u.postTitle}</Text>
                   <DropdownMore />
-
-                  {/* <TouchableOpacity>
-                    <Icon2 name="more-vert" size={20} color="#7D7987" />
-                  </TouchableOpacity> */}
                 </View>
                 {u.subTitle !== '' && (
                   <Text style={styles.subTitle}>{u.subTitle}</Text>
@@ -475,6 +473,10 @@ const ProfileScreen = ({ navigation }) => {
                   <Text style={styles.cardFooterText2}>{u.postDate}</Text>
                   <View style={styles.tag}>
                     <Text style={styles.tagText}>{u.postTag}</Text>
+                  </View>
+                  <View style={styles.eyeView}>
+                    <Icon3 name="eye-outline" size={19} color="#7D7987" />
+                    <Text style={styles.viewNum}>{u.views}</Text>
                   </View>
                 </View>
               </View>
@@ -733,14 +735,15 @@ const styles = StyleSheet.create({
     color: '#896A00',
     textAlign: 'center'
   },
+  padd: {
+    paddingVertical: '2%'
+  },
   cardContainer: {
-    marginTop: '8%',
-    marginHorizontal: '4%',
-    borderRadius: 10,
-    marginBottom: '6%',
-    shadowColor: '#000',
     padding: 20,
-    elevation: 7
+    width: '100%',
+    marginLeft: '0%',
+    marginTop: '0%',
+    borderTopColor: 'white'
   },
   profileinfo: {
     flexDirection: 'row',
@@ -815,8 +818,8 @@ const styles = StyleSheet.create({
   },
   modalView: {
     backgroundColor: 'white',
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
+    height: '100%',
+    width: '100%',
     padding: 20
   },
   textStyle: {
@@ -918,8 +921,8 @@ const styles = StyleSheet.create({
   },
   modalView1: {
     backgroundColor: 'white',
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
+    height: '100%',
+    width: '100%',
     padding: 20
   },
   captionOnImg: {
@@ -1041,5 +1044,18 @@ const styles = StyleSheet.create({
     lineHeight: 14.52,
     color: 'black',
     marginTop: '4%'
+  },
+  eyeView: {
+    flexDirection: 'row',
+    marginLeft: 'auto',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  viewNum: {
+    color: 'black',
+    fontSize: 16,
+    marginLeft: '2%',
+    lineHeight: 18.75,
+    fontFamily: 'Roboto'
   }
 });

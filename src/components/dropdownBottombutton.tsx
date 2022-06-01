@@ -52,11 +52,6 @@ const DropdownBottombutton: FC<Props> = props => {
       label: 'Presentation',
       isNew: false,
       value: '6'
-    },
-    {
-      label: 'Presentation',
-      isNew: false,
-      value: '7'
     }
   ];
 
@@ -97,7 +92,7 @@ const DropdownBottombutton: FC<Props> = props => {
             )}
           </TouchableOpacity>
         )}
-        {item.value !== '1' && item.value !== '7' ? (
+        {item.value !== '1' ? (
           <TouchableOpacity
             style={styles.item}
             onPress={() => onItemPress(item)}
@@ -132,11 +127,11 @@ const DropdownBottombutton: FC<Props> = props => {
       >
         <Icon3 name="plus" size={30} color="#000" />
       </TouchableOpacity>
-      <Modal visible={visible} transparent animationType="none">
+      <Modal visible={visible} transparent animationType="fade">
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
-        <View style={[styles.dropdown, { bottom: dropdownBottom }]}>
+        <View style={[styles.dropdown]}>
           <FlatList
             data={data}
             renderItem={renderItem}
@@ -157,29 +152,30 @@ const styles = StyleSheet.create({
   dropdown: {
     position: 'absolute',
     backgroundColor: 'white',
-    marginLeft: '43%',
-    width: '40%',
+    width: '100%',
     borderRadius: 12,
     zIndex: 999,
+    height: 'auto',
     // paddingTop: '8%',
     // paddingBottom: '8%',
+    bottom: 0,
     paddingLeft: '8%'
   },
   item: {
     // paddingHorizontal: '1%'
     flexDirection: 'row',
-    paddingBottom: '15%'
+    paddingBottom: '10%'
   },
   item2: {
     // paddingHorizontal: '1%'
     flexDirection: 'row',
-    paddingBottom: '25%'
+    paddingBottom: '15%'
   },
   item3: {
     // paddingHorizontal: '1%'
     flexDirection: 'row',
-    paddingTop: '15%',
-    paddingBottom: '15%'
+    paddingTop: '10%',
+    paddingBottom: '10%'
   },
   avatar: {
     backgroundColor: 'white',

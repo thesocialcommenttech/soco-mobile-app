@@ -66,7 +66,6 @@ const HomeScreen = ({ navigation }) => {
         percentProfile={percentProfile}
         navigation={navigation}
       />
-      <View style={styles.padd} />
       <ScrollView>
         {cardContents.map((u, i) => {
           return (

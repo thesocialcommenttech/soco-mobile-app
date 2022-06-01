@@ -2,6 +2,7 @@ import React, { FC, ReactElement, useRef, useState } from 'react';
 import {
   FlatList,
   Modal,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -12,6 +13,7 @@ import { Avatar } from '@rneui/base';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/Ionicons';
 import CircularProgress from './circularIndicator';
+import ReactNativeModal from 'react-native-modal';
 
 const DropdownTopbar = props => {
   const [visible, setVisible] = useState(false);
@@ -90,7 +92,7 @@ const DropdownTopbar = props => {
 
   const openDropdown = (): void => {
     DropdownButton.current.measure((_fx, _fy, _w, h, _px, py) => {
-      setDropdownTop(py + h);
+      setDropdownTop(py);
     });
     setVisible(true);
   };
@@ -150,11 +152,16 @@ const DropdownTopbar = props => {
         activeOpacity={0.7}
         containerStyle={styles.avatar}
       />
-      <Modal visible={visible} transparent animationType="fade">
+      <ReactNativeModal
+        isVisible={visible}
+        backdropOpacity={0}
+        animationIn="slideInRight"
+        animationOut="slideOutRight"
+      >
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
-        <View style={[styles.dropdown, { top: dropdownTop }]}>
+        <ScrollView style={[styles.dropdown]}>
           <TouchableOpacity
             onPress={() => setVisible(false)}
             style={styles.closeBtn}
@@ -176,17 +183,9 @@ const DropdownTopbar = props => {
             )}
           </View>
           <View style={styles.horizontalLine} />
-          <FlatList
-            data={data1}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
+          {data1.map(item => renderItem({ item }))}
           <View style={styles.horizontalLine} />
-          <FlatList
-            data={data2}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
+          {data2.map(item => renderItem({ item }))}
           <View style={styles.horizontalLine} />
           <TouchableOpacity
             style={styles.logoutBtn}
@@ -197,8 +196,8 @@ const DropdownTopbar = props => {
             <Icon1 name="logout" size={24} color="white" />
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
-        </View>
-      </Modal>
+        </ScrollView>
+      </ReactNativeModal>
     </TouchableOpacity>
   );
 };
@@ -212,11 +211,14 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     position: 'absolute',
-    backgroundColor: 'white',
-    marginLeft: '25%',
-    minWidth: '70%',
+    backgroundColor: '#F9FAFB',
+    marginLeft: '15%',
+    minWidth: '90%',
     borderRadius: 12,
-    zIndex: 999
+    zIndex: 999,
+    height: '100%',
+    top: '-1%',
+    right: '-1%'
   },
   item: {
     paddingHorizontal: 25,
@@ -250,7 +252,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)'
+    backgroundColor: 'rgba(0,0,0,0)'
   },
   avatar: {
     backgroundColor: 'white',

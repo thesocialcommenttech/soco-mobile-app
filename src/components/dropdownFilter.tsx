@@ -137,18 +137,12 @@ const DropdownFilter: FC<Props> = props => {
         <Text style={styles.buttonText}>{selected}</Text>
         <Icon3 name="chevron-down" size={20} color="#7D7987" />
       </TouchableOpacity>
-      <Modal visible={visible} transparent animationType="none">
+      <Modal visible={visible} transparent animationType="fade">
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
-        <View
-          style={[styles.dropdown, { top: dropdownTop, left: dropdownLeft }]}
-        >
-          <FlatList
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
+        <View style={[styles.dropdown]}>
+          {data.map(item => renderItem({ item }))}
         </View>
       </Modal>
     </>
@@ -173,25 +167,27 @@ const styles = StyleSheet.create({
   dropdown: {
     position: 'absolute',
     backgroundColor: 'white',
-    width: '40%',
+    width: '100%',
     borderRadius: 12,
     zIndex: 999,
+    height: 'auto',
     // paddingTop: '8%',
     // paddingBottom: '8%',
+    bottom: 0,
     paddingLeft: '8%'
   },
   item: {
     // paddingHorizontal: '1%'
     flexDirection: 'row',
-    paddingBottom: '15%',
-    paddingLeft: '10%'
+    paddingBottom: '10%',
+    paddingLeft: '2%'
   },
   item3: {
     // paddingHorizontal: '1%'
     flexDirection: 'row',
-    paddingTop: '15%',
-    paddingBottom: '15%',
-    paddingLeft: '10%'
+    paddingTop: '10%',
+    paddingBottom: '10%',
+    paddingLeft: '2%'
   },
   avatar: {
     backgroundColor: 'white',

@@ -44,9 +44,7 @@ const DropdownDelete = props => {
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
-        <View
-          style={[styles.dropdown, { top: dropdownTop, right: dropdownRight }]}
-        >
+        <View style={[styles.dropdown]}>
           <Text style={styles.headerText}>Delete Permanently</Text>
           <Text style={styles.descText}>
             You will not be able to reverse this action. Do you really want to
@@ -82,12 +80,15 @@ const styles = StyleSheet.create({
   dropdown: {
     position: 'absolute',
     backgroundColor: 'white',
-    width: '80%',
+    width: '100%',
     borderRadius: 12,
     zIndex: 999,
+    height: 'auto',
     // paddingTop: '8%',
     // paddingBottom: '8%',
-    padding: '8%'
+    bottom: 0,
+    padding: '8%',
+    paddingRight: '5%'
   },
   avatar: {
     backgroundColor: 'white',
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Roboto-Regular',
     fontWeight: '400',
-    color: '#000',
+    color: 'gray',
     marginTop: '5%'
   },
   buttonContainer: {
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: 6,
-    marginRight: '5%',
+    marginRight: '4%',
     backgroundColor: '#FFF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -153,7 +154,6 @@ const styles = StyleSheet.create({
   },
   button1: {
     borderRadius: 6,
-    marginRight: '5%',
     backgroundColor: '#0063FF',
     justifyContent: 'center',
     alignItems: 'center',

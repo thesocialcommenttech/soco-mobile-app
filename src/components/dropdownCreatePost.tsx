@@ -3,6 +3,7 @@ import {
   Dimensions,
   FlatList,
   Modal,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -128,17 +129,13 @@ const DropdownCreatePost: FC<Props> = props => {
         <Text style={styles.buttonText}>{props.label}</Text>
         <Icon3 name="chevron-down" size={20} color="#000" />
       </TouchableOpacity>
-      <Modal visible={visible} transparent animationType="none">
+      <Modal visible={visible} transparent animationType="fade">
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
-        <View style={[styles.dropdown, { top: dropdownTop }]}>
-          <FlatList
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
+        <ScrollView style={[styles.dropdown]}>
+          {data.map(item => renderItem({ item }))}
+        </ScrollView>
       </Modal>
     </>
   );
@@ -162,14 +159,13 @@ const styles = StyleSheet.create({
   dropdown: {
     position: 'absolute',
     backgroundColor: 'white',
-    marginLeft: '6%',
-    marginRight: '6%',
-    width: '88%',
-    height: '40%',
+    width: '100%',
     borderRadius: 12,
     zIndex: 999,
+    height: 'auto',
     // paddingTop: '8%',
     // paddingBottom: '8%',
+    bottom: 0,
     paddingLeft: '8%'
   },
   item: {
