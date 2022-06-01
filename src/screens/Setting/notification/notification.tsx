@@ -1,13 +1,14 @@
-import { StyleSheet, Text, View, Switch } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
+import ToggleSwitch from 'toggle-switch-react-native';
 
 export default function Notification() {
   const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => {
-    setIsEnabled(previousState => !previousState);
-    console.log(isEnabled);
-  };
+  // const toggleSwitch = () => {
+  //   setIsEnabled(previousState => !previousState);
+  //   console.log(isEnabled);
+  // };
 
   return (
     <View style={styles.container}>
@@ -23,12 +24,16 @@ export default function Notification() {
           </Text>
         </View>
         <View style={styles.switch}>
-          <Switch
-            trackColor={{ false: '#767577', true: '#E0EBFF' }}
-            thumbColor={isEnabled ? '#1563E2' : '#f4f3f4'}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
+          <ToggleSwitch
+            isOn={isEnabled}
+            onColor="blue"
+            offColor="lightgray"
+            size="small"
+            onToggle={() => setIsEnabled(!isEnabled)}
+            trackOffStyle={styles.offtrack}
+            trackOnStyle={styles.ontrack}
+            thumbOffStyle={styles.thumboff}
+            thumbOnStyle={styles.thumbon}
           />
           {isEnabled ? [<Icon name="check" size={22} color="green" />] : []}
         </View>
@@ -62,17 +67,36 @@ const styles = StyleSheet.create({
     marginTop: '2%'
   },
   switch: {
-    marginTop: '2.5%',
+    marginTop: '3.5%',
     alignItems: 'flex-start',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    marginLeft: '0.5%'
   },
   newsletter: {
     color: 'black',
-    fontSize: 15,
+    fontSize: 17,
     fontFamily: 'Roboto-Medium',
     lineHeight: 30
   },
   newsletterLine: {
-    lineHeight: 18
+    lineHeight: 18,
+    fontSize: 16
+  },
+  offtrack: {
+    backgroundColor: 'white',
+    borderColor: 'black',
+    borderWidth: 2
+  },
+  ontrack: {
+    backgroundColor: '#E0EBFF',
+    borderColor: 'blue',
+    borderWidth: 2
+  },
+  thumbon: {
+    backgroundColor: 'blue',
+    marginLeft: '1%'
+  },
+  thumboff: {
+    backgroundColor: 'black'
   }
 });
