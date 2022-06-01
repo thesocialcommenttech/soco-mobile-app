@@ -1,9 +1,16 @@
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/EvilIcons';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 
-export default function SettingTab({ name }: { name: string }) {
+export default function SettingTab({
+  title,
+  name
+}: {
+  title: string;
+  name: string;
+}) {
   const navigation = useNavigation();
 
   return (
@@ -16,13 +23,17 @@ export default function SettingTab({ name }: { name: string }) {
         >
           <View style={styles.information}>
             <View style={styles.more}>
-              <Icon name="user" size={42} color="black" />
+              <View style={styles.icon}>
+                {name === 'wallet-outline'
+                  ? [<Icon1 name={name} size={23} color="black" />]
+                  : [<Icon name={name} size={23} color="black" />]}
+              </View>
               <View style={styles.name}>
-                <Text style={styles.nametext}>{name}</Text>
+                <Text style={styles.nametext}>{title}</Text>
               </View>
             </View>
-            <View>
-              <Icon name="chevron-right" size={42} />
+            <View style={styles.rightIcon}>
+              <Icon name="chevron-right" size={21} />
             </View>
           </View>
         </TouchableOpacity>
@@ -42,18 +53,27 @@ const styles = StyleSheet.create({
     padding: 6
   },
   more: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    flex: 0.4
   },
   name: {
     alignSelf: 'center',
-    marginLeft: '2%'
+    justifyContent: 'flex-start'
   },
   nametext: {
     color: 'black'
   },
   bottomruler: {
     borderBottomColor: '#F0F2F5',
-    borderBottomWidth: 1.5,
-    marginTop: '3%'
+    borderBottomWidth: 1.5
+  },
+  icon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 9,
+    width: '35%'
+  },
+  rightIcon: {
+    justifyContent: 'center'
   }
 });

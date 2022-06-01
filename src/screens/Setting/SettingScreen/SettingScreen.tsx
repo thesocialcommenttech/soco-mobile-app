@@ -5,31 +5,38 @@ import SettingTab from '../../../components/settingsComponents/SettingTab';
 const Data = [
   {
     id: 1,
-    title: 'Profile'
+    title: 'Profile',
+    name: 'user-o'
   },
   {
     id: 2,
-    title: 'Password'
+    title: 'Password',
+    name: 'key'
   },
   {
     id: 3,
-    title: 'Interests'
+    title: 'Interests',
+    name: 'heart-o'
   },
   {
     id: 4,
-    title: 'Referral'
+    title: 'Referral',
+    name: 'gift'
   },
   {
     id: 5,
-    title: 'Wallet'
+    title: 'Wallet',
+    name: 'wallet-outline'
   },
   {
     id: 6,
-    title: 'Subscription'
+    title: 'Subscription',
+    name: 'rupee'
   },
   {
     id: 7,
-    title: 'Notification'
+    title: 'Notification',
+    name: 'bell-o'
   }
 ];
 
@@ -43,7 +50,9 @@ export default function mainSettingScreen() {
         <FlatList
           data={Data}
           keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => <SettingTab name={item.title} />}
+          renderItem={({ item }) => (
+            <SettingTab title={item.title} name={item.name} />
+          )}
         />
       </View>
     </View>
