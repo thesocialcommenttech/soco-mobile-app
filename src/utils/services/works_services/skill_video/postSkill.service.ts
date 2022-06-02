@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { PostCreateSkillRequest, PostCreateSkillResponse } from '~/src/utils/typings/works_interface/skill_video/postSkill.interface';
 
-export function postCreateBlog(
+export function postSkill(
     {
         title,
         description,

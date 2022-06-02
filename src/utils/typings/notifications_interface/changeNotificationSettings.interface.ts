@@ -1,16 +1,16 @@
 export interface ChangeNotificationSettingsRequest{
-    newsletter:boolean;
+    newsletter?:boolean;
 }
 
 interface Notification {
-  newsletter: true;
+  newsletter?: true;
 }
 
 interface Result{
-    notification:Notification
+    notification?:Notification
 }
 
 export interface ChangeNotificationSettingsResponse {
-    result:Result;
-    success:boolean;
+    result?:Result;
+    success?:boolean;
 }

@@ -1,7 +1,7 @@
 export interface MarkNotificationsAsReadRequest{
-    notifications:string[];
+    notifications?:string[];
 };
 
 export interface MarkNotificationsAsReadResponse{
-    success:boolean
+    success?:boolean
 }

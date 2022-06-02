@@ -4,7 +4,7 @@ interface ContentIndex0 {
   _id?: string;
   type?: string;
   attributes?: {};
-  data: {
+  data?: {
     heading?: string;
   };
 }
@@ -13,9 +13,9 @@ interface ContentIndex1 {
   _id?: string;
   type?: string;
   attributes?: {};
-  data: {
-    content: {
-      ops: [
+  data?: {
+    content?: {
+      ops?: [
         {
           insert?: string;
         }
@@ -28,7 +28,7 @@ interface ContentIndex2 {
   _id?: string;
   type?: string;
   attributes?: {};
-  data: {
+  data?: {
     pdf?: string;
     description?: string;
   };
@@ -38,7 +38,7 @@ interface ContentIndex3 {
   _id?: string;
   type?: string;
   attributes?: {};
-  data: {
+  data?: {
     video?: string;
   };
 }
@@ -47,7 +47,7 @@ interface ContentIndex4 {
   _id?: string;
   type?: string;
   attributes?: {};
-  data: {
+  data?: {
     code?: string;
   };
 }

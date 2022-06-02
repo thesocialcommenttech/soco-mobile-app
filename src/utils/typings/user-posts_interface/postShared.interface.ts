@@ -1,15 +1,15 @@
 export interface PostSharedRequest{
-    description:string;
-    sharedPostID:string;
-    sharedPostType:string;
-    postedOn:Date;
+    description?:string;
+    sharedPostID?:string;
+    sharedPostType?:string;
+    postedOn?:Date;
 }
 
 interface Share{
-    _id:string
+    _id?:string
 };
 
 export interface PostSharedResponse{
-    share:Share;
-    success:boolean;
+    share?:Share;
+    success?:boolean;
 }

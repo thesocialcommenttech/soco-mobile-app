@@ -1,7 +1,7 @@
 export interface VotePostResponse {
-  success: boolean;
+  success?: boolean;
 }
 
 export interface VotePostRequest {
-  type: 'up' | 'down';
+  type?: 'up' | 'down';
 }

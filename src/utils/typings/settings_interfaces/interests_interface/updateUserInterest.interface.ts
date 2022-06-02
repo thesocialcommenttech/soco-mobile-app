@@ -1,12 +1,12 @@
 export interface UpdateUserInterestRequest{
-    interest_categories:string[];
+    interest_categories?:string[];
 };
 
 interface InterestedCategories{
-    _id:string;
+    _id?:string;
 }
 
 export interface UpdateUserInterestResponse{
-    success:boolean;
-    interested_categories:InterestedCategories[];
+    success?:boolean;
+    interested_categories?:InterestedCategories[];
 }

@@ -1,13 +1,13 @@
 export interface PostBlogRequest{
-    postStatus:string;
+    postStatus?:string;
 };
 
 interface Blog{
-    title:string;
-    _id:string
+    title?:string;
+    _id?:string
 }
 
 export interface PostBlogResponse{
-    blog: Blog;
-    success:boolean;
+    blog?: Blog;
+    success?:boolean;
 };

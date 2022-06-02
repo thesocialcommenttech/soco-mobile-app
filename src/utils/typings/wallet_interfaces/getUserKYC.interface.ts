@@ -1,3 +1,3 @@
 export interface GetUserKYCResponse{
-    success:boolean;
+    success?:boolean;
 }

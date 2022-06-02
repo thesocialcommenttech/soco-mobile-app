@@ -1,9 +1,9 @@
 interface User{
-    premium:boolean;
-    _id:string
+    premium?:boolean;
+    _id?:string
 }
 
 export interface GetUserData2Response{
-    success:boolean;
-    user:User
+    success?:boolean;
+    user?:User
 }

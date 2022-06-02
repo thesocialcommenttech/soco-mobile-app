@@ -4,7 +4,7 @@ import {
   PostCreateProjectResponse
 } from '~/src/utils/typings/works_interface/project/postproject.interface';
 
-export function postCreateProject({
+export function postProject({
   title,
   team,
   introduction,

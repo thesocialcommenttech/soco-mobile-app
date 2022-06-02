@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { PostArticleRequest,  PostArticleResponse} from '~/src/utils/typings/works_interface/article/postArticle.interface';
 
-export function postCreateArticle(
+export function postArticle(
   postStatus: PostArticleRequest
 ): Promise<AxiosResponse<PostArticleResponse>> {
   const config: AxiosRequestConfig = {

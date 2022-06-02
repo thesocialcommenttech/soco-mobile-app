@@ -1,10 +1,10 @@
 interface Interests{
-    category:string; 
-    _id:string; 
-    index:number;
+    category?:string; 
+    _id?:string; 
+    index?:number;
 }
 
 export interface GetInterestCategoriesResponse{
-    success:boolean;
-    interest_categories: Interests[];
+    success?:boolean;
+    interest_categories?: Interests[];
 }

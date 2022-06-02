@@ -14,6 +14,6 @@ interface Posts{
 }
 
 export interface GetPostsResponse{
-    posts:Posts[];
-    success:boolean;
+    posts?:Posts[];
+    success?:boolean;
 }

@@ -1,7 +1,7 @@
 import { File } from "@babel/types";
 
 export interface UpdateArticleRequest{
-    contentJSON:[{
+    contentJSON?:[{
         insert?:string;
     }];
     contentText?:string;

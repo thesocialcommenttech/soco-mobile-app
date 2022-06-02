@@ -4,7 +4,7 @@ import {
   PostBlogResponse
 } from '~/src/utils/typings/works_interface/blog/postBlog.interface';
 
-export function postCreateBlog(
+export function postBlog(
   postStatus: PostBlogRequest
 ): Promise<AxiosResponse<PostBlogResponse>> {
   const config: AxiosRequestConfig = {

@@ -4,7 +4,7 @@ import {
   PostCreateArtworkResponse
 } from '~/src/utils/typings/works_interface/artwork/postArtwork.interface';
 
-export function postCreateArtwork({
+export function postArtwork({
   title,
   description,
   tags,

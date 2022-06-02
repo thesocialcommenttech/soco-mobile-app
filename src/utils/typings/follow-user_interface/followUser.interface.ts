@@ -1,7 +1,7 @@
 export interface FollowUserRequest {
-  userID: string;
+  userID?: string;
 }
 
 export interface FollowUserResponse {
-  success: boolean;
+  success?: boolean;
 }

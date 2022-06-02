@@ -1,24 +1,24 @@
 interface Post{
-    likes:boolean;
-    published:boolean;
-    views:boolean;
+    likes?:boolean;
+    published?:boolean;
+    views?:boolean;
 }
 
 interface Achievement{
-    followers:boolean;
-    post:Post;
+    followers?:boolean;
+    post?:Post;
 };
 
 interface Notification{
-    achievement:Achievement;
+    achievement?:Achievement;
 };
 
 interface UserData{
-    notification:Notification;
-    _id:string;
+    notification?:Notification;
+    _id?:string;
 }
 
 export interface GetUserProfileDataResponse{
-    success:boolean;
-    userData:UserData;
+    success?:boolean;
+    userData?:UserData;
 }

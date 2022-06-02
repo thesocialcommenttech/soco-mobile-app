@@ -1,13 +1,13 @@
 export interface RequestResetUserPasswordRequest{
-    email:string
+    email?:string
 };
 
 export interface RequestResetUserPasswordResponse{
-    success:boolean,
-    sendEmailResult:{
-        ResponseMetadata:{
-            RequestId:string
+    success?:boolean,
+    sendEmailResult?:{
+        ResponseMetadata?:{
+            RequestId?:string
         },
-        MessageId:string
+        MessageId?:string
     }
 };

@@ -1,4 +1,4 @@
 export interface GetUserSubscriptionHistoryResponse{
-    success:boolean;
-    subscriptions: [];
+    success?:boolean;
+    subscriptions?: [];
 }
