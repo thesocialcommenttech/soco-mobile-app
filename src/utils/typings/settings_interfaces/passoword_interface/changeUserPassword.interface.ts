@@ -1,8 +1,8 @@
-export interface ChangeUserPasswordRequest{
-    newPassword?:string;
-    oldPassword?:string;
+export interface ChangeUserPasswordRequest {
+  newPassword?: string;
+  oldPassword?: string;
 }
 
-export interface ChangeUserPasswordResponse{
-    success?:boolean;
+export interface ChangeUserPasswordResponse {
+  success?: boolean;
 }

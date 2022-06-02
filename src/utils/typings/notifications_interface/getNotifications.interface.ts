@@ -1,36 +1,35 @@
-interface PostID{
-    _id?:string;
-    postType?:string;
-    title?:string;
-};
-
-interface UserID{
-    _id?:string;
-    username?:string;
-    profileImage?:string;
-    name?:string;
-};
-
-interface Data{
-    links?:string[];
-    postID?:PostID;
-    userID?:UserID;
+interface PostID {
+  _id?: string;
+  postType?: string;
+  title?: string;
 }
 
-interface Read{
-    data?:Data;
-    notifiedOn?:string;
-    type?:string;
-    _id?:string;
+interface UserID {
+  _id?: string;
+  username?: string;
+  profileImage?: string;
+  name?: string;
 }
 
-interface Notifications{
-    read?:[Read];
-    unread?:[];
+interface Data {
+  links?: string[];
+  postID?: PostID;
+  userID?: UserID;
 }
 
+interface Read {
+  data?: Data;
+  notifiedOn?: string;
+  type?: string;
+  _id?: string;
+}
 
-export interface GetNotificatiosnresponse{
-    notifications?:Notifications;
-    success?:boolean
+interface Notifications {
+  read?: [Read];
+  unread?: [];
+}
+
+export interface GetNotificatiosnresponse {
+  notifications?: Notifications;
+  success?: boolean;
 }

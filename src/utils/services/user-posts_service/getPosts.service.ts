@@ -7,7 +7,7 @@ export function getPosts(): Promise<AxiosResponse<GetPostsResponse>> {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
-    },
+    }
   };
   return axios.request<GetPostsResponse>(config);
-};
+}

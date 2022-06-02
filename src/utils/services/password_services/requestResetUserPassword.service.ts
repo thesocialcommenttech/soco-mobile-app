@@ -22,4 +22,3 @@ export function requestResetUserPassword({
 
   return axios.request<RequestResetUserPasswordResponse>(config);
 }
-

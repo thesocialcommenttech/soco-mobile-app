@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { PostArticleRequest,  PostArticleResponse} from '~/src/utils/typings/works_interface/article/postArticle.interface';
+import {
+  PostArticleRequest,
+  PostArticleResponse
+} from '~/src/utils/typings/works_interface/article/postArticle.interface';
 
 export function postArticle(
   postStatus: PostArticleRequest

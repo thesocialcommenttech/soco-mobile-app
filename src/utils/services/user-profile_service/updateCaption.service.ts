@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { UpdateCaptionRequest, UpdateCaptionResponse } from '../../typings/user-profile_interface/updateCaption.interface';
+import {
+  UpdateCaptionRequest,
+  UpdateCaptionResponse
+} from '../../typings/user-profile_interface/updateCaption.interface';
 
 export function updateCaption({
   caption
@@ -8,7 +11,7 @@ export function updateCaption({
     url: '/user/profile/caption',
     method: 'POST',
     data: {
-        caption
+      caption
     }
   };
 

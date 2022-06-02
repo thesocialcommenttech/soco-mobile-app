@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { UpdateDPRequest,  UpdateDPResposne} from '../../typings/user-profile_interface/updateDP.interface';
+import {
+  UpdateDPRequest,
+  UpdateDPResposne
+} from '../../typings/user-profile_interface/updateDP.interface';
 
 export function updateDP({
   dp
