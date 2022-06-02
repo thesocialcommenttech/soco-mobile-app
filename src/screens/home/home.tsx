@@ -126,8 +126,6 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
-export default HomeScreen;
-
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
