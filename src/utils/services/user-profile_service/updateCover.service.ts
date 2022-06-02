@@ -1,0 +1,19 @@
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import {
+  UpdateCoverRequest,
+  UpdateCoverResponse
+} from '../../typings/user-profile_interface/updateCover.interface';
+
+export function updateCover({
+  cover
+}: UpdateCoverRequest): Promise<AxiosResponse<UpdateCoverResponse>> {
+  const config: AxiosRequestConfig = {
+    url: '/user/profile/cover',
+    method: 'POST',
+    data: {
+      cover
+    }
+  };
+
+  return axios.request<UpdateCoverResponse>(config);
+}
