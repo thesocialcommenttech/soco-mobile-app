@@ -13,7 +13,7 @@ export function markNotificationsAsRead(
     headers: {
       'Content-Type': 'application/json'
     },
-    data:notifications
+    data: notifications
   };
 
   return axios.request<MarkNotificationsAsReadResponse>(config);

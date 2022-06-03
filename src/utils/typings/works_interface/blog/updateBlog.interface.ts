@@ -1,16 +1,16 @@
-interface Insert{
-    insert?:string;
+interface Insert {
+  insert?: string;
 }
 
-export interface UpdateBlogRequest{
-    contentJSON?:[Insert];
-    contentText?:string;
-    title?:string;
-    postStatus?:string;
-    updatedOn?:Date;
+export interface UpdateBlogRequest {
+  contentJSON?: [Insert];
+  contentText?: string;
+  title?: string;
+  postStatus?: string;
+  updatedOn?: Date;
 }
 
-export interface UpdateBlogResponse{
-    postId?:string;
-    success?:boolean;
+export interface UpdateBlogResponse {
+  postId?: string;
+  success?: boolean;
 }

@@ -1,7 +1,12 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
-import { ChangeNotificationSettingsResponse, ChangeNotificationSettingsRequest } from '../../typings/notifications_interface/changeNotificationSettings.interface';
+import {
+  ChangeNotificationSettingsResponse,
+  ChangeNotificationSettingsRequest
+} from '../../typings/notifications_interface/changeNotificationSettings.interface';
 
-export function changeNotificationSettings({newsletter}:ChangeNotificationSettingsRequest): Promise<
+export function changeNotificationSettings({
+  newsletter
+}: ChangeNotificationSettingsRequest): Promise<
   AxiosResponse<ChangeNotificationSettingsResponse>
 > {
   const config: AxiosRequestConfig = {
@@ -10,8 +15,8 @@ export function changeNotificationSettings({newsletter}:ChangeNotificationSettin
     headers: {
       'Content-Type': 'application/json'
     },
-    data:{
-        newsletter
+    data: {
+      newsletter
     }
   };
 

@@ -1,4 +1,4 @@
-import { File } from "@babel/types";
+import { File } from '@babel/types';
 
 interface ContentIndex0 {
   _id?: string;
@@ -7,7 +7,7 @@ interface ContentIndex0 {
   data?: {
     heading?: string;
   };
-};
+}
 
 interface ContentIndex1 {
   _id?: string;
@@ -22,7 +22,7 @@ interface ContentIndex1 {
       ];
     };
   };
-};
+}
 
 interface ContentIndex2 {
   _id?: string;
@@ -32,7 +32,7 @@ interface ContentIndex2 {
     pdf?: string;
     description?: string;
   };
-};
+}
 
 interface ContentIndex3 {
   _id?: string;
@@ -41,7 +41,7 @@ interface ContentIndex3 {
   data?: {
     video?: string;
   };
-};
+}
 
 interface ContentIndex4 {
   _id?: string;
@@ -50,7 +50,7 @@ interface ContentIndex4 {
   data?: {
     code?: string;
   };
-};
+}
 
 export interface PostCreateProjectRequest {
   title?: string;
@@ -65,20 +65,19 @@ export interface PostCreateProjectRequest {
     ContentIndex3,
     ContentIndex4
   ];
-  featureImage?:File;
-  postedOn?:string;
-  updatedOn?:string;
-  postStatus?:string;
+  featureImage?: File;
+  postedOn?: string;
+  updatedOn?: string;
+  postStatus?: string;
   files?: File;
-};
-
-interface Post{
-    _id?:string;
-    title?:string
 }
 
-export interface PostCreateProjectResponse{
-    post?:Post;
-    success?:boolean
-};
+interface Post {
+  _id?: string;
+  title?: string;
+}
 
+export interface PostCreateProjectResponse {
+  post?: Post;
+  success?: boolean;
+}

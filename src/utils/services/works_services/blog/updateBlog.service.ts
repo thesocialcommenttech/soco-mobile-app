@@ -11,7 +11,7 @@ export function updateBlog(
   const config: AxiosRequestConfig = {
     url: `/user/post/update/blog/${postID}`,
     method: 'POST',
-    data: { contentJSON, contentText, title, postStatus, updatedOn },
+    data: { contentJSON, contentText, title, postStatus, updatedOn }
   };
 
   return axios.request<UpdateBlogResponse>(config);

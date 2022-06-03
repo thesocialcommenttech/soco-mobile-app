@@ -1,3 +1,3 @@
-export interface IncrementPostViewsResponse{
-    success?:boolean;
+export interface IncrementPostViewsResponse {
+  success?: boolean;
 }

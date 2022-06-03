@@ -1,4 +1,4 @@
-export interface GetUserInterestsResponse{
-    interested_categories?:string[];
-    success?:boolean;
+export interface GetUserInterestsResponse {
+  interested_categories?: string[];
+  success?: boolean;
 }
