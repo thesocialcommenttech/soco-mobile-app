@@ -24,7 +24,7 @@ const MainStack = () => {
             tabBarLabel: 'Home',
             tabBarLabelStyle: {
               marginBottom: '10%',
-              fontFamily: 'Roboto-Regular',
+              fontFamily: 'Roboto-Medium',
               fontSize: 10,
               color: '#DCDCDC'
             },
@@ -56,7 +56,7 @@ const MainStack = () => {
             tabBarLabel: 'Discover',
             tabBarLabelStyle: {
               marginBottom: '10%',
-              fontFamily: 'Roboto-Regular',
+              fontFamily: 'Roboto-Medium',
               fontSize: 10,
               color: '#DCDCDC'
             },
@@ -88,7 +88,7 @@ const MainStack = () => {
             tabBarLabel: 'Portfolio',
             tabBarLabelStyle: {
               marginBottom: '10%',
-              fontFamily: 'Roboto-Regular',
+              fontFamily: 'Roboto-Medium',
               fontSize: 10,
               color: '#DCDCDC'
             },
@@ -120,7 +120,7 @@ const MainStack = () => {
             tabBarLabel: 'Profile',
             tabBarLabelStyle: {
               marginBottom: '10%',
-              fontFamily: 'Roboto-Regular',
+              fontFamily: 'Roboto-Medium',
               fontSize: 10,
               color: '#DCDCDC'
             },

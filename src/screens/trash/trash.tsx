@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '400',
     color: '#000',
-    fontFamily: 'Roboto',
+    fontFamily: 'Roboto-Medium',
     width: '90%'
   }
 });

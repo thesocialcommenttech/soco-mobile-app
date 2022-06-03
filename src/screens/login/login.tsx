@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start'
   },
   forPass: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontSize: 14,
     fontWeight: '400',
     fontStyle: 'normal',
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     marginTop: '20%'
   },
   dontAcc: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontSize: 14,
     fontWeight: '400',
     fontStyle: 'normal',
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     marginTop: '3%'
   },
   crAcc: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontSize: 14,
     fontWeight: '400',
     fontStyle: 'normal',

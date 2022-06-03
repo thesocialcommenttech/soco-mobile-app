@@ -44,14 +44,19 @@ const DropdownBottombutton: FC<Props> = props => {
       value: '4'
     },
     {
-      label: 'Article',
+      label: 'Link',
       isNew: true,
       value: '5'
     },
     {
-      label: 'Presentation',
-      isNew: false,
+      label: 'Article',
+      isNew: true,
       value: '6'
+    },
+    {
+      label: 'Presentation',
+      isNew: true,
+      value: '7'
     }
   ];
 
@@ -81,7 +86,7 @@ const DropdownBottombutton: FC<Props> = props => {
       <View>
         {item.value === '1' && (
           <TouchableOpacity
-            style={styles.item3}
+            style={styles.item1}
             onPress={() => onItemPress(item)}
           >
             <Text style={styles.buttonText}>{item.label}</Text>
@@ -147,7 +152,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#000',
     fontSize: 14,
-    fontFamily: 'Roboto'
+    fontFamily: 'Roboto-Medium'
   },
   dropdown: {
     position: 'absolute',
@@ -164,18 +169,13 @@ const styles = StyleSheet.create({
   item: {
     // paddingHorizontal: '1%'
     flexDirection: 'row',
-    paddingBottom: '10%'
+    paddingBottom: '8%'
   },
-  item2: {
+  item1: {
     // paddingHorizontal: '1%'
     flexDirection: 'row',
-    paddingBottom: '15%'
-  },
-  item3: {
-    // paddingHorizontal: '1%'
-    flexDirection: 'row',
-    paddingTop: '10%',
-    paddingBottom: '10%'
+    paddingTop: '8%',
+    paddingBottom: '8%'
   },
   avatar: {
     backgroundColor: 'white',

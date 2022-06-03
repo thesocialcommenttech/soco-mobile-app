@@ -17,7 +17,6 @@ import { useSelector } from 'react-redux';
 import { selectUserInfo } from '../../store/reducers/info';
 import { Card } from '@rneui/base';
 import DropdownBottombutton from '../../components/dropdownBottombutton';
-import DropdownCreatePost from '../../components/dropdownCreatePost';
 import { TextInput } from 'react-native';
 import DropdownMore from '../../components/dropdownMore';
 
@@ -426,8 +425,6 @@ const ProfileScreen = ({ navigation }) => {
           }}
           horizontal={true}
         />
-        <DropdownCreatePost label={'Create Post'} />
-        <View style={styles.padd} />
         {cardContents.map((u, i) => {
           return (
             <Card key={i} containerStyle={styles.cardContainer}>
@@ -565,13 +562,13 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 23,
     fontWeight: '700',
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Roboto-Medium',
     color: 'black'
   },
   userName: {
     fontSize: 14,
     fontWeight: '400',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     color: '#7D7987'
   },
   portfolioContainer: {
@@ -590,10 +587,10 @@ const styles = StyleSheet.create({
   portfolioText: {
     fontSize: 14,
     fontWeight: '500',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
     color: '#fff',
-    marginLeft: '35%'
+    textAlign: 'center'
   },
   verticleLine: {
     height: '100%',
@@ -618,7 +615,7 @@ const styles = StyleSheet.create({
   bioText: {
     fontSize: 14,
     fontWeight: '400',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 18.2,
     color: '#7D7987',
     textAlign: 'center'
@@ -634,7 +631,7 @@ const styles = StyleSheet.create({
   updateBioText: {
     fontSize: 14,
     fontWeight: '400',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
     color: '#0063FF',
     textAlign: 'center',
@@ -653,7 +650,7 @@ const styles = StyleSheet.create({
   statsText: {
     fontSize: 14,
     fontWeight: '700',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
     color: 'black',
     textAlign: 'center'
@@ -661,7 +658,7 @@ const styles = StyleSheet.create({
   statsLabel: {
     fontSize: 14,
     fontWeight: '500',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
     color: '#7D7987',
     marginTop: '2%',
@@ -683,14 +680,14 @@ const styles = StyleSheet.create({
   listText: {
     fontSize: 14,
     fontWeight: '500',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
     color: '#0063FF'
   },
   listLabel: {
     fontSize: 14,
     fontWeight: '400',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
     color: '#7D7987'
   },
@@ -730,13 +727,10 @@ const styles = StyleSheet.create({
   itemCount: {
     fontSize: 14,
     fontWeight: '500',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 14,
     color: '#896A00',
     textAlign: 'center'
-  },
-  padd: {
-    paddingVertical: '2%'
   },
   cardContainer: {
     padding: 20,
@@ -759,7 +753,7 @@ const styles = StyleSheet.create({
   cardTitleText: {
     fontSize: 16,
     fontWeight: '700',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     marginLeft: '10%',
     color: 'black'
   },
@@ -783,7 +777,7 @@ const styles = StyleSheet.create({
   cardFooterText: {
     fontSize: 16,
     fontWeight: '700',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 18.75,
     color: '#000'
   },
@@ -795,7 +789,7 @@ const styles = StyleSheet.create({
   cardFooterText2: {
     fontSize: 16,
     fontWeight: '600',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     color: '#7D7987'
   },
   tag: {
@@ -808,7 +802,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 12,
     fontWeight: '700',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     color: '#000'
   },
   plusPos: {
@@ -838,7 +832,7 @@ const styles = StyleSheet.create({
   capTitle: {
     fontSize: 20,
     fontWeight: '600',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     color: '#000',
     marginTop: '2%'
   },
@@ -852,14 +846,14 @@ const styles = StyleSheet.create({
     padding: 20,
     height: '22%',
     textAlignVertical: 'top',
-    fontFamily: 'Roboto',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 21
   },
   maxChar: {
     marginTop: '5%',
     color: '#BDBDBD',
     fontSize: 14,
-    fontFamily: 'Roboto'
+    fontFamily: 'Roboto-Medium'
   },
   updateBtn: {
     backgroundColor: '#0063FF',
@@ -873,13 +867,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     fontSize: 14,
-    fontFamily: 'Roboto-Regular'
+    fontFamily: 'Roboto-Medium'
   },
   maxChar1: {
     marginTop: '5%',
     color: '#BDBDBD',
     fontSize: 14,
-    fontFamily: 'Roboto'
+    fontFamily: 'Roboto-Medium'
   },
   updateBtn1: {
     backgroundColor: '#0063FF',
@@ -893,7 +887,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     fontSize: 14,
-    fontFamily: 'Roboto-Regular'
+    fontFamily: 'Roboto-Medium'
   },
   closeBtn1: {
     color: '#C9D1D8',
@@ -902,7 +896,7 @@ const styles = StyleSheet.create({
   bioTitle: {
     fontSize: 20,
     fontWeight: '600',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     color: '#000',
     marginTop: '2%'
   },
@@ -916,7 +910,7 @@ const styles = StyleSheet.create({
     padding: 20,
     height: '22%',
     textAlignVertical: 'top',
-    fontFamily: 'Roboto',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 21
   },
   modalView1: {
@@ -939,7 +933,7 @@ const styles = StyleSheet.create({
   captionOnImgTxt: {
     color: 'white',
     fontSize: 14,
-    fontFamily: 'Roboto',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 21,
     textAlign: 'center',
     padding: 4
@@ -947,7 +941,7 @@ const styles = StyleSheet.create({
   proTitle: {
     fontSize: 20,
     fontWeight: '600',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     color: '#000',
     marginTop: '2%'
   },
@@ -965,12 +959,12 @@ const styles = StyleSheet.create({
     color: '#0063FF',
     fontWeight: '700',
     fontSize: 14,
-    fontFamily: 'Roboto-Regular'
+    fontFamily: 'Roboto-Medium'
   },
   covTitle: {
     fontSize: 20,
     fontWeight: '600',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     color: '#000',
     marginTop: '2%'
   },
@@ -988,7 +982,7 @@ const styles = StyleSheet.create({
     color: '#0063FF',
     fontWeight: '700',
     fontSize: 14,
-    fontFamily: 'Roboto-Regular'
+    fontFamily: 'Roboto-Medium'
   },
   horizontalLine: {
     borderBottomColor: '#E2E5E9',
@@ -1012,7 +1006,7 @@ const styles = StyleSheet.create({
   },
   selProTxt: {
     color: '#7D7987',
-    fontFamily: 'Roboto',
+    fontFamily: 'Roboto-Medium',
     fontWeight: '600',
     fontSize: 16
   },
@@ -1034,7 +1028,7 @@ const styles = StyleSheet.create({
   },
   selCovTxt: {
     color: '#7D7987',
-    fontFamily: 'Roboto',
+    fontFamily: 'Roboto-Medium',
     fontWeight: '600',
     fontSize: 16
   },
@@ -1056,6 +1050,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: '2%',
     lineHeight: 18.75,
-    fontFamily: 'Roboto'
+    fontFamily: 'Roboto-Medium'
   }
 });

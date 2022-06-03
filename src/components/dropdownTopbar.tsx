@@ -14,13 +14,15 @@ import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/Ionicons';
 import CircularProgress from './circularIndicator';
 import ReactNativeModal from 'react-native-modal';
+import { useDispatch } from 'react-redux';
+import { setAuth } from '../store/reducers/info';
 
 const DropdownTopbar = props => {
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
   const [dropdownTop, setDropdownTop] = useState(0);
   const [selected, setSelected] = useState(undefined);
-
+  const dispatch = useDispatch();
   const data1 = [
     {
       label: 'Internships/Jobs',
@@ -127,9 +129,10 @@ const DropdownTopbar = props => {
       </View>
     </TouchableOpacity>
   );
-  const onItemPress = (item, navigation): void => {
-    // setSelected(item);
-    // onSelect(item);
+  const onItemPress = (
+    item: { label: string },
+    navigation: { navigate: (arg0: string) => void }
+  ): void => {
     setVisible(false);
     if (item.label === 'Drafts') {
       navigation.navigate('Drafts');
@@ -154,13 +157,14 @@ const DropdownTopbar = props => {
       />
       <ReactNativeModal
         isVisible={visible}
-        backdropOpacity={0}
+        backdropOpacity={0.5}
         animationIn="slideInRight"
         animationOut="slideOutRight"
+        backdropTransitionInTiming={0}
+        backdropTransitionOutTiming={0}
+        onBackButtonPress={() => setVisible(false)}
+        onBackdropPress={() => setVisible(false)}
       >
-        <TouchableWithoutFeedback onPress={() => setVisible(false)}>
-          <View style={styles.modalOverlay} />
-        </TouchableWithoutFeedback>
         <ScrollView style={[styles.dropdown]}>
           <TouchableOpacity
             onPress={() => setVisible(false)}
@@ -191,6 +195,7 @@ const DropdownTopbar = props => {
             style={styles.logoutBtn}
             onPress={() => {
               setVisible(false);
+              dispatch(setAuth(false));
             }}
           >
             <Icon1 name="logout" size={24} color="white" />
@@ -212,11 +217,10 @@ const styles = StyleSheet.create({
   dropdown: {
     position: 'absolute',
     backgroundColor: '#F9FAFB',
-    marginLeft: '15%',
-    minWidth: '90%',
+    width: '80%',
     borderRadius: 12,
     zIndex: 999,
-    height: '100%',
+    minHeight: '90%',
     top: '-1%',
     right: '-1%'
   },
@@ -245,14 +249,6 @@ const styles = StyleSheet.create({
     borderEndColor: '#0063FF',
     borderBottomColor: '#0063FF',
     borderTopColor: '#0063FF'
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0)'
   },
   avatar: {
     backgroundColor: 'white',

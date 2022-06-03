@@ -72,7 +72,7 @@ const CustomRadioButton = ({ ...props }) => {
 const styles = StyleSheet.create({
   label: {
     fontSize: 14,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Roboto-Medium',
     fontWeight: '800',
     lineHeight: 14,
     fontStyle: 'normal',
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     // height: 51,
     color: '#000',
     paddingHorizontal: 16,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignContent: 'center'
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   error: {
     fontSize: 12,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 14,
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 14,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 21,

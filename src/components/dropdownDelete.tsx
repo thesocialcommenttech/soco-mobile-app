@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   },
   descText: {
     fontSize: 14,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontWeight: '400',
     color: 'gray',
     marginTop: '5%'

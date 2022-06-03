@@ -7,5 +7,5 @@ import { selectAuth } from '../store/reducers/info';
 
 export default function Routes() {
   const user = useSelector(selectAuth);
-  return <>{true ? <MainStack /> : <AuthStack />}</>;
+  return <>{user ? <MainStack /> : <AuthStack />}</>;
 }

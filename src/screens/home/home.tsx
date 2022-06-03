@@ -126,6 +126,8 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
+export default HomeScreen;
+
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
@@ -159,7 +161,7 @@ const styles = StyleSheet.create({
   cardTitleText: {
     fontSize: 16,
     fontWeight: '700',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     marginLeft: '10%',
     color: 'black'
   },
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
   cardFooterText: {
     fontSize: 16,
     fontWeight: '700',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 18.75,
     color: '#000'
   },
@@ -191,7 +193,7 @@ const styles = StyleSheet.create({
   cardFooterText2: {
     fontSize: 16,
     fontWeight: '600',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     color: '#7D7987'
   },
   tag: {
@@ -204,7 +206,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 12,
     fontWeight: '700',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     color: '#000'
   },
   eyeView: {
@@ -218,7 +220,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: '2%',
     lineHeight: 18.75,
-    fontFamily: 'Roboto'
+    fontFamily: 'Roboto-Medium'
   },
   subTitle: {
     fontFamily: 'Inter',

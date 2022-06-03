@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     marginTop: '3%'
   },
   accDet: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontSize: 16,
     fontWeight: '400',
     fontStyle: 'normal',
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     marginTop: '4%'
   },
   forPass: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontSize: 14,
     fontWeight: '400',
     fontStyle: 'normal',
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     marginTop: '20%'
   },
   dontAcc: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontSize: 14,
     fontWeight: '400',
     fontStyle: 'normal',
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     marginTop: '3%'
   },
   crAcc: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontSize: 14,
     fontWeight: '400',
     fontStyle: 'normal',
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   },
   txtCr: { marginTop: '3%' },
   checkbox: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontSize: 14,
     fontWeight: '400',
     fontStyle: 'normal',
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     marginTop: '3%'
   },
   titleProps: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontSize: 14,
     fontWeight: '400',
     fontStyle: 'normal',
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
   },
   error: {
     fontSize: 12,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 14,
