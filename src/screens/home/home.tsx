@@ -8,10 +8,10 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import TopBar from '../../components/topBar';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon2 from 'react-native-vector-icons/MaterialIcons';
-import Icon3 from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import { Avatar, Card } from '@rneui/base';
+import { Colors } from '../../utils/colors';
 
 const HomeScreen = ({ navigation }) => {
   const [profile] = useState(
@@ -87,10 +87,10 @@ const HomeScreen = ({ navigation }) => {
                     <Text style={styles.cardTitleText}>{u.name}</Text>
                   </View>
                   <TouchableOpacity>
-                    <Icon
+                    <MaterialCommunityIcon
                       name="share-variant-outline"
                       size={20}
-                      color="#7D7987"
+                      color={Colors.Gray600}
                     />
                   </TouchableOpacity>
                 </View>
@@ -113,7 +113,11 @@ const HomeScreen = ({ navigation }) => {
                     <Text style={styles.tagText}>{u.postTag}</Text>
                   </View>
                   <View style={styles.eyeView}>
-                    <Icon3 name="eye-outline" size={19} color="#7D7987" />
+                    <Ionicon
+                      name="eye-outline"
+                      size={19}
+                      color={Colors.Gray600}
+                    />
                     <Text style={styles.viewNum}>{u.views}</Text>
                   </View>
                 </View>
@@ -131,7 +135,7 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   padd: {
     padding: 5
@@ -145,18 +149,16 @@ const styles = StyleSheet.create({
   },
   profileinfo: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center'
   },
   cardTitle: {
-    // backgroundColor: 'gray',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
   },
   avatar2: {
     borderWidth: 1,
-    borderColor: '#fff'
+    borderColor: Colors.White
   },
   cardTitleText: {
     fontSize: 16,
@@ -183,7 +185,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontFamily: 'Roboto-Medium',
     lineHeight: 18.75,
-    color: '#000'
+    color: Colors.Black
   },
   cardFooter2: {
     flexDirection: 'row',
@@ -194,10 +196,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     fontFamily: 'Roboto-Medium',
-    color: '#7D7987'
+    color: Colors.Gray600
   },
   tag: {
-    backgroundColor: '#F2F2F2',
+    backgroundColor: Colors.Gray100,
     borderRadius: 5,
     paddingHorizontal: 5,
     paddingVertical: 2,
@@ -207,7 +209,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     fontFamily: 'Roboto-Medium',
-    color: '#000'
+    color: Colors.Black
   },
   eyeView: {
     flexDirection: 'row',

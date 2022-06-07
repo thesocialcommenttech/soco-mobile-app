@@ -21,6 +21,7 @@ import { TextInput } from 'react-native-paper';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { setAuth } from '../../store/reducers/info';
+import { Colors } from '../../utils/colors';
 
 const RegisterTwoScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -117,7 +118,7 @@ const RegisterTwoScreen = ({ navigation }) => {
               onBlur={formik.handleBlur('dob')}
               right={
                 <TextInput.Icon
-                  color="#000"
+                  color={Colors.Black}
                   name={'calendar-blank'}
                   style={styles.cal}
                   onPress={showDatepicker}
@@ -143,13 +144,13 @@ export default RegisterTwoScreen;
 const styles = StyleSheet.create({
   outContainer: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   container: {
     flex: 1,
     paddingLeft: 20,
     paddingRight: 20,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   backBtn: {
     padding: 20
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '500',
     marginBottom: 20,
-    color: '#000',
+    color: Colors.Black,
     fontStyle: 'normal',
     lineHeight: 32,
     marginTop: '3%'
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16,
-    color: '#BDBDBD',
+    color: Colors.Gray200,
     marginTop: '4%'
   },
   forPass: {
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#AFAFBD',
+    color: Colors.LightGray,
     marginTop: '20%'
   },
   dontAcc: {
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#AFAFBD',
+    color: Colors.LightGray,
     marginTop: '3%'
   },
   crAcc: {
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#0063FF'
+    color: Colors.Secondary
   },
   dobTB: {
     marginTop: '-6%'
@@ -207,7 +208,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   registerBtn: {
-    backgroundColor: '#FFCA12',
+    backgroundColor: Colors.Primary,
     height: 46,
     borderRadius: 8,
     marginTop: '12%',
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#AFAFBD'
+    color: Colors.LightGray
   },
   checkboxContainer: {
     marginTop: '3%'
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 14,
-    color: '#EE0000',
+    color: Colors.Red,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: '3%'

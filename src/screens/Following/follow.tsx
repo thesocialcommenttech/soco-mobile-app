@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import FollowList from './followList';
+import { Colors } from '../../utils/colors';
 
 const Data = [
   {
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
     padding: '3%'
   },
   active: {
-    color: '#0063ff'
+    color: Colors.Secondary
   },
   inactive: {},
   following: {

@@ -6,7 +6,8 @@ import {
   FlatList
 } from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/AntDesign';
+import AntDesignIcon from 'react-native-vector-icons/AntDesign';
+import { Colors } from '../../../utils/colors';
 
 const Data = [
   {
@@ -33,7 +34,11 @@ export default function Subscriptions() {
           ? [
               <View style={styles.message}>
                 <View style={styles.exclamationmark}>
-                  <Icon name="exclamationcircleo" size={22} color="black" />
+                  <AntDesignIcon
+                    name="exclamationcircleo"
+                    size={22}
+                    color="black"
+                  />
                 </View>
 
                 <View style={styles.subtext}>
@@ -54,7 +59,11 @@ export default function Subscriptions() {
           : [
               <View style={styles.mainmessage}>
                 <View style={styles.exclamationmark}>
-                  <Icon name="exclamationcircleo" size={22} color="black" />
+                  <AntDesignIcon
+                    name="exclamationcircleo"
+                    size={22}
+                    color="black"
+                  />
                 </View>
 
                 <View style={styles.subtext}>
@@ -94,7 +103,7 @@ export default function Subscriptions() {
                     console.log('Download Clicked!');
                   }}
                 >
-                  <Icon name="download" size={18} color="blue" />
+                  <AntDesignIcon name="download" size={18} color="blue" />
                 </TouchableWithoutFeedback>
               </View>
             </View>
@@ -113,7 +122,7 @@ const styles = StyleSheet.create({
   mainmessage: {
     padding: 15,
     flexDirection: 'row',
-    backgroundColor: '#F0F2F5',
+    backgroundColor: Colors.BottomRulerColor,
     marginTop: '2%',
     marginRight: '1%',
     marginLeft: '1%'
@@ -135,7 +144,7 @@ const styles = StyleSheet.create({
     marginTop: '1%'
   },
   bottomruler: {
-    borderBottomColor: '#F0F2F5',
+    borderBottomColor: Colors.BottomRulerColor,
     borderBottomWidth: 1.5,
     marginTop: '3%'
   },
@@ -151,7 +160,7 @@ const styles = StyleSheet.create({
   message: {
     padding: 15,
     flexDirection: 'row',
-    backgroundColor: '#FFF4CC',
+    backgroundColor: Colors.LightPrimary,
     marginTop: '2%',
     marginRight: '1%',
     marginLeft: '1%'

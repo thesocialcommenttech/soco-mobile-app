@@ -1,21 +1,19 @@
-import React, { FC, ReactElement, useRef, useState } from 'react';
+import React, { ReactElement, useRef, useState } from 'react';
 import {
-  FlatList,
-  Modal,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View
 } from 'react-native';
 import { Avatar } from '@rneui/base';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon2 from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import CircularProgress from './circularIndicator';
 import ReactNativeModal from 'react-native-modal';
 import { useDispatch } from 'react-redux';
 import { setAuth } from '../store/reducers/info';
+import { Colors } from '../utils/colors';
 
 const DropdownTopbar = props => {
   const [visible, setVisible] = useState(false);
@@ -84,10 +82,6 @@ const DropdownTopbar = props => {
     }
   ];
 
-  //   const toggleDropdown = () => {
-  //     setVisible(!visible);
-  //   };
-
   const toggleDropdown = (): void => {
     visible ? setVisible(false) : openDropdown();
   };
@@ -99,20 +93,20 @@ const DropdownTopbar = props => {
     setVisible(true);
   };
 
-  const onSelect = (item: { label: string; value: string }) => {
-    // console.log('Selected', item);
-  };
-
   const renderItem = ({ item }): ReactElement<any, any> => (
     <TouchableOpacity
       style={styles.item}
       onPress={() => onItemPress(item, props.label.navigation)}
     >
       {item.label !== 'Settings' && (
-        <Icon1 name={item.icon} size={17} color="#000" />
+        <MaterialCommunityIcon
+          name={item.icon}
+          size={17}
+          color={Colors.Black}
+        />
       )}
       {item.label === 'Settings' && (
-        <Icon2 name={item.icon} size={17} color="#000" />
+        <Ionicon name={item.icon} size={17} color={Colors.Black} />
       )}
       <View
         style={
@@ -170,7 +164,11 @@ const DropdownTopbar = props => {
             onPress={() => setVisible(false)}
             style={styles.closeBtn}
           >
-            <Icon1 name="close" size={24} color="#0063FF" />
+            <MaterialCommunityIcon
+              name="close"
+              size={24}
+              color={Colors.Secondary}
+            />
           </TouchableOpacity>
           <View style={styles.picInfo}>
             <CircularProgress
@@ -198,7 +196,7 @@ const DropdownTopbar = props => {
               dispatch(setAuth(false));
             }}
           >
-            <Icon1 name="logout" size={24} color="white" />
+            <MaterialCommunityIcon name="logout" size={24} color="white" />
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -209,18 +207,17 @@ const DropdownTopbar = props => {
 
 const styles = StyleSheet.create({
   buttonText: {
-    color: '#000',
-    // paddingLeft: 10,
+    color: Colors.Black,
     fontSize: 14,
     fontWeight: '400'
   },
   dropdown: {
     position: 'absolute',
-    backgroundColor: '#F9FAFB',
-    width: '80%',
+    backgroundColor: Colors.SideBarBackground,
+    width: '90%',
     borderRadius: 12,
     zIndex: 999,
-    minHeight: '90%',
+    height: '100%',
     top: '-1%',
     right: '-1%'
   },
@@ -236,7 +233,7 @@ const styles = StyleSheet.create({
     marginTop: '-5%'
   },
   closeBtn: {
-    color: '#0063FF',
+    color: Colors.Secondary,
     marginTop: '4%',
     marginRight: '4%',
     alignSelf: 'flex-end'
@@ -245,10 +242,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderColor: 'white',
     borderWidth: 7,
-    borderStartColor: '#0063FF',
-    borderEndColor: '#0063FF',
-    borderBottomColor: '#0063FF',
-    borderTopColor: '#0063FF'
+    borderStartColor: Colors.Secondary,
+    borderEndColor: Colors.Secondary,
+    borderBottomColor: Colors.Secondary,
+    borderTopColor: Colors.Secondary
   },
   avatar: {
     backgroundColor: 'white',
@@ -262,10 +259,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 10,
-    color: '#000'
+    color: Colors.Black
   },
   premium: {
-    backgroundColor: '#FFCA12',
+    backgroundColor: Colors.Primary,
     borderRadius: 19,
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -276,13 +273,13 @@ const styles = StyleSheet.create({
     fontSize: 11
   },
   horizontalLine: {
-    borderBottomColor: '#E2E5E9',
+    borderBottomColor: Colors.GrayLine,
     borderBottomWidth: 1,
     marginTop: '5%',
     marginBottom: '5%'
   },
   newView: {
-    backgroundColor: '#0063FF',
+    backgroundColor: Colors.Secondary,
     borderRadius: 19,
     paddingHorizontal: 7,
     paddingVertical: 2,
@@ -306,7 +303,7 @@ const styles = StyleSheet.create({
   },
   subLabel: {
     fontSize: 12,
-    color: '#0063FF',
+    color: Colors.Secondary,
     marginTop: '2%'
   },
   logoutBtn: {
@@ -314,7 +311,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: '5%',
-    backgroundColor: '#0063FF',
+    backgroundColor: Colors.Secondary,
     marginBottom: '5%',
     marginHorizontal: '5%',
     borderRadius: 12

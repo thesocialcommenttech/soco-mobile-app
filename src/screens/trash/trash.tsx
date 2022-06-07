@@ -1,16 +1,9 @@
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import TopBar from '../../components/topBar';
 import DropdownFilter from '../../components/dropdownFilter';
 import DropdownDelete from '../../components/dropdownDelete';
+import { Colors } from '../../utils/colors';
 
 const TrashScreen = ({ navigation }) => {
   const [profile] = useState(
@@ -103,7 +96,7 @@ const TrashScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   pageContainer: {
     flex: 1,
@@ -114,15 +107,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '6%',
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   headerText: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#000'
+    color: Colors.Black
   },
   horizontalLine: {
-    borderBottomColor: '#F2F2F2',
+    borderBottomColor: Colors.Gray100,
     borderBottomWidth: 1
   },
   item: {
@@ -135,7 +128,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '400',
-    color: '#000',
+    color: Colors.Black,
     fontFamily: 'Roboto-Medium',
     width: '90%'
   }

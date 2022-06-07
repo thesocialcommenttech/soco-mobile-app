@@ -11,17 +11,17 @@ import {
 import React, { useState } from 'react';
 import TopBar from '../../components/topBar';
 import { Avatar } from '@rneui/base';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon3 from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from '../../store/reducers/info';
 import { Card } from '@rneui/base';
 import DropdownBottombutton from '../../components/dropdownBottombutton';
 import { TextInput } from 'react-native';
 import DropdownMore from '../../components/dropdownMore';
+import { Colors } from '../../utils/colors';
 
 const ProfileScreen = ({ navigation }) => {
-  // get backround and profile picture from background
   const state = useSelector(selectUserInfo);
 
   const [background] = useState(
@@ -63,19 +63,6 @@ const ProfileScreen = ({ navigation }) => {
   const [isPremium] = useState(true);
   const [percentProfile] = useState(75);
 
-  // const onEditCaption = () => {
-  //   console.log('onEditCaption');
-  // };
-
-  // const onEditCover = () => {
-  //   console.log('onEditProfile');
-  // };
-
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerRight: () => <HeaderRight />
-  //   });
-  // }, [navigation]);
   const ITEMS = [
     {
       id: '1',
@@ -214,7 +201,11 @@ const ProfileScreen = ({ navigation }) => {
                   onPress={() => setModalVisible(false)}
                   style={styles.closeBtn}
                 >
-                  <Icon name="close" size={24} color="#C9D1D8" />
+                  <MaterialCommunityIcon
+                    name="close"
+                    size={24}
+                    color={Colors.Gray400}
+                  />
                 </TouchableOpacity>
                 <Text style={styles.capTitle}>Caption</Text>
                 <TextInput
@@ -248,9 +239,12 @@ const ProfileScreen = ({ navigation }) => {
             <TouchableOpacity
               style={styles.editCaption}
               onPress={() => setModalVisible(true)}
-              // onPress={onEditCaption}
             >
-              <Icon name="pencil-outline" size={20} color="#fff" />
+              <MaterialCommunityIcon
+                name="pencil-outline"
+                size={20}
+                color={Colors.White}
+              />
             </TouchableOpacity>
           </>
           <>
@@ -267,7 +261,11 @@ const ProfileScreen = ({ navigation }) => {
                   onPress={() => setModalVisible2(false)}
                   style={styles.closeBtn}
                 >
-                  <Icon name="close" size={24} color="#C9D1D8" />
+                  <MaterialCommunityIcon
+                    name="close"
+                    size={24}
+                    color={Colors.Gray400}
+                  />
                 </TouchableOpacity>
                 <Text style={styles.proTitle}>Profile Picture</Text>
                 <View style={styles.profView}>
@@ -315,9 +313,12 @@ const ProfileScreen = ({ navigation }) => {
             <TouchableOpacity
               onPress={() => setModalVisible2(true)}
               style={styles.editCover}
-              // onPress={onEditCover}
             >
-              <Icon name="camera-outline" size={20} color="#fff" />
+              <MaterialCommunityIcon
+                name="camera-outline"
+                size={20}
+                color={Colors.White}
+              />
             </TouchableOpacity>
           </>
         </View>
@@ -335,9 +336,17 @@ const ProfileScreen = ({ navigation }) => {
             onPress={() => setLocked(!locked)}
           >
             {locked ? (
-              <Icon name="lock-outline" size={20} color="#fff" />
+              <MaterialCommunityIcon
+                name="lock-outline"
+                size={20}
+                color={Colors.White}
+              />
             ) : (
-              <Icon name="lock-off-outline" size={20} color="#fff" />
+              <MaterialCommunityIcon
+                name="lock-off-outline"
+                size={20}
+                color={Colors.White}
+              />
             )}
           </TouchableOpacity>
         </View>
@@ -358,7 +367,11 @@ const ProfileScreen = ({ navigation }) => {
                 onPress={() => setModalVisible1(false)}
                 style={styles.closeBtn1}
               >
-                <Icon name="close" size={24} color="#C9D1D8" />
+                <MaterialCommunityIcon
+                  name="close"
+                  size={24}
+                  color={Colors.Gray400}
+                />
               </TouchableOpacity>
               <Text style={styles.bioTitle}>Bio</Text>
               <TextInput
@@ -394,7 +407,11 @@ const ProfileScreen = ({ navigation }) => {
               style={styles.updateBioLink}
               onPress={() => setModalVisible1(!modalVisible1)}
             >
-              <Icon name="pencil-outline" size={18} color="#0063FF" />
+              <MaterialCommunityIcon
+                name="pencil-outline"
+                size={18}
+                color={Colors.Secondary}
+              />
               <Text style={styles.updateBioText}>Update Bio</Text>
             </TouchableOpacity>
           </View>
@@ -445,10 +462,10 @@ const ProfileScreen = ({ navigation }) => {
                     <Text style={styles.cardTitleText}>{u.name}</Text>
                   </View>
                   <TouchableOpacity>
-                    <Icon
+                    <MaterialCommunityIcon
                       name="share-variant-outline"
                       size={20}
-                      color="#7D7987"
+                      color={Colors.Gray600}
                     />
                   </TouchableOpacity>
                 </View>
@@ -472,7 +489,11 @@ const ProfileScreen = ({ navigation }) => {
                     <Text style={styles.tagText}>{u.postTag}</Text>
                   </View>
                   <View style={styles.eyeView}>
-                    <Icon3 name="eye-outline" size={19} color="#7D7987" />
+                    <Ionicon
+                      name="eye-outline"
+                      size={19}
+                      color={Colors.Gray600}
+                    />
                     <Text style={styles.viewNum}>{u.views}</Text>
                   </View>
                 </View>
@@ -484,7 +505,7 @@ const ProfileScreen = ({ navigation }) => {
       <DropdownBottombutton label={undefined} />
       {/* <View style={styles.stickyButton}>
         <TouchableOpacity>
-          <Icon3 name="plus" size={25} color="#000" style={styles.plus} />
+          <Ionicon name="plus" size={25} color={Colors.Black} style={styles.plus} />
         </TouchableOpacity>
       </View> */}
     </View>
@@ -496,7 +517,7 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   statusBar: {
     backgroundColor: 'white',
@@ -504,7 +525,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   bgImage: {
     position: 'absolute',
@@ -515,7 +536,6 @@ const styles = StyleSheet.create({
   avatarContainer: {
     alignSelf: 'center',
     marginTop: '42%',
-    // top: '40%',
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -569,14 +589,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     fontFamily: 'Roboto-Medium',
-    color: '#7D7987'
+    color: Colors.Gray600
   },
   portfolioContainer: {
     flexDirection: 'row',
     marginTop: '5%'
   },
   portfolio: {
-    backgroundColor: '#0063FF',
+    backgroundColor: Colors.Secondary,
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
     height: 46,
@@ -589,7 +609,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
-    color: '#fff',
+    color: Colors.White,
     textAlign: 'center'
   },
   verticleLine: {
@@ -598,7 +618,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)'
   },
   portfolioLock: {
-    backgroundColor: '#0063FF',
+    backgroundColor: Colors.Secondary,
     borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
     height: 46,
@@ -617,7 +637,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontFamily: 'Roboto-Medium',
     lineHeight: 18.2,
-    color: '#7D7987',
+    color: Colors.Gray600,
     textAlign: 'center'
   },
   updateBio: {
@@ -633,7 +653,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
-    color: '#0063FF',
+    color: Colors.Secondary,
     textAlign: 'center',
     marginLeft: '1%'
   },
@@ -660,14 +680,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
-    color: '#7D7987',
+    color: Colors.Gray600,
     marginTop: '2%',
     textAlign: 'center'
   },
   list: {
     marginTop: '8%',
     paddingHorizontal: '8%',
-    // justifyContent: 'space-around',
     alignItems: 'center',
     flexDirection: 'row'
   },
@@ -682,14 +701,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
-    color: '#0063FF'
+    color: Colors.Secondary
   },
   listLabel: {
     fontSize: 14,
     fontWeight: '400',
     fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
-    color: '#7D7987'
+    color: Colors.Gray600
   },
   horizontalSeparator: {
     height: 1,
@@ -704,21 +723,20 @@ const styles = StyleSheet.create({
   },
   item: {
     flexDirection: 'row',
-    // backgroundColor: '#000',
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center'
   },
   itemText: {
     fontSize: 14,
-    color: '#7D7987',
+    color: Colors.Gray600,
     textAlign: 'center'
   },
   circle: {
     width: 26,
     height: 24,
     borderRadius: 100,
-    backgroundColor: '#FFF4CC',
+    backgroundColor: Colors.LightPrimary,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 5,
@@ -729,7 +747,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontFamily: 'Roboto-Medium',
     lineHeight: 14,
-    color: '#896A00',
+    color: Colors.YellowTxt,
     textAlign: 'center'
   },
   cardContainer: {
@@ -741,11 +759,9 @@ const styles = StyleSheet.create({
   },
   profileinfo: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center'
   },
   cardTitle: {
-    // backgroundColor: 'gray',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
@@ -759,7 +775,7 @@ const styles = StyleSheet.create({
   },
   avatar2: {
     borderWidth: 1,
-    borderColor: '#fff'
+    borderColor: Colors.White
   },
   mainContent: {
     marginTop: '7%'
@@ -779,7 +795,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontFamily: 'Roboto-Medium',
     lineHeight: 18.75,
-    color: '#000'
+    color: Colors.Black
   },
   cardFooter2: {
     flexDirection: 'row',
@@ -790,10 +806,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     fontFamily: 'Roboto-Medium',
-    color: '#7D7987'
+    color: Colors.Gray600
   },
   tag: {
-    backgroundColor: '#F2F2F2',
+    backgroundColor: Colors.Gray100,
     borderRadius: 5,
     paddingHorizontal: 5,
     paddingVertical: 2,
@@ -803,7 +819,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     fontFamily: 'Roboto-Medium',
-    color: '#000'
+    color: Colors.Black
   },
   plusPos: {
     position: 'absolute',
@@ -826,20 +842,20 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   closeBtn: {
-    color: '#C9D1D8',
+    color: Colors.Gray400,
     alignSelf: 'flex-end'
   },
   capTitle: {
     fontSize: 20,
     fontWeight: '600',
     fontFamily: 'Roboto-Medium',
-    color: '#000',
+    color: Colors.Black,
     marginTop: '2%'
   },
   captionInput: {
     backgroundColor: 'white',
     marginTop: '8%',
-    borderColor: '#DCDCDC',
+    borderColor: Colors.GrayBorder,
     color: 'black',
     borderWidth: 1,
     borderRadius: 10,
@@ -851,12 +867,12 @@ const styles = StyleSheet.create({
   },
   maxChar: {
     marginTop: '5%',
-    color: '#BDBDBD',
+    color: Colors.Gray200,
     fontSize: 14,
     fontFamily: 'Roboto-Medium'
   },
   updateBtn: {
-    backgroundColor: '#0063FF',
+    backgroundColor: Colors.Secondary,
     borderRadius: 8,
     marginTop: '6%',
     paddingVertical: '4%',
@@ -871,12 +887,12 @@ const styles = StyleSheet.create({
   },
   maxChar1: {
     marginTop: '5%',
-    color: '#BDBDBD',
+    color: Colors.Gray200,
     fontSize: 14,
     fontFamily: 'Roboto-Medium'
   },
   updateBtn1: {
-    backgroundColor: '#0063FF',
+    backgroundColor: Colors.Secondary,
     borderRadius: 8,
     marginTop: '6%',
     paddingVertical: '4%',
@@ -890,20 +906,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Medium'
   },
   closeBtn1: {
-    color: '#C9D1D8',
+    color: Colors.Gray400,
     alignSelf: 'flex-end'
   },
   bioTitle: {
     fontSize: 20,
     fontWeight: '600',
     fontFamily: 'Roboto-Medium',
-    color: '#000',
+    color: Colors.Black,
     marginTop: '2%'
   },
   bioInput: {
     backgroundColor: 'white',
     marginTop: '8%',
-    borderColor: '#DCDCDC',
+    borderColor: Colors.GrayBorder,
     color: 'black',
     borderWidth: 1,
     borderRadius: 10,
@@ -926,7 +942,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rrgba(0, 0, 0, 0.6)',
     borderRadius: 3,
     width: '90%',
-    // height: 35,
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -942,7 +957,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     fontFamily: 'Roboto-Medium',
-    color: '#000',
+    color: Colors.Black,
     marginTop: '2%'
   },
   updateImgBtn: {
@@ -953,10 +968,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#0063FF'
+    borderColor: Colors.Secondary
   },
   updateImgTxt: {
-    color: '#0063FF',
+    color: Colors.Secondary,
     fontWeight: '700',
     fontSize: 14,
     fontFamily: 'Roboto-Medium'
@@ -965,7 +980,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     fontFamily: 'Roboto-Medium',
-    color: '#000',
+    color: Colors.Black,
     marginTop: '2%'
   },
   updateImgBtn1: {
@@ -976,16 +991,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#0063FF'
+    borderColor: Colors.Secondary
   },
   updateImgTxt1: {
-    color: '#0063FF',
+    color: Colors.Secondary,
     fontWeight: '700',
     fontSize: 14,
     fontFamily: 'Roboto-Medium'
   },
   horizontalLine: {
-    borderBottomColor: '#E2E5E9',
+    borderBottomColor: Colors.GrayLine,
     borderBottomWidth: 1,
     marginTop: '8%',
     marginBottom: '8%'
@@ -1005,7 +1020,7 @@ const styles = StyleSheet.create({
     marginLeft: '8%'
   },
   selProTxt: {
-    color: '#7D7987',
+    color: Colors.Gray600,
     fontFamily: 'Roboto-Medium',
     fontWeight: '600',
     fontSize: 16
@@ -1027,7 +1042,7 @@ const styles = StyleSheet.create({
     marginTop: '6%'
   },
   selCovTxt: {
-    color: '#7D7987',
+    color: Colors.Gray600,
     fontFamily: 'Roboto-Medium',
     fontWeight: '600',
     fontSize: 16

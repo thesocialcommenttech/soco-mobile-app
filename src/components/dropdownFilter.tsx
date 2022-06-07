@@ -1,7 +1,5 @@
 import React, { FC, ReactElement, useRef, useState } from 'react';
 import {
-  Dimensions,
-  FlatList,
   Modal,
   StyleSheet,
   Text,
@@ -9,13 +7,12 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import Icon3 from 'react-native-vector-icons/Octicons';
+import Octicon from 'react-native-vector-icons/Octicons';
+import { Colors } from '../utils/colors';
 
 interface Props {
   label: any;
   setLabel: any;
-  // data: Array<{ label: string; value: string }>;
-  // onSelect: (item: { label: string; value: string }) => void;
 }
 
 const DropdownFilter: FC<Props> = props => {
@@ -135,7 +132,7 @@ const DropdownFilter: FC<Props> = props => {
         style={styles.button}
       >
         <Text style={styles.buttonText}>{selected}</Text>
-        <Icon3 name="chevron-down" size={20} color="#7D7987" />
+        <Octicon name="chevron-down" size={20} color={Colors.Gray600} />
       </TouchableOpacity>
       <Modal visible={visible} transparent animationType="fade">
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
@@ -151,14 +148,14 @@ const DropdownFilter: FC<Props> = props => {
 
 const styles = StyleSheet.create({
   buttonText: {
-    color: '#7D7987',
+    color: Colors.Gray600,
     fontSize: 14,
     fontFamily: 'Roboto-Medium',
     fontWeight: '600',
     marginRight: '2%'
   },
   buttonText1: {
-    color: '#000',
+    color: Colors.Black,
     fontSize: 14,
     fontFamily: 'Roboto-Medium',
     fontWeight: '500',
@@ -212,20 +209,20 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: '3%',
     paddingHorizontal: '3%',
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.White,
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
     width: '45%',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#7D7987'
+    borderColor: Colors.Gray600
   },
   pad: {
     height: '5%'
   },
   newView: {
-    backgroundColor: '#0063FF',
+    backgroundColor: Colors.Secondary,
     borderRadius: 19,
     paddingHorizontal: 7,
     paddingVertical: 2,

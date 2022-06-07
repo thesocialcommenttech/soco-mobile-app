@@ -2,8 +2,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-import Icon1 from 'react-native-vector-icons/Ionicons';
-import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicon from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Colors } from '../utils/colors';
 import DiscoverStack from './discoverStack';
 import HomeStack from './homeStack';
 import PortfolioStack from './portfolioStack';
@@ -26,18 +27,18 @@ const MainStack = () => {
               marginBottom: '10%',
               fontFamily: 'Roboto-Medium',
               fontSize: 10,
-              color: '#DCDCDC'
+              color: Colors.GrayBorder
             },
             tabBarLabelPosition: 'below-icon',
             tabBarActiveTintColor: 'white',
             tabBarInactiveTintColor: 'gray',
             tabBarStyle: {
               height: '9%',
-              backgroundColor: '#0F1724'
+              backgroundColor: Colors.BlackTab
             },
             tabBarIcon: tabinfo => {
               return (
-                <Icon2
+                <MaterialCommunityIcon
                   name="home-outline"
                   size={30}
                   color={tabinfo.focused ? 'white' : 'gray'}
@@ -58,18 +59,18 @@ const MainStack = () => {
               marginBottom: '10%',
               fontFamily: 'Roboto-Medium',
               fontSize: 10,
-              color: '#DCDCDC'
+              color: Colors.GrayBorder
             },
             tabBarLabelPosition: 'below-icon',
             tabBarActiveTintColor: 'white',
             tabBarInactiveTintColor: 'gray',
             tabBarStyle: {
               height: '9%',
-              backgroundColor: '#0F1724'
+              backgroundColor: Colors.BlackTab
             },
             tabBarIcon: tabinfo => {
               return (
-                <Icon1
+                <Ionicon
                   name="compass-outline"
                   size={30}
                   color={tabinfo.focused ? 'white' : 'gray'}
@@ -90,18 +91,18 @@ const MainStack = () => {
               marginBottom: '10%',
               fontFamily: 'Roboto-Medium',
               fontSize: 10,
-              color: '#DCDCDC'
+              color: Colors.GrayBorder
             },
             tabBarLabelPosition: 'below-icon',
             tabBarActiveTintColor: 'white',
             tabBarInactiveTintColor: 'gray',
             tabBarStyle: {
               height: '9%',
-              backgroundColor: '#0F1724'
+              backgroundColor: Colors.BlackTab
             },
             tabBarIcon: tabinfo => {
               return (
-                <Icon2
+                <MaterialCommunityIcon
                   name="account-box-outline"
                   size={30}
                   color={tabinfo.focused ? 'white' : 'gray'}
@@ -122,19 +123,19 @@ const MainStack = () => {
               marginBottom: '10%',
               fontFamily: 'Roboto-Medium',
               fontSize: 10,
-              color: '#DCDCDC'
+              color: Colors.GrayBorder
             },
-            // tabBarActiveBackgroundColor: '#DCDCDC',
+            // tabBarActiveBackgroundColor: Colors.GrayBorder,
             tabBarLabelPosition: 'below-icon',
             tabBarActiveTintColor: 'white',
             tabBarInactiveTintColor: 'gray',
             tabBarStyle: {
               height: '9%',
-              backgroundColor: '#0F1724'
+              backgroundColor: Colors.BlackTab
             },
             tabBarIcon: tabinfo => {
               return (
-                <Icon2
+                <MaterialCommunityIcon
                   name="account-circle-outline"
                   size={30}
                   color={tabinfo.focused ? 'white' : 'gray'}

@@ -1,20 +1,21 @@
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicon from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import DropdownTopbar from './dropdownTopbar';
+import { Colors } from '../utils/colors';
 var logo = require('../assets/images/logos/soco-premium.png');
 
-const TopBar = props => {
+const TopBar = (props: any) => {
   return (
     <View style={styles.container}>
       <Image style={styles.logo} source={logo} />
       <View style={styles.rightContainer}>
         <TouchableOpacity>
-          <Icon name="search" size={21} color="white" />
+          <Ionicon name="search" size={21} color="white" />
         </TouchableOpacity>
         <TouchableOpacity>
-          <Icon1 name="bell-outline" size={22} color="white" />
+          <MaterialCommunityIcon name="bell-outline" size={22} color="white" />
         </TouchableOpacity>
         <DropdownTopbar label={props} />
       </View>
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     height: 60,
     flexDirection: 'row',
-    backgroundColor: '#0F1724',
+    backgroundColor: Colors.BlackTab,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingLeft: 10,
@@ -57,6 +58,6 @@ const styles = StyleSheet.create({
   },
   closeBtn: {
     textAlign: 'right',
-    color: '#0063FF'
+    color: Colors.Secondary
   }
 });

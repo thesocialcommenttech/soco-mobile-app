@@ -1,16 +1,9 @@
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import TopBar from '../../components/topBar';
 import DropdownFilter from '../../components/dropdownFilter';
 import DropdownMore from '../../components/dropdownMore';
+import { Colors } from '../../utils/colors';
 
 const DraftsScreen = ({ navigation }) => {
   const [profile] = useState(
@@ -58,16 +51,6 @@ const DraftsScreen = ({ navigation }) => {
     }
   ];
 
-  const renderItem = ({ item }) => {
-    return (
-      <View style={styles.item}>
-        <Text style={styles.title}>{item.title}</Text>
-        <DropdownMore />
-        {/* <Icon name="more-vert" size={20} color="#7D7987" /> */}
-      </View>
-    );
-  };
-
   return (
     <View style={styles.outerContainer}>
       <TopBar
@@ -89,7 +72,7 @@ const DraftsScreen = ({ navigation }) => {
             } else {
               return item.label === selectedLabel;
             }
-          }).map(({ id, title, label }) => (
+          }).map(({ id, title }) => (
             <View key={id}>
               <View style={styles.item}>
                 <Text style={styles.title}>{title}</Text>
@@ -107,7 +90,7 @@ const DraftsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   pageContainer: {
     flex: 1,
@@ -118,15 +101,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '6%',
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   headerText: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#000'
+    color: Colors.Black
   },
   horizontalLine: {
-    borderBottomColor: '#F2F2F2',
+    borderBottomColor: Colors.Gray100,
     borderBottomWidth: 1
   },
   item: {
@@ -139,7 +122,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '400',
-    color: '#000',
+    color: Colors.Black,
     fontFamily: 'Roboto-Medium',
     width: '90%'
   }

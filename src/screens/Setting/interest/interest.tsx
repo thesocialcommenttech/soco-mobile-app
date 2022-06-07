@@ -7,7 +7,8 @@ import {
 } from 'react-native';
 import React from 'react';
 import Categorybox from '../../../components/settingsComponents/categoryBox';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { Colors } from '../../../utils/colors';
 
 const Data = [
   {
@@ -139,7 +140,11 @@ export default function Interest() {
           </View>
           <View style={styles.searchbox}>
             <View style={styles.searchIcon}>
-              <Icon name="search" size={15} color="#0063FF" />
+              <FontAwesomeIcon
+                name="search"
+                size={15}
+                color={Colors.Secondary}
+              />
             </View>
             <TextInput
               placeholder="Search Category Name"
@@ -185,7 +190,7 @@ const styles = StyleSheet.create({
     fontWeight: '500'
   },
   bottomruler: {
-    borderBottomColor: '#F0F2F5',
+    borderBottomColor: Colors.BottomRulerColor,
     borderBottomWidth: 1,
     marginTop: '3%'
   },
@@ -212,7 +217,7 @@ const styles = StyleSheet.create({
   searchbox: {
     borderWidth: 1,
     borderRadius: 5,
-    borderColor: '#7D7987',
+    borderColor: Colors.Gray600,
     marginTop: '1.5%',
     flexDirection: 'row'
   },
@@ -224,7 +229,7 @@ const styles = StyleSheet.create({
     padding: 2
   },
   selectbackgroundstyle: {
-    backgroundColor: '#E0EBFF',
+    backgroundColor: Colors.LightSecondary,
     alignSelf: 'center',
     padding: 9,
     borderRadius: 10,

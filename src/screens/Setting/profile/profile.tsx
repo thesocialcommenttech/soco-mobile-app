@@ -10,8 +10,9 @@ import React, { useState } from 'react';
 import TextInputWithLabel from '../../../components/textInputWithLabel';
 import { useFormik } from 'formik';
 import { object, string } from 'yup';
-import Icon from 'react-native-vector-icons/AntDesign';
+import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { Colors } from '../../../utils/colors';
 
 export default function Profile() {
   const [verify] = useState(true);
@@ -122,7 +123,7 @@ export default function Profile() {
             />
             <View style={styles.instruction}>
               <View style={styles.icon}>
-                <Icon name="exclamationcircleo" size={16} />
+                <AntDesignIcon name="exclamationcircleo" size={16} />
               </View>
               <View style={styles.insview}>
                 <Text style={styles.instext}>
@@ -231,7 +232,7 @@ export default function Profile() {
             <Button
               onPress={() => {}}
               title="Update Profile"
-              color="#0063FF"
+              color={Colors.Secondary}
               accessibilityLabel="Learn more about this purple button"
             />
           </View>
@@ -285,19 +286,19 @@ const styles = StyleSheet.create({
   },
   changetext: {
     fontSize: 16,
-    color: '#0063FF',
+    color: Colors.Secondary,
     fontWeight: 'bold'
   },
   verify: {
     justifyContent: 'space-between',
-    backgroundColor: '#E0EBFF',
+    backgroundColor: Colors.LightSecondary,
     padding: 11,
     marginTop: '2%',
     marginLeft: '1%',
     marginRight: '2%'
   },
   resend: {
-    color: '#0063FF',
+    color: Colors.Secondary,
     fontSize: 16
   },
   resendview: {
@@ -311,13 +312,13 @@ const styles = StyleSheet.create({
   save: {
     padding: 10,
     borderWidth: 1,
-    borderColor: '#0063FF',
+    borderColor: Colors.Secondary,
     borderRadius: 15,
     alignSelf: 'flex-start',
     marginLeft: '2%'
   },
   savetext: {
-    color: '#0063FF',
+    color: Colors.Secondary,
     fontSize: 16
   },
   cancel: {
@@ -327,7 +328,7 @@ const styles = StyleSheet.create({
     marginLeft: '2.5%'
   },
   canceltext: {
-    color: '#0063FF',
+    color: Colors.Secondary,
     fontSize: 16
   },
   row: {
@@ -366,7 +367,7 @@ const styles = StyleSheet.create({
     marginRight: '2%'
   },
   bottomruler: {
-    borderBottomColor: '#F0F2F5',
+    borderBottomColor: Colors.BottomRulerColor,
     borderBottomWidth: 1,
     marginTop: '2%'
   },

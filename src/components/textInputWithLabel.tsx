@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { TextInput } from 'react-native-paper';
+import { Colors } from '../utils/colors';
 
 const TextInputWithLabel = ({ ...props }) => {
   return (
@@ -16,8 +17,8 @@ const TextInputWithLabel = ({ ...props }) => {
         secureTextEntry={props.isSecureTextEntry}
         placeholderTextColor="grey"
         underlineColorAndroid={'transparent'}
-        outlineColor={props.errorTxt ? '#EE0000' : '#DCDCDC'}
-        activeOutlineColor={props.errorTxt ? '#EE0000' : 'blue'}
+        outlineColor={props.errorTxt ? Colors.Red : Colors.GrayBorder}
+        activeOutlineColor={props.errorTxt ? Colors.Red : 'blue'}
         selectionColor={'black'}
         right={props.right}
         onBlur={props.onBlur}
@@ -25,12 +26,6 @@ const TextInputWithLabel = ({ ...props }) => {
         editable={props.editable}
       />
       {props.errorTxt && <Text style={styles.error}>{props.errorTxt}</Text>}
-      {/* <TextInput
-        label={<Text style={{ ...styles.label }}>{props.label}</Text>}
-        style={[styles.input, props.inputStyle]}
-        // underlineColor='transparent'
-      />
-      {props.errorTxt && <Text style={styles.error}>{props.errorTxt}</Text>} */}
     </View>
   );
 };
@@ -42,14 +37,13 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 14,
     fontStyle: 'normal',
-    color: '#000',
+    color: Colors.Black,
     padding: '2%',
     marginBottom: '-1%',
     textTransform: 'uppercase'
   },
   labelBox: {
     backgroundColor: 'white',
-    // flexDirection: 'row'
     alignSelf: 'flex-start',
     marginLeft: '7%',
     zIndex: 999,
@@ -57,16 +51,12 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    // height: 51,
-    color: '#000',
+    color: Colors.Black,
     paddingHorizontal: 16,
     fontFamily: 'Roboto-Medium',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.White,
     justifyContent: 'center',
     alignContent: 'center'
-    // borderWidth: 1,
-    // borderColor: '#DCDCDC',
-    // borderRadius: 5
   },
   error: {
     fontSize: 12,
@@ -74,7 +64,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 14,
-    color: '#EE0000',
+    color: Colors.Red,
     marginTop: '2%'
   }
 });

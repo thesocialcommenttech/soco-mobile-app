@@ -1,8 +1,9 @@
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import { Colors } from '../../utils/colors';
 
 export default function SettingTab({
   name,
@@ -25,15 +26,21 @@ export default function SettingTab({
             <View style={styles.more}>
               <View style={styles.icon}>
                 {icon === 'wallet-outline'
-                  ? [<Icon1 name={icon} size={23} color="black" />]
-                  : [<Icon name={icon} size={23} color="black" />]}
+                  ? [
+                      <MaterialCommunityIcon
+                        name={icon}
+                        size={23}
+                        color="black"
+                      />
+                    ]
+                  : [<FontAwesomeIcon name={icon} size={23} color="black" />]}
               </View>
               <View style={styles.name}>
                 <Text style={styles.nametext}>{name}</Text>
               </View>
             </View>
             <View style={styles.rightIcon}>
-              <Icon name="chevron-right" size={21} />
+              <FontAwesomeIcon name="chevron-right" size={21} />
             </View>
           </View>
         </TouchableOpacity>
@@ -64,7 +71,7 @@ const styles = StyleSheet.create({
     color: 'black'
   },
   bottomruler: {
-    borderBottomColor: '#F0F2F5',
+    borderBottomColor: Colors.BottomRulerColor,
     borderBottomWidth: 1.5
   },
   icon: {

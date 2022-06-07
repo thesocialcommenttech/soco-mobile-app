@@ -19,6 +19,7 @@ import {
   selectUserDetails,
   setUserDetails
 } from '../../store/reducers/register';
+import { Colors } from '../../utils/colors';
 var logo = require('../../assets/images/logos/Untitled.png');
 
 const CustomCheckBox = (props: any) => {
@@ -118,7 +119,7 @@ const RegisterOneScreen = ({ navigation }) => {
               inputStyle={styles.passTB}
               right={
                 <TextInput.Icon
-                  color="#0063ff"
+                  color={Colors.Secondary}
                   name={isSecure ? 'eye-outline' : 'eye-off-outline'}
                   onPress={Eyelick}
                   style={styles.eye}
@@ -168,13 +169,13 @@ export default RegisterOneScreen;
 const styles = StyleSheet.create({
   outContainer: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   container: {
     flex: 1,
     paddingLeft: 20,
     paddingRight: 20,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   logo: {
     marginTop: '5%',
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '500',
     marginBottom: 20,
-    color: '#000',
+    color: Colors.Black,
     fontStyle: 'normal',
     lineHeight: 32,
     marginTop: '3%'
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16,
-    color: '#BDBDBD',
+    color: Colors.Gray200,
     marginTop: '4%'
   },
   forPass: {
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#AFAFBD',
+    color: Colors.LightGray,
     marginTop: '20%'
   },
   dontAcc: {
@@ -215,7 +216,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#AFAFBD',
+    color: Colors.LightGray,
     marginTop: '3%'
   },
   crAcc: {
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#0063FF'
+    color: Colors.Secondary
   },
   nameTB: {
     marginTop: '-6%'
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
     marginTop: '50%'
   },
   nextBtn: {
-    backgroundColor: '#FFCA12',
+    backgroundColor: Colors.Primary,
     height: 46,
     borderRadius: 8,
     marginTop: '6%',
@@ -266,7 +267,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#AFAFBD'
+    color: Colors.LightGray
   },
   checkboxContainer: {
     marginTop: '3%'
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 14,
-    color: '#EE0000',
+    color: Colors.Red,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: '3%'

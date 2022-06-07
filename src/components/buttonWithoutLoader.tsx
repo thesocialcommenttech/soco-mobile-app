@@ -14,7 +14,7 @@ export default ButtonWithoutLoader;
 
 const styles = StyleSheet.create({
   textStyle: {
-    color: '#FFFF',
+    color: Colors.White,
     fontSize: 15,
     fontFamily: 'Roboto-Medium',
     fontWeight: '700',

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
+import { Colors } from '../utils/colors';
 
 /**
  * Function that calculates rotation of the semicircle for firstProgressLayer
@@ -239,13 +240,13 @@ CircularProgress.defaultProps = {
   radius: 50,
   bgRingWidth: 12,
   progressRingWidth: 12,
-  ringColor: '#0063FF',
-  ringBgColor: '#F9FAFB',
+  ringColor: Colors.Secondary,
+  ringBgColor: Colors.SideBarBackground,
   textFontSize: 40,
   textFontColor: 'black',
   textFontWeight: 'bold',
   clockwise: true,
-  bgColor: '#0063FF',
+  bgColor: Colors.Secondary,
   startDegrees: 0,
   title: 'Progress',
   uri: ''

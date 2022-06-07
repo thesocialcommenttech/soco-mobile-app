@@ -9,11 +9,11 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import TopBar from '../../components/topBar';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon2 from 'react-native-vector-icons/MaterialIcons';
-import Icon3 from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import { Avatar, Card } from '@rneui/base';
 import { TextInput } from 'react-native';
+import { Colors } from '../../utils/colors';
 
 const DiscoverScreen = () => {
   const [profile] = useState(
@@ -144,7 +144,11 @@ const DiscoverScreen = () => {
           autoCapitalize="none"
         />
         <TouchableOpacity style={styles.filtIcon}>
-          <Icon name="filter-outline" size={25} color="#0063FF" />
+          <MaterialCommunityIcon
+            name="filter-outline"
+            size={25}
+            color={Colors.Secondary}
+          />
         </TouchableOpacity>
       </View>
       <FlatList
@@ -178,10 +182,10 @@ const DiscoverScreen = () => {
                     <Text style={styles.cardTitleText}>{u.name}</Text>
                   </View>
                   <TouchableOpacity>
-                    <Icon
+                    <MaterialCommunityIcon
                       name="share-variant-outline"
                       size={20}
-                      color="#7D7987"
+                      color={Colors.Gray600}
                     />
                   </TouchableOpacity>
                 </View>
@@ -204,7 +208,11 @@ const DiscoverScreen = () => {
                     <Text style={styles.tagText}>{u.postTag}</Text>
                   </View>
                   <View style={styles.eyeView}>
-                    <Icon3 name="eye-outline" size={19} color="#7D7987" />
+                    <Ionicon
+                      name="eye-outline"
+                      size={19}
+                      color={Colors.Gray600}
+                    />
                     <Text style={styles.viewNum}>{u.views}</Text>
                   </View>
                 </View>
@@ -222,7 +230,7 @@ export default DiscoverScreen;
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   cardContainer: {
     padding: 20,
@@ -234,18 +242,16 @@ const styles = StyleSheet.create({
   },
   profileinfo: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center'
   },
   cardTitle: {
-    // backgroundColor: 'gray',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
   },
   avatar2: {
     borderWidth: 1,
-    borderColor: '#fff'
+    borderColor: Colors.White
   },
   cardTitleText: {
     fontSize: 16,
@@ -272,7 +278,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontFamily: 'Roboto-Medium',
     lineHeight: 18.75,
-    color: '#000'
+    color: Colors.Black
   },
   cardFooter2: {
     flexDirection: 'row',
@@ -283,10 +289,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     fontFamily: 'Roboto-Medium',
-    color: '#7D7987'
+    color: Colors.Gray600
   },
   tag: {
-    backgroundColor: '#F2F2F2',
+    backgroundColor: Colors.Gray100,
     borderRadius: 5,
     paddingHorizontal: 5,
     paddingVertical: 2,
@@ -296,7 +302,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     fontFamily: 'Roboto-Medium',
-    color: '#000'
+    color: Colors.Black
   },
   eyeView: {
     flexDirection: 'row',
@@ -322,7 +328,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     marginTop: '4%',
     marginHorizontal: '4%',
-    borderColor: '#DCDCDC',
+    borderColor: Colors.GrayBorder,
     color: 'black',
     borderWidth: 1,
     borderRadius: 5,
@@ -354,7 +360,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: '#DCDCDC',
+    borderColor: Colors.GrayBorder,
     borderWidth: 1,
     borderRadius: 30
   },
@@ -362,19 +368,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: '#DCDCDC',
+    borderColor: Colors.GrayBorder,
     borderWidth: 1,
     borderRadius: 30,
-    backgroundColor: '#0063FF'
+    backgroundColor: Colors.Secondary
   },
   itemText: {
     fontSize: 14,
-    color: '#7D7987',
+    color: Colors.Gray600,
     textAlign: 'center'
   },
   itemTextSelected: {
     fontSize: 14,
-    color: '#FFF',
+    color: Colors.White,
     textAlign: 'center'
   },
   padd: {

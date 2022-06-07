@@ -9,6 +9,7 @@ import {
 import React, { useState } from 'react';
 import ReferalList from '../../../components/settingsComponents/referalsList';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { Colors } from '../../../utils/colors';
 
 const Data = [
   {
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
     marginLeft: '2.5%'
   },
   bottomruler: {
-    borderBottomColor: '#F0F2F5',
+    borderBottomColor: Colors.BottomRulerColor,
     borderBottomWidth: 1,
     marginTop: '2%',
     marginLeft: '2.5%',

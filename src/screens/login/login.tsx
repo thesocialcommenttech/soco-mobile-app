@@ -16,6 +16,7 @@ import { useFormik } from 'formik';
 import { object, string } from 'yup';
 import { useDispatch } from 'react-redux';
 import { setAuth } from '../../store/reducers/info';
+import { Colors } from '../../utils/colors';
 var logo = require('../../assets/images/logos/Untitled.png');
 
 const LoginScreen = ({ navigation }) => {
@@ -92,7 +93,7 @@ const LoginScreen = ({ navigation }) => {
             errorTxt={formik.touched.password && formik.errors.password}
             right={
               <TextInput.Icon
-                color="#0063ff"
+                color={Colors.Secondary}
                 name={isSecure ? 'eye-outline' : 'eye-off-outline'}
                 onPress={Eyelick}
                 style={styles.eye}
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 20,
     paddingRight: 20,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   logo: {
     marginTop: '5%',
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '500',
     marginBottom: 20,
-    color: '#000',
+    color: Colors.Black,
     fontStyle: 'normal',
     lineHeight: 32,
     marginTop: '10%'
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#AFAFBD',
+    color: Colors.LightGray,
     marginTop: '20%'
   },
   dontAcc: {
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#AFAFBD',
+    color: Colors.LightGray,
     marginTop: '3%'
   },
   crAcc: {
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#0063FF'
+    color: Colors.Secondary
   },
   emailTB: {
     marginTop: '-6%'
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
     marginTop: '50%'
   },
   loginBtn: {
-    backgroundColor: '#FFCA12',
+    backgroundColor: Colors.Primary,
     height: 46,
     borderRadius: 8,
     marginTop: '8%',

@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
-import Icon from 'react-native-vector-icons/Feather';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import ToggleSwitch from 'toggle-switch-react-native';
+import { Colors } from '../../../utils/colors';
 
 export default function Notification() {
   const [isEnabled, setIsEnabled] = useState(false);
@@ -35,7 +36,9 @@ export default function Notification() {
             thumbOffStyle={styles.thumboff}
             thumbOnStyle={styles.thumbon}
           />
-          {isEnabled ? [<Icon name="check" size={22} color="green" />] : []}
+          {isEnabled
+            ? [<FeatherIcon name="check" size={22} color="green" />]
+            : []}
         </View>
       </View>
     </View>
@@ -59,7 +62,7 @@ const styles = StyleSheet.create({
     margin: '1.5%'
   },
   bottomruler: {
-    borderBottomColor: '#F0F2F5',
+    borderBottomColor: Colors.BottomRulerColor,
     borderBottomWidth: 1,
     marginTop: '2%'
   },
@@ -88,7 +91,7 @@ const styles = StyleSheet.create({
     borderWidth: 2
   },
   ontrack: {
-    backgroundColor: '#E0EBFF',
+    backgroundColor: Colors.LightSecondary,
     borderColor: 'blue',
     borderWidth: 2
   },

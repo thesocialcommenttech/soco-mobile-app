@@ -5,6 +5,7 @@ import ButtonWithoutLoader from '../../../components/buttonWithoutLoader';
 import { useFormik } from 'formik';
 import { object, string } from 'yup';
 import { TextInput } from 'react-native-paper';
+import { Colors } from '../../../utils/colors';
 
 export default function Password() {
   const [isSecure, setIsSecure] = useState(true);
@@ -72,7 +73,7 @@ export default function Password() {
           errorTxt={formik.touched.password && formik.errors.password}
           right={
             <TextInput.Icon
-              color="#0063ff"
+              color=Colors.Secondary
               name={isSecure ? 'eye-outline' : 'eye-off-outline'}
               onPress={Eyelick}
               style={styles.eye}
@@ -90,7 +91,7 @@ export default function Password() {
           errorTxt={formik.touched.password && formik.errors.newPassword}
           right={
             <TextInput.Icon
-              color="#0063ff"
+              color=Colors.Secondary
               name={isSecure1 ? 'eye-outline' : 'eye-off-outline'}
               onPress={Eyelick1}
               style={styles.eye}
@@ -108,7 +109,7 @@ export default function Password() {
           errorTxt={formik.touched.password && formik.errors.confirmPassword}
           right={
             <TextInput.Icon
-              color="#0063ff"
+              color=Colors.Secondary
               name={isSecure2 ? 'eye-outline' : 'eye-off-outline'}
               onPress={Eyelick2}
               style={styles.eye}
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
     marginLeft: '1.5%'
   },
   loginBtn: {
-    backgroundColor: '#0063FF',
+    backgroundColor: Colors.Secondary,
     height: 50,
     borderRadius: 8,
     marginTop: '8%',

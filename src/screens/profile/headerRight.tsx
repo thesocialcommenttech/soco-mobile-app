@@ -8,7 +8,7 @@ const HeaderRight = () => {
   let toggle = () => setVisible(!visible);
   return (
     <>
-      <TouchableOpacity style={{ marginTop: 20, marginRight: 8 }}>
+      <TouchableOpacity style={styles.header}>
         <Feather
           name="more-vertical"
           size={24}
@@ -33,4 +33,9 @@ const HeaderRight = () => {
 
 export default HeaderRight;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  header: {
+    marginTop: 20,
+    marginRight: 8
+  }
+});

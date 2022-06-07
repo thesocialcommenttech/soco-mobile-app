@@ -11,13 +11,14 @@ import {
   Dimensions
 } from 'react-native';
 import React, { useState } from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import TextInputWithLabel from '../../../components/textInputWithLabel';
 import { useFormik } from 'formik';
 import { object, string } from 'yup';
 import { TextInput } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { Colors } from '../../../utils/colors';
 
 export default function Kyc() {
   const B = props => <Text style={styles.bold}>{props.children}</Text>;
@@ -153,7 +154,11 @@ export default function Kyc() {
       <View style={styles.bottomruler} />
       <View style={styles.yellowbox}>
         <View style={styles.yellowicon}>
-          <Icon name="exclamation-triangle" size={22} color="black" />
+          <FontAwesomeIcon
+            name="exclamation-triangle"
+            size={22}
+            color="black"
+          />
         </View>
         <View style={styles.yellowins}>
           <Text style={styles.text}>
@@ -164,7 +169,7 @@ export default function Kyc() {
       </View>
       <View style={styles.whitebox}>
         <View style={styles.whiteicon}>
-          <Icon name="question-circle-o" size={27} color="black" />
+          <FontAwesomeIcon name="question-circle-o" size={27} color="black" />
         </View>
         <View style={styles.whiteins}>
           <Text style={styles.text}>
@@ -285,7 +290,7 @@ export default function Kyc() {
         <Button
           onPress={() => {}}
           title="Upload KYC"
-          color="#0063FF"
+          color={Colors.Secondary}
           accessibilityLabel="Learn more about this purple button"
         />
       </View>
@@ -299,7 +304,7 @@ const styles = StyleSheet.create({
     margin: '2.5%'
   },
   yellowbox: {
-    backgroundColor: '#FFF4CC',
+    backgroundColor: Colors.LightPrimary,
     flexDirection: 'row',
     padding: 8,
     marginTop: '3%'
@@ -319,7 +324,7 @@ const styles = StyleSheet.create({
     fontSize: 17
   },
   bottomruler: {
-    borderBottomColor: '#F0F2F5',
+    borderBottomColor: Colors.BottomRulerColor,
     borderBottomWidth: 1,
     marginTop: '2%'
   },

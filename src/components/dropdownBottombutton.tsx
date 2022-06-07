@@ -9,12 +9,11 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import Icon3 from 'react-native-vector-icons/Octicons';
+import Octicon from 'react-native-vector-icons/Octicons';
+import { Colors } from '../utils/colors';
 
 interface Props {
   label: any;
-  // data: Array<{ label: string; value: string }>;
-  // onSelect: (item: { label: string; value: string }) => void;
 }
 
 const DropdownBottombutton: FC<Props> = props => {
@@ -60,7 +59,6 @@ const DropdownBottombutton: FC<Props> = props => {
     }
   ];
 
-  // const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
 
   const openDropdown = (): void => {
@@ -130,7 +128,7 @@ const DropdownBottombutton: FC<Props> = props => {
         ref={DropdownButton}
         style={styles.stickyButton}
       >
-        <Icon3 name="plus" size={30} color="#000" />
+        <Octicon name="plus" size={30} color={Colors.Black} />
       </TouchableOpacity>
       <Modal visible={visible} transparent animationType="fade">
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
@@ -150,7 +148,7 @@ const DropdownBottombutton: FC<Props> = props => {
 
 const styles = StyleSheet.create({
   buttonText: {
-    color: '#000',
+    color: Colors.Black,
     fontSize: 14,
     fontFamily: 'Roboto-Medium'
   },
@@ -161,18 +159,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     zIndex: 999,
     height: 'auto',
-    // paddingTop: '8%',
-    // paddingBottom: '8%',
     bottom: 0,
     paddingLeft: '8%'
   },
   item: {
-    // paddingHorizontal: '1%'
     flexDirection: 'row',
     paddingBottom: '8%'
   },
   item1: {
-    // paddingHorizontal: '1%'
     flexDirection: 'row',
     paddingTop: '8%',
     paddingBottom: '8%'
@@ -199,7 +193,7 @@ const styles = StyleSheet.create({
   },
   stickyButton: {
     position: 'absolute',
-    backgroundColor: '#FFCA12',
+    backgroundColor: Colors.Primary,
     borderRadius: 250,
     right: 20,
     bottom: 20,
@@ -214,7 +208,7 @@ const styles = StyleSheet.create({
     height: '5%'
   },
   newView: {
-    backgroundColor: '#0063FF',
+    backgroundColor: Colors.Secondary,
     borderRadius: 19,
     paddingHorizontal: 7,
     paddingVertical: 2,

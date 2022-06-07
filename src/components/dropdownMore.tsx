@@ -1,7 +1,6 @@
-import React, { FC, ReactElement, useRef, useState } from 'react';
+import React, { ReactElement, useRef, useState } from 'react';
 import {
   Dimensions,
-  FlatList,
   Modal,
   StyleSheet,
   Text,
@@ -9,8 +8,9 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Colors } from '../utils/colors';
 
 const DropdownMore = () => {
   const [visible, setVisible] = useState(false);
@@ -34,16 +34,18 @@ const DropdownMore = () => {
   const windowWidth = Dimensions.get('window').width;
 
   const openDropdown = (): void => {
-    DropdownButton.current.measure((fx, fy, width, height, px, py) => {
-      // console.log('Component width is: ' + width);
-      // console.log('Component height is: ' + height);
-      // console.log('X offset to frame: ' + fx);
-      // console.log('Y offset to frame: ' + fy);
-      // console.log('X offset to page: ' + px);
-      // console.log('Y offset to page: ' + py);
-      setDropdownTop(height + py);
-      setDropdownRight(windowWidth - px - width);
-    });
+    DropdownButton.current.measure(
+      (fx: any, fy: any, width: number, height: any, px: number, py: any) => {
+        // console.log('Component width is: ' + width);
+        // console.log('Component height is: ' + height);
+        // console.log('X offset to frame: ' + fx);
+        // console.log('Y offset to frame: ' + fy);
+        // console.log('X offset to page: ' + px);
+        // console.log('Y offset to page: ' + py);
+        setDropdownTop(height + py);
+        setDropdownRight(windowWidth - px - width);
+      }
+    );
 
     setVisible(true);
   };
@@ -61,7 +63,11 @@ const DropdownMore = () => {
             style={styles.item3}
             onPress={() => onItemPress(item)}
           >
-            <Icon2 name={item.icon} size={20} color="#000" />
+            <MaterialCommunityIcon
+              name={item.icon}
+              size={20}
+              color={Colors.Black}
+            />
             <Text style={styles.buttonText1}>{item.label}</Text>
           </TouchableOpacity>
         )}
@@ -70,7 +76,11 @@ const DropdownMore = () => {
             style={styles.item}
             onPress={() => onItemPress(item)}
           >
-            <Icon2 name={item.icon} size={20} color="#000" />
+            <MaterialCommunityIcon
+              name={item.icon}
+              size={20}
+              color={Colors.Black}
+            />
             <Text style={styles.buttonText1}>{item.label}</Text>
           </TouchableOpacity>
         ) : (
@@ -79,7 +89,7 @@ const DropdownMore = () => {
       </View>
     );
   };
-  const onItemPress = (item): void => {
+  const onItemPress = (item: { label: string; value: string }): void => {
     // setSelected(item);
     onSelect(item);
     setVisible(false);
@@ -93,7 +103,7 @@ const DropdownMore = () => {
         }}
         ref={DropdownButton}
       >
-        <Icon name="more-vert" size={20} color="#7D7987" />
+        <MaterialIcon name="more-vert" size={20} color={Colors.Gray600} />
       </TouchableOpacity>
       <Modal visible={visible} transparent animationType="fade">
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
@@ -109,7 +119,7 @@ const DropdownMore = () => {
 
 const styles = StyleSheet.create({
   buttonText: {
-    color: '#7D7987',
+    color: Colors.Gray600,
     fontSize: 14,
     fontFamily: 'Roboto-Medium',
     fontWeight: '600',
@@ -117,7 +127,7 @@ const styles = StyleSheet.create({
     marginLeft: '5%'
   },
   buttonText1: {
-    color: '#000',
+    color: Colors.Black,
     fontSize: 14,
     fontFamily: 'Roboto-Medium',
     fontWeight: '500',
@@ -131,19 +141,15 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     zIndex: 999,
     height: 'auto',
-    // paddingTop: '8%',
-    // paddingBottom: '8%',
     bottom: 0,
     paddingLeft: '8%'
   },
   item: {
-    // paddingHorizontal: '1%'
     flexDirection: 'row',
     paddingBottom: '10%',
     paddingLeft: '2%'
   },
   item3: {
-    // paddingHorizontal: '1%'
     flexDirection: 'row',
     paddingTop: '10%',
     paddingBottom: '10%',
@@ -173,7 +179,7 @@ const styles = StyleSheet.create({
     height: '5%'
   },
   newView: {
-    backgroundColor: '#0063FF',
+    backgroundColor: Colors.Secondary,
     borderRadius: 19,
     paddingHorizontal: 7,
     paddingVertical: 2,

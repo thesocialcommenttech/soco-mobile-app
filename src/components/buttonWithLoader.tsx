@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
+import { Colors } from '../utils/colors';
 
 const ButtonWithLoader = ({ text, onPress, btnStyle, submitting }) => {
   // add rgba color opacity
@@ -20,7 +21,7 @@ export default ButtonWithLoader;
 
 const styles = StyleSheet.create({
   textStyle: {
-    color: '#000',
+    color: Colors.Black,
     fontSize: 14,
     fontFamily: 'Roboto-Medium',
     fontWeight: '700',
