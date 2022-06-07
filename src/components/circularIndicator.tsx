@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  RecursiveArray,
+  RegisteredStyle,
+  ViewStyle
+} from 'react-native';
 import { Colors } from '../utils/colors';
 
 /**
@@ -132,7 +139,12 @@ const CircularProgress = ({
   if (!clockwise) {
     rotation += 180;
   }
-  let firstProgressLayerStyle;
+  let firstProgressLayerStyle:
+    | boolean
+    | ViewStyle
+    | RegisteredStyle<ViewStyle>
+    | RecursiveArray<false | ViewStyle | RegisteredStyle<ViewStyle>>
+    | readonly (false | ViewStyle | RegisteredStyle<ViewStyle>)[];
   /* when ther ring's border widths are different and percent is less than 50, then we need an offsetLayer
    * before the original offser layer to avoid ring color of the thick portion to be visible in the background.
    */

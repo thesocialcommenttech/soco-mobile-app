@@ -21,6 +21,15 @@ import { TextInput } from 'react-native';
 import DropdownMore from '../../components/dropdownMore';
 import { Colors } from '../../utils/colors';
 
+const ItemRender = ({ actName, count }: { actName: string; count: number }) => (
+  <TouchableOpacity style={styles.item}>
+    <Text style={styles.itemText}>{actName}</Text>
+    <View style={styles.circle}>
+      <Text style={styles.itemCount}>{count}</Text>
+    </View>
+  </TouchableOpacity>
+);
+
 const ProfileScreen = ({ navigation }) => {
   const state = useSelector(selectUserInfo);
 
@@ -143,14 +152,6 @@ const ProfileScreen = ({ navigation }) => {
     }
   ];
 
-  const ItemRender = ({ actName, count }) => (
-    <TouchableOpacity style={styles.item}>
-      <Text style={styles.itemText}>{actName}</Text>
-      <View style={styles.circle}>
-        <Text style={styles.itemCount}>{count}</Text>
-      </View>
-    </TouchableOpacity>
-  );
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);

@@ -1,6 +1,7 @@
 import React, { FC, ReactElement, useRef, useState } from 'react';
 import {
   Modal,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -9,6 +10,65 @@ import {
 } from 'react-native';
 import Octicon from 'react-native-vector-icons/Octicons';
 import { Colors } from '../utils/colors';
+
+const RenderItem = ({
+  key,
+  item,
+  visible,
+  setVisible,
+  selected,
+  setSelected,
+  props
+}: {
+  key: string;
+  item: { label: string; isNew: boolean; value: string };
+  visible: boolean;
+  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  selected: string;
+  setSelected: React.Dispatch<React.SetStateAction<string>>;
+  props: any;
+}): ReactElement<any, any> => {
+  const onSelect = (Item: { label: string; value: string }) => {
+    setSelected(item.label);
+    props.setLabel(item.label);
+    // console.log('Selected', item);
+  };
+
+  const onItemPress = (Item: { label: string; value: string }): void => {
+    // setSelected(item);
+    onSelect(item);
+    setVisible(false);
+  };
+  return (
+    <View>
+      {item.value === '1' && (
+        <TouchableOpacity
+          style={styles.item3}
+          onPress={() => onItemPress(item)}
+        >
+          <Text style={styles.buttonText1}>{item.label}</Text>
+          {item.isNew && (
+            <View style={styles.newView}>
+              <Text style={styles.newText}>New</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      )}
+      {item.value !== '1' ? (
+        <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
+          <Text style={styles.buttonText1}>{item.label}</Text>
+          {item.isNew && (
+            <View style={styles.newView}>
+              <Text style={styles.newText}>New</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      ) : (
+        <></>
+      )}
+    </View>
+  );
+};
 
 interface Props {
   label: any;
@@ -59,67 +119,28 @@ const DropdownFilter: FC<Props> = props => {
     }
   ];
 
-  // const windowWidth = Dimensions.get('window').width;
-
   const openDropdown = (): void => {
-    DropdownButton.current.measure((fx, fy, width, height, px, py) => {
-      // console.log('Component width is: ' + width);
-      // console.log('Component height is: ' + height);
-      // console.log('X offset to frame: ' + fx);
-      // console.log('Y offset to frame: ' + fy);
-      // console.log('X offset to page: ' + px);
-      // console.log('Y offset to page: ' + py);
-      setDropdownTop(height + py);
-      setDropdownLeft(px);
-    });
+    DropdownButton.current.measure(
+      (
+        fx: number,
+        fy: number,
+        width: number,
+        height: number,
+        px: number,
+        py: number
+      ) => {
+        // console.log('Component width is: ' + width);
+        // console.log('Component height is: ' + height);
+        // console.log('X offset to frame: ' + fx);
+        // console.log('Y offset to frame: ' + fy);
+        // console.log('X offset to page: ' + px);
+        // console.log('Y offset to page: ' + py);
+        setDropdownTop(height + py);
+        setDropdownLeft(px);
+      }
+    );
 
     setVisible(true);
-  };
-
-  const onSelect = (item: { label: string; value: string }) => {
-    setSelected(item.label);
-    props.setLabel(item.label);
-    // console.log('Selected', item);
-  };
-
-  const renderItem = ({ item }): ReactElement<any, any> => {
-    return (
-      <View>
-        {item.value === '1' && (
-          <TouchableOpacity
-            style={styles.item3}
-            onPress={() => onItemPress(item)}
-          >
-            <Text style={styles.buttonText1}>{item.label}</Text>
-            {item.isNew && (
-              <View style={styles.newView}>
-                <Text style={styles.newText}>New</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        )}
-        {item.value !== '1' ? (
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => onItemPress(item)}
-          >
-            <Text style={styles.buttonText1}>{item.label}</Text>
-            {item.isNew && (
-              <View style={styles.newView}>
-                <Text style={styles.newText}>New</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        ) : (
-          <></>
-        )}
-      </View>
-    );
-  };
-  const onItemPress = (item): void => {
-    // setSelected(item);
-    onSelect(item);
-    setVisible(false);
   };
 
   return (
@@ -138,9 +159,21 @@ const DropdownFilter: FC<Props> = props => {
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
-        <View style={[styles.dropdown]}>
-          {data.map(item => renderItem({ item }))}
-        </View>
+        <ScrollView style={[styles.dropdown]}>
+          {data.map(item => {
+            return (
+              <RenderItem
+                key={item.value}
+                item={item}
+                visible={visible}
+                setVisible={setVisible}
+                selected={selected}
+                setSelected={setSelected}
+                props={props}
+              />
+            );
+          })}
+        </ScrollView>
       </Modal>
     </>
   );
@@ -157,9 +190,7 @@ const styles = StyleSheet.create({
   buttonText1: {
     color: Colors.Black,
     fontSize: 14,
-    fontFamily: 'Roboto-Medium',
-    fontWeight: '500',
-    marginRight: '2%'
+    fontFamily: 'Roboto-Medium'
   },
   dropdown: {
     position: 'absolute',
@@ -174,16 +205,15 @@ const styles = StyleSheet.create({
     paddingLeft: '8%'
   },
   item: {
-    // paddingHorizontal: '1%'
     flexDirection: 'row',
-    paddingBottom: '10%',
+    paddingBottom: '8%',
     paddingLeft: '2%'
   },
   item3: {
     // paddingHorizontal: '1%'
     flexDirection: 'row',
-    paddingTop: '10%',
-    paddingBottom: '10%',
+    paddingTop: '8%',
+    paddingBottom: '8%',
     paddingLeft: '2%'
   },
   avatar: {

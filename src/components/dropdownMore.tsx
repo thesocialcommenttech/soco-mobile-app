@@ -2,6 +2,7 @@ import React, { ReactElement, useRef, useState } from 'react';
 import {
   Dimensions,
   Modal,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,6 +12,62 @@ import {
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../utils/colors';
+
+const RenderItem = ({
+  key,
+  item,
+  visible,
+  setVisible,
+  selected,
+  setSelected
+}: {
+  key: string;
+  item: { label: string; icon: string; value: string };
+  visible: boolean;
+  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  selected: string;
+  setSelected: React.Dispatch<React.SetStateAction<string>>;
+}): ReactElement<any, any> => {
+  const onSelect = (Item: { label: string; value: string }) => {
+    setSelected(item.label);
+    // console.log('Selected', item);
+  };
+
+  const onItemPress = (Item: { label: string; value: string }): void => {
+    // setSelected(item);
+    onSelect(item);
+    setVisible(false);
+  };
+  return (
+    <View>
+      {item.value === '1' && (
+        <TouchableOpacity
+          style={styles.item3}
+          onPress={() => onItemPress(item)}
+        >
+          <MaterialCommunityIcon
+            name={item.icon}
+            size={20}
+            color={Colors.Black}
+          />
+          <Text style={styles.buttonText1}>{item.label}</Text>
+        </TouchableOpacity>
+      )}
+      {item.value !== '1' ? (
+        <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
+          <MaterialCommunityIcon
+            name={item.icon}
+            size={20}
+            color={Colors.Black}
+          />
+          <Text style={styles.buttonText1}>{item.label}</Text>
+        </TouchableOpacity>
+      ) : (
+        <></>
+      )}
+    </View>
+  );
+};
 
 const DropdownMore = () => {
   const [visible, setVisible] = useState(false);
@@ -35,7 +92,14 @@ const DropdownMore = () => {
 
   const openDropdown = (): void => {
     DropdownButton.current.measure(
-      (fx: any, fy: any, width: number, height: any, px: number, py: any) => {
+      (
+        fx: number,
+        fy: number,
+        width: number,
+        height: number,
+        px: number,
+        py: number
+      ) => {
         // console.log('Component width is: ' + width);
         // console.log('Component height is: ' + height);
         // console.log('X offset to frame: ' + fx);
@@ -48,51 +112,6 @@ const DropdownMore = () => {
     );
 
     setVisible(true);
-  };
-
-  const onSelect = (item: { label: string; value: string }) => {
-    setSelected(item.label);
-    // console.log('Selected', item);
-  };
-
-  const renderItem = ({ item }): ReactElement<any, any> => {
-    return (
-      <View>
-        {item.value === '1' && (
-          <TouchableOpacity
-            style={styles.item3}
-            onPress={() => onItemPress(item)}
-          >
-            <MaterialCommunityIcon
-              name={item.icon}
-              size={20}
-              color={Colors.Black}
-            />
-            <Text style={styles.buttonText1}>{item.label}</Text>
-          </TouchableOpacity>
-        )}
-        {item.value !== '1' ? (
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => onItemPress(item)}
-          >
-            <MaterialCommunityIcon
-              name={item.icon}
-              size={20}
-              color={Colors.Black}
-            />
-            <Text style={styles.buttonText1}>{item.label}</Text>
-          </TouchableOpacity>
-        ) : (
-          <></>
-        )}
-      </View>
-    );
-  };
-  const onItemPress = (item: { label: string; value: string }): void => {
-    // setSelected(item);
-    onSelect(item);
-    setVisible(false);
   };
 
   return (
@@ -109,9 +128,20 @@ const DropdownMore = () => {
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
-        <View style={[styles.dropdown]}>
-          {data.map(item => renderItem({ item }))}
-        </View>
+        <ScrollView style={[styles.dropdown]}>
+          {data.map(item => {
+            return (
+              <RenderItem
+                key={item.value}
+                item={item}
+                visible={visible}
+                setVisible={setVisible}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            );
+          })}
+        </ScrollView>
       </Modal>
     </>
   );
@@ -146,13 +176,13 @@ const styles = StyleSheet.create({
   },
   item: {
     flexDirection: 'row',
-    paddingBottom: '10%',
+    paddingBottom: '8%',
     paddingLeft: '2%'
   },
   item3: {
     flexDirection: 'row',
-    paddingTop: '10%',
-    paddingBottom: '10%',
+    paddingTop: '8%',
+    paddingBottom: '8%',
     paddingLeft: '2%'
   },
   avatar: {

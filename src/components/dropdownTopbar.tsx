@@ -15,6 +15,73 @@ import { useDispatch } from 'react-redux';
 import { setAuth } from '../store/reducers/info';
 import { Colors } from '../utils/colors';
 
+const RenderItem = ({
+  key,
+  item,
+  selected,
+  setSelected,
+  visible,
+  setVisible,
+  props
+}: {
+  key: string;
+  item: {
+    label: string;
+    subLabel: string;
+    value: string;
+    icon: string;
+    isNew: boolean;
+  };
+  selected: string;
+  setSelected: React.Dispatch<React.SetStateAction<string>>;
+  visible: boolean;
+  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  props: any;
+}): ReactElement<any, any> => {
+  const onItemPress = (
+    Item: { label: string },
+    navigation: { navigate: (arg0: string) => void }
+  ): void => {
+    setVisible(false);
+    if (item.label === 'Drafts') {
+      navigation.navigate('Drafts');
+    }
+    if (item.label === 'Trash') {
+      navigation.navigate('Trash');
+    }
+  };
+  return (
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => onItemPress(item, props.label.navigation)}
+    >
+      {item.label !== 'Settings' && (
+        <MaterialCommunityIcon
+          name={item.icon}
+          size={17}
+          color={Colors.Black}
+        />
+      )}
+      {item.label === 'Settings' && (
+        <Ionicon name={item.icon} size={17} color={Colors.Black} />
+      )}
+      <View
+        style={
+          item.subLabel ? styles.itemTextContainer2 : styles.itemTextContainer1
+        }
+      >
+        <Text style={styles.buttonText}>{item.label}</Text>
+        {item.isNew && (
+          <View style={styles.newView}>
+            <Text style={styles.newText}>New</Text>
+          </View>
+        )}
+        {item.subLabel && <Text style={styles.subLabel}>{item.subLabel}</Text>}
+      </View>
+    </TouchableOpacity>
+  );
+};
+
 const DropdownTopbar = props => {
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
@@ -93,49 +160,6 @@ const DropdownTopbar = props => {
     setVisible(true);
   };
 
-  const renderItem = ({ item }): ReactElement<any, any> => (
-    <TouchableOpacity
-      style={styles.item}
-      onPress={() => onItemPress(item, props.label.navigation)}
-    >
-      {item.label !== 'Settings' && (
-        <MaterialCommunityIcon
-          name={item.icon}
-          size={17}
-          color={Colors.Black}
-        />
-      )}
-      {item.label === 'Settings' && (
-        <Ionicon name={item.icon} size={17} color={Colors.Black} />
-      )}
-      <View
-        style={
-          item.subLabel ? styles.itemTextContainer2 : styles.itemTextContainer1
-        }
-      >
-        <Text style={styles.buttonText}>{item.label}</Text>
-        {item.isNew && (
-          <View style={styles.newView}>
-            <Text style={styles.newText}>New</Text>
-          </View>
-        )}
-        {item.subLabel && <Text style={styles.subLabel}>{item.subLabel}</Text>}
-      </View>
-    </TouchableOpacity>
-  );
-  const onItemPress = (
-    item: { label: string },
-    navigation: { navigate: (arg0: string) => void }
-  ): void => {
-    setVisible(false);
-    if (item.label === 'Drafts') {
-      navigation.navigate('Drafts');
-    }
-    if (item.label === 'Trash') {
-      navigation.navigate('Trash');
-    }
-  };
-
   return (
     <TouchableOpacity ref={DropdownButton} onPress={toggleDropdown}>
       <Avatar
@@ -185,9 +209,29 @@ const DropdownTopbar = props => {
             )}
           </View>
           <View style={styles.horizontalLine} />
-          {data1.map(item => renderItem({ item }))}
+          {data1.map(item => (
+            <RenderItem
+              key={item.value}
+              item={item}
+              selected={selected}
+              setSelected={setSelected}
+              visible={visible}
+              setVisible={setVisible}
+              props={props}
+            />
+          ))}
           <View style={styles.horizontalLine} />
-          {data2.map(item => renderItem({ item }))}
+          {data2.map(item => (
+            <RenderItem
+              key={item.value}
+              item={item}
+              selected={selected}
+              setSelected={setSelected}
+              visible={visible}
+              setVisible={setVisible}
+              props={props}
+            />
+          ))}
           <View style={styles.horizontalLine} />
           <TouchableOpacity
             style={styles.logoutBtn}
