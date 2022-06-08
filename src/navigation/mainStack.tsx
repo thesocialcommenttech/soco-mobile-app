@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
 import Icon1 from 'react-native-vector-icons/Ionicons';
@@ -12,8 +12,15 @@ import ProfileStack from './profileStack';
 const MyTab = createBottomTabNavigator();
 
 const MainStack = () => {
+  const MyTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: 'white'
+    }
+  };
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={MyTheme}>
       <MyTab.Navigator>
         <MyTab.Screen
           name="HomeTab"

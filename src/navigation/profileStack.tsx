@@ -3,6 +3,7 @@ import React from 'react';
 import DraftsScreen from '../screens/drafts/drafts';
 import ProfileScreen from '../screens/profile/profile';
 import TrashScreen from '../screens/trash/trash';
+import OriginalSettingStack from './settingStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,11 @@ const ProfileStack = () => {
       <Stack.Screen
         name="Trash"
         component={TrashScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Setting"
+        component={OriginalSettingStack}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

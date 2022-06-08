@@ -137,6 +137,9 @@ const DropdownTopbar = props => {
     if (item.label === 'Trash') {
       navigation.navigate('Trash');
     }
+    if (item.label === 'Settings') {
+      navigation.navigate('Setting');
+    }
   };
 
   return (
