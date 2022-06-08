@@ -1,7 +1,6 @@
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Image } from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 
 export default function SettingTab({
@@ -24,9 +23,10 @@ export default function SettingTab({
           <View style={styles.information}>
             <View style={styles.more}>
               <View style={styles.icon}>
-                {icon === 'wallet-outline'
+                {/* {icon === 'wallet-outline'
                   ? [<Icon1 name={icon} size={23} color="black" />]
-                  : [<Icon name={icon} size={23} color="black" />]}
+                  : [<Icon name={icon} size={23} color="black" />]} */}
+                <Image source={icon} />
               </View>
               <View style={styles.name}>
                 <Text style={styles.nametext}>{name}</Text>

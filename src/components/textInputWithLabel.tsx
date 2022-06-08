@@ -14,12 +14,15 @@ const TextInputWithLabel = ({ ...props }) => {
         mode="outlined"
         onChangeText={props.onChangeText}
         secureTextEntry={props.isSecureTextEntry}
-        placeholderTextColor="grey"
+        placeholderTextColor={
+          props.placeholderTextColor ? props.placeholderTextColor : '#99969F'
+        }
         underlineColorAndroid={'transparent'}
         outlineColor={props.errorTxt ? '#EE0000' : '#DCDCDC'}
         activeOutlineColor={props.errorTxt ? '#EE0000' : 'blue'}
         selectionColor={'black'}
         right={props.right}
+        left={props.left}
         onBlur={props.onBlur}
         value={props.value}
         editable={props.editable}
@@ -51,9 +54,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     // flexDirection: 'row'
     alignSelf: 'flex-start',
-    marginLeft: '7%',
+    marginLeft: '10%',
     zIndex: 999,
-    marginTop: '8%'
+    marginTop: '6%',
+    paddingLeft: 4,
+    paddingRight: 4
   },
   input: {
     width: '100%',
