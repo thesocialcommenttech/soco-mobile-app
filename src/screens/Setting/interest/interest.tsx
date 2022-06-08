@@ -8,6 +8,8 @@ import {
 import React from 'react';
 import Categorybox from '../../../components/settingsComponents/categoryBox';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 
 const Data = [
   {
@@ -28,7 +30,7 @@ const Data = [
   },
   {
     id: 5,
-    text: 'Technology, Learning'
+    text: 'Technology'
   },
   {
     id: 6,
@@ -74,7 +76,7 @@ const Data1 = [
 export default function Interest() {
   var components = [];
   var components1 = [];
-
+  const navigation = useNavigation();
   const selectClose = data => {
     console.log(data);
   };
@@ -119,11 +121,16 @@ export default function Interest() {
   return (
     <>
       <View style={styles.container}>
+        <View style={styles.flexrow}>
+          <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+            <Icon1 name="arrow-left" size={28} color="black" />
+          </TouchableWithoutFeedback>
+          <Text style={styles.mheader}>Interests</Text>
+        </View>
         <View style={styles.fCont}>
           <Text style={styles.boldtext}>My Interests</Text>
           <Text style={styles.normaltext}>Total {Data.length} Interests</Text>
         </View>
-        <View style={styles.bottomruler} />
         <View style={styles.selectedCategories}>{components1}</View>
 
         <View style={styles.addcategories}>
@@ -133,13 +140,12 @@ export default function Interest() {
               {10 - Data.length} selection Left
             </Text>
           </View>
-          <View style={styles.bottomruler} />
-          <View style={styles.maximum}>
+          {/* <View style={styles.maximum}>
             <Text>Maximum 10 Interest can be selected</Text>
-          </View>
+          </View> */}
           <View style={styles.searchbox}>
             <View style={styles.searchIcon}>
-              <Icon name="search" size={15} color="#0063FF" />
+              <Icon name="search" size={15.5} color="#0063FF" />
             </View>
             <TextInput
               placeholder="Search Category Name"
@@ -156,7 +162,7 @@ export default function Interest() {
           }}
         >
           <View style={styles.updatebtn}>
-            <Text style={styles.updatetxt}>Update</Text>
+            <Text style={styles.updatetxt}>Save</Text>
           </View>
         </TouchableWithoutFeedback>
       </View>
@@ -166,9 +172,8 @@ export default function Interest() {
 
 const styles = StyleSheet.create({
   container: {
-    marginLeft: '3%',
-    marginRight: '3%',
-    marginTop: '7%',
+    marginLeft: '4.5%',
+    marginRight: '4.5%',
     flex: 1
   },
   fCont: {
@@ -177,12 +182,15 @@ const styles = StyleSheet.create({
   },
   boldtext: {
     fontFamily: 'Roboto-Medium',
-    fontWeight: '900',
-    color: 'black'
+    fontWeight: '500',
+    color: '#7D7987',
+    lineHeight: 16,
+    fontSize: 15
   },
   normaltext: {
     fontFamily: 'Roboto-Medium',
-    fontWeight: '500'
+    fontWeight: '400',
+    color: '#BDBDBD'
   },
   bottomruler: {
     borderBottomColor: '#F0F2F5',
@@ -190,30 +198,31 @@ const styles = StyleSheet.create({
     marginTop: '3%'
   },
   backgroundstyle: {
-    backgroundColor: '#1563E2',
+    backgroundColor: '#0063FF',
     alignSelf: 'center',
-    padding: 8,
+    paddingTop: 7,
+    paddingLeft: 7,
+    paddingBottom: 7,
     paddingRight: 3,
-    borderRadius: 10,
+    borderRadius: 8,
     flexDirection: 'row'
   },
   textstyle: {
     color: 'white'
   },
   selectedCategories: {
-    marginTop: '3%',
-    padding: 2,
+    marginTop: '6%',
     flexDirection: 'row',
     flexWrap: 'wrap'
   },
   addcategories: {
-    marginTop: '3%'
+    marginTop: '8%'
   },
   searchbox: {
     borderWidth: 1,
     borderRadius: 5,
     borderColor: '#7D7987',
-    marginTop: '1.5%',
+    marginTop: '7%',
     flexDirection: 'row'
   },
   allcategory: {
@@ -232,20 +241,23 @@ const styles = StyleSheet.create({
     marginBottom: '1%'
   },
   selecttextstyle: {
-    color: '#1563E2'
+    color: '#0063FF'
   },
   updatebtn: {
-    backgroundColor: '#1563E2',
-    padding: 11,
+    backgroundColor: '#0063FF',
+    paddingTop: 15,
+    paddingBottom: 15,
     alignSelf: 'center',
     fontFamily: 'Roboto-Medium',
     borderRadius: 10,
     marginTop: '3%',
-    width: '35%'
+    width: '100%'
   },
   updatetxt: {
-    color: 'white',
-    alignSelf: 'center'
+    color: '#FFFFFF',
+    alignSelf: 'center',
+    fontWeight: '600',
+    fontSize: 15
   },
   searchIcon: {
     marginTop: '4%',
@@ -254,5 +266,18 @@ const styles = StyleSheet.create({
   },
   maximum: {
     marginTop: '1.5%'
+  },
+  flexrow: {
+    flexDirection: 'row',
+    marginBottom: '6%',
+    marginLeft: '-1%',
+    marginTop: '3%'
+  },
+  mheader: {
+    color: 'black',
+    marginLeft: '4%',
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: '0.5%'
   }
 });

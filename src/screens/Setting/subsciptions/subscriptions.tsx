@@ -7,6 +7,8 @@ import {
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
+import { useNavigation } from '@react-navigation/native';
+import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Data = [
   {
@@ -26,9 +28,16 @@ const Data = [
 ];
 
 export default function Subscriptions() {
+  const navigation = useNavigation();
   return (
     <>
       <View style={styles.container}>
+        <View style={styles.flexrow}>
+          <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+            <Icon1 name="arrow-left" size={28} color="black" />
+          </TouchableWithoutFeedback>
+          <Text style={styles.mheader}>Subscriptions</Text>
+        </View>
         {Data.length
           ? [
               <View style={styles.message}>
@@ -108,7 +117,9 @@ export default function Subscriptions() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: '2%'
+    marginLeft: '4%',
+    marginRight: '4%',
+    marginTop: '3%'
   },
   mainmessage: {
     padding: 15,
@@ -171,5 +182,17 @@ const styles = StyleSheet.create({
   subscriptiontitle: {
     color: 'black',
     fontWeight: 'bold'
+  },
+  flexrow: {
+    flexDirection: 'row',
+    marginTop: '1%',
+    marginBottom: '4%'
+  },
+  mheader: {
+    color: 'black',
+    marginLeft: '4%',
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: '0.5%'
   }
 });

@@ -4,11 +4,14 @@ import {
   View,
   FlatList,
   TouchableOpacity,
-  ToastAndroid
+  ToastAndroid,
+  TouchableWithoutFeedback
 } from 'react-native';
 import React, { useState } from 'react';
 import ReferalList from '../../../components/settingsComponents/referalsList';
 import Clipboard from '@react-native-clipboard/clipboard';
+import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 
 const Data = [
   {
@@ -43,7 +46,7 @@ const Data = [
 
 export default function Referals() {
   const [code] = useState('5UYRCH');
-
+  const navigation = useNavigation();
   const copyToClipboard = text => {
     Clipboard.setString(text);
   };
@@ -54,6 +57,12 @@ export default function Referals() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.flexrow}>
+        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+          <Icon1 name="arrow-left" size={28} color="black" />
+        </TouchableWithoutFeedback>
+        <Text style={styles.mheader}>Refferals</Text>
+      </View>
       <View style={styles.box}>
         <View style={styles.label}>
           <Text style={styles.heading}>Your Refferal Code</Text>
@@ -83,7 +92,6 @@ export default function Referals() {
       <View style={styles.refferals}>
         <Text style={styles.boldtext}>Your Refferals</Text>
       </View>
-      <View style={styles.bottomruler} />
       <View>
         <FlatList
           data={Data}
@@ -144,7 +152,8 @@ const styles = StyleSheet.create({
   },
   share: {
     color: 'black',
-    lineHeight: 19
+    lineHeight: 20,
+    marginBottom: '2%'
   },
   codeused: {
     marginLeft: '2.5%',
@@ -153,8 +162,9 @@ const styles = StyleSheet.create({
   boldtext: {
     fontFamily: 'Roboto-Medium',
     fontWeight: '900',
-    color: 'black',
-    fontSize: 17
+    fontSize: 17,
+    marginTop: '2%',
+    marginBottom: '2%'
   },
   refferals: {
     marginTop: '3%',
@@ -172,5 +182,18 @@ const styles = StyleSheet.create({
   },
   instruction: {
     color: 'black'
+  },
+  flexrow: {
+    flexDirection: 'row',
+    marginTop: '2%',
+    marginLeft: '2%',
+    marginBottom: '4%'
+  },
+  mheader: {
+    color: 'black',
+    marginLeft: '4%',
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: '0.5%'
   }
 });
