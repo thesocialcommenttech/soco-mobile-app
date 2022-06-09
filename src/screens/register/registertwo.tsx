@@ -61,8 +61,8 @@ const RegisterTwoScreen = ({ navigation }) => {
         academics: values.academics
       })
     );
-    dispatch(setAuth(true));
-    navigation.navigate('RegisterTwo');
+    dispatch(setAuth(1));
+    // navigation.navigate('RegisterTwo');
   };
 
   const RegisterSchema = object().shape({

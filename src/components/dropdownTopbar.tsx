@@ -24,7 +24,7 @@ const RenderItem = ({
   setVisible,
   props
 }: {
-  key: string;
+  key: number;
   item: {
     label: string;
     subLabel: string;
@@ -209,9 +209,9 @@ const DropdownTopbar = props => {
             )}
           </View>
           <View style={styles.horizontalLine} />
-          {data1.map(item => (
+          {data1.map((item, index) => (
             <RenderItem
-              key={item.value}
+              key={index}
               item={item}
               selected={selected}
               setSelected={setSelected}
@@ -221,9 +221,9 @@ const DropdownTopbar = props => {
             />
           ))}
           <View style={styles.horizontalLine} />
-          {data2.map(item => (
+          {data2.map((item, index) => (
             <RenderItem
-              key={item.value}
+              key={index}
               item={item}
               selected={selected}
               setSelected={setSelected}

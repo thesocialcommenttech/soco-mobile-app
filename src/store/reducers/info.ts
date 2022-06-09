@@ -17,7 +17,7 @@ const initState: {
   following: number;
   views: number;
   accessPortfolio: boolean;
-  authenticated: boolean;
+  authenticated: number;
 } = {
   name: '',
   userName: '',
@@ -35,7 +35,7 @@ const initState: {
   following: 0,
   views: 0,
   accessPortfolio: true,
-  authenticated: false
+  authenticated: 0
 };
 
 export const infoSlice = createSlice({
@@ -89,7 +89,7 @@ export const selectUserInfo = (state: {
 
 export const selectAuth = (state: {
   userinfo: {
-    authenticated: boolean;
+    authenticated: number;
   };
 }) => state.userinfo.authenticated;
 
