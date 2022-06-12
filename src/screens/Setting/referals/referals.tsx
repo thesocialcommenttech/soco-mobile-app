@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     margin: '2.7%'
   },
   share: {
-    color: 'black',
+    color: '#7D7987',
     lineHeight: 20,
     marginBottom: '2%'
   },
@@ -164,7 +164,8 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     fontSize: 17,
     marginTop: '2%',
-    marginBottom: '2%'
+    marginBottom: '2%',
+    color: '#7D7987'
   },
   refferals: {
     marginTop: '3%',
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
     color: '#1563E2'
   },
   instruction: {
-    color: 'black'
+    color: '#7D7987'
   },
   flexrow: {
     flexDirection: 'row',
