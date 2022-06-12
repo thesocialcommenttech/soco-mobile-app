@@ -11,7 +11,11 @@ const TopBar = (props: any) => {
     <View style={styles.container}>
       <Image style={styles.logo} source={logo} />
       <View style={styles.rightContainer}>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate('Search');
+          }}
+        >
           <Ionicon name="search" size={21} color="white" />
         </TouchableOpacity>
         <TouchableOpacity>

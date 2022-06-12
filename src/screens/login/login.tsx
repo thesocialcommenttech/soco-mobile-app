@@ -39,7 +39,7 @@ const LoginScreen = ({ navigation }) => {
   ) => {
     // Will be replaced with API call to backend to authenticate the given emailid and password
     // dispatch(setUserDetails(values));
-    dispatch(setAuth(true));
+    dispatch(setAuth(2));
     formikActions.setSubmitting(false);
   };
 

@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import DraftsScreen from '../screens/drafts/drafts';
 import HomeScreen from '../screens/home/home';
+import SearchScreen from '../screens/search/search';
 import TrashScreen from '../screens/trash/trash';
 
 const Stack = createNativeStackNavigator();
