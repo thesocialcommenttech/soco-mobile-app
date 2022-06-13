@@ -80,6 +80,7 @@ export default function Bank() {
           disabled={false}
           value={toggleCheckBox}
           onValueChange={newValue => setToggleCheckBox(newValue)}
+          tintColor={'#000000'}
         />
         <Text style={styles.checktext}>
           Check your bank Account/UPI details twice, carefully before adding it.
@@ -118,9 +119,9 @@ const styles = StyleSheet.create({
   },
   btn: {
     alignItems: 'center',
-    padding: '5%',
+    padding: '4%',
     backgroundColor: '#0063FF',
-    borderRadius: 10,
+    borderRadius: 6,
     marginTop: '4%'
   },
   btntext: {

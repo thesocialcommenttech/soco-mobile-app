@@ -3,7 +3,8 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
-  Animated
+  Animated,
+  ScrollView
 } from 'react-native';
 import React, { useState, useRef } from 'react';
 import Upi from './upi';
@@ -100,17 +101,21 @@ const styles = StyleSheet.create({
     marginRight: '4%'
   },
   typetext: {
-    fontSize: 16
+    fontSize: 16,
+    color: '#7D7987',
+    marginLeft: '4%'
   },
   accountview: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: '3%'
+    marginTop: '3%',
+    marginLeft: '3%',
+    marginRight: '3%'
   },
   select: {
     borderColor: '#FFCA12',
     borderWidth: 1.5,
-    borderRadius: 10,
+    borderRadius: 5,
     paddingTop: '2.5%',
     paddingBottom: '2.5%',
     alignItems: 'center',
@@ -128,7 +133,7 @@ const styles = StyleSheet.create({
   selectactive: {
     borderColor: '#FFCA12',
     borderWidth: 1.5,
-    borderRadius: 10,
+    borderRadius: 5,
     backgroundColor: '#FFF4CC',
     paddingTop: '2.5%',
     paddingBottom: '2.5%',
@@ -140,6 +145,8 @@ const styles = StyleSheet.create({
   detailtext: {
     marginTop: '6%',
     fontSize: 16,
-    marginBottom: '-4%'
+    marginBottom: '-4%',
+    marginLeft: '4%',
+    color: '#7D7987'
   }
 });

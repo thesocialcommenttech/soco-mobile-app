@@ -130,7 +130,7 @@ export default function Profile() {
             />
             <View style={styles.instruction}>
               <View style={styles.icon}>
-                <Icon name="exclamationcircleo" size={16} />
+                <Icon name="exclamationcircleo" size={16} color={'#7D7987'} />
               </View>
               <View style={styles.insview}>
                 <Text style={styles.instext}>
@@ -277,7 +277,8 @@ const styles = StyleSheet.create({
     marginRight: '1%'
   },
   instext: {
-    fontSize: 15
+    fontSize: 15,
+    color: '#7D7987'
   },
   insview: {
     marginLeft: '1%'

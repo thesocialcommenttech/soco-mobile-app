@@ -148,10 +148,11 @@ export default function Interest() {
               <Icon name="search" size={15.5} color="#0063FF" />
             </View>
             <TextInput
-              placeholder="Search Category Name"
+              placeholder="Search"
               onChangeText={text => {
                 search(text);
               }}
+              placeholderTextColor="#99969F"
             />
           </View>
         </View>

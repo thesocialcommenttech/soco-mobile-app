@@ -158,11 +158,12 @@ const styles = StyleSheet.create({
   },
   withdrawview: {
     marginLeft: '4%',
-    marginTop: '2%',
+    marginTop: '8%',
     marginRight: '4%'
   },
   withdrawtext: {
-    fontSize: 16
+    fontSize: 17,
+    color: '#7D7987'
   },
   passTB: {
     marginTop: '-6%'
@@ -182,21 +183,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   withtext: {
-    fontSize: 15,
+    fontSize: 16,
     color: 'white',
-    marginTop: '1.5%',
-    marginLeft: '2%',
-    fontFamily: 'Roboto-normal'
+    marginTop: '0.5%',
+    marginLeft: '3%',
+    fontFamily: 'Roboto-normal',
+    fontWeight: '500'
   },
   account: {
     marginLeft: '4%',
     marginRight: '4%',
-    marginTop: '3%',
+    marginTop: '7%',
     padding: '2.5%',
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
   acctext: {
-    fontSize: 17
+    fontSize: 17,
+    color: '#7D7987'
   }
 });

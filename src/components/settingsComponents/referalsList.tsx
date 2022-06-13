@@ -36,7 +36,7 @@ export default function ReferalList({
           </View>
           <View style={styles.followtext}>
             <Text style={styles.name}>{title}</Text>
-            <Text>@ {userId}</Text>
+            <Text style={styles.uid}>@ {userId}</Text>
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -59,7 +59,8 @@ const styles = StyleSheet.create({
     borderRadius: 25
   },
   followtext: {
-    marginLeft: '4%'
+    marginLeft: '6%',
+    marginTop: '0.5%'
   },
   name: {
     fontFamily: 'Roboto-Medium',
@@ -76,5 +77,8 @@ const styles = StyleSheet.create({
   },
   rowImage: {
     flexDirection: 'row'
+  },
+  uid: {
+    color: '#7D7987'
   }
 });

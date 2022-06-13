@@ -143,10 +143,11 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontFamily: 'Roboto-Medium',
-    fontSize: 18
+    fontSize: 18,
+    color: '#7D7987'
   },
   headingview: {
-    marginTop: '4.5%',
+    marginTop: '6.5%',
     marginLeft: '2%',
     marginRight: '2%'
   },
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
   },
   header: {
     marginTop: '0%',
-    marginBottom: '-2%',
+    marginBottom: '0%',
     marginLeft: '1.5%'
   },
   loginBtn: {

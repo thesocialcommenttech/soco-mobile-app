@@ -23,7 +23,7 @@ export default function TransactionList({ ...props }) {
             <Text style={styles.blacktext}>₹ {props.amount}</Text>
           </View>
           <View style={styles.date}>
-            <Text>{props.date}</Text>
+            <Text style={styles.datetext}>{props.date}</Text>
           </View>
         </View>
       </View>
@@ -34,7 +34,8 @@ export default function TransactionList({ ...props }) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    marginTop: '4%'
+    marginTop: '4%',
+    marginBottom: '2%'
   },
   maincontent: {
     flex: 1,
@@ -50,5 +51,8 @@ const styles = StyleSheet.create({
   blacktext: {
     color: 'black',
     fontSize: 14
+  },
+  datetext: {
+    color: '#7D7987'
   }
 });

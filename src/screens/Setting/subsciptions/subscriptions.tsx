@@ -47,7 +47,7 @@ export default function Subscriptions() {
 
                 <View style={styles.subtext}>
                   <Text style={styles.activesub}>
-                    You have an active premium subscription valid till
+                    You have an active premium subscription till
                     <Text style={styles.activesubtext}>
                       {' '}
                       {Data[Data.length - 1].date}
@@ -77,38 +77,39 @@ export default function Subscriptions() {
         <View style={styles.subsview}>
           <Text style={styles.substext}>Subscriptions history</Text>
         </View>
-        <View style={styles.bottomruler} />
-        <FlatList
-          data={Data}
-          keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.subdetail}>
-              <View>
+        <View style={styles.list}>
+          <FlatList
+            data={Data}
+            keyExtractor={item => item.id.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.subdetail}>
                 <View>
-                  <Text style={styles.subscriptiontitle}>
-                    {item.subsciption_title}
-                  </Text>
-                </View>
-                <View>
-                  <View style={styles.row}>
-                    <Text>₹{item.amt}/- </Text>
-                    <Text> @{item.date}</Text>
-                    <Text> {item.time}</Text>
+                  <View>
+                    <Text style={styles.subscriptiontitle}>
+                      {item.subsciption_title}
+                    </Text>
+                  </View>
+                  <View>
+                    <View style={styles.row}>
+                      <Text style={styles.imf}>₹{item.amt}/- </Text>
+                      <Text style={styles.imf}> @{item.date}</Text>
+                      <Text style={styles.imf}> {item.time}</Text>
+                    </View>
                   </View>
                 </View>
+                <View style={styles.downloadbtn}>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      console.log('Download Clicked!');
+                    }}
+                  >
+                    <Icon name="download" size={18} color="blue" />
+                  </TouchableWithoutFeedback>
+                </View>
               </View>
-              <View style={styles.downloadbtn}>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    console.log('Download Clicked!');
-                  }}
-                >
-                  <Icon name="download" size={18} color="blue" />
-                </TouchableWithoutFeedback>
-              </View>
-            </View>
-          )}
-        />
+            )}
+          />
+        </View>
       </View>
     </>
   );
@@ -138,12 +139,13 @@ const styles = StyleSheet.create({
     marginTop: '0.2%'
   },
   subsview: {
-    marginTop: '3%',
+    marginTop: '6%',
     marginRight: '1%',
     marginLeft: '1%'
   },
   substext: {
-    marginTop: '1%'
+    marginTop: '1%',
+    color: '#7D7987'
   },
   bottomruler: {
     borderBottomColor: '#F0F2F5',
@@ -153,7 +155,7 @@ const styles = StyleSheet.create({
   subdetail: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: '2%'
+    marginTop: '3%'
   },
   downloadbtn: {
     marginTop: '3%',
@@ -169,7 +171,8 @@ const styles = StyleSheet.create({
   },
   activesub: {
     fontSize: 14,
-    color: 'black'
+    color: 'black',
+    marginRight: '1%'
   },
   activesubtext: {
     fontSize: 14,
@@ -194,5 +197,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginTop: '0.5%'
+  },
+  imf: {
+    color: '#7D7987'
+  },
+  list: {
+    marginLeft: '1%',
+    marginRight: '1%',
+    marginTop: '4%'
   }
 });
