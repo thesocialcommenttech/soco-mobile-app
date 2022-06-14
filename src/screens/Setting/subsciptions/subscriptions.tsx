@@ -103,7 +103,7 @@ export default function Subscriptions() {
                       console.log('Download Clicked!');
                     }}
                   >
-                    <Icon name="download" size={18} color="blue" />
+                    <Icon1 name="download-outline" size={24} color="#0063FF" />
                   </TouchableWithoutFeedback>
                 </View>
               </View>
@@ -118,7 +118,7 @@ export default function Subscriptions() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginLeft: '4%',
+    marginLeft: '5%',
     marginRight: '4%',
     marginTop: '3%'
   },
@@ -139,13 +139,14 @@ const styles = StyleSheet.create({
     marginTop: '0.2%'
   },
   subsview: {
-    marginTop: '6%',
+    marginTop: '8%',
     marginRight: '1%',
     marginLeft: '1%'
   },
   substext: {
     marginTop: '1%',
-    color: '#7D7987'
+    color: '#7D7987',
+    fontSize: 15.5
   },
   bottomruler: {
     borderBottomColor: '#F0F2F5',
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
   subdetail: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: '3%'
+    marginTop: '5%'
   },
   downloadbtn: {
     marginTop: '3%',
@@ -167,7 +168,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF4CC',
     marginTop: '2%',
     marginRight: '1%',
-    marginLeft: '1%'
+    marginLeft: '1%',
+    borderRadius: 5
   },
   activesub: {
     fontSize: 14,
@@ -177,14 +179,17 @@ const styles = StyleSheet.create({
   activesubtext: {
     fontSize: 14,
     color: 'black',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    lineHeight: 19
   },
   row: {
     flexDirection: 'row'
   },
   subscriptiontitle: {
     color: 'black',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    fontSize: 15,
+    lineHeight: 20
   },
   flexrow: {
     flexDirection: 'row',
@@ -199,7 +204,8 @@ const styles = StyleSheet.create({
     marginTop: '0.5%'
   },
   imf: {
-    color: '#7D7987'
+    color: '#7D7987',
+    marginTop: '1%'
   },
   list: {
     marginLeft: '1%',
