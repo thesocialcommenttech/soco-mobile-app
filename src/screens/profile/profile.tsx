@@ -8,18 +8,17 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TopBar from '../../components/topBar';
 import { Avatar } from '@rneui/base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import { useSelector } from 'react-redux';
-import { selectUserInfo } from '../../store/reducers/info';
 import { Card } from '@rneui/base';
 import DropdownBottombutton from '../../components/dropdownBottombutton';
 import { TextInput } from 'react-native';
 import DropdownMore from '../../components/dropdownMore';
 import { Colors } from '../../utils/colors';
+import { getUserData } from '../../utils/services/user-profile_service/getUserData.service';
 
 const ItemRender = ({ actName, count }: { actName: string; count: number }) => (
   <TouchableOpacity style={styles.item}>
@@ -31,8 +30,6 @@ const ItemRender = ({ actName, count }: { actName: string; count: number }) => (
 );
 
 const ProfileScreen = ({ navigation }) => {
-  const state = useSelector(selectUserInfo);
-
   const [background] = useState(
     'https://images.unsplash.com/photo-1651006450901-9f487bafe481?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80'
   );
@@ -71,6 +68,10 @@ const ProfileScreen = ({ navigation }) => {
   const [curLen1, setCurLen1] = useState(0);
   const [isPremium] = useState(true);
   const [percentProfile] = useState(75);
+
+  useEffect(() => {
+    // const userData = getUserData();
+  }, []);
 
   const ITEMS = [
     {

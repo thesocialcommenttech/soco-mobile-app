@@ -11,33 +11,31 @@ import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
 import { useFormik } from 'formik';
 import { object, string } from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  selectUserDetails,
-  setUserDetails
-} from '../../store/reducers/register';
+import { useDispatch } from 'react-redux';
 import CustomRadioButton from '../../components/customRadioButton';
 import { TextInput } from 'react-native-paper';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import { setAuth } from '../../store/reducers/info';
 import { Colors } from '../../utils/colors';
+import { register } from '../../utils/services/register_service/register.service';
+import store from '../../store';
+import { RegisterReqeust } from '../../utils/typings/register_interface/register.interface';
+import { AuthAction } from '../../store/actions/auth';
 
-const RegisterTwoScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const state = useSelector(selectUserDetails);
+const RegisterTwoScreen = ({ route, navigation }) => {
+  const state = route.params;
 
   const [date, setDate] = useState(new Date());
 
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate;
     setDate(currentDate);
-    dispatch(
-      setUserDetails({
-        ...state,
-        dob: currentDate.toLocaleDateString()
-      })
-    );
+    // dispatch(
+    //   setUserDetails({
+    //     ...state,
+    //     dob: currentDate.toLocaleDateString()
+    //   })
+    // );
   };
 
   const showMode = currentMode => {
@@ -53,21 +51,41 @@ const RegisterTwoScreen = ({ navigation }) => {
     showMode('date');
   };
 
-  const onRegister = (values: any) => {
-    dispatch(
-      setUserDetails({
-        ...state,
-        gender: values.gender,
-        academics: values.academics
-      })
-    );
-    dispatch(setAuth(1));
-    // navigation.navigate('RegisterTwo');
+  const registerUser = (payload: RegisterReqeust) => {
+    return function (dispatch) {
+      register(payload)
+        .then(res => {
+          console.log(res);
+          dispatch({ type: AuthAction.LOGIN, payload: res.data });
+        })
+        .catch(err => {
+          console.log(err, 'JJJJ');
+        });
+    };
+  };
+
+  const onRegister = async (
+    values: any,
+    formikActions: {
+      setSubmitting: (arg0: boolean) => void;
+      resetForm: () => void;
+    }
+  ) => {
+    const payload = {
+      ...state,
+      academic: values.academic,
+      gender: values.gender,
+      dob: date.toLocaleDateString()
+    };
+    store.dispatch(registerUser(payload) as any);
+    formikActions.setSubmitting(false);
+    formikActions.resetForm();
+    console.log(payload);
   };
 
   const RegisterSchema = object().shape({
     gender: string().required('Gender is required'),
-    academics: string().required('Academics is required')
+    academic: string().required('Academic is required')
   });
 
   const formik = useFormik({
@@ -100,14 +118,14 @@ const RegisterTwoScreen = ({ navigation }) => {
               errorTxt={formik.touched.gender && formik.errors.gender}
             />
             <CustomRadioButton
-              label={'Academics'}
+              label={'Academic'}
               option1="Graduate"
               option2="Undergraduate"
               onPress={(option: string) => {
-                formik.setFieldValue('academics', option);
+                formik.setFieldValue('academic', option);
               }}
-              onBlur={formik.handleBlur('academics')}
-              errorTxt={formik.touched.academics && formik.errors.academics}
+              onBlur={formik.handleBlur('academic')}
+              errorTxt={formik.touched.academic && formik.errors.academic}
             />
             <TextInputWithLabel
               placeholder="dd/mm/yyyy"

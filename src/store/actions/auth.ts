@@ -1,4 +1,4 @@
-import { IAuthData } from '~/src/store/reducers/auth';
+import { IAuthData } from '../../store/reducers/auth';
 
 export enum AuthAction {
   LOGIN = 'LOGIN',

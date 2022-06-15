@@ -1,26 +1,36 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
-import isJSON from 'validator/lib/isJSON';
+import * as SecureStore from 'expo-secure-store';
 
-export function deleteAuthCredentials() {
+export async function deleteAuthCredentials() {
+  await Promise.all([
+    SecureStore.deleteItemAsync('ut'),
+    SecureStore.deleteItemAsync('uid')
+  ]);
   delete axios.defaults.headers.common.Authorization;
 }
 
-export function setAuthCredentials({ token }: { token: string }) {
+export async function setAuthCredentials({
+  user_id,
+  token
+}: {
+  token: string;
+  user_id: string;
+}) {
+  await Promise.all([
+    SecureStore.setItemAsync('uid', user_id),
+    SecureStore.setItemAsync('ut', token)
+  ]);
   axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  // set baseurl of axios
+  axios.defaults.baseURL =
+    'https://thesocialcomment-backend-test.herokuapp.com';
 }
 
-export function getAuthCredentials() {
-  const userDetailsStringified = Cookies.get('ud');
+export async function getAuthCredentials() {
+  const [user_id, token] = await Promise.all([
+    SecureStore.getItemAsync('uid'),
+    SecureStore.getItemAsync('ut')
+  ]);
 
-  if (!userDetailsStringified) {
-    return null;
-  }
-
-  return {
-    token: Cookies.get('t'),
-    user: isJSON(userDetailsStringified)
-      ? JSON.parse(userDetailsStringified)
-      : null
-  };
+  return { user_id, token };
 }

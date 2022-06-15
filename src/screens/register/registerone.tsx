@@ -14,12 +14,8 @@ import { TextInput } from 'react-native-paper';
 import { useFormik } from 'formik';
 import { object, string, boolean } from 'yup';
 import { CheckBox } from '@rneui/base';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  selectUserDetails,
-  setUserDetails
-} from '../../store/reducers/register';
 import { Colors } from '../../utils/colors';
+import { RegisterReqeust } from '../../utils/typings/register_interface/register.interface';
 var logo = require('../../assets/images/logos/Untitled.png');
 
 const CustomCheckBox = (props: any) => {
@@ -44,13 +40,27 @@ const CustomCheckBox = (props: any) => {
 };
 
 const RegisterOneScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
   const [isSecure, setIsSecure] = useState(true);
-  const state = useSelector(selectUserDetails);
+  const state: RegisterReqeust = {
+    name: null,
+    username: null,
+    email: null,
+    password: null,
+    academic: null,
+    agreement: false,
+    dob: null,
+    gender: null,
+    city: null,
+    pincode: null,
+    referal: null,
+    state: null
+  };
 
   const onNext = (values: any) => {
-    dispatch(setUserDetails(values));
-    navigation.navigate('RegisterTwo');
+    const payload = {
+      ...values
+    };
+    navigation.navigate('RegisterTwo', payload);
   };
 
   const NextSchema = object().shape({
@@ -59,8 +69,8 @@ const RegisterOneScreen = ({ navigation }) => {
       .required('Email is Required'),
     password: string().required('Password is Required'),
     name: string().required('Name is Required'),
-    userName: string().required('Username is Required'),
-    isChecked: boolean().oneOf(
+    username: string().required('Username is Required'),
+    agreement: boolean().oneOf(
       [true],
       'You must agree to the terms and conditions and privacy policy'
     )
@@ -97,10 +107,10 @@ const RegisterOneScreen = ({ navigation }) => {
               placeholder="Username"
               label="Username"
               inputStyle={styles.usernameTB}
-              onChangeText={formik.handleChange('userName')}
-              value={formik.values.userName}
-              errorTxt={formik.touched.userName && formik.errors.userName}
-              onBlur={formik.handleBlur('userName')}
+              onChangeText={formik.handleChange('username')}
+              value={formik.values.username}
+              errorTxt={formik.touched.username && formik.errors.username}
+              onBlur={formik.handleBlur('username')}
             />
             <TextInputWithLabel
               placeholder="Email"
@@ -134,21 +144,19 @@ const RegisterOneScreen = ({ navigation }) => {
               placeholder="Referral (Optional)"
               label="Referral (Optional)"
               inputStyle={styles.refTB}
-              onChangeText={formik.handleChange('referralCode')}
-              value={formik.values.referralCode}
-              errorTxt={
-                formik.touched.referralCode && formik.errors.referralCode
-              }
-              onBlur={formik.handleBlur('referralCode')}
+              onChangeText={formik.handleChange('referal')}
+              value={formik.values.referal}
+              errorTxt={formik.touched.referal && formik.errors.referal}
+              onBlur={formik.handleBlur('referal')}
             />
             <View>
               <CustomCheckBox
-                checked={formik.values.isChecked}
+                checked={formik.values.agreement}
                 onPress={() => {
-                  formik.setFieldValue('isChecked', !formik.values.isChecked);
+                  formik.setFieldValue('agreement', !formik.values.agreement);
                 }}
-                onBlur={formik.handleBlur('isChecked')}
-                errorTxt={formik.touched.isChecked && formik.errors.isChecked}
+                onBlur={formik.handleBlur('agreement')}
+                errorTxt={formik.touched.agreement && formik.errors.agreement}
               />
             </View>
             <ButtonWithLoader

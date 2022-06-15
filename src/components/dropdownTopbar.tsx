@@ -1,4 +1,4 @@
-import React, { ReactElement, useRef, useState } from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -11,20 +11,16 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import CircularProgress from './circularIndicator';
 import ReactNativeModal from 'react-native-modal';
-import { useDispatch } from 'react-redux';
-import { setAuth } from '../store/reducers/info';
 import { Colors } from '../utils/colors';
+import { AuthAction } from '../store/actions/auth';
+import store from '../store';
+import { getAuthCredentials } from '../lib/auth-credentials';
 
 const RenderItem = ({
-  key,
   item,
-  selected,
-  setSelected,
-  visible,
   setVisible,
   props
 }: {
-  key: number;
   item: {
     label: string;
     subLabel: string;
@@ -87,7 +83,6 @@ const DropdownTopbar = props => {
   const DropdownButton = useRef(null);
   const [dropdownTop, setDropdownTop] = useState(0);
   const [selected, setSelected] = useState(undefined);
-  const dispatch = useDispatch();
   const data1 = [
     {
       label: 'Internships/Jobs',
@@ -209,10 +204,10 @@ const DropdownTopbar = props => {
             )}
           </View>
           <View style={styles.horizontalLine} />
-          {data1.map((item, index) => (
+          {data1.map(item => (
             <RenderItem
-              key={index}
               item={item}
+              key={item.value}
               selected={selected}
               setSelected={setSelected}
               visible={visible}
@@ -237,7 +232,9 @@ const DropdownTopbar = props => {
             style={styles.logoutBtn}
             onPress={() => {
               setVisible(false);
-              dispatch(setAuth(false));
+              store.dispatch({
+                type: AuthAction.LOGOUT
+              });
             }}
           >
             <MaterialCommunityIcon name="logout" size={24} color="white" />

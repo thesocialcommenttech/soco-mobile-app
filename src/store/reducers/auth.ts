@@ -23,16 +23,17 @@ export interface IAuthState extends IAuthData {
 const initState: IAuthState = {
   user: null,
   authenticated: false,
-  token: 'hellowtoken'
+  token: null
 };
 
-export const authReducer = (
+export const authReducer = async (
   state: IAuthState = initState,
   action: AuthActionTypes
-): IAuthState => {
+): Promise<IAuthState> => {
   switch (action.type) {
     case AuthAction.LOGIN:
-      setAuthCredentials({
+      await setAuthCredentials({
+        user_id: action.payload.user._id,
         token: action.payload.token
       });
 
@@ -44,7 +45,7 @@ export const authReducer = (
       };
 
     case AuthAction.LOGOUT:
-      deleteAuthCredentials();
+      await deleteAuthCredentials();
       return initState;
 
     default:

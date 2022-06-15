@@ -8,10 +8,7 @@ const ButtonWithLoader = ({ text, onPress, btnStyle, submitting }) => {
     ? 'rgba(255, 202, 18, 0.4)'
     : 'rgba(255, 202, 18, 1)';
   return (
-    <TouchableOpacity
-      style={[btnStyle, { backgroundColor }]}
-      onPress={submitting ? null : onPress}
-    >
+    <TouchableOpacity style={[btnStyle, { backgroundColor }]} onPress={onPress}>
       <Text style={styles.textStyle}>{text}</Text>
     </TouchableOpacity>
   );

@@ -1,4 +1,5 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from '../../axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import {
   LoginRequestData,
   LoginResponseData
@@ -9,6 +10,7 @@ export function login({
   password
 }: LoginRequestData): Promise<AxiosResponse<LoginResponseData>> {
   const config: AxiosRequestConfig = {
+    baseURL: 'https://thesocialcomment-backend-test.herokuapp.com',
     url: '/user/login',
     method: 'POST',
     headers: {

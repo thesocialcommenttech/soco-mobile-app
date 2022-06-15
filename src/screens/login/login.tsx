@@ -8,19 +8,21 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
 import { TextInput } from 'react-native-paper';
 import { useFormik } from 'formik';
 import { object, string } from 'yup';
-import { useDispatch } from 'react-redux';
-import { setAuth } from '../../store/reducers/info';
 import { Colors } from '../../utils/colors';
+import { login } from '../../utils/services/login_service/login.service';
+import { AuthAction } from '../../store/actions/auth';
+import store from '../../store';
+import { LoginRequestData } from '../../utils/typings/login_interface/login.interface';
+import { getAuthCredentials } from '../../lib/auth-credentials';
 var logo = require('../../assets/images/logos/Untitled.png');
 
 const LoginScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
   const [isSecure, setIsSecure] = useState(true);
   const state: {
     email: string;
@@ -30,16 +32,24 @@ const LoginScreen = ({ navigation }) => {
     password: ''
   };
 
-  const onLogin = (
+  const onLogin = async (
     values: any,
     formikActions: {
       setSubmitting: (arg0: boolean) => void;
       resetForm: () => void;
     }
   ) => {
-    // Will be replaced with API call to backend to authenticate the given emailid and password
-    // dispatch(setUserDetails(values));
-    dispatch(setAuth(2));
+    const payload: LoginRequestData = {
+      email: values.email,
+      password: values.password
+    };
+    const res = await login(payload);
+    if (res.status === 200) {
+      store.dispatch({ type: AuthAction.LOGIN, payload: res.data });
+      formikActions.resetForm();
+    } else {
+      console.log('ERR', res);
+    }
     formikActions.setSubmitting(false);
   };
 
@@ -108,7 +118,6 @@ const LoginScreen = ({ navigation }) => {
             btnStyle={styles.loginBtn}
             submitting={formik.isSubmitting}
           />
-
           <TouchableOpacity style={styles.fmp} onPress={onForgotPassword}>
             <Text style={styles.forPass}>Forgot my password</Text>
           </TouchableOpacity>

@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import Routes from './src/navigation/routes';
 //import { StyleSheet } from 'react-native';
 import Stack from './src/navigation/settingStack';
-import { store } from './src/store';
+import store from './src/store';
 
 const App = () => {
   // const isDarkMode = useColorScheme() === 'dark';

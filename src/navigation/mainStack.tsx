@@ -11,6 +11,10 @@ import HomeStack from './homeStack';
 import PortfolioStack from './portfolioStack';
 import ProfileStack from './profileStack';
 import SearchScreen from '../screens/search/search';
+import store from '../store';
+import { useSelector } from 'react-redux';
+import { IAuthState } from '../store/reducers/auth';
+import { IRootReducer } from '../store/reducers';
 
 const MyTab = createBottomTabNavigator();
 const MyStack = createNativeStackNavigator();
@@ -152,6 +156,12 @@ function AppTabs() {
 }
 
 const MainStack = () => {
+  const user = useSelector((state: IRootReducer) => state.auth);
+  React.useEffect(() => {
+    // const what = store.getState().auth.authenticated;
+    // console.log(what);
+    console.log('MAINSTACK', user);
+  }, []);
   return (
     <NavigationContainer>
       <MyStack.Navigator>
