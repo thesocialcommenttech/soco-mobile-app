@@ -15,6 +15,7 @@ import store from '../store';
 import { useSelector } from 'react-redux';
 import { IAuthState } from '../store/reducers/auth';
 import { IRootReducer } from '../store/reducers';
+import NotificationsScreen from '../screens/notifications/notifications';
 
 const MyTab = createBottomTabNavigator();
 const MyStack = createNativeStackNavigator();
@@ -156,12 +157,12 @@ function AppTabs() {
 }
 
 const MainStack = () => {
-  const user = useSelector((state: IRootReducer) => state.auth);
-  React.useEffect(() => {
-    // const what = store.getState().auth.authenticated;
-    // console.log(what);
-    console.log('MAINSTACK', user);
-  }, []);
+  // const user = useSelector((state: IRootReducer) => state.auth);
+  // React.useEffect(() => {
+  //   // const what = store.getState().auth.authenticated;
+  //   // console.log(what);
+  //   console.log('MAINSTACK', user);
+  // }, []);
   return (
     <NavigationContainer>
       <MyStack.Navigator>
@@ -173,6 +174,13 @@ const MainStack = () => {
         <MyStack.Screen
           name="Search"
           component={SearchScreen}
+          options={{
+            headerShown: false
+          }}
+        />
+        <MyStack.Screen
+          name="Notifications"
+          component={NotificationsScreen}
           options={{
             headerShown: false
           }}

@@ -18,7 +18,11 @@ const TopBar = (props: any) => {
         >
           <Ionicon name="search" size={21} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate('Notifications');
+          }}
+        >
           <MaterialCommunityIcon name="bell-outline" size={22} color="white" />
         </TouchableOpacity>
         <DropdownTopbar label={props} />
