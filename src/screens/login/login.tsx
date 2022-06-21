@@ -8,61 +8,58 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
 import { TextInput } from 'react-native-paper';
-import { useFormik } from 'formik';
+import { FormikHelpers, useFormik } from 'formik';
 import { object, string } from 'yup';
 import { Colors } from '../../utils/colors';
 import { login } from '../../utils/services/login_service/login.service';
-import { AuthAction } from '../../store/actions/auth';
-import store from '../../store';
+import { AuthActionTypes, setAuthToLogin } from '../../store/actions/auth';
 import { LoginRequestData } from '../../utils/typings/login_interface/login.interface';
-import { getAuthCredentials } from '../../lib/auth-credentials';
-var logo = require('../../assets/images/logos/Untitled.png');
+import { useDispatch } from 'react-redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { IRootReducer } from '../../store/reducers';
+const logo = require('../../assets/images/logos/Untitled.png');
 
 const LoginScreen = ({ navigation }) => {
   const [isSecure, setIsSecure] = useState(true);
-  const state: {
-    email: string;
-    password: string;
-  } = {
-    email: '',
-    password: ''
-  };
+  const dispatch =
+    useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
 
   const onLogin = async (
-    values: any,
-    formikActions: {
-      setSubmitting: (arg0: boolean) => void;
-      resetForm: () => void;
-    }
+    values: LoginRequestData,
+    formikActions: FormikHelpers<LoginRequestData>
   ) => {
-    const payload: LoginRequestData = {
+    const response = await login({
       email: values.email,
       password: values.password
-    };
-    const res = await login(payload);
-    if (res.status === 200) {
-      store.dispatch({ type: AuthAction.LOGIN, payload: res.data });
+    });
+
+    if (response.data?.success) {
+      dispatch(
+        setAuthToLogin({ user: response.data.user, token: response.data.token })
+      );
       formikActions.resetForm();
     } else {
-      console.log('ERR', res);
+      console.log('ERR', response);
     }
     formikActions.setSubmitting(false);
   };
 
-  const LoginSchema = object().shape({
-    email: string()
-      .email('Invalid Email address')
-      .required('Email is Required'),
-    password: string().required('Password is Required')
-  });
-
-  const formik = useFormik({
-    initialValues: state,
-    validationSchema: LoginSchema,
+  const formik = useFormik<LoginRequestData>({
+    initialValues: {
+      email: '',
+      password: ''
+    },
+    validationSchema: object({
+      email: string()
+        .trim()
+        .email('Invalid Email address')
+        .required('Email is Required'),
+      password: string().trim().required('Password is Required')
+    }),
     onSubmit: onLogin
   });
 

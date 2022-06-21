@@ -7,11 +7,14 @@ module.exports = {
     {
       files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
       rules: {
-        '@typescript-eslint/no-shadow': 'off',
-        '@typescript-eslint/no-unused-vars': 'off',
-        'no-undef': 'off',
-        'comma-dangle': 'off',
+        'no-shadow': 'off',
+        '@typescript-eslint/no-shadow': 'error',
+        '@typescript-eslint/no-unused-vars': 'off'
       }
     }
-  ]
+  ],
+  rules: {
+    'no-undef': 'off',
+    'comma-dangle': 'off'
+  }
 };

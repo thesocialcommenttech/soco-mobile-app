@@ -73,7 +73,7 @@ export default function Password() {
           errorTxt={formik.touched.password && formik.errors.password}
           right={
             <TextInput.Icon
-              color=Colors.Secondary
+              color={Colors.Secondary}
               name={isSecure ? 'eye-outline' : 'eye-off-outline'}
               onPress={Eyelick}
               style={styles.eye}
@@ -91,7 +91,7 @@ export default function Password() {
           errorTxt={formik.touched.password && formik.errors.newPassword}
           right={
             <TextInput.Icon
-              color=Colors.Secondary
+              color={Colors.Secondary}
               name={isSecure1 ? 'eye-outline' : 'eye-off-outline'}
               onPress={Eyelick1}
               style={styles.eye}
@@ -109,7 +109,7 @@ export default function Password() {
           errorTxt={formik.touched.password && formik.errors.confirmPassword}
           right={
             <TextInput.Icon
-              color=Colors.Secondary
+              color={Colors.Secondary}
               name={isSecure2 ? 'eye-outline' : 'eye-off-outline'}
               onPress={Eyelick2}
               style={styles.eye}

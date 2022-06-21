@@ -1,9 +1,8 @@
-import { combineReducers } from 'redux';
 import { authReducer, IAuthState } from './auth';
 
-const rootReducer = combineReducers({
+const rootReducer = {
   auth: authReducer
-});
+};
 
 export interface IRootReducer {
   auth: IAuthState;

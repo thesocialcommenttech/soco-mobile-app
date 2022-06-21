@@ -1,7 +1,3 @@
-import {
-  deleteAuthCredentials,
-  setAuthCredentials
-} from '../../lib/auth-credentials';
 import { AuthActionTypes, AuthAction } from '../actions/auth';
 
 export interface IUserData {
@@ -26,17 +22,12 @@ const initState: IAuthState = {
   token: null
 };
 
-export const authReducer = async (
+export const authReducer = (
   state: IAuthState = initState,
   action: AuthActionTypes
-): Promise<IAuthState> => {
+): IAuthState => {
   switch (action.type) {
     case AuthAction.LOGIN:
-      await setAuthCredentials({
-        user_id: action.payload.user._id,
-        token: action.payload.token
-      });
-
       return {
         ...state,
         authenticated: true,
@@ -45,7 +36,6 @@ export const authReducer = async (
       };
 
     case AuthAction.LOGOUT:
-      await deleteAuthCredentials();
       return initState;
 
     default:
