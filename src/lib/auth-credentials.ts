@@ -32,5 +32,8 @@ export async function getAuthCredentials() {
     SecureStore.getItemAsync('ut')
   ]);
 
-  return { user_id, token };
+  return {
+    user_id,
+    token
+  };
 }

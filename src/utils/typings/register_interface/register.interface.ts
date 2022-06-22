@@ -1,6 +1,6 @@
 import { User } from '../login_interface/login.interface';
 
-export interface RegisterReqeust {
+export interface RegisterRequest {
   name?: string;
   username?: string;
   email?: string;

@@ -39,7 +39,10 @@ const LoginScreen = ({ navigation }) => {
 
     if (response.data?.success) {
       dispatch(
-        setAuthToLogin({ user: response.data.user, token: response.data.token })
+        setAuthToLogin({
+          user: response.data.user,
+          token: response.data.token
+        })
       );
       formikActions.resetForm();
     } else {

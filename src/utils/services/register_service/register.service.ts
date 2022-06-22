@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import {
-  RegisterReqeust,
+  RegisterRequest,
   RegisterResponse
 } from '../../typings/register_interface/register.interface';
 
@@ -17,7 +17,7 @@ export function register({
   pincode,
   referal,
   state
-}: RegisterReqeust): Promise<AxiosResponse<RegisterResponse>> {
+}: RegisterRequest): Promise<AxiosResponse<RegisterResponse>> {
   const config: AxiosRequestConfig = {
     baseURL: 'https://thesocialcomment-backend-test.herokuapp.com',
     url: '/user/register',
@@ -40,5 +40,27 @@ export function register({
       state
     }
   };
-  return axios.request<RegisterResponse>(config);
+  return axios
+    .request<RegisterResponse>(config)
+    .then(res => {
+      return res;
+    })
+    .catch(error => {
+      if (error.response) {
+        // Request made and server responded
+        // console.log(error.response.data);
+        // console.log(error.response.status);
+        // console.log(error.response.headers);
+        return error.response;
+      } else if (error.request) {
+        // The request was made but no response was received
+        // console.log(error.request);
+        return error.request;
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        // console.log('Error', error.message);
+        return error.message;
+      }
+      // return error;
+    });
 }

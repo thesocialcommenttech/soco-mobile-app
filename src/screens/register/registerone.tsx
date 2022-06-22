@@ -11,11 +11,11 @@ import React, { useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
 import { TextInput } from 'react-native-paper';
-import { useFormik } from 'formik';
+import { FormikHelpers, useFormik } from 'formik';
 import { object, string, boolean } from 'yup';
 import { CheckBox } from '@rneui/base';
 import { Colors } from '../../utils/colors';
-import { RegisterReqeust } from '../../utils/typings/register_interface/register.interface';
+import { RegisterRequest } from '../../utils/typings/register_interface/register.interface';
 var logo = require('../../assets/images/logos/Untitled.png');
 
 const CustomCheckBox = (props: any) => {
@@ -56,10 +56,14 @@ const RegisterOneScreen = ({ navigation }) => {
     state: null
   };
 
-  const onNext = (values: any) => {
+  const onNext = (
+    values: RegisterRequest,
+    formikActions: FormikHelpers<RegisterRequest>
+  ) => {
     const payload = {
       ...values
     };
+    formikActions.setSubmitting(false);
     navigation.navigate('RegisterTwo', payload);
   };
 

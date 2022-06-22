@@ -9,7 +9,7 @@ import {
 import React, { useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
-import { useFormik } from 'formik';
+import { FormikHelpers, useFormik } from 'formik';
 import { object, string } from 'yup';
 import { useDispatch } from 'react-redux';
 import CustomRadioButton from '../../components/customRadioButton';
@@ -18,24 +18,21 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { Colors } from '../../utils/colors';
 import { register } from '../../utils/services/register_service/register.service';
-import store from '../../store';
-import { RegisterReqeust } from '../../utils/typings/register_interface/register.interface';
-import { AuthAction } from '../../store/actions/auth';
+import { RegisterRequest } from '../../utils/typings/register_interface/register.interface';
+import { AuthActionTypes, setAuthToLogin } from '../../store/actions/auth';
+import { ThunkDispatch } from 'redux-thunk';
+import { IRootReducer } from '~/src/store/reducers';
 
 const RegisterTwoScreen = ({ route, navigation }) => {
   const state = route.params;
 
   const [date, setDate] = useState(new Date());
+  const dispatch =
+    useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
 
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate;
     setDate(currentDate);
-    // dispatch(
-    //   setUserDetails({
-    //     ...state,
-    //     dob: currentDate.toLocaleDateString()
-    //   })
-    // );
   };
 
   const showMode = currentMode => {
@@ -51,36 +48,32 @@ const RegisterTwoScreen = ({ route, navigation }) => {
     showMode('date');
   };
 
-  const registerUser = (payload: RegisterReqeust) => {
-    return function (dispatch) {
-      register(payload)
-        .then(res => {
-          console.log(res);
-          dispatch({ type: AuthAction.LOGIN, payload: res.data });
-        })
-        .catch(err => {
-          console.log(err, 'JJJJ');
-        });
-    };
-  };
-
   const onRegister = async (
-    values: any,
-    formikActions: {
-      setSubmitting: (arg0: boolean) => void;
-      resetForm: () => void;
-    }
+    values: RegisterRequest,
+    formikActions: FormikHelpers<RegisterRequest>
   ) => {
-    const payload = {
+    const payload: RegisterRequest = {
       ...state,
       academic: values.academic,
       gender: values.gender,
       dob: date.toLocaleDateString()
     };
-    store.dispatch(registerUser(payload) as any);
+    const response = await register(payload);
+
+    if (response.data?.success) {
+      console.log('success', response.data);
+      formikActions.resetForm();
+      navigation.navigate('OptionalInfo', response.data);
+      // dispatch(
+      //   setAuthToLogin({
+      //     user: response.data.user,
+      //     token: response.data.token
+      //   })
+      // );
+    } else {
+      console.log('ERR', response.data);
+    }
     formikActions.setSubmitting(false);
-    formikActions.resetForm();
-    console.log(payload);
   };
 
   const RegisterSchema = object().shape({

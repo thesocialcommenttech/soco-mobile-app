@@ -3,16 +3,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { ThunkDispatch } from 'redux-thunk';
 import BioScreen from '../screens/bio/bio';
 import CategoriesScreen from '../screens/categories/categories';
 import CoverPictureScreen from '../screens/coverPicture/coverPicture';
-import ForgotPasswordScreen from '../screens/login/forgotPassword';
 
-import LoginScreen from '../screens/login/login';
 import ProfilePictureScreen from '../screens/profilePicture/profilePicture';
-import RegisterOneScreen from '../screens/register/registerone';
-import RegisterTwoScreen from '../screens/register/registertwo';
-import { setAuth } from '../store/reducers/info';
+import { AuthActionTypes, setAuthToLogin } from '../store/actions/auth';
+import { IRootReducer } from '../store/reducers';
 import { Colors } from '../utils/colors';
 
 const Stack = createNativeStackNavigator();
@@ -22,112 +20,161 @@ const Header = ({ index }) => {
   return <></>;
 };
 
-const OptionalStack = () => {
-  const dispatch = useDispatch();
+const OptionalStack = ({ navigation, route }) => {
+  React.useEffect(() => {
+    console.log('dg', route.params);
+  }, [route.params]);
+
+  const dispatch =
+    useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Categories"
-          component={CategoriesScreen}
-          options={({ navigation }) => ({
-            gestureDirection: 'horizontal',
-            headerShown: false,
-            headerBackground: () => (
-              <View style={styles.headerView}>
-                <TouchableOpacity onPress={() => dispatch(setAuth(2))}>
-                  <Text style={styles.skipTxt}>SKIP</Text>
-                </TouchableOpacity>
-                <View style={styles.dotsView}>
-                  <View style={styles.dotsY} />
-                  <View style={styles.dotsG} />
-                  <View style={styles.dotsG} />
-                  <View style={styles.dotsG} />
-                </View>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('ProfilePicture')}
-                >
-                  <Text style={styles.nextTxt}>NEXT</Text>
-                </TouchableOpacity>
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Categories"
+        component={CategoriesScreen}
+        options={() => ({
+          gestureDirection: 'horizontal',
+          headerShown: false,
+          headerBackground: () => (
+            <View style={styles.headerView}>
+              <TouchableOpacity
+                onPress={() => {
+                  dispatch(
+                    setAuthToLogin({
+                      user: route.params.user,
+                      token: route.params.token
+                    })
+                  );
+                }}
+              >
+                <Text style={styles.skipTxt}>SKIP</Text>
+              </TouchableOpacity>
+              <View style={styles.dotsView}>
+                <View style={styles.dotsY} />
+                <View style={styles.dotsG} />
+                <View style={styles.dotsG} />
+                <View style={styles.dotsG} />
               </View>
-            )
-          })}
-        />
-        <Stack.Screen
-          name="ProfilePicture"
-          component={ProfilePictureScreen}
-          options={({ navigation }) => ({
-            headerShown: false,
-            headerBackground: () => (
-              <View style={styles.headerView}>
-                <TouchableOpacity onPress={() => dispatch(setAuth(2))}>
-                  <Text style={styles.skipTxt}>SKIP</Text>
-                </TouchableOpacity>
-                <View style={styles.dotsView}>
-                  <View style={styles.dotsY} />
-                  <View style={styles.dotsY} />
-                  <View style={styles.dotsG} />
-                  <View style={styles.dotsG} />
-                </View>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('CoverPicture')}
-                >
-                  <Text style={styles.nextTxt}>NEXT</Text>
-                </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ProfilePicture')}
+              >
+                <Text style={styles.nextTxt}>NEXT</Text>
+              </TouchableOpacity>
+            </View>
+          )
+        })}
+      />
+      <Stack.Screen
+        name="ProfilePicture"
+        component={ProfilePictureScreen}
+        options={() => ({
+          headerShown: false,
+          headerBackground: () => (
+            <View style={styles.headerView}>
+              <TouchableOpacity
+                onPress={() => {
+                  dispatch(
+                    setAuthToLogin({
+                      user: route.params.user,
+                      token: route.params.token
+                    })
+                  );
+                }}
+              >
+                <Text style={styles.skipTxt}>SKIP</Text>
+              </TouchableOpacity>
+              <View style={styles.dotsView}>
+                <View style={styles.dotsY} />
+                <View style={styles.dotsY} />
+                <View style={styles.dotsG} />
+                <View style={styles.dotsG} />
               </View>
-            )
-          })}
-        />
-        <Stack.Screen
-          name="CoverPicture"
-          component={CoverPictureScreen}
-          options={({ navigation }) => ({
-            headerShown: false,
-            headerBackground: () => (
-              <View style={styles.headerView}>
-                <TouchableOpacity onPress={() => dispatch(setAuth(2))}>
-                  <Text style={styles.skipTxt}>SKIP</Text>
-                </TouchableOpacity>
-                <View style={styles.dotsView}>
-                  <View style={styles.dotsY} />
-                  <View style={styles.dotsY} />
-                  <View style={styles.dotsY} />
-                  <View style={styles.dotsG} />
-                </View>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('BioScreen')}
-                >
-                  <Text style={styles.nextTxt}>NEXT</Text>
-                </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('CoverPicture')}
+              >
+                <Text style={styles.nextTxt}>NEXT</Text>
+              </TouchableOpacity>
+            </View>
+          )
+        })}
+      />
+      <Stack.Screen
+        name="CoverPicture"
+        component={CoverPictureScreen}
+        options={() => ({
+          headerShown: false,
+          headerBackground: () => (
+            <View style={styles.headerView}>
+              <TouchableOpacity
+                onPress={() => {
+                  dispatch(
+                    setAuthToLogin({
+                      user: route.params.user,
+                      token: route.params.token
+                    })
+                  );
+                }}
+              >
+                <Text style={styles.skipTxt}>SKIP</Text>
+              </TouchableOpacity>
+              <View style={styles.dotsView}>
+                <View style={styles.dotsY} />
+                <View style={styles.dotsY} />
+                <View style={styles.dotsY} />
+                <View style={styles.dotsG} />
               </View>
-            )
-          })}
-        />
-        <Stack.Screen
-          name="BioScreen"
-          component={BioScreen}
-          options={({ navigation }) => ({
-            headerShown: false,
-            headerBackground: () => (
-              <View style={styles.headerView}>
-                <TouchableOpacity onPress={() => dispatch(setAuth(2))}>
-                  <Text style={styles.skipTxt}>SKIP</Text>
-                </TouchableOpacity>
-                <View style={styles.dotsView}>
-                  <View style={styles.dotsY} />
-                  <View style={styles.dotsY} />
-                  <View style={styles.dotsY} />
-                  <View style={styles.dotsY} />
-                </View>
-                <TouchableOpacity onPress={() => dispatch(setAuth(2))}>
-                  <Text style={styles.nextTxt}>NEXT</Text>
-                </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('BioScreen')}
+              >
+                <Text style={styles.nextTxt}>NEXT</Text>
+              </TouchableOpacity>
+            </View>
+          )
+        })}
+      />
+      <Stack.Screen
+        name="BioScreen"
+        component={BioScreen}
+        options={() => ({
+          headerShown: false,
+          headerBackground: () => (
+            <View style={styles.headerView}>
+              <TouchableOpacity
+                onPress={() => {
+                  dispatch(
+                    setAuthToLogin({
+                      user: route.params.user,
+                      token: route.params.token
+                    })
+                  );
+                }}
+              >
+                <Text style={styles.skipTxt}>SKIP</Text>
+              </TouchableOpacity>
+              <View style={styles.dotsView}>
+                <View style={styles.dotsY} />
+                <View style={styles.dotsY} />
+                <View style={styles.dotsY} />
+                <View style={styles.dotsY} />
               </View>
-            )
-          })}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+              <TouchableOpacity
+                onPress={() => {
+                  dispatch(
+                    setAuthToLogin({
+                      user: route.params.user,
+                      token: route.params.token
+                    })
+                  );
+                }}
+              >
+                <Text style={styles.nextTxt}>NEXT</Text>
+              </TouchableOpacity>
+            </View>
+          )
+        })}
+      />
+    </Stack.Navigator>
   );
 };
 

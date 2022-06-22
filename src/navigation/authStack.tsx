@@ -6,6 +6,7 @@ import ForgotPasswordScreen from '../screens/login/forgotPassword';
 import LoginScreen from '../screens/login/login';
 import RegisterOneScreen from '../screens/register/registerone';
 import RegisterTwoScreen from '../screens/register/registertwo';
+import OptionalStack from './optionalStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,13 @@ const AuthStack = () => {
         <Stack.Screen
           name="RegisterTwo"
           component={RegisterTwoScreen}
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="OptionalInfo"
+          component={OptionalStack}
           options={{
             headerShown: false
           }}

@@ -10,6 +10,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import React, { useState } from 'react';
 import { Colors } from '../../utils/colors';
 import Categorybox from '../../components/categoryBox';
+import { getAuthCredentials } from '../../lib/auth-credentials';
 
 const DATA = [
   {
@@ -172,10 +173,10 @@ const CategoriesScreen = () => {
       <ScrollView>
         <View style={styles.selectedCategories}>
           {data
-            .filter((item, id) => item.selected === true)
+            .filter(item => item.selected === true)
             .map((item, id) => (
               <Categorybox
-                key={id}
+                id={id}
                 backgroundstyle={styles.selectedBackgroundstyle}
                 textstyle={styles.selectedTextstyle}
                 text={item.text}
@@ -188,10 +189,10 @@ const CategoriesScreen = () => {
         </View>
         <View style={styles.allcategory}>
           {data
-            .filter((item, id) => item.selected === false)
+            .filter(item => item.selected === false)
             .map((item, id) => (
               <Categorybox
-                key={id}
+                id={id}
                 backgroundstyle={styles.backgroundstyle}
                 textstyle={styles.textstyle}
                 text={item.text}

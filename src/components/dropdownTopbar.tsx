@@ -12,9 +12,16 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import CircularProgress from './circularIndicator';
 import ReactNativeModal from 'react-native-modal';
 import { Colors } from '../utils/colors';
-import { AuthAction } from '../store/actions/auth';
+import {
+  AuthAction,
+  AuthActionTypes,
+  setAuthToLogout
+} from '../store/actions/auth';
 import store from '../store';
 import { getAuthCredentials } from '../lib/auth-credentials';
+import { useDispatch } from 'react-redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { IRootReducer } from '../store/reducers';
 
 const RenderItem = ({
   item,
@@ -83,6 +90,10 @@ const DropdownTopbar = props => {
   const DropdownButton = useRef(null);
   const [dropdownTop, setDropdownTop] = useState(0);
   const [selected, setSelected] = useState(undefined);
+
+  const dispatch =
+    useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
+
   const data1 = [
     {
       label: 'Internships/Jobs',
@@ -169,6 +180,7 @@ const DropdownTopbar = props => {
         containerStyle={styles.avatar}
       />
       <ReactNativeModal
+        style={styles.dropdown}
         isVisible={visible}
         backdropOpacity={0.5}
         animationIn="slideInRight"
@@ -178,7 +190,7 @@ const DropdownTopbar = props => {
         onBackButtonPress={() => setVisible(false)}
         onBackdropPress={() => setVisible(false)}
       >
-        <ScrollView style={[styles.dropdown]}>
+        <ScrollView /* style={[styles.dropdown]} */>
           <TouchableOpacity
             onPress={() => setVisible(false)}
             style={styles.closeBtn}
@@ -231,10 +243,8 @@ const DropdownTopbar = props => {
           <TouchableOpacity
             style={styles.logoutBtn}
             onPress={() => {
-              setVisible(false);
-              store.dispatch({
-                type: AuthAction.LOGOUT
-              });
+              // setVisible(false);
+              dispatch(setAuthToLogout());
             }}
           >
             <MaterialCommunityIcon name="logout" size={24} color="white" />
@@ -255,12 +265,14 @@ const styles = StyleSheet.create({
   dropdown: {
     position: 'absolute',
     backgroundColor: Colors.SideBarBackground,
-    width: '90%',
+    width: '80%',
     borderRadius: 12,
     zIndex: 999,
     height: '100%',
-    top: '-1%',
-    right: '-1%'
+    top: '-3%',
+    right: '-4%'
+    // top: '-1%',
+    // right: '-1%'
   },
   item: {
     paddingHorizontal: 25,
@@ -353,7 +365,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: '5%',
     backgroundColor: Colors.Secondary,
-    marginBottom: '5%',
+    // marginBottom: '5%',
     marginHorizontal: '5%',
     borderRadius: 12
   },
