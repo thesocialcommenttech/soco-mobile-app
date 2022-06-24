@@ -4,11 +4,11 @@ import {
   FollowUserResponse
 } from '../../typings/follow-user_interface/followUser.interface';
 
-export function followUser({
+export function unfollowUser({
   userID
 }: FollowUserRequest): Promise<AxiosResponse<FollowUserResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/profile/follow',
+    url: '/user/profile/unfollow',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
