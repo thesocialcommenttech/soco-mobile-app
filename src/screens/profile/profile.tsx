@@ -19,6 +19,12 @@ import { TextInput } from 'react-native';
 import DropdownMore from '../../components/dropdownMore';
 import { Colors } from '../../utils/colors';
 import { getUserData } from '../../utils/services/user-profile_service/getUserData.service';
+import { useSelector } from 'react-redux';
+import { IRootReducer } from '../../store/reducers';
+import { getUserData2 } from '../../utils/services/user-profile_service/getUserData2.service';
+import { getUserProfileData } from '../../utils/services/user-profile_service/getUserProfileData.service';
+import { getUserProfileCompletion } from '../../utils/services/user-profile_service/getUserProfileCompletion.service';
+import { getPosts } from '../../utils/services/user-posts_service/getPosts.service';
 
 const ItemRender = ({ actName, count }: { actName: string; count: number }) => (
   <TouchableOpacity style={styles.item}>
@@ -36,8 +42,8 @@ const ProfileScreen = ({ navigation }) => {
   const [profile] = useState(
     'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIADoAPQMBIgACEQEDEQH/xAAbAAACAgMBAAAAAAAAAAAAAAAEBQMGAAECB//EADYQAAIBAwIDBQUFCQAAAAAAAAECAwAEEQUhBhIxIlFhcYETQaGxwRQyM0KRFlNiZJKTstHw/8QAGAEBAQEBAQAAAAAAAAAAAAAAAwIEAAH/xAAeEQACAgICAwAAAAAAAAAAAAAAAQIREiEDMQRRgf/aAAwDAQACEQMRAD8AsyLf8vbeYr/GOb4NmtETEfgxMT3wAf44psrSfvGrOaU/mX1Wi+ja9CS8Z0nKGGJuUKBh2Q9PHNDEpJ2XtZjn3IVk+fLTDXr6LT7GW9uoY5BEM4xgk9AKK4d1CK+0mO6tYUti4wzEdo/8a8bo5K+hGYLaMg4kt2O4LQuh/Vc11zy45YdR5u4PMrfB9651PWNQ08uuoWRuYT0uB2iPPurNLePVrMzryREMVMchBx6jNcpWVKFdmz9tTmZo4mAU9owlc+qnHwoQ3soODb/0Tj6imSaSoaRlSE5QgNG2N6GbSbv+Y/u5+tVYeJZGYIma3zYQ5rl8Fj3AVqdgFNcUIeJ7eTUbeGzjK4knQPnu3P0z6UYtxHpQjtY7cmEYUcmc/EYPoc0I06Nr9vE8iqscLPuepJAH1rvVOINNtpVikdnwe24QlF8z0oZy2auKKqxpcPAwMTSISy59mx3I8qQ8JaQdON1dCUGK6ctFGPypns59Kla1tdRP26N/aBm5FOduvd7j49RinLskNuW5cIi5wozsO4V3FvZ55GqRIyIw3UHI64odioOASAO41PG3YU4O4zQdw2H2x605lsJkmCyMNskdKhurgBT5UVHphOGlfl8F/wBmpjYW5ideTdhgsdyPGrxIzPH+J7w/tMze0+6gznp02+eaPHEC21rYxiBJWdsSSb55Sfceua3xfwvdi8mvYU50Z8OF6rtvSV3woMg5WRMqpHTyrNKma4OUemXbhO4S4u7tIEMcEb8/L3tuBt44J/SrcDsKpPA0NxDpclxLCyCVlPT8uBirULnmj2O9LCFICc8pbC+bs58KWzSdrc0WZcoCcDakl7K3tNqtIOTLvjIYVyuDseh2qUff9aiWrDB5LVZyeZmSTGOdPeO4g7Glc3DVnNIrXBSQA9BEAT4Z9O6nh/EPnWMB7Q0bhFuxVySSpMhjiVFCooVRsFUYAHdQt3piSAvB2H+BphWzVoNlUuJGiDpJ2XXYjxqu6pqsVrMFkYZI95qx8S7Xu3vRfma8l4sYnVmBJwEFUkTJn//Z'
   );
-  const [name] = useState('John Doe');
-  const [userName] = useState('@johndoe');
+  const [name, setName] = useState('John Doe');
+  const [userName, setUserName] = useState('@johndoe');
   const [locked, setLocked] = useState(true);
   const [bio, setBio] = useState(
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru.'
@@ -51,26 +57,75 @@ const ProfileScreen = ({ navigation }) => {
   const [finBio, setFinBio] = useState(
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru.'
   );
-  const [followers] = useState(32);
-  const [following] = useState(9);
-  const [views] = useState(245);
-  const [activities] = useState({
+  const [followers, setFollowers] = useState(32);
+  const [following, setFollowing] = useState(9);
+  const [views, setViews] = useState(245);
+  const [activities, setActivities] = useState({
     All: 0,
     Blogs: 0,
-    Artworks: 0,
+    Artworks: 500,
     Videos: 0,
     Projects: 0,
     Presentations: 0,
     Articles: 0,
     Links: 0
   });
+
+  const getAll = (work: any) => {
+    return (
+      work.article.length +
+      work.blog.length +
+      work.artwork.length +
+      work.project.length +
+      work.presentation.length +
+      work.link.length
+    );
+  };
   const [curLen, setCurLen] = useState(0);
   const [curLen1, setCurLen1] = useState(0);
-  const [isPremium] = useState(true);
+  const [isPremium, setIsPremium] = useState(true);
   const [percentProfile] = useState(75);
 
+  const basicData = useSelector((state: IRootReducer) => state.auth.user);
+
   useEffect(() => {
-    // const userData = getUserData();
+    // console.log('YO', basicData);
+    const fetchData = async () => {
+      const gud = await getUserData(basicData.username.toString());
+      const gupd = await getUserProfileData();
+      const gupc = await getUserProfileCompletion();
+      const gp = await getPosts();
+      // const userD2 = await getUserData2(basicData.username.toString());
+      return { gud: gud.data, gupd: gupd.data, gupc: gupc.data };
+    };
+    fetchData()
+      .then(res => {
+        console.log('gupc', res.gud);
+        setName(res.gud.user.name);
+        setUserName(res.gud.user.username);
+        setFollowers(res.gud.user.followers);
+        setFollowing(res.gud.user.following);
+        setViews(res.gud.user.totalViews);
+        setActivities({
+          ...activities,
+          All: getAll(res.gud.user.portfolio.work),
+          Articles: res.gud.user.portfolio.work.article.length,
+          Blogs: res.gud.user.portfolio.work.blog.length,
+          Artworks: res.gud.user.portfolio.work.artwork.length,
+          Projects: res.gud.user.portfolio.work.project.length,
+          Presentations: res.gud.user.portfolio.work.presentation.length,
+          Links: res.gud.user.portfolio.work.link.length,
+          Videos: 0
+        });
+        setLocked(res.gud.user.portfolioLock !== 'PUBLIC');
+        setIsPremium(res.gud.user.premium);
+        // console.log(res.gupd.userData.notification);
+      })
+
+      .catch(err => {
+        console.log(err.response.data);
+      });
+    // console.log('YO', userData);
   }, []);
 
   const ITEMS = [

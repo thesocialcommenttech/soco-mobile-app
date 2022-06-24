@@ -1,7 +1,5 @@
-import { File } from '@babel/types';
-
 export interface UpdateDPRequest {
-  dp?: File;
+  dp: FormData;
 }
 
 export interface UpdateDPResposne {

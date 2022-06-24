@@ -19,7 +19,7 @@ export default function Categorybox({
   data,
   setData
 }: {
-  id: number;
+  id: string;
   backgroundstyle: any;
   textstyle: any;
   text: string;
@@ -51,7 +51,7 @@ export default function Categorybox({
           }
         }}
       >
-        <View style={styles.container}>
+        <View style={styles.container} key={id}>
           <View style={backgroundstyle}>
             <Text style={textstyle}>{text}</Text>
             {cancel === 'True'

@@ -2,6 +2,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import { Avatar } from '@rneui/base';
 import { Colors } from '../../utils/colors';
+import { updateCover } from '../../utils/services/user-profile_service/updateCover.service';
 
 const CoverPictureScreen = () => {
   const [profile] = useState(
@@ -11,6 +12,15 @@ const CoverPictureScreen = () => {
   const [background] = useState(
     'https://images.unsplash.com/photo-1651006450901-9f487bafe481?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80'
   );
+
+  const addImage = async () => {
+    console.log('add image');
+    // try {
+    //   const response = await updateCover(profile);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+  };
 
   return (
     <View style={styles.container}>
@@ -24,7 +34,7 @@ const CoverPictureScreen = () => {
       <TouchableOpacity onPress={() => {}}>
         <Text style={styles.selTxt}>SELECT IMAGE</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.updateImgBtn} onPress={() => {}}>
+      <TouchableOpacity style={styles.updateImgBtn} onPress={addImage}>
         <Text style={styles.updateImgTxt}>Add Cover Image</Text>
       </TouchableOpacity>
     </View>

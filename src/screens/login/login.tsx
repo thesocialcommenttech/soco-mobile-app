@@ -32,22 +32,35 @@ const LoginScreen = ({ navigation }) => {
     values: LoginRequestData,
     formikActions: FormikHelpers<LoginRequestData>
   ) => {
-    const response = await login({
-      email: values.email,
-      password: values.password
-    });
+    try {
+      const response = await login({
+        email: values.email,
+        password: values.password
+      });
 
-    if (response.data?.success) {
-      dispatch(
-        setAuthToLogin({
-          user: response.data.user,
-          token: response.data.token
-        })
-      );
-      formikActions.resetForm();
-    } else {
-      console.log('ERR', response);
+      if (response.data?.success) {
+        dispatch(
+          setAuthToLogin({
+            user: response.data.user,
+            token: response.data.token
+          })
+        );
+        formikActions.resetForm();
+      } else {
+        throw new Error(response.data.message.toString());
+      }
+    } catch (error) {
+      console.log(error);
+      if (error.message === 'INVALID_PASS') {
+        formikActions.setFieldError('password', 'Invalid password');
+      } else if (error.message === '"email" must be a valid email') {
+        formikActions.setFieldError('email', 'Invalid email');
+      } else if (error.message === 'USER_NOT_FOUND') {
+        formikActions.setFieldError('password', 'Incorrect email/Password');
+        formikActions.setFieldError('email', ' ');
+      }
     }
+
     formikActions.setSubmitting(false);
   };
 
@@ -85,7 +98,7 @@ const LoginScreen = ({ navigation }) => {
           <Image style={styles.logo} source={logo} />
           <Text style={styles.login}>Login</Text>
           <TextInputWithLabel
-            placeholder="Email"
+            placeholder="Emaill"
             label="Email"
             inputStyle={styles.emailTB}
             onChangeText={formik.handleChange('email')}

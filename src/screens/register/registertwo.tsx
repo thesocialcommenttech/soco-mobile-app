@@ -22,6 +22,7 @@ import { RegisterRequest } from '../../utils/typings/register_interface/register
 import { AuthActionTypes, setAuthToLogin } from '../../store/actions/auth';
 import { ThunkDispatch } from 'redux-thunk';
 import { IRootReducer } from '~/src/store/reducers';
+import { setAuthCredentials } from '../../lib/auth-credentials';
 
 const RegisterTwoScreen = ({ route, navigation }) => {
   const state = route.params;
@@ -63,6 +64,10 @@ const RegisterTwoScreen = ({ route, navigation }) => {
     if (response.data?.success) {
       console.log('success', response.data);
       formikActions.resetForm();
+      await setAuthCredentials({
+        user_id: response.data.user._id,
+        token: response.data.token
+      });
       navigation.navigate('OptionalInfo', response.data);
       // dispatch(
       //   setAuthToLogin({

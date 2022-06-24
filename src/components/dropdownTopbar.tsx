@@ -93,7 +93,6 @@ const DropdownTopbar = props => {
 
   const dispatch =
     useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
-
   const data1 = [
     {
       label: 'Internships/Jobs',
@@ -270,7 +269,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     height: '100%',
     top: '-3%',
-    right: '-4%'
+    right: '-5%'
     // top: '-1%',
     // right: '-1%'
   },
