@@ -26,6 +26,8 @@ const TextInputWithLabel = ({ ...props }) => {
         onBlur={props.onBlur}
         value={props.value}
         editable={props.editable}
+        multiline={props.multiline}
+        numberOfLines={props.numberOfLines}
       />
       {props.errorTxt && <Text style={styles.error}>{props.errorTxt}</Text>}
       {/* <TextInput
