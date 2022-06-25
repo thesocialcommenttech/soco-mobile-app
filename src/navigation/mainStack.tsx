@@ -103,8 +103,7 @@ const MainStack = () => {
             tabBarActiveTintColor: 'white',
             tabBarInactiveTintColor: 'gray',
             tabBarStyle: {
-              height: '9%',
-              backgroundColor: '#0F1724'
+              display: 'none'
             },
             tabBarIcon: tabinfo => {
               return (
