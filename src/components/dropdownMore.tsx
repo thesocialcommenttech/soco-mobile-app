@@ -19,7 +19,10 @@ const RenderItem = ({
   visible,
   setVisible,
   selected,
-  setSelected
+  setSelected,
+  onDelete,
+  onEdit,
+  id
 }: {
   key: string;
   item: { label: string; icon: string; value: string };
@@ -27,6 +30,9 @@ const RenderItem = ({
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   selected: string;
   setSelected: React.Dispatch<React.SetStateAction<string>>;
+  onDelete: (id: string) => void;
+  onEdit: (id: string) => void;
+  id: string;
 }): ReactElement<any, any> => {
   const onSelect = (Item: { label: string; value: string }) => {
     setSelected(item.label);
@@ -35,6 +41,12 @@ const RenderItem = ({
 
   const onItemPress = (Item: { label: string; value: string }): void => {
     // setSelected(item);
+    if (Item.label === 'Delete') {
+      onDelete(id);
+    }
+    if (Item.label === 'Edit') {
+      onEdit(id);
+    }
     onSelect(item);
     setVisible(false);
   };
@@ -69,7 +81,7 @@ const RenderItem = ({
   );
 };
 
-const DropdownMore = () => {
+const DropdownMore = ({ onDelete, onEdit, id }) => {
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
   const [dropdownTop, setDropdownTop] = useState(0);
@@ -138,6 +150,9 @@ const DropdownMore = () => {
                 setVisible={setVisible}
                 selected={selected}
                 setSelected={setSelected}
+                onDelete={onDelete}
+                onEdit={onEdit}
+                id={id}
               />
             );
           })}

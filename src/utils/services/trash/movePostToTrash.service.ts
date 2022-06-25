@@ -5,7 +5,7 @@ export function movePostToTrash(): Promise<
   AxiosResponse<MovePostToTrashResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/post/trash`,
+    url: '/user/post/trash',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

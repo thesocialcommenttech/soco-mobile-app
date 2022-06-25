@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../../utils/colors';
 import { ScrollView } from 'react-native-gesture-handler';
+import { getNotifications } from '../../utils/services/notification_services/getNotifications.service';
 
 const UNREAD = [
   {
@@ -98,7 +99,19 @@ const NotificationsScreen = ({ navigation }) => {
   const [clicked, setClicked] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState('User');
 
-  useEffect(() => {}, [clicked]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const gn = await getNotifications();
+      return { gn: gn };
+    };
+    fetchData()
+      .then(res => {
+        console.log('gn', res);
+      })
+      .catch(err => {
+        console.log('Notifs', err.response);
+      });
+  }, [clicked]);
   return (
     <View style={styles.container}>
       <View style={styles.header}>

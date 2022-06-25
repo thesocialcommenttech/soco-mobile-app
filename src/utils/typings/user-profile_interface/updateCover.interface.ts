@@ -1,7 +1,7 @@
 import { File } from '@babel/types';
 
 export interface UpdateCoverRequest {
-  cover?: File;
+  cover?: FormData;
 }
 
 export interface UpdateCoverResponse {

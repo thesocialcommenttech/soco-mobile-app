@@ -9,6 +9,10 @@ export function getUserData2(
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
+    },
+    params: {
+      projection:
+        'name email email_verified coverImage onboard isFollowing totalViews totalPosts postTypes.postType postTypes.totalPosts favouritePostsCount followerUsersCount followingUsersCount profileImage caption timelineTextureImage username bio portfolioLock premium'
     }
   };
 

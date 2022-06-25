@@ -25,6 +25,11 @@ import { getUserData2 } from '../../utils/services/user-profile_service/getUserD
 import { getUserProfileData } from '../../utils/services/user-profile_service/getUserProfileData.service';
 import { getUserProfileCompletion } from '../../utils/services/user-profile_service/getUserProfileCompletion.service';
 import { getPosts } from '../../utils/services/user-posts_service/getPosts.service';
+import { getUserFeeds } from '../../utils/services/user-posts_service/getUserFeeds.service';
+import { updateCaption } from '../../utils/services/user-profile_service/updateCaption.service';
+import { updateDP } from '../../utils/services/user-profile_service/updateDP.service';
+import { updateCover } from '../../utils/services/user-profile_service/updateCover.service';
+import { movePostToTrash } from '../../utils/services/trash/movePostToTrash.service';
 
 const ItemRender = ({ actName, count }: { actName: string; count: number }) => (
   <TouchableOpacity style={styles.item}>
@@ -86,21 +91,36 @@ const ProfileScreen = ({ navigation }) => {
   const [isPremium, setIsPremium] = useState(true);
   const [percentProfile] = useState(75);
 
+  const [profilePicResponse, setProfilePicResponse] = useState(null);
+  const [coverPicResponse, setCoverPicResponse] = useState(null);
+
   const basicData = useSelector((state: IRootReducer) => state.auth.user);
 
   useEffect(() => {
     // console.log('YO', basicData);
     const fetchData = async () => {
       const gud = await getUserData(basicData.username.toString());
+      const userD2 = await getUserData2(basicData.username.toString());
       const gupd = await getUserProfileData();
       const gupc = await getUserProfileCompletion();
-      const gp = await getPosts();
-      // const userD2 = await getUserData2(basicData.username.toString());
-      return { gud: gud.data, gupd: gupd.data, gupc: gupc.data };
+      const gp = await getPosts(basicData._id.toString());
+      const gufs = await getUserFeeds();
+      return {
+        gud: gud.data,
+        gupd: gupd.data,
+        gupc: gupc.data,
+        gp: gp.data,
+        gufs: gufs.data,
+        userD2: userD2.data
+      };
     };
     fetchData()
       .then(res => {
         console.log('gupc', res.gud);
+        console.log('id', res.gud.user._id);
+        console.log('gp', res.gp.posts);
+        console.log('gufs', res.gufs);
+        console.log('userD2', res.userD2);
         setName(res.gud.user.name);
         setUserName(res.gud.user.username);
         setFollowers(res.gud.user.followers);
@@ -208,6 +228,20 @@ const ProfileScreen = ({ navigation }) => {
     }
   ];
 
+  const onDeletePost = async (id: string) => {
+    // try {
+    //   const res = await movePostToTrash();
+    //   console.log(res);
+    // } catch (error) {
+    //   console.log(error.response);
+    // }
+    console.log('delete', id);
+  };
+
+  const onEditPost = (id: string) => {
+    console.log('edit', id);
+  };
+
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
@@ -284,8 +318,16 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={styles.maxChar}>Max Characters: {curLen}/150</Text>
                 <TouchableOpacity
                   style={styles.updateBtn}
-                  onPress={() => {
+                  onPress={async () => {
                     setFinCaption(caption);
+                    try {
+                      const res = await updateCaption({
+                        caption: caption
+                      });
+                      console.log(res);
+                    } catch (error) {
+                      console.log(error);
+                    }
                     setModalVisible(false);
                   }}
                 >
@@ -338,6 +380,13 @@ const ProfileScreen = ({ navigation }) => {
                 <TouchableOpacity
                   style={styles.updateImgBtn}
                   onPress={() => {
+                    try {
+                      // const res = await updateDP({
+                      //   dp: profilePicResponse
+                      // });
+                    } catch (error) {
+                      console.log(error);
+                    }
                     setModalVisible2(false);
                   }}
                 >
@@ -360,6 +409,13 @@ const ProfileScreen = ({ navigation }) => {
                 <TouchableOpacity
                   style={styles.updateImgBtn1}
                   onPress={() => {
+                    try {
+                      // const res = await updateCover({
+                      //   dp: coverPicResponse
+                      // });
+                    } catch (error) {
+                      console.log(error);
+                    }
                     setModalVisible2(false);
                   }}
                 >
@@ -452,6 +508,10 @@ const ProfileScreen = ({ navigation }) => {
                 style={styles.updateBtn1}
                 onPress={() => {
                   setFinBio(bio);
+                  try {
+                  } catch (error) {
+                    console.log(error);
+                  }
                   setModalVisible1(false);
                 }}
               >
@@ -535,7 +595,11 @@ const ProfileScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.cardFooter}>
                   <Text style={styles.cardFooterText}>{u.postTitle}</Text>
-                  <DropdownMore />
+                  <DropdownMore
+                    onDelete={onDeletePost}
+                    onEdit={onEditPost}
+                    id={u.id}
+                  />
                 </View>
                 {u.subTitle !== '' && (
                   <Text style={styles.subTitle}>{u.subTitle}</Text>
