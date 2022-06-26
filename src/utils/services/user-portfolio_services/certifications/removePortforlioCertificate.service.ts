@@ -7,7 +7,7 @@ export function removePortforlioCertificate({
   AxiosResponse<RemovePortforlioCertificateResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/remove/certification`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/remove/certification`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

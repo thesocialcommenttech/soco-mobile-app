@@ -3,7 +3,7 @@ import { GetWalletResponse } from '../../typings/wallet_interfaces/getWallet.int
 
 export function getWallet(): Promise<AxiosResponse<GetWalletResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/wallet/wallet',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/wallet/wallet',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

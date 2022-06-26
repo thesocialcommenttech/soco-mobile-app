@@ -5,7 +5,7 @@ export function lockUserPortfolio(
   state: string
 ): Promise<AxiosResponse<LockUserPortfolioResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolioLock/${state}`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolioLock/${state}`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

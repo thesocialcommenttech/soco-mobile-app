@@ -5,7 +5,7 @@ export function resendEmailVerification(
   email: string
 ): Promise<AxiosResponse<ResendEmailVerificationResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/email-verification/request/${email}`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/email-verification/request/${email}`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

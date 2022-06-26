@@ -5,7 +5,7 @@ export function getPortfolioSkillsSelectionList(): Promise<
   AxiosResponse<GetPortfolioSkillsSelectionListResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/portfolio/skills/search`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/portfolio/skills/search`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

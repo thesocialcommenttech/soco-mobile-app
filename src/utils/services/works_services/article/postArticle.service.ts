@@ -8,7 +8,7 @@ export function postArticle(
   postStatus: PostArticleRequest
 ): Promise<AxiosResponse<PostArticleResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/post/create/article',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/create/article',
     method: 'POST',
     data: postStatus,
     headers: {

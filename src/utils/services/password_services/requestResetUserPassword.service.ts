@@ -10,7 +10,7 @@ export function requestResetUserPassword({
   AxiosResponse<RequestResetUserPasswordResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/reset-password/request',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/reset-password/request',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

@@ -8,7 +8,7 @@ export function unfollowUser({
   userID
 }: FollowUserRequest): Promise<AxiosResponse<FollowUserResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/profile/unfollow',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/profile/unfollow',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

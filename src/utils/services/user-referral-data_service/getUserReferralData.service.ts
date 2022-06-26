@@ -5,7 +5,7 @@ export function getUserReferralData(): Promise<
   AxiosResponse<GetUserReferralDataResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/profile/referral',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/profile/referral',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

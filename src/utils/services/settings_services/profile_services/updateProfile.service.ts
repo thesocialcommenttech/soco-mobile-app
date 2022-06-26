@@ -12,7 +12,7 @@ export function updateProfile({
   username
 }: UpdateProfileRequest): Promise<AxiosResponse<UpdateProfileResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/settings/profile',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/settings/profile',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

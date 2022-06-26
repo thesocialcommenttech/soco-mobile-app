@@ -7,7 +7,7 @@ export function postLink({
   AxiosResponse<PostLinkResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/post/create/link`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/create/link`,
     method: 'POST',
     data: { title, description, featureImage, tags, link, postedOn, postStatus }
   };

@@ -8,11 +8,11 @@ interface Experience {
 }
 
 export interface UpdatePortforlioExperienceRequest {
-  experience: Experience;
-  indexID: string;
+  experience?: Experience;
+  indexID?: string;
 }
 
 export interface UpdatePortforlioExperienceResponse {
-  experience: Experience;
-  success: boolean;
+  experience?: Experience;
+  success?: boolean;
 }

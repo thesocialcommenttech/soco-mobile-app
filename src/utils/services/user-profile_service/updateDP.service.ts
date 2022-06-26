@@ -8,7 +8,7 @@ export function updateDP({
   dp
 }: UpdateDPRequest): Promise<AxiosResponse<UpdateDPResposne>> {
   const config: AxiosRequestConfig = {
-    url: '/user/profile/picture',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/profile/picture',
     method: 'POST',
     data: {
       dp

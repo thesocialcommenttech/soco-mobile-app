@@ -7,7 +7,7 @@ export function addPortforlioSkill({
   AxiosResponse<AddPortforlioSkillResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/add/skill`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/add/skill`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

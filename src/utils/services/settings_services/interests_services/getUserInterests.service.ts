@@ -5,7 +5,7 @@ export function getUserInterests(): Promise<
   AxiosResponse<GetUserInterestsResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/interest',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/interest',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

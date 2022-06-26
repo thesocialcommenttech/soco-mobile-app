@@ -10,7 +10,7 @@ export function changeNotificationSettings({
   AxiosResponse<ChangeNotificationSettingsResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/settings/notification',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/settings/notification',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

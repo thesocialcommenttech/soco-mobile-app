@@ -7,7 +7,7 @@ export function updatePortforlioEducation({
   AxiosResponse<UpdatePortforlioEducationResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/update/education`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/update/education`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

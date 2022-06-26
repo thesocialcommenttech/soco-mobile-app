@@ -5,7 +5,7 @@ export function movePostToTrash(): Promise<
   AxiosResponse<MovePostToTrashResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/post/trash`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/trash`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

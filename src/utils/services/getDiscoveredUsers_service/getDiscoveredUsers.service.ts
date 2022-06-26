@@ -7,7 +7,7 @@ export function getDiscoveredUsers({
   AxiosResponse<GetDiscoveredUsersResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/discover`,
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/discover',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

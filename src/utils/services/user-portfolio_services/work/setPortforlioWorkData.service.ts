@@ -7,7 +7,7 @@ export function setPortforlioWorkData({
   AxiosResponse<SetPortforlioWorkDataResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/add/work`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/add/work`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

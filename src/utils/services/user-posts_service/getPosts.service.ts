@@ -3,7 +3,7 @@ import { GetPostsResponse } from '../../typings/user-posts_interface/getPosts.in
 
 export function getPosts(): Promise<AxiosResponse<GetPostsResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/post/all',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/all',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

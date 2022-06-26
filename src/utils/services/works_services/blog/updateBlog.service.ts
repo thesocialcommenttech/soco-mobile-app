@@ -9,7 +9,7 @@ export function updateBlog(
   postID: string
 ): Promise<AxiosResponse<UpdateBlogResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/post/update/blog/${postID}`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/update/blog/${postID}`,
     method: 'POST',
     data: { contentJSON, contentText, title, postStatus, updatedOn }
   };

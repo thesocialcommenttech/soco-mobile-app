@@ -11,7 +11,7 @@ export function changeUserPassword({
   AxiosResponse<ChangeUserPasswordResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/settings/password',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/settings/password',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

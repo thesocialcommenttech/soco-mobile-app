@@ -1,7 +1,7 @@
 export interface RemovePortforlioEducationRequest{
-    educationId:string;
+    educationId?:string;
 };
 
 export interface RemovePortforlioEducationResponse{
-    success:boolean;
+    success?:boolean;
 }

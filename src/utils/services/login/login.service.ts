@@ -9,7 +9,7 @@ export function login({
   password
 }: LoginRequestData): Promise<AxiosResponse<LoginResponseData>> {
   const config: AxiosRequestConfig = {
-    url: '/user/login',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/login',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -17,4 +17,4 @@ export function login({
     data: { email, password }
   };
   return axios.request<LoginResponseData>(config);
-};
+}

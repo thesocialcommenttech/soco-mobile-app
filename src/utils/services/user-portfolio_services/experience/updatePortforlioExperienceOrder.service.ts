@@ -7,7 +7,7 @@ export function updatePortforlioExperienceOrder({
   AxiosResponse<UpdatePortforlioExperienceOrderResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/update/experience/order`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/update/experience/order`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

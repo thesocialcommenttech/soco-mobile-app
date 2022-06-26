@@ -5,7 +5,7 @@ export function updateUserEmail({
   email
 }: UpdateUserEmailRequest): Promise<AxiosResponse<UpdateUserEmailResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/settings/email',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/settings/email',
     method: 'POST',
     data: {
       email

@@ -6,7 +6,7 @@ export function getUserFollowings({
   userID
 }: GetUserFollowingsRequest): Promise<AxiosResponse<GetUserFollowingsResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/profile/followings',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/profile/followings',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

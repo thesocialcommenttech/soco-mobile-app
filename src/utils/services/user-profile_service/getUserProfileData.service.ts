@@ -5,7 +5,7 @@ export function getUserProfileData(): Promise<
   AxiosResponse<GetUserProfileDataResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/profile/data',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/profile/data',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

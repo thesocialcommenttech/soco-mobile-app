@@ -1,4 +1,4 @@
 export interface MovePostToTrashResponse{
-    result:any;
-    success:boolean;
+    result?:any;
+    success?:boolean;
 };

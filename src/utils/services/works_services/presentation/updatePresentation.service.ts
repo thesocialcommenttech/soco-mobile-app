@@ -9,7 +9,7 @@ export function updatePresentation(
   postID: string
 ): Promise<AxiosResponse<UpdatePresentationResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/post/update/presentation/${postID}`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/update/presentation/${postID}`,
     method: 'POST',
     data: { tags, description, featureImage, slides, totalSlides, postedOn, title, postStatus, updatedOn }
   };

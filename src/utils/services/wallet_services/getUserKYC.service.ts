@@ -3,7 +3,7 @@ import { GetUserKYCResponse } from '../../typings/wallet_interfaces/getUserKYC.i
 
 export function getUserKYC(): Promise<AxiosResponse<GetUserKYCResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/kyc',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/kyc',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

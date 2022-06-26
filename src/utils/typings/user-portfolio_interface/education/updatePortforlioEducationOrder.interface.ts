@@ -1,12 +1,12 @@
 interface Education{
-    _id:string;
-    order:number;
+    _id?:string;
+    order?:number;
 };
 
 export interface UpdatePortforlioEducationOrderRequest{
-    order:Education[];
+    order?:Education[];
 };
 
 export interface UpdatePortforlioEducationOrderResponse{
-    success:boolean;
+    success?:boolean;
 }

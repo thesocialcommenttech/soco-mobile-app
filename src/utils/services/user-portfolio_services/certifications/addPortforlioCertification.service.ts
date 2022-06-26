@@ -16,7 +16,7 @@ export function addPortforlioCertification({
   AxiosResponse<AddPortforlioCertificationResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/add/certification`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/add/certification`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

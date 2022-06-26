@@ -7,7 +7,7 @@ export function removePortforlioExperience({
   AxiosResponse<RemovePortforlioExperienceResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/remove/experience`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/remove/experience`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

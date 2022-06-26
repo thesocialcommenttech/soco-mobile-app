@@ -19,9 +19,9 @@ interface ExperienceResponse {
   title?: string;
   to?: Date;
   order?: number;
-  _id: string;
+  _id?: string;
 }
 export interface AddPortfolioExperienceResponse {
-    experience:ExperienceResponse;
-    success?:boolean;
+  experience?: ExperienceResponse;
+  success?: boolean;
 }

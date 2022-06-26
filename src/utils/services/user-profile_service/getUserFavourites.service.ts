@@ -5,7 +5,7 @@ export function getUserFavourites(
   {proj, userID}:GetUserFavouritesRequest
 ): Promise<AxiosResponse<GetUserFavouritesResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/profile/favourites`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/profile/favourites`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

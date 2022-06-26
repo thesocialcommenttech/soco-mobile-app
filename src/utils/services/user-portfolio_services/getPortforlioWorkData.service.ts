@@ -7,7 +7,7 @@ export function getPortforlioWorkData({
   AxiosResponse<GetPortforlioWorkDataResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/data`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/data`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

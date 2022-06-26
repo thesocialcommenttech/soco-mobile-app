@@ -13,7 +13,7 @@ export function verifySubscriptionPayment({
   AxiosResponse<VerifySubscriptionPaymentResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/subscription/verify-payment',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/subscription/verify-payment',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

@@ -5,7 +5,7 @@ export function removePortfolioIntroVideo(): Promise<
   AxiosResponse<RemovePortfolioIntroVideoResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/remove/intro-video`,
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/remove/intro-video',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

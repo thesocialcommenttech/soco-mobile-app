@@ -8,7 +8,7 @@ export function addPortforlioSocialAccounts(
   account_urls: Social_accounts
 ): Promise<AxiosResponse<AddPortforlioSocialAccountsResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/add/social-account`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/add/social-account`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

@@ -12,7 +12,7 @@ export function uploadUserKYC({
   pan_back_image
 }: UploadUserKYCRequest): Promise<AxiosResponse<UploadUserKYCResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/kyc',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/kyc',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

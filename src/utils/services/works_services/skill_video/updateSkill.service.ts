@@ -19,7 +19,7 @@ export function updateSkill(
   postID: string
 ): Promise<AxiosResponse<UpdateSkillResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/post/update/skill/${postID}`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/update/skill/${postID}`,
     method: 'POST',
     data: {
       title,

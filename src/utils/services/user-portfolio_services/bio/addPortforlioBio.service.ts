@@ -7,7 +7,7 @@ export function addPortforlioBio({
   AxiosResponse<AddPortforlioBioResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/add/bio`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/add/bio`,
     method: 'POST',
     data: { bio }
   };

@@ -5,7 +5,7 @@ export function getUserWorksForPortfolio(
   postType: string
 ): Promise<AxiosResponse<GetUserWorksForPortfolioResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/works/${postType}`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/portfolio/works/${postType}`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
