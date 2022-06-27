@@ -383,7 +383,8 @@ export default function Presentation() {
             label="Description"
             inputStyle={styles.descriptionTB}
             multiline={true}
-            numberOfLines={4}
+            numberOfLines={5}
+            maxLength={120}
             // onChangeText={formik.handleChange('email')}
             // value={formik.values.email}
             // errorTxt={formik.touched.email && formik.errors.email}
