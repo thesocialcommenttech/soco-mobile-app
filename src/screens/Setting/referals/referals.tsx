@@ -4,11 +4,15 @@ import {
   View,
   FlatList,
   TouchableOpacity,
-  ToastAndroid
+  ToastAndroid,
+  TouchableWithoutFeedback,
+  ScrollView
 } from 'react-native';
 import React, { useState } from 'react';
 import ReferalList from '../../../components/settingsComponents/referalsList';
 import Clipboard from '@react-native-clipboard/clipboard';
+import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../../utils/colors';
 
 const Data = [
@@ -44,7 +48,7 @@ const Data = [
 
 export default function Referals() {
   const [code] = useState('5UYRCH');
-
+  const navigation = useNavigation();
   const copyToClipboard = text => {
     Clipboard.setString(text);
   };
@@ -54,52 +58,60 @@ export default function Referals() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.box}>
-        <View style={styles.label}>
-          <Text style={styles.heading}>Your Refferal Code</Text>
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.flexrow}>
+          <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+            <Icon1 name="arrow-left" size={28} color="black" />
+          </TouchableWithoutFeedback>
+          <Text style={styles.mheader}>Refferals</Text>
         </View>
-        <View style={styles.codebox}>
-          <TouchableOpacity
-            onPress={() => {
-              copyToClipboard(code);
-              showToast();
-            }}
-          >
-            <Text style={styles.code}>{code}</Text>
-          </TouchableOpacity>
+        <View style={styles.box}>
+          <View style={styles.label}>
+            <Text style={styles.heading}>Your Refferal Code</Text>
+          </View>
+          <View style={styles.codebox}>
+            <TouchableOpacity
+              onPress={() => {
+                copyToClipboard(code);
+                showToast();
+              }}
+            >
+              <Text style={styles.code}>{code}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.incentiveview}>
+          <Text style={styles.share}>
+            Share this code with your Friends.If anybody uses this code at the
+            time of registration to socialcomment you will receive exciting
+            incentives.
+          </Text>
+        </View>
+        <View style={styles.codeused}>
+          <Text style={styles.instruction}>Refferal Code used </Text>
+          <Text style={styles.Code}>6YUOED</Text>
+        </View>
+        <View style={styles.refferals}>
+          <Text style={styles.boldtext}>Your Refferals</Text>
+        </View>
+
+        <View>
+          <FlatList
+            data={Data}
+            keyExtractor={item => item.id.toString()}
+            renderItem={({ item }) => (
+              <ReferalList
+                title={item.title}
+                userId={item.userId}
+                image={item.image}
+                prime={item.prime}
+              />
+            )}
+          />
         </View>
       </View>
-      <View style={styles.incentiveview}>
-        <Text style={styles.share}>
-          Share this code with your Friends.If anybody uses this code at the
-          time of registration to socialcomment you will receive exciting
-          incentives.
-        </Text>
-      </View>
-      <View style={styles.codeused}>
-        <Text style={styles.instruction}>Refferal Code used </Text>
-        <Text style={styles.Code}>6YUOED</Text>
-      </View>
-      <View style={styles.refferals}>
-        <Text style={styles.boldtext}>Your Refferals</Text>
-      </View>
-      <View style={styles.bottomruler} />
-      <View>
-        <FlatList
-          data={Data}
-          keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => (
-            <ReferalList
-              title={item.title}
-              userId={item.userId}
-              image={item.image}
-              prime={item.prime}
-            />
-          )}
-        />
-      </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -144,8 +156,10 @@ const styles = StyleSheet.create({
     margin: '2.7%'
   },
   share: {
-    color: 'black',
-    lineHeight: 19
+    color: '#7D7987',
+    lineHeight: 20,
+    marginBottom: '2%',
+    fontSize: 15
   },
   codeused: {
     marginLeft: '2.5%',
@@ -153,12 +167,14 @@ const styles = StyleSheet.create({
   },
   boldtext: {
     fontFamily: 'Roboto-Medium',
-    fontWeight: '900',
-    color: 'black',
-    fontSize: 17
+    fontWeight: '600',
+    fontSize: 17,
+    marginTop: '2%',
+    marginBottom: '2%',
+    color: '#7D7987'
   },
   refferals: {
-    marginTop: '3%',
+    marginTop: '7%',
     marginLeft: '2.5%'
   },
   bottomruler: {
@@ -172,6 +188,20 @@ const styles = StyleSheet.create({
     color: '#1563E2'
   },
   instruction: {
-    color: 'black'
+    color: '#7D7987',
+    fontSize: 15
+  },
+  flexrow: {
+    flexDirection: 'row',
+    marginTop: '2%',
+    marginLeft: '2%',
+    marginBottom: '4%'
+  },
+  mheader: {
+    color: 'black',
+    marginLeft: '4%',
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: '0.5%'
   }
 });

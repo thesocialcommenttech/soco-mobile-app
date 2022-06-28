@@ -1,11 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import React, { useState } from 'react';
-import FeatherIcon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ToggleSwitch from 'toggle-switch-react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../../utils/colors';
 
 export default function Notification() {
   const [isEnabled, setIsEnabled] = useState(false);
+  const navigation = useNavigation();
   // const toggleSwitch = () => {
   //   setIsEnabled(previousState => !previousState);
   //   console.log(isEnabled);
@@ -13,18 +15,16 @@ export default function Notification() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={styles.row}>
+        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+          <Icon name="arrow-left" size={28} color="black" />
+        </TouchableWithoutFeedback>
+        <Text style={styles.mheader}>Notification</Text>
+      </View>
+      <View style={styles.mainview}>
         <Text style={styles.boldtext}>Email Preferences</Text>
-
-        <View style={styles.bottomruler} />
         <View style={styles.information}>
           <Text style={styles.newsletter}>Newsletter</Text>
-          <Text style={styles.newsletterLine}>
-            Receive newsletters sent periodically containing best suggested post
-            for you
-          </Text>
-        </View>
-        <View style={styles.switch}>
           <ToggleSwitch
             isOn={isEnabled}
             onColor="blue"
@@ -36,10 +36,11 @@ export default function Notification() {
             thumbOffStyle={styles.thumboff}
             thumbOnStyle={styles.thumbon}
           />
-          {isEnabled
-            ? [<FeatherIcon name="check" size={22} color="green" />]
-            : []}
         </View>
+        <Text style={styles.newsletterLine}>
+          Receive newsletters sent periodically containing best suggested post
+          for you
+        </Text>
       </View>
     </View>
   );
@@ -48,18 +49,15 @@ export default function Notification() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: '1%',
-    marginRight: '1%',
-    marginLeft: '1%'
+    marginTop: '8%',
+    marginRight: '5%',
+    marginLeft: '5%'
   },
   boldtext: {
     fontFamily: 'Roboto-Medium',
-    fontWeight: '900',
-    color: 'black',
+    fontWeight: '400',
+    color: '#7D7987',
     fontSize: 17
-  },
-  header: {
-    margin: '1.5%'
   },
   bottomruler: {
     borderBottomColor: Colors.BottomRulerColor,
@@ -67,7 +65,9 @@ const styles = StyleSheet.create({
     marginTop: '2%'
   },
   information: {
-    marginTop: '2%'
+    marginTop: '4%',
+    justifyContent: 'space-between',
+    flexDirection: 'row'
   },
   switch: {
     marginTop: '3.5%',
@@ -83,7 +83,9 @@ const styles = StyleSheet.create({
   },
   newsletterLine: {
     lineHeight: 18,
-    fontSize: 16
+    fontSize: 16,
+    marginTop: '4%',
+    color: '#BDBDBD'
   },
   offtrack: {
     backgroundColor: 'white',
@@ -101,5 +103,18 @@ const styles = StyleSheet.create({
   },
   thumboff: {
     backgroundColor: 'black'
+  },
+  mainview: {
+    marginTop: '6%'
+  },
+  row: {
+    flexDirection: 'row'
+  },
+  mheader: {
+    color: 'black',
+    marginLeft: '4%',
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: '0.5%'
   }
 });

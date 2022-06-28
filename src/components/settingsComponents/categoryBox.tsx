@@ -58,8 +58,9 @@ const styles = StyleSheet.create({
     marginBottom: '1.5%'
   },
   close: {
-    marginTop: '2%',
-    marginLeft: '1.5%',
-    marginRight: '1%'
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 2.5,
+    marginLeft: '2%'
   }
 });

@@ -157,12 +157,6 @@ function AppTabs() {
 }
 
 const MainStack = () => {
-  // const user = useSelector((state: IRootReducer) => state.auth);
-  // React.useEffect(() => {
-  //   // const what = store.getState().auth.authenticated;
-  //   // console.log(what);
-  //   console.log('MAINSTACK', user);
-  // }, []);
   return (
     <NavigationContainer>
       <MyStack.Navigator>

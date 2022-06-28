@@ -3,18 +3,21 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Button,
-  ScrollView
+  ScrollView,
+  TouchableWithoutFeedback
 } from 'react-native';
 import React, { useState } from 'react';
 import TextInputWithLabel from '../../../components/textInputWithLabel';
 import { useFormik } from 'formik';
 import { object, string } from 'yup';
-import AntDesignIcon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/AntDesign';
+import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../../utils/colors';
 
 export default function Profile() {
+  const navigation = useNavigation();
   const [verify] = useState(true);
   const [change, setChange] = useState(true);
   const [open, setOpen] = useState(false);
@@ -86,13 +89,18 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.flexrow}>
+        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+          <Icon1 name="arrow-left" size={28} color="black" />
+        </TouchableWithoutFeedback>
+        <Text style={styles.mheader}>Profile</Text>
+      </View>
       <ScrollView>
         <View style={styles.headingview}>
           <View style={styles.header}>
             <View style={styles.refferals}>
               <Text style={styles.boldtext}>General Information</Text>
             </View>
-            <View style={styles.bottomruler} />
             <TextInputWithLabel
               placeholder="Enter Your Name"
               label="Name"
@@ -123,7 +131,7 @@ export default function Profile() {
             />
             <View style={styles.instruction}>
               <View style={styles.icon}>
-                <AntDesignIcon name="exclamationcircleo" size={16} />
+                <Icon name="exclamationcircleo" size={16} color={'#7D7987'} />
               </View>
               <View style={styles.insview}>
                 <Text style={styles.instext}>
@@ -187,7 +195,6 @@ export default function Profile() {
             <View style={styles.refferals}>
               <Text style={styles.boldtext}>Personal Information</Text>
             </View>
-            <View style={styles.bottomruler} />
             <View style={styles.genderview}>
               <Text style={styles.gendertext}>Gender</Text>
             </View>
@@ -199,6 +206,7 @@ export default function Profile() {
               setValue={setValue}
               setItems={setItems}
               style={styles.dropdown}
+              placeholderStyle={styles.placeHolder}
             />
             <TextInputWithLabel
               placeholder="Phone Number"
@@ -214,7 +222,6 @@ export default function Profile() {
             <View style={styles.refferals}>
               <Text style={styles.boldtext}>Educational Detail</Text>
             </View>
-            <View style={styles.bottomruler} />
             <View style={styles.genderview}>
               <Text style={styles.gendertext}>Academics</Text>
             </View>
@@ -226,15 +233,13 @@ export default function Profile() {
               setValue={setValue1}
               setItems={setItems1}
               style={styles.dropdown}
+              placeholderStyle={styles.placeHolder}
             />
           </View>
           <View style={styles.button}>
-            <Button
-              onPress={() => {}}
-              title="Update Profile"
-              color={Colors.Secondary}
-              accessibilityLabel="Learn more about this purple button"
-            />
+            <TouchableWithoutFeedback>
+              <Text style={styles.btnText}>Update Profile</Text>
+            </TouchableWithoutFeedback>
           </View>
         </View>
       </ScrollView>
@@ -245,8 +250,8 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginLeft: '2%',
-    marginRight: '2%'
+    marginLeft: '4%',
+    marginRight: '4%'
   },
   heading: {
     fontFamily: 'Roboto-Medium',
@@ -263,7 +268,8 @@ const styles = StyleSheet.create({
     marginRight: '2%'
   },
   emailTB: {
-    marginTop: '-6%'
+    marginTop: '-5.5%',
+    paddingLeft: 10
   },
   instruction: {
     marginTop: '2%',
@@ -272,7 +278,8 @@ const styles = StyleSheet.create({
     marginRight: '1%'
   },
   instext: {
-    fontSize: 15
+    fontSize: 15,
+    color: '#7D7987'
   },
   insview: {
     marginLeft: '1%'
@@ -310,12 +317,16 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   save: {
-    padding: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
     borderWidth: 1,
-    borderColor: Colors.Secondary,
-    borderRadius: 15,
+    borderColor: '#0063FF',
+    borderRadius: 10,
     alignSelf: 'flex-start',
-    marginLeft: '2%'
+    marginLeft: '2%',
+    backgroundColor: '#E0EBFF'
   },
   savetext: {
     color: Colors.Secondary,
@@ -333,11 +344,12 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    marginTop: '3%'
+    marginTop: '6%'
   },
   headerPersonel: {
-    marginTop: '2%',
-    marginLeft: '1.5%'
+    marginTop: '10%',
+    marginLeft: '2%',
+    marginRight: '2%'
   },
   genderview: {
     backgroundColor: 'white',
@@ -345,8 +357,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     padding: 6,
     marginBottom: '-4.5%',
-    marginLeft: '6%',
-    marginTop: '3.5%'
+    marginLeft: '10%',
+    marginTop: '3.5%',
+    paddingLeft: 10,
+    paddingRight: 10
   },
   gendertext: {
     color: 'black',
@@ -354,17 +368,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   dropdown: {
-    borderColor: 'lightgray'
+    borderColor: 'lightgray',
+    paddingLeft: 22,
+    paddingTop: 17,
+    paddingBottom: 17
   },
   headerEducation: {
-    marginTop: '6%',
-    marginLeft: '2%'
-  },
-  button: {
-    marginTop: '5%',
-    marginBottom: '7%',
+    marginTop: '8%',
     marginLeft: '2%',
     marginRight: '2%'
+  },
+  button: {
+    marginTop: '7%',
+    marginBottom: '7%',
+    marginLeft: '2%',
+    marginRight: '2%',
+    paddingTop: 15,
+    paddingBottom: 15,
+    backgroundColor: '#0063FF',
+    borderRadius: 8,
+    alignItems: 'center'
   },
   bottomruler: {
     borderBottomColor: Colors.BottomRulerColor,
@@ -373,15 +396,35 @@ const styles = StyleSheet.create({
   },
   boldtext: {
     fontFamily: 'Roboto-Medium',
-    fontWeight: '900',
-    color: 'black',
-    fontSize: 17
+    color: 'gray',
+    fontSize: 16
   },
   refferals: {
     marginTop: '2.5%'
   },
   noteditable: {
     marginTop: '-6%',
-    backgroundColor: 'lightgray'
+    backgroundColor: '#F2F2F2',
+    paddingLeft: 10
+  },
+  btnText: {
+    color: '#FFFFFF',
+    fontWeight: '500'
+  },
+  placeHolder: {
+    color: '#99969F',
+    fontSize: 16
+  },
+  flexrow: {
+    flexDirection: 'row',
+    marginLeft: '2%',
+    marginTop: '3%'
+  },
+  mheader: {
+    color: 'black',
+    marginLeft: '4%',
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: '0.5%'
   }
 });

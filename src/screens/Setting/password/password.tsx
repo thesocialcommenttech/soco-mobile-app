@@ -1,17 +1,19 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import React, { useState } from 'react';
 import TextInputWithLabel from '../../../components/textInputWithLabel';
 import ButtonWithoutLoader from '../../../components/buttonWithoutLoader';
 import { useFormik } from 'formik';
 import { object, string } from 'yup';
 import { TextInput } from 'react-native-paper';
+import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../../utils/colors';
 
 export default function Password() {
   const [isSecure, setIsSecure] = useState(true);
   const [isSecure1, setIsSecure1] = useState(true);
   const [isSecure2, setIsSecure2] = useState(true);
-
+  const navigation = useNavigation();
   const state: {
     password: string;
     newPassword: string;
@@ -60,6 +62,12 @@ export default function Password() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.flexrow}>
+        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+          <Icon1 name="arrow-left" size={28} color="black" />
+        </TouchableWithoutFeedback>
+        <Text style={styles.mheader}>Password</Text>
+      </View>
       <View style={styles.headingview}>
         <View style={styles.header}>
           <Text style={styles.heading}>Change Password</Text>
@@ -73,7 +81,7 @@ export default function Password() {
           errorTxt={formik.touched.password && formik.errors.password}
           right={
             <TextInput.Icon
-              color={Colors.Secondary}
+              color="black"
               name={isSecure ? 'eye-outline' : 'eye-off-outline'}
               onPress={Eyelick}
               style={styles.eye}
@@ -83,7 +91,7 @@ export default function Password() {
           onChangeText={formik.handleChange('password')}
         />
         <TextInputWithLabel
-          placeholder="Enter new your new password"
+          placeholder="Enter your new password"
           label="New Password"
           isSecureTextEntry={isSecure1}
           onBlur={formik.handleBlur('newPassword')}
@@ -91,7 +99,7 @@ export default function Password() {
           errorTxt={formik.touched.password && formik.errors.newPassword}
           right={
             <TextInput.Icon
-              color={Colors.Secondary}
+              color="black"
               name={isSecure1 ? 'eye-outline' : 'eye-off-outline'}
               onPress={Eyelick1}
               style={styles.eye}
@@ -109,7 +117,7 @@ export default function Password() {
           errorTxt={formik.touched.password && formik.errors.confirmPassword}
           right={
             <TextInput.Icon
-              color={Colors.Secondary}
+              color="black"
               name={isSecure2 ? 'eye-outline' : 'eye-off-outline'}
               onPress={Eyelick2}
               style={styles.eye}
@@ -136,15 +144,17 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontFamily: 'Roboto-Medium',
-    fontSize: 18
+    fontSize: 18,
+    color: '#7D7987'
   },
   headingview: {
-    marginTop: '4.5%',
+    marginTop: '6.5%',
     marginLeft: '2%',
     marginRight: '2%'
   },
   passTB: {
-    marginTop: '-6%'
+    marginTop: '-6%',
+    paddingLeft: 8
   },
   eye: {
     justifyContent: 'center',
@@ -153,7 +163,7 @@ const styles = StyleSheet.create({
   },
   header: {
     marginTop: '0%',
-    marginBottom: '-2%',
+    marginBottom: '0%',
     marginLeft: '1.5%'
   },
   loginBtn: {
@@ -163,5 +173,17 @@ const styles = StyleSheet.create({
     marginTop: '8%',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  flexrow: {
+    flexDirection: 'row',
+    marginTop: '2%',
+    marginLeft: '2%'
+  },
+  mheader: {
+    color: 'black',
+    marginLeft: '4%',
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: '0.5%'
   }
 });

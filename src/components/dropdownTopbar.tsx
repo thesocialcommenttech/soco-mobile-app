@@ -10,6 +10,8 @@ import { Avatar } from '@rneui/base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import CircularProgress from './circularIndicator';
+import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon2 from 'react-native-vector-icons/Ionicons';
 import ReactNativeModal from 'react-native-modal';
 import { Colors } from '../utils/colors';
 import {
@@ -163,6 +165,51 @@ const DropdownTopbar = props => {
       setDropdownTop(py);
     });
     setVisible(true);
+  };
+
+  const onSelect = (item: { label: string; value: string }) => {
+    // console.log('Selected', item);
+  };
+
+  const renderItem = ({ item }): ReactElement<any, any> => (
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => onItemPress(item, props.label.navigation)}
+    >
+      {item.label !== 'Settings' && (
+        <Icon1 name={item.icon} size={17} color="#000" />
+      )}
+      {item.label === 'Settings' && (
+        <Icon2 name={item.icon} size={17} color="#000" />
+      )}
+      <View
+        style={
+          item.subLabel ? styles.itemTextContainer2 : styles.itemTextContainer1
+        }
+      >
+        <Text style={styles.buttonText}>{item.label}</Text>
+        {item.isNew && (
+          <View style={styles.newView}>
+            <Text style={styles.newText}>New</Text>
+          </View>
+        )}
+        {item.subLabel && <Text style={styles.subLabel}>{item.subLabel}</Text>}
+      </View>
+    </TouchableOpacity>
+  );
+  const onItemPress = (item, navigation): void => {
+    // setSelected(item);
+    // onSelect(item);
+    setVisible(false);
+    if (item.label === 'Drafts') {
+      navigation.navigate('Drafts');
+    }
+    if (item.label === 'Trash') {
+      navigation.navigate('Trash');
+    }
+    if (item.label === 'Settings') {
+      navigation.navigate('Setting');
+    }
   };
 
   return (

@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { Provider } from 'react-redux';
 import Routes from './src/navigation/routes';
 //import { StyleSheet } from 'react-native';
-import Stack from './src/navigation/settingStack';
 import store from './src/store';
 
 const App = () => {
@@ -15,9 +14,6 @@ const App = () => {
         <FlashMessage position="top" />
       </View>
     </Provider>
-    // <>
-    //   <Stack />
-    // </>
   );
 };
 
