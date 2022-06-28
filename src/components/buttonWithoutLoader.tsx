@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
+import { Colors } from '../utils/colors';
 
 const ButtonWithoutLoader = ({ text, onPress, btnStyle, submitting }) => {
   // add rgba color opacity

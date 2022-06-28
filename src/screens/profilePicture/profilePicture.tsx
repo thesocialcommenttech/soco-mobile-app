@@ -11,8 +11,6 @@ import { Avatar } from '@rneui/base';
 import { Colors } from '../../utils/colors';
 import * as ImagePicker from 'react-native-image-picker';
 import { updateDP } from '../../utils/services/user-profile_service/updateDP.service';
-import { UpdateDPRequest } from '~/src/utils/typings/user-profile_interface/updateDP.interface';
-import { File } from '@babel/types';
 
 /* toggle includeExtra */
 const includeExtra = true;

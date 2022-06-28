@@ -16,6 +16,7 @@ import { object, string, boolean } from 'yup';
 import { CheckBox } from '@rneui/base';
 import { Colors } from '../../utils/colors';
 import { RegisterRequest } from '../../utils/typings/register_interface/register.interface';
+import { RegisterReqeust } from '../../utils/typings/register_interfaces/register.interfce';
 var logo = require('../../assets/images/logos/Untitled.png');
 
 const CustomCheckBox = (props: any) => {

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { Provider } from 'react-redux';
 import Routes from './src/navigation/routes';
 //import { StyleSheet } from 'react-native';
 import store from './src/store';
+import './src/utils/ignoreWarnings';
 
 const App = () => {
   return (
