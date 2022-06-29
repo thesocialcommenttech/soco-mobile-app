@@ -54,6 +54,11 @@ const DropdownBottombutton: FC<Props> = props => {
       label: 'Presentation',
       isNew: false,
       value: '6'
+    },
+    {
+      label: 'Link',
+      isNew: false,
+      value: '7'
     }
   ];
 
