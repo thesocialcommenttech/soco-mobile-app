@@ -10,6 +10,7 @@ import {
   View
 } from 'react-native';
 import Icon3 from 'react-native-vector-icons/Octicons';
+import { useNavigation } from '@react-navigation/native';
 
 interface Props {
   label: any;
@@ -18,6 +19,7 @@ interface Props {
 }
 
 const DropdownBottombutton: FC<Props> = props => {
+  const navigation = useNavigation();
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
   const [dropdownBottom, setDropdownBottom] = useState(0);
@@ -114,6 +116,7 @@ const DropdownBottombutton: FC<Props> = props => {
     // setSelected(item);
     onSelect(item);
     setVisible(false);
+    navigation.navigate(item.label as never, {} as never);
   };
 
   return (
