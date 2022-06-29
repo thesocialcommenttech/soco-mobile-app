@@ -9,6 +9,7 @@ import SkillVideo from '../screens/createPost/skillVideo';
 import VideoPlayer from '../screens/createPost/videoPlayer';
 import Presentation from '../screens/createPost/presentation';
 import Link from '../screens/createPost/link';
+import Follow from '../screens/following/follow';
 
 const Stack = createNativeStackNavigator();
 
@@ -58,6 +59,11 @@ const ProfileStack = () => {
       <Stack.Screen
         name="Link"
         component={Link}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Follower"
+        component={Follow}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

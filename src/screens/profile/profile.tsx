@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View
 } from 'react-native';
 import React, { useState } from 'react';
@@ -402,14 +403,29 @@ const ProfileScreen = ({ navigation }) => {
         </>
 
         <View style={styles.stats}>
-          <View style={styles.statsItem}>
-            <Text style={styles.statsText}>{followers}</Text>
-            <Text style={styles.statsLabel}>Followers</Text>
-          </View>
-          <View style={styles.statsItem}>
-            <Text style={styles.statsText}>{following}</Text>
-            <Text style={styles.statsLabel}>Following</Text>
-          </View>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              navigation.navigate('Follower' as never, {} as never);
+            }}
+          >
+            <View style={styles.statsItem}>
+              <Text style={styles.statsText}>{followers}</Text>
+              <Text style={styles.statsLabel}>Followers</Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              navigation.navigate(
+                'Follower' as never,
+                { screen: 'Following' } as never
+              );
+            }}
+          >
+            <View style={styles.statsItem}>
+              <Text style={styles.statsText}>{following}</Text>
+              <Text style={styles.statsLabel}>Following</Text>
+            </View>
+          </TouchableWithoutFeedback>
           <View style={styles.statsItem}>
             <Text style={styles.statsText}>{views}</Text>
             <Text style={styles.statsLabel}>Views</Text>
