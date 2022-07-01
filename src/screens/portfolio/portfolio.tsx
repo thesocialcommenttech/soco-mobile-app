@@ -14,6 +14,7 @@ import Bio from './bio';
 import Experiences from './experiences';
 import Certifications from './certifications';
 import Educations from './educations';
+import Skills from './skills';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -48,6 +49,7 @@ export default function Portfolio() {
           <Tab.Screen name="Experiences" component={Experiences} />
           <Tab.Screen name="Certifications" component={Certifications} />
           <Tab.Screen name="Educations" component={Educations} />
+          <Tab.Screen name="Skills" component={Skills} />
         </Tab.Navigator>
       </View>
     </>
