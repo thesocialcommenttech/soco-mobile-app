@@ -1,6 +1,7 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import SkillList from '../../components/portfolio/skillList';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Data = [
   {
@@ -50,7 +51,18 @@ const Data = [
   }
 ];
 
-export default function Skills() {
+export default function Skills({ ...props }) {
+  useFocusEffect(
+    React.useCallback(() => {
+      //Alert.alert('Screen was focused');
+      props.extraData('Skills');
+      return () => {
+        //Alert.alert('Screen was unfocused');
+        // Useful for cleanup functions
+      };
+    }, [props])
+  );
+
   return (
     <View style={styles.container}>
       <FlatList
