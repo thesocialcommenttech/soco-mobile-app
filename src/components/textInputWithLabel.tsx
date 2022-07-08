@@ -31,7 +31,7 @@ const TextInputWithLabel = ({ ...props }) => {
         placeholder={props.placeholder}
         mode="outlined"
         onChangeText={value => {
-          props.onChangeText;
+          props.onChangeText(value);
           setTextLength(value.length);
           checktextLength();
         }}
