@@ -6,19 +6,19 @@ export interface UpdatePresentationRequest {
   description?: string;
   featureImage?: File;
   slides?: File;
-  totalSlides?:number;
-  postedOn?:Date;
-  updatedOn?:Date;
-  postStatus?:string;
-};
+  totalSlides?: number;
+  postedOn?: Date;
+  updatedOn?: Date;
+  postStatus?: string;
+}
 
-interface SlideInfo{
-    slideUrl?:string;
-    position?:number;
-};
+interface SlideInfo {
+  slideUrl?: string;
+  position?: number;
+}
 
-export interface UpdatePresentationResponse{
-    success?:boolean;
-    slides?: SlideInfo[];
-    uploadedFeatureImage?:string;
+export interface UpdatePresentationResponse {
+  success?: boolean;
+  slides?: SlideInfo[];
+  uploadedFeatureImage?: string;
 }

@@ -1,18 +1,22 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { RemovePortforlioWorkRequest, RemovePortforlioWorkResponse } from '~/src/utils/typings/user-portfolio_interface/work/removePortforlioWork.interface';
+import {
+  RemovePortforlioWorkRequest,
+  RemovePortforlioWorkResponse
+} from '~/src/utils/typings/user-portfolio_interface/work/removePortforlioWork.interface';
 
 export function removePortforlioWork({
-  postType,postId
+  postType,
+  postId
 }: RemovePortforlioWorkRequest): Promise<
   AxiosResponse<RemovePortforlioWorkResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/remove/work`,
+    url: '/user/portfolio/remove/work',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    data: { postType,postId }
+    data: { postType, postId }
   };
 
   return axios.request<RemovePortforlioWorkResponse>(config);

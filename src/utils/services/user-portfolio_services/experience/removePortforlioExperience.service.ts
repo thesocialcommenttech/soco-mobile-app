@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { RemovePortforlioExperienceRequest, RemovePortforlioExperienceResponse} from '~/src/utils/typings/user-portfolio_interface/experience/removePortforlioExperience.interface';
+import {
+  RemovePortforlioExperienceRequest,
+  RemovePortforlioExperienceResponse
+} from '~/src/utils/typings/user-portfolio_interface/experience/removePortforlioExperience.interface';
 
 export function removePortforlioExperience({
   experienceId
@@ -7,7 +10,7 @@ export function removePortforlioExperience({
   AxiosResponse<RemovePortforlioExperienceResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/remove/experience`,
+    url: '/user/portfolio/remove/experience',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

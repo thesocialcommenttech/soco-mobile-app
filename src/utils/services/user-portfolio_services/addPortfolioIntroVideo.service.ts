@@ -10,7 +10,7 @@ export function addPortfolioIntroVideo({
   AxiosResponse<AddPortfolioIntroVideoResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/add/intro-video`,
+    url: '/user/portfolio/add/intro-video',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { RemovePortforlioEducationRequest, RemovePortforlioEducationResponse } from '~/src/utils/typings/user-portfolio_interface/education/removePortforlioEducation.interface';
+import {
+  RemovePortforlioEducationRequest,
+  RemovePortforlioEducationResponse
+} from '~/src/utils/typings/user-portfolio_interface/education/removePortforlioEducation.interface';
 
 export function removePortforlioEducation({
   educationId
@@ -7,12 +10,12 @@ export function removePortforlioEducation({
   AxiosResponse<RemovePortforlioEducationResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/remove/education`,
+    url: '/user/portfolio/remove/education',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    data: { educationId}
+    data: { educationId }
   };
 
   return axios.request<RemovePortforlioEducationResponse>(config);

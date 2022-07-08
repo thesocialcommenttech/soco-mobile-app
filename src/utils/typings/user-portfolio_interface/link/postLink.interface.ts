@@ -8,12 +8,10 @@ export interface PostLinkRequest {
   link: string;
   postedOn: Date;
   postStatus: string;
-};
+}
 
-export interface PostLinkResponse{
-    link: Pick<PostLinkRequest, ("link" | "title")>;
-    _id:string;
-    success:boolean
-};
-
-
+export interface PostLinkResponse {
+  link: Pick<PostLinkRequest, 'link' | 'title'>;
+  _id: string;
+  success: boolean;
+}

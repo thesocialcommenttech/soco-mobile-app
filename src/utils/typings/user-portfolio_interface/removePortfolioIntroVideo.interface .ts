@@ -1,3 +1,3 @@
-export interface RemovePortfolioIntroVideoResponse{
-    success:boolean;
+export interface RemovePortfolioIntroVideoResponse {
+  success: boolean;
 }

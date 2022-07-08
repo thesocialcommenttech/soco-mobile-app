@@ -11,7 +11,7 @@ export function updatePortforlioExperience({
   AxiosResponse<UpdatePortforlioExperienceResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/update/experience`,
+    url: '/user/portfolio/update/experience',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

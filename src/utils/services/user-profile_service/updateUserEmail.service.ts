@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { UpdateUserEmailRequest, UpdateUserEmailResponse} from '../../typings/user-profile_interface/updateUserEmail.interface';
+import {
+  UpdateUserEmailRequest,
+  UpdateUserEmailResponse
+} from '../../typings/user-profile_interface/updateUserEmail.interface';
 
 export function updateUserEmail({
   email

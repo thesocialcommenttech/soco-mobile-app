@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { AddPortforlioEducationRequest, AddPortforlioEducationResponse } from '~/src/utils/typings/user-portfolio_interface/education/addPortforlioEducation.interface';
+import {
+  AddPortforlioEducationRequest,
+  AddPortforlioEducationResponse
+} from '~/src/utils/typings/user-portfolio_interface/education/addPortforlioEducation.interface';
 
 export function addPortforlioEducation({
   education
@@ -7,7 +10,7 @@ export function addPortforlioEducation({
   AxiosResponse<AddPortforlioEducationResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/add/education`,
+    url: '/user/portfolio/add/education',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

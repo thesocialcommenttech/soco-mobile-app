@@ -4,7 +4,7 @@ export interface AddPortfolioIntroVideoRequest {
   introvideo?: File;
 }
 
-export interface AddPortfolioIntroVideoResponse{
-    intro_video_url?:string;
-    success?:boolean;
+export interface AddPortfolioIntroVideoResponse {
+  intro_video_url?: string;
+  success?: boolean;
 }

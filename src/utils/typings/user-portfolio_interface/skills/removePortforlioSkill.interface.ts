@@ -1,7 +1,7 @@
-export interface RemovePortforlioSkillRequest{
-    skillId:string;
-};
+export interface RemovePortforlioSkillRequest {
+  skillId: string;
+}
 
-export interface RemovePortforlioSkillResponse{
-    success:boolean;
+export interface RemovePortforlioSkillResponse {
+  success: boolean;
 }

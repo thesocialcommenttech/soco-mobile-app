@@ -1,7 +1,7 @@
-export interface AddPortforlioBioRequest{
-    bio?:string;
-};
+export interface AddPortforlioBioRequest {
+  bio?: string;
+}
 
-export interface AddPortforlioBioResponse{
-    success?:boolean;
+export interface AddPortforlioBioResponse {
+  success?: boolean;
 }

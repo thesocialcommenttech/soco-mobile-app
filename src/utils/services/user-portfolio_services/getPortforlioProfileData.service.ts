@@ -10,7 +10,7 @@ export function getPortforlioProfileData({
   AxiosResponse<GetPortforlioProfileDataResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/profile`,
+    url: '/user/portfolio/profile',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

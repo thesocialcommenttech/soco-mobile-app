@@ -1,13 +1,16 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { RemovePortforlioSkillRequest, RemovePortforlioSkillResponse } from '~/src/utils/typings/user-portfolio_interface/skills/removePortforlioSkill.interface';
+import {
+  RemovePortforlioSkillRequest,
+  RemovePortforlioSkillResponse
+} from '~/src/utils/typings/user-portfolio_interface/skills/removePortforlioSkill.interface';
 
 export function removePortforlioSkill({
-    skillId
+  skillId
 }: RemovePortforlioSkillRequest): Promise<
   AxiosResponse<RemovePortforlioSkillResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/remove/skill`,
+    url: '/user/portfolio/remove/skill',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

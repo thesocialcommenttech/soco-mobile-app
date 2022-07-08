@@ -10,7 +10,7 @@ export function addPortforlioExperience({
   AxiosResponse<AddPortfolioExperienceResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/add/experience`,
+    url: '/user/portfolio/add/experience',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

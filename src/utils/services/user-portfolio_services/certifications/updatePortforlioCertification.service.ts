@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { UpdatePortforlioCertificationRequest,UpdatePortforlioCertificationResponse } from '~/src/utils/typings/user-portfolio_interface/certifications/updatePortforlioCertification.interface';
+import {
+  UpdatePortforlioCertificationRequest,
+  UpdatePortforlioCertificationResponse
+} from '~/src/utils/typings/user-portfolio_interface/certifications/updatePortforlioCertification.interface';
 
 export function updatePortforlioCertification({
   title,
@@ -13,7 +16,7 @@ export function updatePortforlioCertification({
   AxiosResponse<UpdatePortforlioCertificationResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/update/certification`,
+    url: '/user/portfolio/update/certification',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

@@ -1,4 +1,4 @@
-export interface RemoveUserInterestResponse{
-    categoryID?:string;
-    success?: boolean;
-};
+export interface RemoveUserInterestResponse {
+  categoryID?: string;
+  success?: boolean;
+}

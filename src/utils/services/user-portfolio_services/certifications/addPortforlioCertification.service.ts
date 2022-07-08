@@ -16,7 +16,7 @@ export function addPortforlioCertification({
   AxiosResponse<AddPortforlioCertificationResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/add/certification`,
+    url: '/user/portfolio/add/certification',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

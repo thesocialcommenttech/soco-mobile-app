@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { GetPortforlioWorkDataRequest, GetPortforlioWorkDataResponse } from '../../typings/user-portfolio_interface/getPortforlioWorkData.interface';
+import {
+  GetPortforlioWorkDataRequest,
+  GetPortforlioWorkDataResponse
+} from '../../typings/user-portfolio_interface/getPortforlioWorkData.interface';
 
 export function getPortforlioWorkData({
   username
@@ -7,7 +10,7 @@ export function getPortforlioWorkData({
   AxiosResponse<GetPortforlioWorkDataResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/data`,
+    url: '/user/portfolio/data',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

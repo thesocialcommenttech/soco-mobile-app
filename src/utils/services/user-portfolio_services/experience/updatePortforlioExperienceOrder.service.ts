@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { UpdatePortforlioExperienceOrderRequest, UpdatePortforlioExperienceOrderResponse } from '~/src/utils/typings/user-portfolio_interface/experience/updatePortforlioExperienceOrder.inerface';
+import {
+  UpdatePortforlioExperienceOrderRequest,
+  UpdatePortforlioExperienceOrderResponse
+} from '~/src/utils/typings/user-portfolio_interface/experience/updatePortforlioExperienceOrder.inerface';
 
 export function updatePortforlioExperienceOrder({
   experienceOrder
@@ -7,7 +10,7 @@ export function updatePortforlioExperienceOrder({
   AxiosResponse<UpdatePortforlioExperienceOrderResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/update/experience/order`,
+    url: '/user/portfolio/update/experience/order',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

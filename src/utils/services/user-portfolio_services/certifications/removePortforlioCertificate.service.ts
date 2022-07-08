@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { RemovePortforlioCertificateRequest, RemovePortforlioCertificateResponse } from '~/src/utils/typings/user-portfolio_interface/certifications/removePortforlioCertificate.interface';
+import {
+  RemovePortforlioCertificateRequest,
+  RemovePortforlioCertificateResponse
+} from '~/src/utils/typings/user-portfolio_interface/certifications/removePortforlioCertificate.interface';
 
 export function removePortforlioCertificate({
   certificateId
@@ -7,7 +10,7 @@ export function removePortforlioCertificate({
   AxiosResponse<RemovePortforlioCertificateResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: `/user/portfolio/remove/certification`,
+    url: '/user/portfolio/remove/certification',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

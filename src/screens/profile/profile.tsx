@@ -146,7 +146,7 @@ const ProfileScreen = ({ navigation }) => {
         console.log(err.response.data);
       });
     // console.log('YO', userData);
-  }, []);
+  });
 
   const ITEMS = [
     {

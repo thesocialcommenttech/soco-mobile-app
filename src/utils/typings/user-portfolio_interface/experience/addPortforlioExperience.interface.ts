@@ -22,6 +22,6 @@ interface ExperienceResponse {
   _id: string;
 }
 export interface AddPortfolioExperienceResponse {
-    experience:ExperienceResponse;
-    success?:boolean;
+  experience: ExperienceResponse;
+  success?: boolean;
 }

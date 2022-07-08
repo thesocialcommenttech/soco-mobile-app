@@ -1,3 +1,3 @@
-export interface AddPostToUserFavResponse{
-    success:boolean;
-};
+export interface AddPostToUserFavResponse {
+  success: boolean;
+}

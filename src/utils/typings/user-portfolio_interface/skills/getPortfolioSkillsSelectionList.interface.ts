@@ -1,9 +1,9 @@
-interface Skill{
-    _id:string;
-    skill:string;
+interface Skill {
+  _id: string;
+  skill: string;
 }
 
-export interface GetPortfolioSkillsSelectionListResponse{
-    skills:Skill[];
-    success:boolean;
+export interface GetPortfolioSkillsSelectionListResponse {
+  skills: Skill[];
+  success: boolean;
 }

@@ -17,4 +17,4 @@ export function login({
     data: { email, password }
   };
   return axios.request<LoginResponseData>(config);
-};
+}

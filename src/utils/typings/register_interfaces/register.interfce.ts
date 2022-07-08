@@ -5,14 +5,14 @@ export interface RegisterReqeust {
   username: string;
   email: string;
   password: string;
-  academic:string;
-  agreement:boolean;
-  dob:string;
-  gender:string;
-  city:string;
-  pincode:string;
-  referal:string;
-  state:string
+  academic: string;
+  agreement: boolean;
+  dob: string;
+  gender: string;
+  city: string;
+  pincode: string;
+  referal: string;
+  state: string;
 }
 
 export interface RegisterResponse {
