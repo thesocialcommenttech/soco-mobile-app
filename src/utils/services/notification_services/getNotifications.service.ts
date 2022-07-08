@@ -5,7 +5,7 @@ export function getNotifications(): Promise<
   AxiosResponse<GetNotificatiosnresponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/notifications',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/notifications',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

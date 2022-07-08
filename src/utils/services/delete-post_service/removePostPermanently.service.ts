@@ -5,7 +5,7 @@ export function removePostPermanently(): Promise<
   AxiosResponse<RemovePostPermanentlyResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/post/delete',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/delete',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

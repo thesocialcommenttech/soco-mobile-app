@@ -3,7 +3,7 @@ import { SearchPostResponse } from '../../typings/search_interface/searchPost.in
 
 export function searchPost(): Promise<AxiosResponse<SearchPostResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/search/post',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/search/post',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

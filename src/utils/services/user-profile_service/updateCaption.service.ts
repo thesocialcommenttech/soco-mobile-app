@@ -8,7 +8,7 @@ export function updateCaption({
   caption
 }: UpdateCaptionRequest): Promise<AxiosResponse<UpdateCaptionResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/profile/caption',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/profile/caption',
     method: 'POST',
     data: {
       caption

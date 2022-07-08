@@ -17,7 +17,7 @@ export function updateLink(
   postId: string
 ): Promise<AxiosResponse<UpdateLinkResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/post/update/link/${postId}`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/update/link/${postId}`,
     method: 'POST',
     data: { title, description, featureImage, tags, link, postedOn, postStatus }
   };

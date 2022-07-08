@@ -5,7 +5,7 @@ export function addPostToUserFav(
   action: string
 ): Promise<AxiosResponse<AddPostToUserFavResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/profile/favourite/${action}`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/profile/favourite/${action}`,
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

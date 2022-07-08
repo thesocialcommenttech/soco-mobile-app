@@ -5,7 +5,7 @@ export function setOnlineStatus(): Promise<
   AxiosResponse<SetOnlineStatusResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/online-session/start',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/online-session/start',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

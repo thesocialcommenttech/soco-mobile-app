@@ -1,18 +1,18 @@
 interface Skill {
-  skill: string;
-  level: number;
+  skill?: string;
+  level?: number;
 }
 
 export interface UpdatePortforlioSkillRequest {
-  indexID: string;
-  skill: Skill;
+  indexID?: string;
+  skill?: Skill;
 }
 
 interface SkillResponse extends Skill {
-  _id: string;
+  _id?: string;
 }
 
 export interface UpdatePortforlioSkillResponse {
-  skill: SkillResponse;
-  success: boolean;
+  skill?: SkillResponse;
+  success?: boolean;
 }

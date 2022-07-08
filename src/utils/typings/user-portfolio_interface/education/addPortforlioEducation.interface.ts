@@ -1,21 +1,21 @@
 interface Education {
-  course: string;
-  institute: string;
-  level: string;
-  passYear: Date;
-  status: string;
+  course?: string;
+  institute?: string;
+  level?: string;
+  passYear?: Date;
+  status?: string;
 }
 
 export interface AddPortforlioEducationRequest {
-  education: Education;
+  education?: Education;
 }
 
 interface ResponseEducation extends Education {
-  order: number;
-  _id: string;
+  order?: number;
+  _id?: string;
 }
 
 export interface AddPortforlioEducationResponse {
-  success: boolean;
-  education: ResponseEducation;
+  success?: boolean;
+  education?: ResponseEducation;
 }

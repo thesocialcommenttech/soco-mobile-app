@@ -20,7 +20,7 @@ export function updateProject(
   postID: string
 ): Promise<AxiosResponse<UpdateProjectResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/post/update/project/${postID}`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/update/project/${postID}`,
     method: 'POST',
     data: {
       title,

@@ -1,8 +1,8 @@
 export interface RemovePortforlioCertificateRequest {
-  certificateId: string;
+  certificateId?: string;
 }
 
 export interface RemovePortforlioCertificateResponse {
-  certificateId: string;
-  success: boolean;
+  certificateId?: string;
+  success?: boolean;
 }

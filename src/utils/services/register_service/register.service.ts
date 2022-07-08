@@ -19,7 +19,6 @@ export function register({
   state
 }: RegisterRequest): Promise<AxiosResponse<RegisterResponse>> {
   const config: AxiosRequestConfig = {
-    baseURL: 'https://thesocialcomment-backend-test.herokuapp.com',
     url: '/user/register',
     method: 'POST',
     headers: {

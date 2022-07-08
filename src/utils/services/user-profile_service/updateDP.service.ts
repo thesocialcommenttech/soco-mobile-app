@@ -9,7 +9,6 @@ export function updateDP({
 }: UpdateDPRequest): Promise<AxiosResponse<UpdateDPResposne>> {
   // console.log(dp.getParts());
   const config: AxiosRequestConfig = {
-    baseURL: 'https://thesocialcomment-backend-test.herokuapp.com',
     headers: {
       'Content-Type': 'multipart/form-data'
     },

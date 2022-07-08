@@ -10,7 +10,6 @@ export function login({
   password
 }: LoginRequestData): Promise<AxiosResponse<LoginResponseData>> {
   const config: AxiosRequestConfig = {
-    baseURL: 'https://thesocialcomment-backend-test.herokuapp.com',
     url: '/user/login',
     method: 'POST',
     headers: {

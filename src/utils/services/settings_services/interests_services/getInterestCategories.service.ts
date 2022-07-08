@@ -5,7 +5,7 @@ export function getInterestCategories(): Promise<
   AxiosResponse<GetInterestCategoriesResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/category/interest-categories',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/category/interest-categories',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

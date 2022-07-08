@@ -16,7 +16,7 @@ export function postSkill({
   updatedOn
 }: PostCreateSkillRequest): Promise<AxiosResponse<PostCreateSkillResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/post/create/skill',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/create/skill',
     method: 'POST',
     data: {
       title,

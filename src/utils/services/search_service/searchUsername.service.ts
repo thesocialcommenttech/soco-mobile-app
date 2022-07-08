@@ -5,7 +5,7 @@ export function searchUsername(): Promise<
   AxiosResponse<SearchUsernameResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/search/user',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/search/user',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

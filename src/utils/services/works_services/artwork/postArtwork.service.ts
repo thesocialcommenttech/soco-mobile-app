@@ -16,7 +16,7 @@ export function postArtwork({
   AxiosResponse<PostCreateArtworkResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/post/create/artwork',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/create/artwork',
     method: 'POST',
     data: { title, description, tags, category, artwork, postedOn, postStatus },
     headers: {

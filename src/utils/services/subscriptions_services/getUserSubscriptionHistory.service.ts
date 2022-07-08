@@ -5,7 +5,7 @@ export function getUserSubscriptionsHistory(): Promise<
   AxiosResponse<GetUserSubscriptionHistoryResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/subscription',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/subscription',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

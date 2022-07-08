@@ -1,12 +1,12 @@
 interface Exp {
-  order: number;
-  _id: string;
+  order?: number;
+  _id?: string;
 }
 
 export interface UpdatePortforlioExperienceOrderRequest {
-  experienceOrder: Exp[];
+  experienceOrder?: Exp[];
 }
 
 export interface UpdatePortforlioExperienceOrderResponse {
-  success: boolean;
+  success?: boolean;
 }

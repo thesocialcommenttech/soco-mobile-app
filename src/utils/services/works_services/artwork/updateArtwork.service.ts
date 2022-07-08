@@ -17,7 +17,7 @@ export function updateArtwork(
   postID: string
 ): Promise<AxiosResponse<UpdateArtworkResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/post/update/artwork/${postID}`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/update/artwork/${postID}`,
     method: 'POST',
     data: { title, description, tags, category, artwork, postedOn, postStatus }
   };

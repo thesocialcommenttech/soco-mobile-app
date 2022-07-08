@@ -1,11 +1,11 @@
 interface SendEmailRequest {
-  MessageId: string;
-  ResponseMetadata: {
-    RequestId: string;
+  MessageId?: string;
+  ResponseMetadata?: {
+    RequestId?: string;
   };
 }
 
 export interface ResendEmailVerificationResponse {
-  sendEmailResult: SendEmailRequest;
-  success: boolean;
+  sendEmailResult?: SendEmailRequest;
+  success?: boolean;
 }

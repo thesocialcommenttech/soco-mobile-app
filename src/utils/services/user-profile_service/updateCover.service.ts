@@ -8,7 +8,7 @@ export function updateCover({
   cover
 }: UpdateCoverRequest): Promise<AxiosResponse<UpdateCoverResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/profile/cover',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/profile/cover',
     method: 'POST',
     data: {
       cover

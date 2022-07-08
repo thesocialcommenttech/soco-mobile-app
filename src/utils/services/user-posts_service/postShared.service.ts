@@ -11,7 +11,7 @@ export function postShared({
   sharedPostType
 }: PostSharedRequest): Promise<AxiosResponse<PostSharedResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/post/create/shared',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/create/shared',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

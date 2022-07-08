@@ -1,3 +1,3 @@
 export interface RemovePostPermanentlyResponse {
-  success: boolean;
+  success?: boolean;
 }

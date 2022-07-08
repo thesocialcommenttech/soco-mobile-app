@@ -5,7 +5,7 @@ export function getPosts(
   userID: string
 ): Promise<AxiosResponse<GetPostsResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/post/all',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/all',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

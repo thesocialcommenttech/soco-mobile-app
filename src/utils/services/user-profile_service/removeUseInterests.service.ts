@@ -5,7 +5,7 @@ export function removeUserInterest(): Promise<
   AxiosResponse<RemoveUserInterestResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/interest',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/interest',
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'

@@ -5,7 +5,7 @@ export function closeSession(): Promise<
   AxiosResponse<SetOnlineStatusResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/online-session/end',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/online-session/end',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

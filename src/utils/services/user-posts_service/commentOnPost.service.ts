@@ -3,7 +3,7 @@ import { CommentOnPostResponse } from '../../typings/user-posts_interface/commen
 
 export function commentOnPost(): Promise<AxiosResponse<CommentOnPostResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/post/comment/create',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/comment/create',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

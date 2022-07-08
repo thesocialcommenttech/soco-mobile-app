@@ -3,7 +3,7 @@ import { getUserFeedsResponse } from '../../typings/user-posts_interface/getUser
 
 export function getUserFeeds(): Promise<AxiosResponse<getUserFeedsResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/post/feeds',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/feeds',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

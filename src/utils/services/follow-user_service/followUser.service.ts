@@ -8,7 +8,7 @@ export function followUser({
   userID
 }: FollowUserRequest): Promise<AxiosResponse<FollowUserResponse>> {
   const config: AxiosRequestConfig = {
-    url: '/user/profile/follow',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/profile/follow',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
