@@ -5,7 +5,7 @@ interface PostedBy {
   _id?: string;
 }
 
-interface Feed {
+export interface Feed {
   comments?: number;
   description?: string;
   downvotes?: number;
