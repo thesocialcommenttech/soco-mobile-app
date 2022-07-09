@@ -21,9 +21,12 @@ import {
 } from '../store/actions/auth';
 import store from '../store';
 import { getAuthCredentials } from '../lib/auth-credentials';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { IRootReducer } from '../store/reducers';
+import { staticFileSrc } from '../utils/methods';
+import { getUserData2 } from '../utils/services/user-profile_service/getUserData2.service';
+import { getUserProfileCompletion } from '../utils/services/user-profile_service/getUserProfileCompletion.service';
 
 const RenderItem = ({
   item,
@@ -87,14 +90,51 @@ const RenderItem = ({
   );
 };
 
-const DropdownTopbar = props => {
+function DropdownTopbar(props) {
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
   const [dropdownTop, setDropdownTop] = useState(0);
   const [selected, setSelected] = useState(undefined);
+  const auth = useSelector((state: IRootReducer) => state.auth);
+
+  const [profileCompletion, setProfileCompletion] = useState(0);
+  const [premium, setPremium] = useState(false);
 
   const dispatch =
     useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
+
+  useEffect(() => {
+    fetchProfileCompletion();
+    fetchUserPremiumStatus();
+  }, []);
+
+  async function fetchProfileCompletion() {
+    const result = await getUserProfileCompletion();
+    if (result.data.success) {
+      let completedSteps = Object.values(result.data.completed_profile.work);
+      delete result.data.completed_profile.work;
+
+      completedSteps = completedSteps.concat(
+        Object.values(result.data.completed_profile)
+      );
+
+      let countCompletedSteps = completedSteps.reduce<number>(
+        (p, c) => (c ? p + 1 : p),
+        0
+      );
+
+      setProfileCompletion((countCompletedSteps / completedSteps.length) * 100);
+    }
+  }
+
+  async function fetchUserPremiumStatus() {
+    const result = await getUserData2(auth.user?.username, 'premium');
+
+    if (result.data.success) {
+      setPremium(result.data.user.premium);
+    }
+  }
+
   const data1 = [
     {
       label: 'Internships/Jobs',
@@ -217,10 +257,10 @@ const DropdownTopbar = props => {
       <Avatar
         size={30}
         rounded
-        title={props.label.username?.charAt(0)}
+        title={auth.user?.name}
         titleStyle={styles.avatarTitle}
         source={{
-          uri: props.label.uri
+          uri: staticFileSrc(auth.user?.profileImage)
         }}
         activeOpacity={0.7}
         containerStyle={styles.avatar}
@@ -249,13 +289,13 @@ const DropdownTopbar = props => {
           </TouchableOpacity>
           <View style={styles.picInfo}>
             <CircularProgress
-              percent={props.label.percentProfile}
-              title={props.label.username?.charAt(0)}
-              uri={props.label.uri}
+              percent={profileCompletion}
+              title={auth.user?.username}
+              uri={staticFileSrc(auth.user?.profileImage)}
               clockwise={false}
             />
-            <Text style={styles.name}>{props.label.username}</Text>
-            {props.label.premium && (
+            <Text style={styles.name}>{auth.user?.name}</Text>
+            {premium && (
               <View style={styles.premium}>
                 <Text style={styles.premiumText}>Premium Account</Text>
               </View>
@@ -300,7 +340,7 @@ const DropdownTopbar = props => {
       </ReactNativeModal>
     </TouchableOpacity>
   );
-};
+}
 
 const styles = StyleSheet.create({
   buttonText: {
