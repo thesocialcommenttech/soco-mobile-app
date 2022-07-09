@@ -17,6 +17,7 @@ module.exports = {
     'no-undef': 'off',
     'comma-dangle': 'off',
     'prettier/prettier': 'off',
-    'react-hooks/exhaustive-deps': 'off'
+    'react-hooks/exhaustive-deps': 'off',
+    'react-native/no-inline-styles': 'off'
   }
 };

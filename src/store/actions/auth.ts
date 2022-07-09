@@ -34,7 +34,7 @@ export type ISetAuthToLogin = ThunkAction<any, IRootReducer, any, ILoginAction>;
 export function setAuthToLogin(authData: IAuthData): ISetAuthToLogin {
   return async dispatch => {
     await setAuthCredentials({
-      user_id: authData.user._id,
+      user: authData.user,
       token: authData.token
     });
 

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { AuthActionTypes, AuthAction } from '../actions/auth';
 
 export interface IUserData {
@@ -28,6 +29,10 @@ export const authReducer = (
 ): IAuthState => {
   switch (action.type) {
     case AuthAction.LOGIN:
+
+      // setting bearer token
+      axios.defaults.headers.common.Authorization = `Bearer ${action.payload.token}`;
+
       return {
         ...state,
         authenticated: true,

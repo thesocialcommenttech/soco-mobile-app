@@ -1,5 +1,7 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { IUserData } from '../store/reducers/auth';
+import isJSON from 'is-json';
 
 export async function deleteAuthCredentials() {
   await Promise.all([
@@ -10,30 +12,29 @@ export async function deleteAuthCredentials() {
 }
 
 export async function setAuthCredentials({
-  user_id,
-  token
+  token,
+  user
 }: {
   token: string;
-  user_id: string;
+  user: IUserData;
 }) {
   await Promise.all([
-    SecureStore.setItemAsync('uid', user_id),
+    SecureStore.setItemAsync('uid', user._id),
+    SecureStore.setItemAsync('u', JSON.stringify(user)),
     SecureStore.setItemAsync('ut', token)
   ]);
-  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-  // set baseurl of axios
-  axios.defaults.baseURL =
-    'https://thesocialcomment-backend-test.herokuapp.com';
 }
 
 export async function getAuthCredentials() {
-  const [user_id, token] = await Promise.all([
+  const [user_id, user, token] = await Promise.all([
     SecureStore.getItemAsync('uid'),
+    SecureStore.getItemAsync('u'),
     SecureStore.getItemAsync('ut')
   ]);
 
   return {
     user_id,
-    token
+    token,
+    user: isJSON(user) && JSON.parse(user)
   };
 }
