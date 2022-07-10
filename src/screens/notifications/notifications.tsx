@@ -1,192 +1,256 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { Colors } from '../../utils/colors';
 import { ScrollView } from 'react-native-gesture-handler';
 import { getNotifications } from '../../utils/services/notification_services/getNotifications.service';
+import {
+  GetNotificatiosnresponse,
+  Notification
+} from '~/src/utils/typings/notifications_interface/getNotifications.interface';
+import { format } from 'timeago.js';
+import { ActivityIndicator } from 'react-native-paper';
+import { markNotificationsAsRead } from '~/src/utils/services/notification_services/markNotificationsAsRead.service';
 
-const UNREAD = [
-  {
-    id: 1,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 2,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 3,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 4,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 5,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 6,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 7,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  }
-];
-const READ = [
-  {
-    id: 1,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 2,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 3,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 4,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 5,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 6,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  },
-  {
-    id: 7,
-    username: '@akshay',
-    title: 'How to Minimize Fatigue During Virtual Meetings?',
-    time: '1 hour ago'
-  }
-];
+function NotificationItem({
+  notification
+}: {
+  notification: Notification;
+}): ReactElement {
+  return (
+    <View style={styles.notification}>
+      <View style={styles.notificationTime}>
+        <Text style={styles.notificationTimeText}>
+          {format(notification.notifiedOn)}
+        </Text>
+      </View>
+      {(() => {
+        switch (notification.type) {
+          case 'add-fav':
+            return (
+              <View style={styles.notificationTitle}>
+                <Text style={styles.notificationUserText}>
+                  @{notification.data.userID.username}
+                  <Text style={styles.notificationText}>
+                    {' '}
+                    make {notification.data.postID.postType}{' '}
+                    <Text style={styles.notificationTitleText}>
+                      {notification.data.postID.title}
+                    </Text>{' '}
+                    as favourite.
+                  </Text>
+                </Text>
+              </View>
+            );
+          case 'new-post':
+            return (
+              <View style={styles.notificationTitle}>
+                <Text style={styles.notificationUserText}>
+                  @{notification.data.userID.username}
+                  <Text style={styles.notificationText}>
+                    {' '}
+                    posted a new {notification.data.postID.postType}{' '}
+                    <Text style={styles.notificationTitleText}>
+                      {notification.data.postID.title}
+                    </Text>
+                  </Text>
+                </Text>
+              </View>
+            );
+          case 'add-like':
+            return (
+              <View style={styles.notificationTitle}>
+                <Text style={styles.notificationUserText}>
+                  @{notification.data.userID.username}
+                  <Text style={styles.notificationText}>
+                    {' '}
+                    liked your {notification.data.postID.postType}{' '}
+                    <Text style={styles.notificationTitleText}>
+                      {notification.data.postID.title}
+                    </Text>
+                  </Text>
+                </Text>
+              </View>
+            );
+          case 'new-comment':
+            return (
+              <View style={styles.notificationTitle}>
+                <Text style={styles.notificationUserText}>
+                  @{notification.data.userID.username}
+                  <Text style={styles.notificationText}>
+                    {' '}
+                    comments on your {notification.data.postID.postType}{' '}
+                    <Text style={styles.notificationTitleText}>
+                      {notification.data.postID.title}
+                    </Text>
+                  </Text>
+                </Text>
+              </View>
+            );
+          case 'shared-post':
+            return (
+              <View style={styles.notificationTitle}>
+                <Text style={styles.notificationUserText}>
+                  @{notification.data.userID.username}
+                  <Text style={styles.notificationText}>
+                    {' '}
+                    shared {notification.data.postID.postType}{' '}
+                    <Text style={styles.notificationTitleText}>
+                      {notification.data.postID.title}
+                    </Text>{' '}
+                    with you.
+                  </Text>
+                </Text>
+              </View>
+            );
+          case 'admin-msg':
+            return (
+              <View style={styles.notificationTitle}>
+                <Text style={styles.notificationText}>
+                  {notification.data.message}
+                </Text>
+                {notification.data.links?.map(link => (
+                  <View>
+                    {link.relativeTo === 'username' ? (
+                      <TouchableOpacity
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          padding: 5,
+                          paddingHorizontal: 10,
+                          marginTop: 10,
+                          backgroundColor: 'rgba(0,0,0,0.05)',
+                          borderRadius: 6
+                        }}
+                      >
+                        <FontAwesome5
+                          name="external-link-alt"
+                          style={{ marginRight: 5 }}
+                          color="gray"
+                        />
+                        <Text>{link.text}</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <Text>
+                        <FontAwesome5 name="external-link-alt" /> {link.text}
+                      </Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            );
+        }
+      })()}
+    </View>
+  );
+}
 
 const NotificationsScreen = ({ navigation }) => {
-  const [searchPhrase, setSearchPhrase] = useState('');
-  const [clicked, setClicked] = useState(false);
-  const [selectedLabel, setSelectedLabel] = useState('User');
+  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] =
+    useState<GetNotificatiosnresponse['notifications']>();
+
+  const unreadNotifications = useMemo(
+    () => notifications?.unread,
+    [notifications]
+  );
+
+  const readNotifications = useMemo(() => notifications?.read, [notifications]);
+
+  async function markAsRead() {
+    const notifiationIds = unreadNotifications.map(
+      notification => notification._id
+    );
+
+    await markNotificationsAsRead({ notifications: notifiationIds });
+  }
+
+  async function fetchNotifications() {
+    setLoading(true);
+    const result = await getNotifications();
+
+    if (result.data.success) {
+      setNotifications(result.data.notifications);
+    }
+    setLoading(false);
+  }
 
   useEffect(() => {
-    const fetchData = async () => {
-      const gn = await getNotifications();
-      return { gn: gn };
-    };
-    fetchData()
-      .then(res => {
-        console.log('gn', res);
-      })
-      .catch(err => {
-        console.log('Notifs', err.response);
-      });
-  }, [clicked]);
+    fetchNotifications();
+
+    setTimeout(() => {
+      markAsRead();
+    }, 1000);
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <MaterialCommunityIcon
-          name="arrow-left"
-          size={25}
-          color="black"
+        <TouchableOpacity
           onPress={() => {
             navigation.goBack();
           }}
-          style={styles.backIcon}
-        />
-        <View style={styles.head}>
-          <Text style={styles.headerText}>Notifications</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setClicked(!clicked);
-            }}
-          >
-            <MaterialCommunityIcon name="refresh" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
+        >
+          <MaterialCommunityIcon
+            name="arrow-left"
+            size={24}
+            color="black"
+            style={styles.backIcon}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Notifications</Text>
+        <TouchableOpacity
+          onPress={() => {
+            fetchNotifications();
+          }}
+        >
+          <MaterialCommunityIcon name="refresh" size={24} color="black" />
+        </TouchableOpacity>
       </View>
-      <ScrollView>
-        <View style={styles.util}>
-          <Text style={styles.utilText}>Unread</Text>
+      {loading ? (
+        <View style={styles.loadingCt}>
+          <ActivityIndicator size={24} color={Colors.Secondary} />
         </View>
-        <View style={styles.unread}>
-          {UNREAD.map(item => {
-            return (
-              <View style={styles.notification} key={item.id}>
-                <View style={styles.notificationTime}>
-                  <Text style={styles.notificationTimeText}>{item.time}</Text>
-                </View>
-                <View style={styles.notificationTitle}>
-                  <Text style={styles.notificationUserText}>
-                    {item.username}
-                    <Text style={styles.notificationText}>
-                      {' posted a new blog '}
-                    </Text>
-                    <Text style={styles.notificationTitleText}>
-                      {item.title}
-                    </Text>
-                  </Text>
-                </View>
+      ) : (
+        <ScrollView>
+          {unreadNotifications?.length > 0 && (
+            <>
+              <View style={styles.util}>
+                <Text style={styles.utilText}>Unread</Text>
               </View>
-            );
-          })}
-        </View>
-        <View style={styles.util}>
-          <Text style={styles.utilText}>Read</Text>
-        </View>
-        <View style={styles.read}>
-          {UNREAD.map(item => {
-            return (
-              <View style={styles.notification} key={item.id}>
-                <View style={styles.notificationTime}>
-                  <Text style={styles.notificationTimeText}>{item.time}</Text>
-                </View>
-                <View style={styles.notificationTitle}>
-                  <Text style={styles.notificationUserText}>
-                    {item.username}
-                    <Text style={styles.notificationText}>
-                      {' posted a new blog '}
-                    </Text>
-                    <Text style={styles.notificationTitleText}>
-                      {item.title}
-                    </Text>
-                  </Text>
-                </View>
+              <View style={styles.unread}>
+                {unreadNotifications?.map(notification => {
+                  return (
+                    <NotificationItem
+                      key={notification._id}
+                      notification={notification}
+                    />
+                  );
+                })}
               </View>
-            );
-          })}
-        </View>
-      </ScrollView>
+            </>
+          )}
+          {readNotifications?.length > 0 && (
+            <>
+              <View style={styles.util}>
+                <Text style={styles.utilText}>Read</Text>
+              </View>
+              <View style={styles.read}>
+                {readNotifications?.map(notification => {
+                  return (
+                    <NotificationItem
+                      key={notification._id}
+                      notification={notification}
+                    />
+                  );
+                })}
+              </View>
+            </>
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 };
@@ -196,7 +260,6 @@ export default NotificationsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     // paddingHorizontal: '5%'
     paddingVertical: '5%'
   },
@@ -204,12 +267,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingBottom: '5%'
+    paddingBottom: '5%',
+    paddingHorizontal: 20
   },
-  backIcon: {
-    marginLeft: '5%'
-    // backgroundColor: '#000'
-  },
+  backIcon: {},
   title: {
     width: '100%',
     marginTop: 20,
@@ -219,49 +280,42 @@ const styles = StyleSheet.create({
     color: '#000',
     fontFamily: 'Roboto-Medium'
   },
-  util: {
-    marginLeft: '8%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: '5%'
-  },
-  utilText: {
-    fontSize: 16,
-    fontFamily: 'Roboto-Medium',
-    color: Colors.Gray600
-  },
   headerText: {
     fontSize: 18,
     fontWeight: '600',
     fontFamily: 'Roboto-Medium',
-    color: '#000'
+    color: '#000',
+    flexGrow: 1,
+    paddingHorizontal: 15
   },
-  head: {
+  util: {
+    marginLeft: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '78%',
-    // backgroundColor: 'gray',
-    marginLeft: '5%'
+    paddingVertical: 15
+  },
+  utilText: {
+    fontSize: 16,
+    fontFamily: 'Roboto-Medium',
+    // fontWeight: '700',
+    color: '#7D7987'
   },
   notification: {
-    paddingVertical: '3%',
-    paddingHorizontal: '5%'
+    paddingVertical: 10,
+    paddingHorizontal: 20
   },
   unread: {
     // maxHeight: '50%',
     backgroundColor: '#fff7db'
   },
-  read: {
-    // maxHeight: '50%',
-    backgroundColor: 'white'
-  },
+  read: {},
   notificationTime: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center'
   },
   notificationTimeText: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: 'Roboto-Medium',
     color: Colors.Gray600
   },
@@ -276,13 +330,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Roboto-Medium',
     color: Colors.Secondary,
-    lineHeight: 20
+    lineHeight: 22
   },
 
   notificationText: {
-    color: Colors.Black
+    fontSize: 14,
+    color: Colors.Black,
+    lineHeight: 20
   },
   notificationTitleText: {
+    fontSize: 14,
     color: Colors.Gray600
+  },
+  loadingCt: {
+    display: 'flex',
+    justifyContent: 'center',
+    padding: 20
   }
 });

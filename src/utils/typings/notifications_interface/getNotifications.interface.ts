@@ -1,35 +1,46 @@
-interface PostID {
+interface NotificationPost {
   _id?: string;
   postType?: string;
   title?: string;
 }
 
-interface UserID {
+interface NotificationUser {
   _id?: string;
   username?: string;
   profileImage?: string;
   name?: string;
 }
 
-interface Data {
-  links?: string[];
-  postID?: PostID;
-  userID?: UserID;
+interface NotificationDataLink {
+  relativeTo: 'username'| 'root';
+  text: string;
+  url: string;
 }
 
-interface Read {
-  data?: Data;
+interface NotificationData {
+  links?: NotificationDataLink[];
+  postID?: NotificationPost;
+  userID?: NotificationUser;
+  message?: string;
+}
+
+export interface Notification {
+  data?: NotificationData;
   notifiedOn?: string;
-  type?: string;
+  type?:
+    | 'add-fav'
+    | 'new-post'
+    | 'shared-post'
+    | 'add-like'
+    | 'new-comment'
+    | 'admin-msg';
   _id?: string;
 }
 
-interface Notifications {
-  read?: [Read];
-  unread?: [];
-}
-
 export interface GetNotificatiosnresponse {
-  notifications?: Notifications;
+  notifications?: {
+    read?: Notification[];
+    unread?: Notification[];
+  };
   success?: boolean;
 }
