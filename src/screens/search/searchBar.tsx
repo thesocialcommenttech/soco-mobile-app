@@ -1,5 +1,5 @@
 // SearchBar.js
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -12,72 +12,72 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { Colors } from '../../utils/colors';
 
-const SearchBar = ({ clicked, searchPhrase, setSearchPhrase, setClicked }) => {
+function SearchBar({
+  onSearchPhraseChange
+}: {
+  onSearchPhraseChange: (searchPhrase: string) => void;
+  onSearchPhraseClear: () => void;
+}) {
+  const [searchPhrase, setSearchPhrase] = useState(null);
+  const inputIsDirty = useMemo(() => searchPhrase?.length > 0, [searchPhrase]);
+
   return (
-    <>
-      <View
-        style={
-          clicked ? styles.searchBar__clicked : styles.searchBar__unclicked
-        }
-      >
-        <Ionicon name="search" size={15} color={Colors.Gray600} />
-        <TextInput
-          style={styles.input}
-          placeholder="Search"
-          placeholderTextColor={'#99969F'}
-          value={searchPhrase}
-          onChangeText={setSearchPhrase}
-          onFocus={() => {
-            setClicked(true);
+    <View
+      style={[
+        styles.searchBar,
+        inputIsDirty ? styles.searchBar__clicked : styles.searchBar__unclicked
+      ]}
+    >
+      <Ionicon name="search" size={20} color={Colors.Gray600} />
+      <TextInput
+        style={styles.input}
+        placeholder="Search"
+        placeholderTextColor={'#99969F'}
+        value={searchPhrase}
+        onChangeText={value => {
+          setSearchPhrase(value);
+          onSearchPhraseChange(value);
+        }}
+      />
+      {inputIsDirty && (
+        <MaterialCommunityIcon
+          name="close"
+          style={styles.searchBarClearBtn}
+          size={20}
+          color={Colors.Gray600}
+          onPress={() => {
+            onSearchPhraseChange('');
+            Keyboard.dismiss();
           }}
         />
-        {clicked && (
-          <MaterialCommunityIcon
-            name="close"
-            size={20}
-            color={Colors.Gray600}
-            onPress={() => {
-              setSearchPhrase('');
-              Keyboard.dismiss();
-              setClicked(false);
-            }}
-          />
-        )}
-      </View>
-    </>
+      )}
+    </View>
   );
-};
+}
 export default SearchBar;
 
 // styles
 const styles = StyleSheet.create({
-  searchBar__unclicked: {
-    marginLeft: '4%',
+  searchBar: {
+    display: 'flex',
+    marginLeft: 15,
     paddingHorizontal: '4%',
     flexDirection: 'row',
-    width: '88%',
-    backgroundColor: Colors.White,
+    flexGrow: 1,
     borderRadius: 5,
     borderColor: Colors.GrayBorder,
     borderWidth: 1,
     alignItems: 'center',
-    height: 50
+    height: 45,
+    position: 'relative'
   },
-  searchBar__clicked: {
-    marginLeft: '4%',
-    paddingHorizontal: '4%',
-    flexDirection: 'row',
-    width: '88%',
-    backgroundColor: Colors.White,
-    borderRadius: 5,
-    borderColor: Colors.GrayBorder,
-    borderWidth: 1,
-    alignItems: 'center'
-  },
+  searchBar__unclicked: {},
+  searchBar__clicked: {},
+  searchBarClearBtn: {},
   input: {
-    fontSize: 16,
+    fontSize: 14,
     marginLeft: 10,
-    width: '82%',
+    flexGrow: 1,
     color: 'black'
   }
 });

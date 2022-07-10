@@ -5,7 +5,7 @@ interface PostedBy {
   _id?: string;
 }
 
-interface Post {
+export interface SearchedPost {
   postType?: string;
   postedBy?: PostedBy;
   title?: string;
@@ -13,6 +13,6 @@ interface Post {
 }
 
 export interface SearchPostResponse {
-  result?: Post[];
+  result?: SearchedPost[];
   success?: boolean;
 }

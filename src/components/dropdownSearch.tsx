@@ -11,111 +11,61 @@ import {
 import Octicon from 'react-native-vector-icons/Octicons';
 import { Colors } from '../utils/colors';
 
-const RenderItem = ({
-  key,
-  item,
-  visible,
-  setVisible,
-  selected,
-  setSelected,
-  props
-}: {
-  key: string;
-  item: { label: string; value: string };
-  visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  selected: string;
-  setSelected: React.Dispatch<React.SetStateAction<string>>;
-  props: any;
-}): ReactElement<any, any> => {
-  const onSelect = (Item: { label: string; value: string }) => {
-    setSelected(item.label);
-    props.setLabel(item.label);
-    // console.log('Selected', item);
-  };
+interface DropdownItem {
+  label: string;
+  value: string;
+}
 
-  const onItemPress = (Item: { label: string; value: string }): void => {
-    // setSelected(item);
-    onSelect(item);
-    setVisible(false);
-  };
+const RenderItem = ({
+  item,
+  onItemPress
+}: {
+  item: DropdownItem;
+  onItemPress: (item: DropdownItem) => void;
+}): ReactElement<any, any> => {
+  // const onSelect = (Item: { label: string; value: string }) => {
+  //   setSelected(item.label);
+  //   props.setLabel(item.label);
+  //   // console.log('Selected', item);
+  // };
+
+  // function onItemPress(): void {
+  //   // setSelected(item);
+  //   onSelect(item);
+  //   setVisible(false);
+  // }
   return (
     <View>
-      {item.value === '1' && (
-        <TouchableOpacity
-          style={styles.item3}
-          onPress={() => onItemPress(item)}
-        >
-          <Text style={styles.buttonText1}>{item.label}</Text>
-        </TouchableOpacity>
-      )}
-      {item.value !== '1' ? (
-        <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
-          <Text style={styles.buttonText1}>{item.label}</Text>
-        </TouchableOpacity>
-      ) : (
-        <></>
-      )}
+      <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
+        <Text style={styles.buttonText1}>{item.label}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
-interface Props {
-  label: any;
-  setLabel: any;
-}
-
-const DropdownSearch: FC<Props> = props => {
+function DropdownSearch(props: {
+  options: DropdownItem[];
+  currentSelectionIndex?: number;
+  onSelectionChange: (selection: DropdownItem) => void;
+}) {
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
-  const [dropdownTop, setDropdownTop] = useState(0);
-  const [dropdownLeft, setDropdownLeft] = useState(0);
-  const [selected, setSelected] = useState('User');
-  const data = [
-    {
-      label: 'User',
-      value: '1'
-    },
-    {
-      label: 'Post',
-      value: '2'
-    }
-  ];
-
-  const openDropdown = (): void => {
-    DropdownButton.current.measure(
-      (
-        fx: number,
-        fy: number,
-        width: number,
-        height: number,
-        px: number,
-        py: number
-      ) => {
-        // console.log('Component width is: ' + width);
-        // console.log('Component height is: ' + height);
-        // console.log('X offset to frame: ' + fx);
-        // console.log('Y offset to frame: ' + fy);
-        // console.log('X offset to page: ' + px);
-        // console.log('Y offset to page: ' + py);
-        setDropdownTop(height + py);
-        setDropdownLeft(px);
-      }
-    );
-
-    setVisible(true);
-  };
+  const [selectedIndex, setSelectedIndex] = useState(
+    props.currentSelectionIndex ?? 0
+  );
 
   return (
     <>
       <TouchableOpacity
         onPress={() => {
-          visible ? setVisible(false) : openDropdown();
+          setVisible(!visible);
         }}
         ref={DropdownButton}
         style={styles.button}
       >
-        <Text style={styles.buttonText}>{selected}</Text>
+        <Text style={styles.buttonText}>
+          {props.options[selectedIndex].label}
+        </Text>
         <Octicon name="chevron-down" size={15} color={'#99969F'} />
       </TouchableOpacity>
       <Modal visible={visible} transparent animationType="fade">
@@ -123,16 +73,16 @@ const DropdownSearch: FC<Props> = props => {
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>
         <ScrollView style={[styles.dropdown]}>
-          {data.map(item => {
+          {props.options.map((item, i) => {
             return (
               <RenderItem
                 key={item.value}
                 item={item}
-                visible={visible}
-                setVisible={setVisible}
-                selected={selected}
-                setSelected={setSelected}
-                props={props}
+                onItemPress={() => {
+                  setSelectedIndex(i);
+                  setVisible(false);
+                  props.onSelectionChange(item);
+                }}
               />
             );
           })}
@@ -140,7 +90,7 @@ const DropdownSearch: FC<Props> = props => {
       </Modal>
     </>
   );
-};
+}
 
 const styles = StyleSheet.create({
   buttonText: {
@@ -158,19 +108,23 @@ const styles = StyleSheet.create({
   dropdown: {
     position: 'absolute',
     backgroundColor: 'white',
-    width: '100%',
+    // width: '100%',
     borderRadius: 12,
     zIndex: 999,
-    height: 'auto',
+    // height: 'auto',
     // paddingTop: '8%',
     // paddingBottom: '8%',
+    paddingVertical: 10,
     bottom: 0,
-    paddingLeft: '8%'
+    left: 0,
+    right: 0,
+    margin: 10
+    // paddingLeft: '8%'
   },
   item: {
     flexDirection: 'row',
-    paddingBottom: '8%',
-    paddingLeft: '2%'
+    paddingHorizontal: 25,
+    paddingVertical: 13
   },
   item3: {
     // paddingHorizontal: '1%'

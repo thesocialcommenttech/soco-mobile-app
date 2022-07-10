@@ -1,4 +1,4 @@
-interface User {
+export interface SearchedUser {
   name?: string;
   profileImage?: string;
   username?: string;
@@ -6,6 +6,6 @@ interface User {
 }
 
 export interface SearchUsernameResponse {
-  result?: User[];
+  result?: SearchedUser[];
   success?: boolean;
 }

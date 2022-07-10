@@ -1,13 +1,13 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { SearchPostResponse } from '../../typings/search_interface/searchPost.interface';
 
-export function searchPost(): Promise<AxiosResponse<SearchPostResponse>> {
+export function searchPost(
+  postTitleQuery: string
+): Promise<AxiosResponse<SearchPostResponse>> {
   const config: AxiosRequestConfig = {
-    url: 'https://thesocialcomment-backend-test.herokuapp.com/search/post',
+    url: 'search/post',
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    params: { q: postTitleQuery }
   };
   return axios.request<SearchPostResponse>(config);
 }
