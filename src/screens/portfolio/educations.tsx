@@ -31,7 +31,7 @@ export default function Educations({ ...props }) {
   useFocusEffect(
     React.useCallback(() => {
       //Alert.alert('Screen was focused');
-      props.extraData('Eduation');
+      props.extraData('Education');
       return () => {
         //Alert.alert('Screen was unfocused');
         // Useful for cleanup functions

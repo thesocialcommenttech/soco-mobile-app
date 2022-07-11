@@ -39,12 +39,15 @@ export default function Portfolio() {
   const [modalVisible2, setModalVisible2] = useState(false);
   const [modalVisible3, setModalVisible3] = useState(false);
   const [modalVisible4, setModalVisible4] = useState(false);
+  const [modalVisible5, setModalVisible5] = useState(false);
   const [date, setDate] = useState(new Date());
   const [yes, setYes] = useState(true);
   const [yes1, setYes1] = useState(false);
+  const [yes2, setYes2] = useState(true);
   const [photoPath, setPhotoPath] = useState<any>();
   const [value, setValue] = useState(40);
   const [sliderActive, setSliderActive] = useState(false);
+  const [edunum, setEduNum] = useState(1);
 
   const valuesetter = val => {
     setValue(val);
@@ -147,6 +150,8 @@ export default function Portfolio() {
       setModalVisible4(true);
     } else if (activeTab === 'Bio') {
       setModalVisible(true);
+    } else if (activeTab === 'Education') {
+      setModalVisible5(true);
     }
   };
 
@@ -603,6 +608,172 @@ export default function Portfolio() {
           </>
         </Modal1>
 
+        <Modal1
+          isVisible={modalVisible5}
+          backdropColor="black"
+          backdropOpacity={0.3}
+          animationIn="slideInUp"
+          style={styles.modal4}
+          onBackdropPress={() => setModalVisible5(false)}
+        >
+          <>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View style={styles.addeducationview}>
+                <View style={styles.updatebioheader}>
+                  <Text style={styles.updatebiotxt}>Add Education</Text>
+                  <TouchableWithoutFeedback
+                    onPress={() => setModalVisible5(false)}
+                  >
+                    <Icon1 name="close" size={25} color="#C9D1D8" />
+                  </TouchableWithoutFeedback>
+                </View>
+                <View style={styles.educationdetail}>
+                  <TextInputWithLabel
+                    placeholder="Name of your Institute"
+                    label="Institute Name"
+                    inputStyle={styles.emailTB}
+                    // onChangeText={formik.handleChange('username')}
+                    // value={formik.values.username}
+                    // errorTxt={formik.touched.username && formik.errors.username}
+                    // onBlur={formik.handleBlur('username')}
+                  />
+
+                  <TextInputWithLabel
+                    placeholder="Eg. 10th, 12th, B.Tech"
+                    label="Course"
+                    inputStyle={styles.emailTB}
+                    // onChangeText={formik.handleChange('username')}
+                    // value={formik.values.username}
+                    // errorTxt={formik.touched.username && formik.errors.username}
+                    // onBlur={formik.handleBlur('username')}
+                  />
+
+                  <View style={styles.labelBox}>
+                    <Text style={styles.label}>EDUCATION LEVEL</Text>
+                  </View>
+
+                  <View style={styles.boxoutlineview}>
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        setEduNum(1);
+                      }}
+                    >
+                      <View
+                        style={[
+                          edunum === 1 ? styles.eduactiveview : styles.eduview
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            edunum === 1 ? styles.eduactivetext : styles.edutext
+                          ]}
+                        >
+                          Schooling
+                        </Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        setEduNum(2);
+                      }}
+                    >
+                      <View
+                        style={[
+                          edunum === 2 ? styles.eduactiveview : styles.eduview
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            edunum === 2 ? styles.eduactivetext : styles.edutext
+                          ]}
+                        >
+                          Graduation
+                        </Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        setEduNum(3);
+                      }}
+                    >
+                      <View
+                        style={[
+                          edunum === 3 ? styles.eduactiveview : styles.eduview
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            edunum === 3 ? styles.eduactivetext : styles.edutext
+                          ]}
+                        >
+                          Post Graduation
+                        </Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  </View>
+                  <View style={styles.labelBox}>
+                    <Text style={styles.label}>STATUS</Text>
+                  </View>
+                  <View style={styles.selectionview}>
+                    <TouchableWithoutFeedback onPress={() => setYes2(true)}>
+                      <View
+                        style={[yes2 ? styles.selectactive : styles.select]}
+                      >
+                        <Text
+                          style={[
+                            yes2 ? styles.intextactive : styles.intextinactive
+                          ]}
+                        >
+                          COMPLETED
+                        </Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback onPress={() => setYes2(false)}>
+                      <View
+                        style={[!yes2 ? styles.selectactive : styles.select]}
+                      >
+                        <Text
+                          style={[
+                            !yes2 ? styles.intextactive : styles.intextinactive
+                          ]}
+                        >
+                          PURSUING
+                        </Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  </View>
+                  {yes2
+                    ? []
+                    : [
+                        <TextInputWithLabel
+                          placeholder="dd/mm/yyyy"
+                          label="Passout Year"
+                          inputStyle={styles.dobTB}
+                          //value={date.toLocaleDateString()}
+                          // errorTxt={formik.touched.dob && formik.errors.dob}
+                          // onBlur={formik.handleBlur('dob')}
+                          right={
+                            <TI.Icon
+                              color="#000"
+                              name={'calendar-blank'}
+                              style={styles.cal}
+                              onPress={showDatepicker}
+                            />
+                          }
+                          editable={false}
+                        />
+                      ]}
+                </View>
+                <View style={styles.button}>
+                  <TouchableWithoutFeedback>
+                    <Text style={styles.btnText}>Add</Text>
+                  </TouchableWithoutFeedback>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </>
+        </Modal1>
+
         <View style={styles.flexrow}>
           <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
             <Icon1 name="arrow-left" size={28} color="black" />
@@ -937,5 +1108,56 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingTop: 10,
     paddingBottom: 15
+  },
+  addeducationview: {
+    backgroundColor: 'white',
+    flex: 1
+  },
+  educationdetail: {
+    marginLeft: '5%',
+    marginRight: '5%'
+  },
+  boxoutlineview: {
+    marginTop: '-0.2%',
+    borderWidth: 1,
+    borderColor: '#DCDCDC',
+    borderRadius: 5,
+    paddingTop: 10,
+    paddingBottom: 15
+  },
+  edutext: {
+    color: '#000000',
+    fontSize: 15,
+    lineHeight: 21
+  },
+  eduactivetext: {
+    color: '#000000',
+    fontWeight: '700',
+    fontSize: 15,
+    lineHeight: 21
+  },
+  eduview: {
+    borderWidth: 2,
+    borderColor: '#FFCA12',
+    paddingTop: 8,
+    paddingBottom: 8,
+    alignItems: 'center',
+    borderRadius: 5,
+    marginLeft: '3%',
+    marginRight: '3%',
+    marginTop: '3%',
+    backgroundColor: 'white'
+  },
+  eduactiveview: {
+    borderWidth: 2,
+    borderColor: '#FFCA12',
+    paddingTop: 8,
+    paddingBottom: 8,
+    alignItems: 'center',
+    borderRadius: 5,
+    marginLeft: '3%',
+    marginRight: '3%',
+    marginTop: '3%',
+    backgroundColor: '#FFF4CC'
   }
 });
