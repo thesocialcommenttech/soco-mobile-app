@@ -21,13 +21,14 @@ import Experiences from './experiences';
 import Certifications from './certifications';
 import Educations from './educations';
 import Skills from './skills';
+import Works from './works';
 import Modal1 from 'react-native-modal';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import { TextInput as TI } from 'react-native-paper';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import ImageInputWithLabel from '../../components/createPost/imageInputWithLabel';
 import { launchImageLibrary } from 'react-native-image-picker';
-import Slider from 'react-native-slider';
+import Slider from '@react-native-community/slider';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -40,6 +41,8 @@ export default function Portfolio() {
   const [modalVisible3, setModalVisible3] = useState(false);
   const [modalVisible4, setModalVisible4] = useState(false);
   const [modalVisible5, setModalVisible5] = useState(false);
+  const [modalVisible6, setModalVisible6] = useState(false);
+  const [modalVisible7, setModalVisible7] = useState(false);
   const [date, setDate] = useState(new Date());
   const [yes, setYes] = useState(true);
   const [yes1, setYes1] = useState(false);
@@ -152,6 +155,8 @@ export default function Portfolio() {
       setModalVisible(true);
     } else if (activeTab === 'Education') {
       setModalVisible5(true);
+    } else if (activeTab === 'Works') {
+      setModalVisible6(true);
     }
   };
 
@@ -223,6 +228,7 @@ export default function Portfolio() {
                     placeholder={'Write about yourself'}
                     numberOfLines={8}
                     multiline={true}
+                    placeholderTextColor="#99969F"
                   />
                 </View>
                 <View style={styles.button}>
@@ -243,8 +249,8 @@ export default function Portfolio() {
           style={styles.modal2}
           onBackdropPress={() => setModalVisible2(false)}
         >
-          <ScrollView>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <>
               <View style={styles.addexperienceview}>
                 <View style={styles.updatebioheader}>
                   <Text style={styles.updatebiotxt}>Add Experience</Text>
@@ -361,8 +367,8 @@ export default function Portfolio() {
                   </TouchableWithoutFeedback>
                 </View>
               </View>
-            </TouchableWithoutFeedback>
-          </ScrollView>
+            </>
+          </TouchableWithoutFeedback>
         </Modal1>
 
         <Modal1
@@ -567,34 +573,29 @@ export default function Portfolio() {
                     ]}
                   >
                     <View style={styles.slider}>
-                      <Text
-                        // eslint-disable-next-line react-native/no-inline-styles
-                        style={{
-                          width: 50,
-                          textAlign: 'center',
-                          left: left,
-                          color: '#0063FF',
-                          fontWeight: 'bold'
-                        }}
-                      >
-                        {Math.floor(value) / 10}
-                      </Text>
-
                       <Slider
+                        style={styles.sliderdesign}
+                        minimumValue={0}
                         maximumValue={100}
-                        value={value}
-                        onSlidingComplete={val => {
-                          setValue(val);
-                          setSliderActive(false);
-                        }}
-                        minimumTrackTintColor={'#0063FF'}
-                        maximumTrackTintColor={'#DCDCDC'}
-                        thumbTintColor={'#0063FF'}
+                        minimumTrackTintColor="#0063FF"
+                        maximumTrackTintColor="#DCDCDC"
+                        thumbTintColor="#0063FF"
+                        onValueChange={val => valuesetter(val)}
                         step={5}
-                        //onValueChange={val => valuesetter(val)}
-                        thumbStyle={styles.thumb}
-                        onSlidingStart={() => setSliderActive(true)}
                       />
+                    </View>
+                    <View style={styles.skillnumber}>
+                      <View style={styles.extremeNumberview}>
+                        <Text style={styles.skillnumtext}>0</Text>
+                      </View>
+                      <View style={styles.skillNumberview}>
+                        <Text style={styles.numtext}>
+                          {Math.floor(value) / 10}
+                        </Text>
+                      </View>
+                      <View style={styles.extremeNumberview}>
+                        <Text style={styles.skillnumtext}>10</Text>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -774,6 +775,65 @@ export default function Portfolio() {
           </>
         </Modal1>
 
+        <Modal1
+          isVisible={modalVisible6}
+          backdropColor="black"
+          backdropOpacity={0.3}
+          animationIn="slideInUp"
+          style={styles.modal4}
+          onBackdropPress={() => setModalVisible6(false)}
+        >
+          <>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View style={styles.addeducationview}>
+                <View style={styles.updatebioheader}>
+                  <Text style={styles.updatebiotxt}>Add Blog</Text>
+                  <TouchableWithoutFeedback
+                    onPress={() => setModalVisible6(false)}
+                  >
+                    <Icon1 name="close" size={25} color="#C9D1D8" />
+                  </TouchableWithoutFeedback>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </>
+        </Modal1>
+
+        <Modal1
+          isVisible={modalVisible7}
+          backdropColor="black"
+          backdropOpacity={0.3}
+          animationIn="slideInUp"
+          style={styles.modal1}
+          onBackdropPress={() => setModalVisible7(false)}
+        >
+          <>
+            <View style={styles.optionview}>
+              <TouchableWithoutFeedback>
+                <Text style={styles.workselectiontext}>Blog</Text>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback>
+                <Text style={styles.workselectiontext}>Artwork</Text>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback>
+                <Text style={styles.workselectiontext}>Article</Text>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback>
+                <Text style={styles.workselectiontext}>Skill Video</Text>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback>
+                <Text style={styles.workselectiontext}>Project</Text>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback>
+                <Text style={styles.workselectiontext}>Presentation</Text>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback>
+                <Text style={styles.workselectiontext}>Link</Text>
+              </TouchableWithoutFeedback>
+            </View>
+          </>
+        </Modal1>
+
         <View style={styles.flexrow}>
           <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
             <Icon1 name="arrow-left" size={28} color="black" />
@@ -859,6 +919,18 @@ export default function Portfolio() {
           <Tab.Screen
             name="Skills"
             children={() => <Skills extraData={activescreen} />}
+            // listeners={{
+            //   tabPress: e => {
+            //     const text = e.target;
+            //     const str = text.substring(0, text.indexOf('-'));
+            //     setActiveTab(str);
+            //     console.log(activeTab);
+            //   }
+            // }}
+          />
+          <Tab.Screen
+            name="Works"
+            children={() => <Works extraData={activescreen} />}
             // listeners={{
             //   tabPress: e => {
             //     const text = e.target;
@@ -1159,5 +1231,46 @@ const styles = StyleSheet.create({
     marginRight: '3%',
     marginTop: '3%',
     backgroundColor: '#FFF4CC'
+  },
+  skillnumber: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginLeft: '9.5%',
+    marginRight: '9%'
+  },
+  skillnumtext: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
+  numtext: {
+    color: 'blue',
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
+  sliderdesign: {
+    height: 40
+  },
+  skillNumberview: {
+    backgroundColor: '#E0EBFF',
+    padding: 12,
+    marginLeft: '2.2%'
+  },
+  extremeNumberview: {
+    backgroundColor: '#F2F2F2',
+    padding: 12
+  },
+  modal7: {
+    width: '100%',
+    marginLeft: 0,
+    marginBottom: 0,
+    backgroundColor: 'white'
+  },
+  workselectiontext: {
+    color: 'black',
+    fontSize: 16,
+    marginTop: '4%',
+    marginLeft: '8%',
+    marginBottom: '3%'
   }
 });
