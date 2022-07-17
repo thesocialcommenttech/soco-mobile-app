@@ -9,7 +9,9 @@ import {
   Keyboard,
   PermissionsAndroid,
   Platform,
-  Dimensions
+  Dimensions,
+  Image,
+  FlatList
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -29,8 +31,52 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import ImageInputWithLabel from '../../components/createPost/imageInputWithLabel';
 import { launchImageLibrary } from 'react-native-image-picker';
 import Slider from '@react-native-community/slider';
+import AddWork from '../../components/portfolio/addWork';
 
 const Tab = createMaterialTopTabNavigator();
+
+const Data = [
+  {
+    key: 1,
+    uri: 'https://reactnative.dev/img/tiny_logo.png',
+    text: 'Wear a mask bonk ban workout walk negronis bumping elbows and tapping feet fine dining ready made meals close contact.'
+  },
+  {
+    key: 2,
+    uri: 'https://reactnative.dev/img/tiny_logo.png',
+    text: 'Aged 60 dressing 30 conservative in your old age playing bridge RV roadtrips just call it weed still paying in cash lifestyle villages so whats the damage? semi-retired.'
+  },
+  {
+    key: 3,
+    uri: 'https://reactnative.dev/img/tiny_logo.png',
+    text: 'Wellness holotropic breathwork colon hydrotherapy what is wellness anyway? Im gluten free infrared sauna blanket super elixer.'
+  },
+  {
+    key: 4,
+    uri: 'https://reactnative.dev/img/tiny_logo.png',
+    text: 'Perplexed retail investor discount window lending wall street liquidity all about the Benjamins.'
+  },
+  {
+    key: 5,
+    uri: 'https://reactnative.dev/img/tiny_logo.png',
+    text: 'High vis vest backyard builder safety first scissor lift coffee break.'
+  },
+  {
+    key: 6,
+    uri: 'https://reactnative.dev/img/tiny_logo.png',
+    text: 'Tequilla and lime chicken three hat restaurant artisnal anything flame grilled campers duck pancakes a la carte.'
+  },
+  {
+    key: 7,
+    uri: 'https://reactnative.dev/img/tiny_logo.png',
+    text: 'Crystal waters cruise insider shore tours romance at sea whale shark diving back packers Vanuatu not quite Fiji the scenic route.'
+  }
+  // {
+  //   key: 8,
+  //   uri: 'https://reactnative.dev/img/tiny_logo.png',
+  //   text: 'Cinnamon wine tasting old world favorite French chardonnay quit hating on Merlot ask the sommelier I never drink anything with a screw cap new world wines the wine maker.'
+  // }
+];
 
 export default function Portfolio() {
   const navigation = useNavigation();
@@ -785,16 +831,34 @@ export default function Portfolio() {
         >
           <>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <View style={styles.addeducationview}>
-                <View style={styles.updatebioheader}>
-                  <Text style={styles.updatebiotxt}>Add Blog</Text>
-                  <TouchableWithoutFeedback
-                    onPress={() => setModalVisible6(false)}
-                  >
-                    <Icon1 name="close" size={25} color="#C9D1D8" />
-                  </TouchableWithoutFeedback>
+              <>
+                <View style={styles.addeducationview}>
+                  <View style={styles.updatebioheader}>
+                    <Text style={styles.updatebiotxt}>Add Blog</Text>
+                    <TouchableWithoutFeedback
+                      onPress={() => setModalVisible6(false)}
+                    >
+                      <Icon1 name="close" size={25} color="#C9D1D8" />
+                    </TouchableWithoutFeedback>
+                  </View>
+                  <View style={styles.addblogview}>
+                    <ScrollView>
+                      <FlatList
+                        data={Data}
+                        keyExtractor={item => item.key.toString()}
+                        renderItem={({ item }) => (
+                          <AddWork uri={item.uri} text={item.text} />
+                        )}
+                      />
+                    </ScrollView>
+                  </View>
+                  <View style={styles.addblogbutton}>
+                    <TouchableWithoutFeedback>
+                      <Text style={styles.btnText}>Add</Text>
+                    </TouchableWithoutFeedback>
+                  </View>
                 </View>
-              </View>
+              </>
             </TouchableWithoutFeedback>
           </>
         </Modal1>
@@ -1272,5 +1336,41 @@ const styles = StyleSheet.create({
     marginTop: '4%',
     marginLeft: '8%',
     marginBottom: '3%'
+  },
+  addblogview: {
+    flexDirection: 'row',
+    marginTop: '3%',
+    marginLeft: '1%',
+    marginRight: '1%',
+    justifyContent: 'space-between',
+    flex: 1
+  },
+  addblogimage: {
+    height: 80,
+    width: 120,
+    borderRadius: 7
+  },
+  addblogtext: {
+    color: 'black',
+    flexShrink: 1,
+    width: 150,
+    marginBottom: 5,
+    marginLeft: '3%',
+    lineHeight: 19,
+    fontSize: 15
+  },
+  blogimageandtextview: {
+    flexDirection: 'row'
+  },
+  addblogbutton: {
+    marginTop: '3%',
+    marginBottom: '3%',
+    marginLeft: '5%',
+    marginRight: '5%',
+    paddingTop: 15,
+    paddingBottom: 15,
+    backgroundColor: '#0063FF',
+    borderRadius: 5,
+    alignItems: 'center'
   }
 });
