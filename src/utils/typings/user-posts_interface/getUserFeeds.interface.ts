@@ -1,3 +1,5 @@
+import { Post } from '../post';
+
 interface PostedBy {
   name?: string;
   profileImage?: string;
@@ -22,6 +24,6 @@ export interface Feed {
 
 export interface getUserFeedsResponse {
   followingCount?: number;
-  feeds?: Feed[];
+  feeds?: Post[];
   success?: boolean;
 }

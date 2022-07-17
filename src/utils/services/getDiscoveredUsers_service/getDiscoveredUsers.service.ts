@@ -1,25 +1,22 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import {
   GetDiscoveredUsersRequest,
-  GetDiscoveredUsersResponse
+  GetDiscoveredPostsResponse
 } from '../../typings/getDiscoveredUsers_interface/getDiscoveredUsers.interface';
 
-export function getDiscoveredUsers({
+export function getDiscoveredPosts({
   pageNo,
   proj,
   size,
   type
 }: GetDiscoveredUsersRequest): Promise<
-  AxiosResponse<GetDiscoveredUsersResponse>
+  AxiosResponse<GetDiscoveredPostsResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/discover',
+    url: 'user/discover',
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
     data: { pageNo, proj, size, type }
   };
 
-  return axios.request<GetDiscoveredUsersResponse>(config);
+  return axios.request<GetDiscoveredPostsResponse>(config);
 }

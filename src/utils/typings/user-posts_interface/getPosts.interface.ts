@@ -1,9 +1,11 @@
+import { PostType } from '../post';
+
 interface Posts {
   aim?: string;
   comments?: number;
   downvotes?: number;
   featureImage?: string;
-  postType?: string;
+  postType?: PostType;
   postedBy?: string;
   postedOn?: string;
   title?: string;

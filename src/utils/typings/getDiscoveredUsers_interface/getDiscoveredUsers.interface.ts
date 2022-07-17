@@ -1,3 +1,5 @@
+import { Post } from '../post';
+
 export interface GetDiscoveredUsersRequest {
   pageNo?: number;
   proj?: string;
@@ -12,7 +14,7 @@ interface PostedBy {
   _id?: string;
 }
 
-interface Post {
+export interface DiscoveredPost {
   comments?: number;
   downvotes?: number;
   upvotes?: number;
@@ -26,7 +28,7 @@ interface Post {
   _id?: string;
 }
 
-export interface GetDiscoveredUsersResponse {
+export interface GetDiscoveredPostsResponse {
   posts?: Post[];
   success?: boolean;
 }
