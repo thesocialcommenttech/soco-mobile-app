@@ -202,7 +202,7 @@ export default function Portfolio() {
     } else if (activeTab === 'Education') {
       setModalVisible5(true);
     } else if (activeTab === 'Works') {
-      setModalVisible6(true);
+      setModalVisible7(true);
     }
   };
 
@@ -631,17 +631,11 @@ export default function Portfolio() {
                       />
                     </View>
                     <View style={styles.skillnumber}>
-                      <View style={styles.extremeNumberview}>
-                        <Text style={styles.skillnumtext}>0</Text>
-                      </View>
-                      <View style={styles.skillNumberview}>
-                        <Text style={styles.numtext}>
-                          {Math.floor(value) / 10}
-                        </Text>
-                      </View>
-                      <View style={styles.extremeNumberview}>
-                        <Text style={styles.skillnumtext}>10</Text>
-                      </View>
+                      <Text style={styles.skillnumtext}>0</Text>
+                      <Text style={styles.numtext}>
+                        {Math.floor(value) / 10}
+                      </Text>
+                      <Text style={styles.skillnumtext}>10</Text>
                     </View>
                   </View>
                 </View>
@@ -873,7 +867,7 @@ export default function Portfolio() {
         >
           <>
             <View style={styles.optionview}>
-              <TouchableWithoutFeedback>
+              <TouchableWithoutFeedback onPress={() => setModalVisible6(true)}>
                 <Text style={styles.workselectiontext}>Blog</Text>
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback>
@@ -1303,14 +1297,14 @@ const styles = StyleSheet.create({
     marginRight: '9%'
   },
   skillnumtext: {
-    color: 'black',
-    fontSize: 16,
-    fontWeight: 'bold'
+    color: '#BDBDBD',
+    fontSize: 16
   },
   numtext: {
-    color: 'blue',
-    fontSize: 16,
-    fontWeight: 'bold'
+    color: '#BDBDBD',
+    fontSize: 17,
+    fontWeight: 'bold',
+    marginLeft: '2%'
   },
   sliderdesign: {
     height: 40
