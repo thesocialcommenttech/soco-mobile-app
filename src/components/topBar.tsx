@@ -1,15 +1,42 @@
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import DropdownTopbar from './dropdownTopbar';
 import { Colors } from '../utils/colors';
-var logo = require('../assets/images/logos/soco-premium.png');
+import logo from '../assets/images/logos/thesocialcomment-logo.png';
+import Textlogo from '../assets/images/logos/soco-premium.png';
+import { getUserData2 } from '../utils/services/user-profile_service/getUserData2.service';
+import { useSelector } from 'react-redux';
+import { IRootReducer } from '../store/reducers';
 
-const TopBar = (props: any) => {
+function TopBar(props: any) {
+  const auth = useSelector((root: IRootReducer) => root.auth);
+  const [premium, setPremium] = useState(false);
+
+  async function fetchUserData() {
+    try {
+      const result = await getUserData2(auth.user.username, 'premium');
+
+      if (result.data.success) {
+        setPremium(result.data.user.premium);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Image style={styles.logo} source={logo} />
+      {premium ? (
+        <Image style={styles.textLogo} source={Textlogo} />
+      ) : (
+        <Image style={styles.logo} source={logo} />
+      )}
       <View style={styles.rightContainer}>
         <TouchableOpacity
           onPress={() => {
@@ -29,7 +56,7 @@ const TopBar = (props: any) => {
       </View>
     </View>
   );
-};
+}
 
 export default TopBar;
 
@@ -45,8 +72,13 @@ const styles = StyleSheet.create({
     paddingRight: 10
   },
   logo: {
-    marginLeft: '2%',
-    width: '39%',
+    marginLeft: 15,
+    width: 30,
+    resizeMode: 'contain'
+  },
+  textLogo: {
+    marginLeft: 8,
+    width: 130,
     resizeMode: 'contain'
   },
   rightContainer: {
