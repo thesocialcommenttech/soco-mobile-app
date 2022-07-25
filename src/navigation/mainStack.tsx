@@ -89,7 +89,7 @@ const MainStack = () => {
         <MyTab.Screen
           name="PortfolioTab"
           component={PortfolioStack}
-          options={{
+          options={({ route }) => ({
             tabBarHideOnKeyboard: true,
             headerShown: false,
             tabBarLabel: 'Portfolio',
@@ -103,7 +103,8 @@ const MainStack = () => {
             tabBarActiveTintColor: 'white',
             tabBarInactiveTintColor: 'gray',
             tabBarStyle: {
-              display: 'none'
+              height: '9%',
+              backgroundColor: '#0F1724'
             },
             tabBarIcon: tabinfo => {
               return (
@@ -115,7 +116,7 @@ const MainStack = () => {
                 />
               );
             }
-          }}
+          })}
         />
         <MyTab.Screen
           name="ProfileTab"
