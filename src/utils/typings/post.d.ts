@@ -2,7 +2,7 @@ export type PostType =
   | 'blog'
   | 'artwork'
   | 'skill'
-  | 'presetation'
+  | 'presentation'
   | 'project'
   | 'link'
   | 'shared'

@@ -1,7 +1,7 @@
-import { File } from '@babel/types';
+import { FileObject } from '../file';
 
 export interface UpdateCoverRequest {
-  cover?: FormData;
+  coverImage?: FileObject;
 }
 
 export interface UpdateCoverResponse {

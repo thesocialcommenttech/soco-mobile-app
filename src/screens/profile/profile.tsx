@@ -1,7 +1,6 @@
 import {
-  FlatList,
+  Dimensions,
   Image,
-  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,38 +8,58 @@ import {
   View
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import TopBar from '../../components/topBar';
 import { Avatar } from '@rneui/base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicon from 'react-native-vector-icons/Ionicons';
-import { Card } from '@rneui/base';
 import DropdownBottombutton from '../../components/dropdownBottombutton';
-import { TextInput } from 'react-native';
-import DropdownMore from '../../components/dropdownMore';
 import { Colors } from '../../utils/colors';
-import { getUserData } from '../../utils/services/user-profile_service/getUserData.service';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '../../store/reducers';
 import { getUserData2 } from '../../utils/services/user-profile_service/getUserData2.service';
-import { getUserProfileData } from '../../utils/services/user-profile_service/getUserProfileData.service';
-import { getUserProfileCompletion } from '../../utils/services/user-profile_service/getUserProfileCompletion.service';
 import { getPosts } from '../../utils/services/user-posts_service/getPosts.service';
-import { getUserFeeds } from '../../utils/services/user-posts_service/getUserFeeds.service';
-import { updateCaption } from '../../utils/services/user-profile_service/updateCaption.service';
-import { updateDP } from '../../utils/services/user-profile_service/updateDP.service';
-import { updateCover } from '../../utils/services/user-profile_service/updateCover.service';
-import { movePostToTrash } from '../../utils/services/trash/movePostToTrash.service';
+import { GetPostsResponse } from '~/src/utils/typings/user-posts_interface/getPosts.interface';
+import Post from '~/src/components/Post';
+import { staticFileSrc } from '~/src/utils/methods';
+import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
+import { ActivityIndicator } from 'react-native-paper';
+import { User } from '~/src/utils/typings/user-profile_interface/getUserData.interface';
+import { PostType } from '~/src/utils/typings/post';
+import UpdateCaptionModal from '~/src/components/modals/profile/UpdateCaption';
+import UpdateProfileCoverImageModal from '~/src/components/modals/profile/UpdateProfileCoverImage';
+import UpdateBioModal from '~/src/components/modals/profile/UpdateBio';
+import { useProfileData } from '~/src/state/profileScreenState';
+import Color from 'color';
 
-const ItemRender = ({ actName, count }: { actName: string; count: number }) => (
-  <TouchableOpacity style={styles.item}>
-    <Text style={styles.itemText}>{actName}</Text>
-    <View style={styles.circle}>
-      <Text style={styles.itemCount}>{count}</Text>
+function PostState({ title, count }: { title: string; count: number }) {
+  return (
+    <View style={styles.item}>
+      <Text style={styles.itemText}>{title}</Text>
+      <View style={styles.circle}>
+        <Text style={styles.itemCount}>{count ?? 0}</Text>
+      </View>
     </View>
-  </TouchableOpacity>
-);
+  );
+}
 
 const ProfileScreen = ({ navigation }) => {
+  const auth = useSelector((state: IRootReducer) => state.auth);
+  const [pageState, setPageState] = useState({
+    pageNo: 0,
+    pageSize: 20
+  });
+
+  const { setUserProfile, userProfile } = useProfileData();
+
+  // const [userProfile, setUserProfile] = useState<
+  //   { postTypes: Record<PostType, User['postTypes'][0]> } & Omit<
+  //     GetUserData2Response['user'],
+  //     'postTypes'
+  //   >
+  // >(null);
+  const [posts, setPosts] = useState<GetPostsResponse['posts']>(null);
+
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [postsLoading, setPostsLoading] = useState(true);
+
   const [background] = useState(
     'https://images.unsplash.com/photo-1651006450901-9f487bafe481?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80'
   );
@@ -91,142 +110,51 @@ const ProfileScreen = ({ navigation }) => {
   const [isPremium, setIsPremium] = useState(true);
   const [percentProfile] = useState(75);
 
-  const [profilePicResponse, setProfilePicResponse] = useState(null);
-  const [coverPicResponse, setCoverPicResponse] = useState(null);
+  async function fetchUserProfile() {
+    setProfileLoading(true);
+    const profileProjection =
+      'name email email_verified coverImage onboard isFollowing totalViews totalPosts postTypes.postType postTypes.totalPosts favouritePostsCount followerUsersCount followingUsersCount profileImage caption timelineTextureImage username bio portfolioLock premium';
 
-  const basicData = useSelector((state: IRootReducer) => state.auth.user);
+    const result = await getUserData2(
+      auth.user.username,
+      profileProjection,
+      auth.user?._id ?? null
+    );
+
+    if (result.data.success) {
+      setUserProfile({
+        ...result.data.user,
+        postTypes: result.data.user.postTypes.reduce(
+          (a, c) => Object.assign(a, { [c.postType]: c }),
+          {}
+        ) as Record<PostType, User['postTypes'][0]>
+      });
+    }
+    setProfileLoading(false);
+  }
+
+  async function fetchPosts() {
+    setPostsLoading(true);
+    const postProjection =
+      'shares views postedOn link postedBy postType featureImage totalSlides description sharedPost title comments upvotes downvotes aim';
+
+    const result = await getPosts(
+      auth.user._id,
+      pageState.pageNo,
+      postProjection,
+      pageState.pageSize
+    );
+
+    if (result.data.success) {
+      setPosts(result.data.posts);
+    }
+    setPostsLoading(false);
+  }
 
   useEffect(() => {
-    // console.log('YO', basicData);
-    const fetchData = async () => {
-      const gud = await getUserData(basicData.username.toString());
-      const userD2 = await getUserData2(basicData.username.toString());
-      const gupd = await getUserProfileData();
-      const gupc = await getUserProfileCompletion();
-      const gp = await getPosts(basicData._id.toString());
-      const gufs = await getUserFeeds();
-      return {
-        gud: gud.data,
-        gupd: gupd.data,
-        gupc: gupc.data,
-        gp: gp.data,
-        gufs: gufs.data,
-        userD2: userD2.data
-      };
-    };
-    fetchData()
-      .then(res => {
-        console.log('gupc', res.gud);
-        console.log('id', res.gud.user._id);
-        console.log('gp', res.gp.posts);
-        console.log('gufs', res.gufs);
-        console.log('userD2', res.userD2);
-        setName(res.gud.user.name);
-        setUserName(res.gud.user.username);
-        setFollowers(res.gud.user.followers);
-        setFollowing(res.gud.user.following);
-        setViews(res.gud.user.totalViews);
-        setActivities({
-          ...activities,
-          All: getAll(res.gud.user.portfolio.work),
-          Articles: res.gud.user.portfolio.work.article.length,
-          Blogs: res.gud.user.portfolio.work.blog.length,
-          Artworks: res.gud.user.portfolio.work.artwork.length,
-          Projects: res.gud.user.portfolio.work.project.length,
-          Presentations: res.gud.user.portfolio.work.presentation.length,
-          Links: res.gud.user.portfolio.work.link.length,
-          Videos: 0
-        });
-        setLocked(res.gud.user.portfolioLock !== 'PUBLIC');
-        setIsPremium(res.gud.user.premium);
-        // console.log(res.gupd.userData.notification);
-      })
-
-      .catch(err => {
-        console.log(err.response.data);
-      });
-    // console.log('YO', userData);
-  });
-
-  const ITEMS = [
-    {
-      id: '1',
-      name: 'All',
-      count: activities.All
-    },
-    {
-      id: '2',
-      name: 'Blogs',
-      count: activities.Blogs
-    },
-    {
-      id: '3',
-      name: 'Artworks',
-      count: activities.Artworks
-    },
-    {
-      id: '4',
-      name: 'Videos',
-      count: activities.Videos
-    },
-    {
-      id: '5',
-      name: 'Projects',
-      count: activities.Projects
-    },
-    {
-      id: '6',
-      name: 'Presentations',
-      count: activities.Presentations
-    },
-    {
-      id: '7',
-      name: 'Articles',
-      count: activities.Articles
-    },
-    {
-      id: '8',
-      name: 'Links',
-      count: activities.Links
-    }
-  ];
-
-  const cardContents = [
-    {
-      id: '1',
-      name: 'John Doe',
-      profilePic: profile,
-      postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
-      subTitle: '',
-      postTitle: 'Python - An Installation Guide',
-      postDate: '24 Feb, 2022',
-      postTag: 'Artwork',
-      views: 26
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      profilePic: profile,
-      postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
-      postTitle: 'Python - An Installation Guide',
-      subTitle:
-        "Trumpthechumps Mango Mussolini I'm with Her tangerine tornado The Clown Prince if Ivanka weren't my daughter...",
-      postDate: '24 Feb, 2022',
-      postTag: 'Artwork',
-      views: 26
-    },
-    {
-      id: '3',
-      name: 'John Doe',
-      profilePic: profile,
-      postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
-      postTitle: 'Python - An Installation Guide',
-      subTitle: '',
-      postDate: '24 Feb, 2022',
-      postTag: 'Artwork',
-      views: 26
-    }
-  ];
+    fetchUserProfile();
+    fetchPosts();
+  }, []);
 
   const onDeletePost = async (id: string) => {
     // try {
@@ -246,390 +174,186 @@ const ProfileScreen = ({ navigation }) => {
   const [modalVisible1, setModalVisible1] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
   return (
-    <View style={styles.outerContainer}>
-      <ScrollView style={styles.container}>
-        <TopBar
-          uri={profile}
-          username={name}
-          premium={isPremium}
-          percentProfile={percentProfile}
-          navigation={navigation}
-        />
-        <View style={styles.images}>
-          <Image
-            source={{
-              uri: background
-            }}
-            style={styles.bgImage}
-          />
-          <View style={styles.avatarContainer}>
-            <Avatar
-              size={90}
-              rounded
-              title={name?.charAt(0)}
-              titleStyle={styles.avatarTitle}
-              source={{
-                uri: profile
-              }}
-              activeOpacity={0.7}
-              containerStyle={styles.avatar}
-            />
-          </View>
-          <View style={styles.captionOnImg}>
-            <Text style={styles.captionOnImgTxt}>{finCaption}</Text>
-          </View>
-          <>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                setModalVisible(!modalVisible);
-              }}
-            >
-              <View style={styles.modalView}>
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  style={styles.closeBtn}
-                >
-                  <MaterialCommunityIcon
-                    name="close"
-                    size={24}
-                    color={Colors.Gray400}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.capTitle}>Caption</Text>
-                <TextInput
-                  style={styles.captionInput}
-                  onChangeText={text => {
-                    setCaption(text);
-                    setCurLen(text.length);
-                  }}
-                  value={caption}
-                  maxLength={150}
-                  multiline={true}
-                  placeholder={"Write what's in your mind"}
-                  placeholderTextColor={'gray'}
-                  spellCheck={false}
-                  autoCorrect={false}
-                  autoComplete="off"
-                  autoCapitalize="none"
-                />
-                <Text style={styles.maxChar}>Max Characters: {curLen}/150</Text>
-                <TouchableOpacity
-                  style={styles.updateBtn}
-                  onPress={async () => {
-                    setFinCaption(caption);
-                    try {
-                      const res = await updateCaption({
-                        caption: caption
-                      });
-                      console.log(res);
-                    } catch (error) {
-                      console.log(error);
-                    }
-                    setModalVisible(false);
-                  }}
-                >
-                  <Text style={styles.updateTxt}>Update</Text>
-                </TouchableOpacity>
-              </View>
-            </Modal>
-            <TouchableOpacity
-              style={styles.editCaption}
-              onPress={() => setModalVisible(true)}
-            >
-              <MaterialCommunityIcon
-                name="pencil-outline"
-                size={20}
-                color={Colors.White}
-              />
-            </TouchableOpacity>
-          </>
-          <>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={modalVisible2}
-              onRequestClose={() => {
-                setModalVisible2(!modalVisible2);
-              }}
-            >
-              <View style={styles.modalView}>
-                <TouchableOpacity
-                  onPress={() => setModalVisible2(false)}
-                  style={styles.closeBtn}
-                >
-                  <MaterialCommunityIcon
-                    name="close"
-                    size={24}
-                    color={Colors.Gray400}
-                  />
-                </TouchableOpacity>
-                <Text style={styles.proTitle}>Profile Picture</Text>
-                <View style={styles.profView}>
-                  <Image
-                    style={styles.profUpdatePic}
-                    resizeMode="cover"
-                    source={{ uri: profile }}
-                  />
-                  <TouchableOpacity style={styles.selProImg}>
-                    <Text style={styles.selProTxt}>SELECT IMAGE</Text>
-                  </TouchableOpacity>
-                </View>
-                <TouchableOpacity
-                  style={styles.updateImgBtn}
-                  onPress={() => {
-                    try {
-                      // const res = await updateDP({
-                      //   dp: profilePicResponse
-                      // });
-                    } catch (error) {
-                      console.log(error);
-                    }
-                    setModalVisible2(false);
-                  }}
-                >
-                  <Text style={styles.updateImgTxt}>
-                    Update Profile Picture
-                  </Text>
-                </TouchableOpacity>
-                <View style={styles.horizontalLine} />
-                <Text style={styles.covTitle}>Cover Picture</Text>
-                <View style={styles.covView}>
-                  <Image
-                    style={styles.covUpdatePic}
-                    resizeMode="cover"
-                    source={{ uri: background }}
-                  />
-                  <TouchableOpacity style={styles.selCovImg}>
-                    <Text style={styles.selCovTxt}>SELECT IMAGE</Text>
-                  </TouchableOpacity>
-                </View>
-                <TouchableOpacity
-                  style={styles.updateImgBtn1}
-                  onPress={() => {
-                    try {
-                      // const res = await updateCover({
-                      //   dp: coverPicResponse
-                      // });
-                    } catch (error) {
-                      console.log(error);
-                    }
-                    setModalVisible2(false);
-                  }}
-                >
-                  <Text style={styles.updateImgTxt1}>Update Cover Picture</Text>
-                </TouchableOpacity>
-              </View>
-            </Modal>
-            <TouchableOpacity
-              onPress={() => setModalVisible2(true)}
-              style={styles.editCover}
-            >
-              <MaterialCommunityIcon
-                name="camera-outline"
-                size={20}
-                color={Colors.White}
-              />
-            </TouchableOpacity>
-          </>
+    <ScreenWithTopBar navigation={navigation}>
+      {profileLoading || postsLoading ? (
+        <View style={styles.loadingCt}>
+          <ActivityIndicator color={'#0063ff'} size={32} />
         </View>
-        <View style={styles.info}>
-          <Text style={styles.name}>{name}</Text>
-          <Text style={styles.userName}>{userName}</Text>
-        </View>
-        <View style={styles.portfolioContainer}>
-          <TouchableOpacity style={styles.portfolio}>
-            <Text style={styles.portfolioText}>Portfolio</Text>
-          </TouchableOpacity>
-          <View style={styles.verticleLine} />
-          <TouchableOpacity
-            style={styles.portfolioLock}
-            onPress={() => setLocked(!locked)}
-          >
-            {locked ? (
-              <MaterialCommunityIcon
-                name="lock-outline"
-                size={20}
-                color={Colors.White}
-              />
-            ) : (
-              <MaterialCommunityIcon
-                name="lock-off-outline"
-                size={20}
-                color={Colors.White}
-              />
-            )}
-          </TouchableOpacity>
-        </View>
-        <View style={styles.bio}>
-          <Text style={styles.bioText}>{bio}</Text>
-        </View>
+      ) : (
         <>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible1}
-            onRequestClose={() => {
-              setModalVisible1(!modalVisible1);
-            }}
-          >
-            <View style={styles.modalView1}>
-              <TouchableOpacity
-                onPress={() => setModalVisible1(false)}
-                style={styles.closeBtn1}
-              >
-                <MaterialCommunityIcon
-                  name="close"
-                  size={24}
-                  color={Colors.Gray400}
-                />
-              </TouchableOpacity>
-              <Text style={styles.bioTitle}>Bio</Text>
-              <TextInput
-                style={styles.bioInput}
-                onChangeText={text => {
-                  setBio(text);
-                  setCurLen1(text.length);
+          <ScrollView style={styles.container}>
+            <View style={styles.coverCt}>
+              <Image
+                source={{
+                  uri: staticFileSrc(userProfile?.coverImage)
                 }}
-                value={bio}
-                maxLength={150}
-                multiline={true}
-                placeholder={'Write about yourself'}
-                placeholderTextColor={'gray'}
-                spellCheck={false}
-                autoCorrect={false}
-                autoComplete="off"
-                autoCapitalize="none"
+                style={styles.bgImage}
               />
-              <Text style={styles.maxChar1}>Max Characters: {curLen1}/150</Text>
+              <View style={styles.avatarContainer}>
+                <Avatar
+                  size={100}
+                  rounded
+                  title={userProfile.name}
+                  titleStyle={styles.avatarTitle}
+                  source={{
+                    uri: staticFileSrc(userProfile?.profileImage)
+                  }}
+                  activeOpacity={0.7}
+                  containerStyle={styles.avatar}
+                />
+              </View>
+              <View style={styles.captionOnImg}>
+                <Text style={styles.captionOnImgTxt}>
+                  {userProfile.caption}
+                </Text>
+              </View>
+              <>
+                <UpdateCaptionModal
+                  modalVisible={modalVisible}
+                  setModalVisible={setModalVisible}
+                  setFinCaption={setFinCaption}
+                />
+                <TouchableOpacity
+                  style={styles.editCaption}
+                  onPress={() => setModalVisible(true)}
+                >
+                  <MaterialCommunityIcon
+                    name="pencil-outline"
+                    size={20}
+                    color={Colors.White}
+                  />
+                </TouchableOpacity>
+              </>
+              <>
+                <UpdateProfileCoverImageModal
+                  show={modalVisible2}
+                  onClose={() => setModalVisible2(false)}
+                />
+                <TouchableOpacity
+                  onPress={() => setModalVisible2(true)}
+                  style={styles.editCover}
+                >
+                  <MaterialCommunityIcon
+                    name="camera-outline"
+                    size={20}
+                    color={Colors.White}
+                  />
+                </TouchableOpacity>
+              </>
+            </View>
+            <View style={styles.info}>
+              <Text style={styles.name}>{userProfile.name}</Text>
+              <Text style={styles.userName}>{userProfile.username}</Text>
+            </View>
+            <View style={styles.portfolioContainer}>
+              <TouchableOpacity style={styles.portfolio}>
+                <Text style={styles.portfolioText}>Portfolio</Text>
+              </TouchableOpacity>
+              {/* <View style={styles.verticleLine} /> */}
               <TouchableOpacity
-                style={styles.updateBtn1}
-                onPress={() => {
-                  setFinBio(bio);
-                  try {
-                  } catch (error) {
-                    console.log(error);
-                  }
-                  setModalVisible1(false);
-                }}
+                style={styles.portfolioLock}
+                onPress={() => setLocked(!locked)}
               >
-                <Text style={styles.updateTxt1}>Update</Text>
+                {locked ? (
+                  <MaterialCommunityIcon
+                    name="lock-outline"
+                    size={20}
+                    color={Colors.White}
+                  />
+                ) : (
+                  <MaterialCommunityIcon
+                    name="lock-off-outline"
+                    size={20}
+                    color={Colors.White}
+                  />
+                )}
               </TouchableOpacity>
             </View>
-          </Modal>
-          <View style={styles.updateBio}>
-            <TouchableOpacity
-              style={styles.updateBioLink}
-              onPress={() => setModalVisible1(!modalVisible1)}
-            >
-              <MaterialCommunityIcon
-                name="pencil-outline"
-                size={18}
-                color={Colors.Secondary}
+            <View style={styles.bio}>
+              <Text style={styles.bioText}>{userProfile.bio}</Text>
+            </View>
+            <>
+              <UpdateBioModal
+                modalVisible1={modalVisible1}
+                setModalVisible1={setModalVisible1}
               />
-              <Text style={styles.updateBioText}>Update Bio</Text>
-            </TouchableOpacity>
-          </View>
-        </>
-
-        <View style={styles.stats}>
-          <View style={styles.statsItem}>
-            <Text style={styles.statsText}>{followers}</Text>
-            <Text style={styles.statsLabel}>Followers</Text>
-          </View>
-          <View style={styles.statsItem}>
-            <Text style={styles.statsText}>{following}</Text>
-            <Text style={styles.statsLabel}>Following</Text>
-          </View>
-          <View style={styles.statsItem}>
-            <Text style={styles.statsText}>{views}</Text>
-            <Text style={styles.statsLabel}>Views</Text>
-          </View>
-        </View>
-        <FlatList
-          data={ITEMS}
-          style={styles.activity}
-          renderItem={({ item }) => (
-            <ItemRender actName={item.name} count={item.count} />
-          )}
-          keyExtractor={item => {
-            return item.id.toString();
-          }}
-          horizontal={true}
-        />
-        {cardContents.map((u, i) => {
-          return (
-            <Card key={i} containerStyle={styles.cardContainer}>
-              <View>
-                <View style={styles.cardTitle}>
-                  <View style={styles.profileinfo}>
-                    <Avatar
-                      size={36}
-                      rounded
-                      // title={name?.charAt(0)}
-                      // titleStyle={styles.avatarTitle}
-                      source={{
-                        uri: u.profilePic
-                      }}
-                      activeOpacity={0.7}
-                      containerStyle={styles.avatar2}
-                    />
-                    <Text style={styles.cardTitleText}>{u.name}</Text>
-                  </View>
-                  <TouchableOpacity>
-                    <MaterialCommunityIcon
-                      name="share-variant-outline"
-                      size={20}
-                      color={Colors.Gray600}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View key={i} style={styles.mainContent}>
-                  <Image
-                    style={styles.postPic}
-                    resizeMode="cover"
-                    source={{ uri: u.postImage }}
+              <View style={styles.updateBio}>
+                <TouchableOpacity
+                  style={styles.updateBioLink}
+                  onPress={() => setModalVisible1(!modalVisible1)}
+                >
+                  <MaterialCommunityIcon
+                    name="pencil-outline"
+                    size={18}
+                    color={Colors.Secondary}
                   />
-                </View>
-                <View style={styles.cardFooter}>
-                  <Text style={styles.cardFooterText}>{u.postTitle}</Text>
-                  <DropdownMore
-                    onDelete={onDeletePost}
-                    onEdit={onEditPost}
-                    id={u.id}
-                  />
-                </View>
-                {u.subTitle !== '' && (
-                  <Text style={styles.subTitle}>{u.subTitle}</Text>
-                )}
-                <View style={styles.cardFooter2}>
-                  <Text style={styles.cardFooterText2}>{u.postDate}</Text>
-                  <View style={styles.tag}>
-                    <Text style={styles.tagText}>{u.postTag}</Text>
-                  </View>
-                  <View style={styles.eyeView}>
-                    <Ionicon
-                      name="eye-outline"
-                      size={19}
-                      color={Colors.Gray600}
-                    />
-                    <Text style={styles.viewNum}>{u.views}</Text>
-                  </View>
-                </View>
+                  <Text style={styles.updateBioText}>Update Bio</Text>
+                </TouchableOpacity>
               </View>
-            </Card>
-          );
-        })}
-      </ScrollView>
-      <DropdownBottombutton label={undefined} />
+            </>
+
+            <ScrollView horizontal={true} style={styles.stats}>
+              <ProfileState
+                title="Followers"
+                value={userProfile.followerUsersCount}
+              />
+              <ProfileState
+                title="Following"
+                value={userProfile.followingUsersCount}
+              />
+              <ProfileState
+                title="Favourites"
+                value={userProfile.favouritePostsCount}
+              />
+              <ProfileState title="Views" value={userProfile.totalViews} />
+              <ProfileState title="Posts" value={userProfile.totalPosts} />
+            </ScrollView>
+
+            <ScrollView horizontal={true} style={styles.activity}>
+              <PostState title="All" count={userProfile.totalPosts} />
+              <PostState
+                title="All"
+                count={userProfile.postTypes.blog?.totalPosts}
+              />
+              <PostState
+                title="Artworks"
+                count={userProfile.postTypes.artwork?.totalPosts}
+              />
+              <PostState
+                title="Videos"
+                count={userProfile.postTypes.skill?.totalPosts}
+              />
+              <PostState
+                title="Projects"
+                count={userProfile.postTypes.project?.totalPosts}
+              />
+              <PostState
+                title="Articles"
+                count={userProfile.postTypes.article?.totalPosts}
+              />
+              <PostState
+                title="Presentations"
+                count={userProfile.postTypes.presentation?.totalPosts}
+              />
+              <PostState
+                title="Links"
+                count={userProfile.postTypes.link?.totalPosts}
+              />
+            </ScrollView>
+
+            {posts.map(post => (
+              <Post key={post._id} data={post} />
+            ))}
+          </ScrollView>
+          <DropdownBottombutton label={undefined} />
+        </>
+      )}
       {/* <View style={styles.stickyButton}>
         <TouchableOpacity>
           <Ionicon name="plus" size={25} color={Colors.Black} style={styles.plus} />
         </TouchableOpacity>
       </View> */}
-    </View>
+    </ScreenWithTopBar>
   );
 };
 
@@ -649,14 +373,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.White
   },
   bgImage: {
-    position: 'absolute',
+    // position: 'absolute',
     width: '100%',
-    height: 200,
+    height: '100%',
     resizeMode: 'cover'
   },
   avatarContainer: {
+    position: 'absolute',
     alignSelf: 'center',
-    marginTop: '42%',
+    // marginTop: '42%',
+    bottom: 0,
+    transform: [{ translateY: 50 }],
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -668,14 +395,17 @@ const styles = StyleSheet.create({
   avatarTitle: {
     color: 'black'
   },
-  images: {
+  coverCt: {
     flex: 1,
-    flexDirection: 'column'
+    flexDirection: 'column',
+    height: Dimensions.get('screen').width * 0.35,
+    width: '100%',
+    marginBottom: 50
   },
   editCaption: {
     position: 'absolute',
-    top: '65%',
-    left: '2%',
+    bottom: 10,
+    left: 10,
     backgroundColor: 'rgba(15, 23, 36, 0.47)',
     borderRadius: 5,
     width: 35,
@@ -685,8 +415,8 @@ const styles = StyleSheet.create({
   },
   editCover: {
     position: 'absolute',
-    top: '65%',
-    right: '2%',
+    bottom: 10,
+    right: 10,
     backgroundColor: 'rgba(15, 23, 36, 0.47)',
     borderRadius: 5,
     width: 35,
@@ -707,51 +437,60 @@ const styles = StyleSheet.create({
     color: 'black'
   },
   userName: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '400',
     fontFamily: 'Roboto-Medium',
-    color: Colors.Gray600
+    color: Colors.Gray600,
+    marginTop: 5
   },
   portfolioContainer: {
     flexDirection: 'row',
-    marginTop: '5%'
+    marginTop: 20,
+    marginHorizontal: 20
   },
   portfolio: {
     backgroundColor: Colors.Secondary,
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
-    height: 46,
-    justifyContent: 'center',
-    marginLeft: '8%',
-    width: '71%'
+    padding: 15,
+    // height: 46,
+    // justifyContent: 'center',
+    // marginLeft: '8%',
+    // width: '71%'
+    flexGrow: 1
   },
   portfolioText: {
     fontSize: 14,
     fontWeight: '500',
     fontFamily: 'Roboto-Medium',
-    lineHeight: 16.41,
+    // lineHeight: 16.41,
     color: Colors.White,
-    textAlign: 'center'
+    textAlign: 'center',
+    marginLeft: 20
   },
   verticleLine: {
     height: '100%',
-    width: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)'
+    width: 1
+    // backgroundColor: 'rgba(255, 255, 255, 0.1)'
   },
   portfolioLock: {
     backgroundColor: Colors.Secondary,
     borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
-    height: 46,
+    borderLeftColor: Color(Colors.Secondary).lightness(55).hex().toString(),
+    borderLeftWidth: 1,
+    padding: 15,
+    // height: 46,
     justifyContent: 'center',
-    marginRight: '8%',
-    width: '13%',
+    // marginRight: '8%',
+    // width: '13%',
     alignItems: 'center'
   },
   bio: {
-    marginTop: '5%',
-    marginLeft: '8%',
-    marginRight: '8%'
+    marginTop: 20,
+    marginHorizontal: 20
+    // marginLeft: '8%',
+    // marginRight: '8%'
   },
   bioText: {
     fontSize: 14,
@@ -779,20 +518,20 @@ const styles = StyleSheet.create({
     marginLeft: '1%'
   },
   stats: {
-    flexDirection: 'row',
-    marginTop: '8%',
-    alignItems: 'center',
-    justifyContent: 'center'
+    // flexDirection: 'row',
+    marginTop: '8%'
+    // alignItems: 'center',
+    // justifyContent: 'center'
   },
   statsItem: {
     flexDirection: 'column',
-    paddingHorizontal: '8%'
+    paddingHorizontal: 20
   },
   statsText: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '700',
     fontFamily: 'Roboto-Medium',
-    lineHeight: 16.41,
+    // lineHeight: 16.41,
     color: 'black',
     textAlign: 'center'
   },
@@ -802,7 +541,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Medium',
     lineHeight: 16.41,
     color: Colors.Gray600,
-    marginTop: '2%',
+    marginTop: 5,
     textAlign: 'center'
   },
   list: {
@@ -839,12 +578,14 @@ const styles = StyleSheet.create({
   },
   activity: {
     flexGrow: 0,
-    marginTop: '6%',
-    marginHorizontal: '4%'
+    marginVertical: 15,
+    paddingLeft: 20
+    // marginHorizontal: '4%'
   },
   item: {
     flexDirection: 'row',
-    padding: 10,
+    paddingVertical: 10,
+    paddingRight: 20,
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -1006,56 +747,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Roboto-Medium'
   },
-  maxChar1: {
-    marginTop: '5%',
-    color: Colors.Gray200,
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium'
-  },
-  updateBtn1: {
-    backgroundColor: Colors.Secondary,
-    borderRadius: 8,
-    marginTop: '6%',
-    paddingVertical: '4%',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  updateTxt1: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium'
-  },
-  closeBtn1: {
-    color: Colors.Gray400,
-    alignSelf: 'flex-end'
-  },
-  bioTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    fontFamily: 'Roboto-Medium',
-    color: Colors.Black,
-    marginTop: '2%'
-  },
-  bioInput: {
-    backgroundColor: 'white',
-    marginTop: '8%',
-    borderColor: Colors.GrayBorder,
-    color: 'black',
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 20,
-    height: '22%',
-    textAlignVertical: 'top',
-    fontFamily: 'Roboto-Medium',
-    lineHeight: 21
-  },
-  modalView1: {
-    backgroundColor: 'white',
-    height: '100%',
-    width: '100%',
-    padding: 20
-  },
   captionOnImg: {
     position: 'absolute',
     top: '6%',
@@ -1073,100 +764,6 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     textAlign: 'center',
     padding: 4
-  },
-  proTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    fontFamily: 'Roboto-Medium',
-    color: Colors.Black,
-    marginTop: '2%'
-  },
-  updateImgBtn: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    marginTop: '6%',
-    paddingVertical: '4%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.Secondary
-  },
-  updateImgTxt: {
-    color: Colors.Secondary,
-    fontWeight: '700',
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium'
-  },
-  covTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    fontFamily: 'Roboto-Medium',
-    color: Colors.Black,
-    marginTop: '2%'
-  },
-  updateImgBtn1: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    marginTop: '9%',
-    paddingVertical: '4%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.Secondary
-  },
-  updateImgTxt1: {
-    color: Colors.Secondary,
-    fontWeight: '700',
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium'
-  },
-  horizontalLine: {
-    borderBottomColor: Colors.GrayLine,
-    borderBottomWidth: 1,
-    marginTop: '8%',
-    marginBottom: '8%'
-  },
-  profView: {
-    flexDirection: 'row',
-    marginTop: '6%',
-    justifyContent: 'flex-start',
-    alignItems: 'center'
-  },
-  profUpdatePic: {
-    height: 90,
-    width: 90,
-    borderRadius: 100
-  },
-  selProImg: {
-    marginLeft: '8%'
-  },
-  selProTxt: {
-    color: Colors.Gray600,
-    fontFamily: 'Roboto-Medium',
-    fontWeight: '600',
-    fontSize: 16
-  },
-  covView: {
-    marginTop: '6%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20
-  },
-  covUpdatePic: {
-    height: 200,
-    width: 300,
-    marginLeft: '4%',
-    marginRight: '4%',
-    borderRadius: 8
-  },
-  selCovImg: {
-    marginTop: '6%'
-  },
-  selCovTxt: {
-    color: Colors.Gray600,
-    fontFamily: 'Roboto-Medium',
-    fontWeight: '600',
-    fontSize: 16
   },
   subTitle: {
     fontFamily: 'Inter',
@@ -1187,5 +784,19 @@ const styles = StyleSheet.create({
     marginLeft: '2%',
     lineHeight: 18.75,
     fontFamily: 'Roboto-Medium'
+  },
+  loadingCt: {
+    display: 'flex',
+    justifyContent: 'center',
+    padding: 20
   }
 });
+
+function ProfileState(props: { title: string; value: string | number }) {
+  return (
+    <View style={styles.statsItem}>
+      <Text style={styles.statsText}>{props.value}</Text>
+      <Text style={styles.statsLabel}>{props.title}</Text>
+    </View>
+  );
+}

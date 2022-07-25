@@ -1,5 +1,7 @@
+import { FileObject } from '../file';
+
 export interface UpdateDPRequest {
-  dp: FormData;
+  profileImage: FileObject;
 }
 
 export interface UpdateDPResposne {

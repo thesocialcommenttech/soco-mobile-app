@@ -50,7 +50,7 @@ export default function Post({ data }: { data: IPost }): ReactElement {
   }
 
   return (
-    <Card containerStyle={styles.cardContainer}>
+    <View style={styles.cardContainer}>
       <View>
         <View style={styles.cardTitle}>
           <View style={styles.profileinfo}>
@@ -102,7 +102,7 @@ export default function Post({ data }: { data: IPost }): ReactElement {
           </View>
         </View>
       </View>
-    </Card>
+    </View>
   );
 }
 
@@ -112,7 +112,9 @@ const styles = StyleSheet.create({
     width: '100%',
     marginLeft: '0%',
     marginTop: '0%',
-    borderTopColor: 'white'
+    // borderTopColor: 'white'
+    borderTopWidth: 1,
+    borderTopColor: Colors.GrayLine
   },
   profileinfo: {
     flexDirection: 'row',

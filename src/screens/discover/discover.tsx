@@ -125,7 +125,7 @@ function DiscoverScreen({ navigation }) {
       label: 'Projects'
     },
     {
-      value: 'presetation',
+      value: 'presentation',
       label: 'Presentations'
     },
     {

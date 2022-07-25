@@ -1,3 +1,5 @@
+import { PostType } from '../post';
+
 interface Work {
   blog?: string[];
   artwork?: string[];
@@ -35,11 +37,16 @@ interface Wallet {
   wallet_id?: string;
 }
 
-interface User {
-  address?: {};
+export interface PostTypeState {
+  postType: PostType;
+  totalPosts: number;
+}
+
+export interface User {
+  address?: Record<string, any>;
   portfolio?: Portfolio;
   notification?: Notification;
-  achievements?: {};
+  achievements?: Record<string, any>;
   wallet?: Wallet;
   profileImage?: string;
   coverImage?: string;
@@ -47,6 +54,8 @@ interface User {
   following?: number;
   portfolioLock?: string;
   posts?: string[];
+  bio?: string;
+  caption?: string;
   onboard?: boolean;
   vdOnBoard?: boolean;
   favourites?: number;
@@ -69,6 +78,10 @@ interface User {
   online?: boolean;
   totalPosts?: number;
   totalViews?: number;
+  favouritePostsCount: number;
+  followerUsersCount: number;
+  followingUsersCount: number;
+  postTypes: PostTypeState[];
 }
 
 export interface GetUserDataResponse {

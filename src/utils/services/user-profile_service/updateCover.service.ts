@@ -5,14 +5,18 @@ import {
 } from '../../typings/user-profile_interface/updateCover.interface';
 
 export function updateCover({
-  cover
+  coverImage
 }: UpdateCoverRequest): Promise<AxiosResponse<UpdateCoverResponse>> {
+  const formdata = new FormData();
+  formdata.append('cover', coverImage);
+
   const config: AxiosRequestConfig = {
-    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/profile/cover',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: 'user/profile/cover',
     method: 'POST',
-    data: {
-      cover
-    }
+    data: formdata
   };
 
   return axios.request<UpdateCoverResponse>(config);

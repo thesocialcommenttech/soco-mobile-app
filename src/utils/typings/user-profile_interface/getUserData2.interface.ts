@@ -1,7 +1,4 @@
-interface User {
-  premium?: boolean;
-  _id?: string;
-}
+import { User } from './getUserData.interface';
 
 export interface GetUserData2Response {
   success?: boolean;

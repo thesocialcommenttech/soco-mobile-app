@@ -128,7 +128,7 @@ const ProfilePictureScreen = () => {
     //   data.append(key, body[key]);
     // });
     // console.log('data', data);
-    updateDP({ dp: data })
+    updateDP({ profileImage: data })
       .then(res => {
         console.log(res);
       })

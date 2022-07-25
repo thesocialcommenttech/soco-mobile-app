@@ -5,16 +5,18 @@ import {
 } from '../../typings/user-profile_interface/updateDP.interface';
 
 export function updateDP({
-  dp
+  profileImage
 }: UpdateDPRequest): Promise<AxiosResponse<UpdateDPResposne>> {
-  // console.log(dp.getParts());
+  const formdata = new FormData();
+  formdata.append('dp', profileImage);
+
   const config: AxiosRequestConfig = {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    url: '/user/profile/picture',
+    url: 'user/profile/picture',
     method: 'POST',
-    data: dp
+    data: formdata
   };
 
   return axios.request<UpdateDPResposne>(config);
