@@ -8,37 +8,37 @@ const Data = [
   {
     id: 1,
     name: 'Profile',
-    icon: require('../../../assets/images/icons/profile.png')
+    icon: 'user'
   },
   {
     id: 2,
     name: 'Password',
-    icon: require('../../../assets/images/icons/password.png')
+    icon: 'key-variant'
   },
   {
     id: 3,
     name: 'Interests',
-    icon: require('../../../assets/images/icons/heart.png')
+    icon: 'heart-outline'
   },
   {
     id: 4,
     name: 'Referral',
-    icon: require('../../../assets/images/icons/referal.png')
+    icon: 'wallet-giftcard'
   },
   {
     id: 5,
     name: 'Wallet',
-    icon: require('../../../assets/images/icons/wallet.png')
+    icon: 'wallet-outline'
   },
   {
     id: 6,
     name: 'Subscription',
-    icon: require('../../../assets/images/icons/rupee.png')
+    icon: 'rupee'
   },
   {
     id: 7,
     name: 'Notification',
-    icon: require('../../../assets/images/icons/notification.png')
+    icon: 'bell-outline'
   }
 ];
 

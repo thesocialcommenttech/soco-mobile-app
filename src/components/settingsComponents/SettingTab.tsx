@@ -2,6 +2,8 @@ import { StyleSheet, TouchableOpacity, View, Text, Image } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import Icon1 from 'react-native-vector-icons/EvilIcons';
+import Icon2 from 'react-native-vector-icons/FontAwesome';
 
 export default function SettingTab({
   name,
@@ -11,7 +13,22 @@ export default function SettingTab({
   name: string;
 }) {
   const navigation = useNavigation();
-
+  let ic;
+  if (icon === 'user') {
+    ic = <Icon1 name="user" size={30} color={'black'} />;
+  } else if (icon === 'key-variant') {
+    ic = <Icon name="key-variant" size={26} color={'black'} />;
+  } else if (icon === 'heart-outline') {
+    ic = <Icon name="heart-outline" size={26} color={'black'} />;
+  } else if (icon === 'wallet-giftcard') {
+    ic = <Icon name="wallet-giftcard" size={26} color={'black'} />;
+  } else if (icon === 'bell-outline') {
+    ic = <Icon name="bell-outline" size={26} color={'black'} />;
+  } else if (icon === 'wallet-outline') {
+    ic = <Icon name="wallet-outline" size={26} color={'black'} />;
+  } else if (icon === 'rupee') {
+    ic = <Icon2 name="rupee" size={25} color={'black'} />;
+  }
   return (
     <>
       <View style={styles.container}>
@@ -26,7 +43,7 @@ export default function SettingTab({
                 {/* {icon === 'wallet-outline'
                   ? [<Icon1 name={icon} size={23} color="black" />]
                   : [<Icon name={icon} size={23} color="black" />]} */}
-                <Image source={icon} />
+                {ic}
               </View>
               <View style={styles.name}>
                 <Text style={styles.nametext}>{name}</Text>

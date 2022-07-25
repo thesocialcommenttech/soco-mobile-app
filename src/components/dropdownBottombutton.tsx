@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import Octicon from 'react-native-vector-icons/Octicons';
 import { Colors } from '../utils/colors';
+import { useNavigation } from '@react-navigation/native';
 
 const RenderItem = ({
   key,
@@ -78,6 +79,7 @@ interface Props {
 }
 
 const DropdownBottombutton: FC<Props> = props => {
+  const navigation = useNavigation();
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
   const [dropdownBottom, setDropdownBottom] = useState(0);
@@ -143,6 +145,17 @@ const DropdownBottombutton: FC<Props> = props => {
     );
 
     setVisible(true);
+  };
+
+  const onSelect = (item: { label: string; value: string }) => {
+    // console.log('Selected', item);
+  };
+
+  const onItemPress = (item): void => {
+    // setSelected(item);
+    onSelect(item);
+    setVisible(false);
+    navigation.navigate(item.label as never, {} as never);
   };
 
   return (

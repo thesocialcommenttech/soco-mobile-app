@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import CertificateList from '../../components/portfolio/certificateList';
 import Modal1 from 'react-native-modal';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Data = [
   {
@@ -48,11 +49,21 @@ const Data = [
   }
 ];
 
-export default function Certifications() {
+export default function Certifications({ ...props }) {
   const [modalVisible, setModalVisible] = useState(false);
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
+  useFocusEffect(
+    React.useCallback(() => {
+      //Alert.alert('Screen was focused');
+      props.extraData('Certificates');
+      return () => {
+        //Alert.alert('Screen was unfocused');
+        // Useful for cleanup functions
+      };
+    }, [props])
+  );
   return (
     <View style={styles.container}>
       <Modal1

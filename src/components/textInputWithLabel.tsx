@@ -6,8 +6,8 @@ import { Colors } from '../utils/colors';
 const TextInputWithLabel = ({ ...props }) => {
   const [textLength, setTextLength] = useState(0);
   const checktextLength = () => {
-    if (textLength > 120) {
-      setTextLength(120);
+    if (textLength > props.maxLength) {
+      setTextLength(props.maxLength);
     }
   };
   return (

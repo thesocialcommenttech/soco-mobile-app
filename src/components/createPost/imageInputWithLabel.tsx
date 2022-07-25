@@ -33,7 +33,7 @@ const ImageInputWithLabel = ({ ...props }) => {
             ]
           : [
               <View style={styles.noimageview}>
-                <Text>Hello</Text>
+                <Text style={styles.txtcolor}>Hello</Text>
               </View>
             ]}
 
@@ -144,6 +144,9 @@ const styles = StyleSheet.create({
   },
   noimageview: {
     padding: '9%'
+  },
+  txtcolor: {
+    color: 'white'
   }
 });
 

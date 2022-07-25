@@ -10,9 +10,25 @@ import React, { useState } from 'react';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import VideoPlayer from 'react-native-video-controls';
 import Modal1 from 'react-native-modal';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function Bio() {
+export default function Bio({ ...props }) {
   const [modalVisible, setModalVisible] = useState(false);
+  // useEffect(() => {
+  //   props.extraData('Bio');
+  // }, [props]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      //Alert.alert('Screen was focused');
+      props.extraData('Bio');
+      return () => {
+        //Alert.alert('Screen was unfocused');
+        // Useful for cleanup functions
+      };
+    }, [props])
+  );
+
   return (
     <View style={styles.container}>
       <Modal1
