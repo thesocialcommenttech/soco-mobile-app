@@ -4,10 +4,9 @@ import {
   View,
   Image,
   ScrollView,
-  TouchableWithoutFeedback,
-  Alert
+  TouchableWithoutFeedback
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import VideoPlayer from 'react-native-video-controls';
 import Modal1 from 'react-native-modal';
