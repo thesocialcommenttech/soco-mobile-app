@@ -25,6 +25,15 @@ export async function setAuthCredentials({
   ]);
 }
 
+export async function updateProfileImageInAuthCredentials(
+  profileImage: string
+) {
+  const user = JSON.parse(await SecureStore.getItemAsync('u')) as IUserData;
+  user.profileImage = profileImage;
+
+  await SecureStore.setItemAsync('u', JSON.stringify(user));
+}
+
 export async function getAuthCredentials() {
   const [user_id, user, token] = await Promise.all([
     SecureStore.getItemAsync('uid'),

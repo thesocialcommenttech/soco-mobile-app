@@ -29,7 +29,6 @@ export const authReducer = (
 ): IAuthState => {
   switch (action.type) {
     case AuthAction.LOGIN:
-
       // setting bearer token
       axios.defaults.headers.common.Authorization = `Bearer ${action.payload.token}`;
 
@@ -42,6 +41,11 @@ export const authReducer = (
 
     case AuthAction.LOGOUT:
       return initState;
+
+    case AuthAction.UPDATE_PROFILE_IMAGE:
+      const newAuthUser = { ...state.user };
+      newAuthUser.profileImage = action.payload.profileImage;
+      return { ...state, user: newAuthUser };
 
     default:
       return state;

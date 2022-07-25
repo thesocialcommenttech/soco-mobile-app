@@ -2,13 +2,15 @@ import { IAuthData, IAuthState } from '../../store/reducers/auth';
 import { ThunkAction } from 'redux-thunk';
 import {
   deleteAuthCredentials,
-  setAuthCredentials
+  setAuthCredentials,
+  updateProfileImageInAuthCredentials
 } from '../../lib/auth-credentials';
 import { IRootReducer } from '../reducers';
 
 export enum AuthAction {
   LOGIN = 'LOGIN',
-  LOGOUT = 'LOGOUT'
+  LOGOUT = 'LOGOUT',
+  UPDATE_PROFILE_IMAGE = 'UPDATE_PROFILE_IMAGE'
 }
 
 interface ILogoutAction {
@@ -22,6 +24,11 @@ export const logoutAction = (): ILogoutAction => ({
 interface ILoginAction {
   type: AuthAction.LOGIN;
   payload: IAuthData;
+}
+
+interface IUpdateUserProfileImageAction {
+  type: AuthAction.UPDATE_PROFILE_IMAGE;
+  payload: { profileImage: string };
 }
 
 export const loginAction = (authData: IAuthData): ILoginAction => ({
@@ -49,6 +56,13 @@ export type ISetAuthLogout = ThunkAction<
   ILogoutAction
 >;
 
+export type IUpdateUserProfileImage = ThunkAction<
+  void,
+  IRootReducer,
+  any,
+  IUpdateUserProfileImageAction
+>;
+
 export function setAuthToLogout(): ISetAuthLogout {
   return async dispatch => {
     await deleteAuthCredentials();
@@ -56,4 +70,23 @@ export function setAuthToLogout(): ISetAuthLogout {
   };
 }
 
-export type AuthActionTypes = ILogoutAction | ILoginAction;
+export const updateUserProfileImageAction = (
+  profileImage: string
+): IUpdateUserProfileImageAction => ({
+  type: AuthAction.UPDATE_PROFILE_IMAGE,
+  payload: { profileImage }
+});
+
+export function updateUserProfileImageGlobalState(
+  profileImage: string
+): IUpdateUserProfileImage {
+  return async dispatch => {
+    await updateProfileImageInAuthCredentials(profileImage);
+    dispatch(updateUserProfileImageAction(profileImage));
+  };
+}
+
+export type AuthActionTypes =
+  | ILogoutAction
+  | ILoginAction
+  | IUpdateUserProfileImageAction;
