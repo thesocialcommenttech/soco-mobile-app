@@ -93,6 +93,7 @@ export default function Experiences({ ...props }) {
       </Modal1>
       <FlatList
         data={Data}
+        showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <Experiencelist

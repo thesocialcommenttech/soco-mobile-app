@@ -67,6 +67,7 @@ export default function Skills({ ...props }) {
     <View style={styles.container}>
       <FlatList
         data={Data}
+        showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <SkillList skill={item.skill} rating={item.rating} />
