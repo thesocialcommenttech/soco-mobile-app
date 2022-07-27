@@ -3,7 +3,13 @@ import Portfolio from '../screens/portfolio/portfolio';
 import ArtWorkDetail from '../screens/portfolio/artWorkDetail';
 import SkillVideoDetail from '../screens/portfolio/skillVideoDetail';
 import PresentationDetail from '../screens/portfolio/presentationDetail';
+import UpdateBio from '../screens/portfolio/updatePortfolio/updateBio';
+import AddExperience from '../screens/portfolio/updatePortfolio/addExperience';
+import AddCertificate from '../screens/portfolio/updatePortfolio/addCertificate';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AddSkill from '../screens/portfolio/updatePortfolio/addSkill';
+import AddEducation from '../screens/portfolio/updatePortfolio/addEducation';
+import AddBlog from '../screens/portfolio/updatePortfolio/addBlog';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +34,36 @@ const PortfolioStack = () => {
       <Stack.Screen
         name="Presentation"
         component={PresentationDetail}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Updatebio"
+        component={UpdateBio}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Addexperience"
+        component={AddExperience}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Addcertificate"
+        component={AddCertificate}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Addskill"
+        component={AddSkill}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Addeducation"
+        component={AddEducation}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Addblog"
+        component={AddBlog}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
