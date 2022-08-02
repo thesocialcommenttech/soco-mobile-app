@@ -11,33 +11,6 @@ import {
 import React, { useEffect, useState } from 'react';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const Data = [
-  {
-    key: 1,
-    text: 'Design'
-  },
-  {
-    key: 2,
-    text: 'Chat App'
-  },
-  {
-    key: 3,
-    text: 'UI/UX'
-  },
-  {
-    key: 4,
-    text: 'Mobile Design'
-  },
-  {
-    key: 5,
-    text: 'Figma'
-  },
-  {
-    key: 6,
-    text: 'Design'
-  }
-];
-
 export default function MainComponent({ ...props }) {
   useEffect(() => {
     console.log(props);
