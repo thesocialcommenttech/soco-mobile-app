@@ -11,7 +11,6 @@ import HomeStack from './homeStack';
 import PortfolioStack from './portfolioStack';
 import ProfileStack from './profileStack';
 import SearchScreen from '../screens/search/search';
-import store from '../store';
 import { useSelector } from 'react-redux';
 import { IAuthState } from '../store/reducers/auth';
 import { IRootReducer } from '../store/reducers';
