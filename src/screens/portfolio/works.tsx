@@ -12,6 +12,7 @@ import React, { useState } from 'react';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import Modal1 from 'react-native-modal';
+import { useNavigation } from '@react-navigation/native';
 
 const SECTIONS = [
   {
@@ -20,28 +21,33 @@ const SECTIONS = [
       {
         key: '1',
         text: 'Daily rituals for divine feminine energy healthy.',
-        uri: 'https://picsum.photos/id/1/200'
+        uri: 'https://picsum.photos/id/1/200',
+        type: 'Blogs'
       },
       {
         key: '2',
         text: 'What a legend bowled Marsh - caught Lillee gambit armchair umpires.',
-        uri: 'https://picsum.photos/id/10/200'
+        uri: 'https://picsum.photos/id/10/200',
+        type: 'Blogs'
       },
 
       {
         key: '3',
         text: 'What a legend bowled Marsh - caught Lillee gambit armchair umpires.',
-        uri: 'https://picsum.photos/id/1002/200'
+        uri: 'https://picsum.photos/id/1002/200',
+        type: 'Blogs'
       },
       {
         key: '4',
         text: 'Daily rituals for divine feminine energy healthy.',
-        uri: 'https://picsum.photos/id/1006/200'
+        uri: 'https://picsum.photos/id/1006/200',
+        type: 'Blogs'
       },
       {
         key: '5',
         text: 'Daily rituals for divine feminine energy healthy.',
-        uri: 'https://picsum.photos/id/1008/200'
+        uri: 'https://picsum.photos/id/1008/200',
+        type: 'Blogs'
       }
     ]
   },
@@ -51,28 +57,33 @@ const SECTIONS = [
       {
         key: '1',
         text: 'Home is where the anchor drops shore tours seas the day rusty dancemoves cruise eat sleep repeat crystal waters.',
-        uri: 'https://picsum.photos/id/1011/200'
+        uri: 'https://picsum.photos/id/1011/200',
+        type: 'Articles'
       },
       {
         key: '2',
         text: 'Support your microbiome inner beauty avoiding edocrine disruptors Im gluten free brain boosting mushroom infused coffee doing whole30 gummies powders and sprays glutem sensitivity melatonin infused gummies.',
-        uri: 'https://picsum.photos/id/1012/200'
+        uri: 'https://picsum.photos/id/1012/200',
+        type: 'Articles'
       },
 
       {
         key: '3',
         text: 'Curated wine list Tuscan lunches new world wines well I used to live in Napa ask the sommelier you can really taste the terroir cherry like overtones wine philistine cellar door.',
-        uri: 'https://picsum.photos/id/1013/200'
+        uri: 'https://picsum.photos/id/1013/200',
+        type: 'Articles'
       },
       {
         key: '4',
         text: 'Home is where the anchor drops shore tours seas the day rusty dancemoves cruise eat sleep repeat crystal waters.',
-        uri: 'https://picsum.photos/id/1015/200'
+        uri: 'https://picsum.photos/id/1015/200',
+        type: 'Articles'
       },
       {
         key: '5',
         text: 'Home is where the anchor drops shore tours seas the day rusty dancemoves cruise eat sleep repeat crystal waters.',
-        uri: 'https://picsum.photos/id/1016/200'
+        uri: 'https://picsum.photos/id/1016/200',
+        type: 'Articles'
       }
     ]
   },
@@ -81,24 +92,29 @@ const SECTIONS = [
     data: [
       {
         key: '1',
-        uri: 'https://picsum.photos/id/1027/300'
+        uri: 'https://picsum.photos/id/1027/300',
+        type: 'Artwork'
       },
       {
         key: '2',
-        uri: 'https://picsum.photos/id/1028/300'
+        uri: 'https://picsum.photos/id/1028/300',
+        type: 'Artwork'
       },
 
       {
         key: '3',
-        uri: 'https://picsum.photos/id/1029/300'
+        uri: 'https://picsum.photos/id/1029/300',
+        type: 'Artwork'
       },
       {
         key: '4',
-        uri: 'https://picsum.photos/id/1032/300'
+        uri: 'https://picsum.photos/id/1032/300',
+        type: 'Artwork'
       },
       {
         key: '5',
-        uri: 'https://picsum.photos/id/1031/300'
+        uri: 'https://picsum.photos/id/1031/300',
+        type: 'Artwork'
       }
     ]
   },
@@ -108,28 +124,33 @@ const SECTIONS = [
       {
         key: '1',
         text: 'The World Cup eye on the ball Grand Slam pulled his hammy I’m gonna fade into Bolivian Superbowl allyoop our blood our sweat your tears.',
-        uri: 'https://picsum.photos/id/1022/200'
+        uri: 'https://picsum.photos/id/1022/200',
+        type: 'Skill Videos'
       },
       {
         key: '2',
         text: 'Beyonces ring JamesEdition Russian billionaires bachelor party international jetset super super super rich elegance AAirpass trustafarians Prada Gucci Chanel.',
-        uri: 'https://picsum.photos/id/1023/200'
+        uri: 'https://picsum.photos/id/1023/200',
+        type: 'Skill Videos'
       },
 
       {
         key: '3',
         text: 'Air kiss Anna who? closet classics more is more and less is a bore role models I cant concentrate in flats Victoria Bekham fashion passes - style remains Karl Lagerfelds cat Choupette.',
-        uri: 'https://picsum.photos/id/1024/200'
+        uri: 'https://picsum.photos/id/1024/200',
+        type: 'Skill Videos'
       },
       {
         key: '4',
         text: 'Item text 4',
-        uri: 'https://picsum.photos/id/1025/200'
+        uri: 'https://picsum.photos/id/1025/200',
+        type: 'Skill Videos'
       },
       {
         key: '5',
         text: 'Item text 5',
-        uri: 'https://picsum.photos/id/1026/200'
+        uri: 'https://picsum.photos/id/1026/200',
+        type: 'Skill Videos'
       }
     ]
   },
@@ -139,28 +160,33 @@ const SECTIONS = [
       {
         key: '1',
         text: 'Free wheeling free spirit Swedish denim your denim wear-and-tear story open air boyfriend jeans sexy denim spontaneous the true wanderer.',
-        uri: 'https://picsum.photos/id/17/200'
+        uri: 'https://picsum.photos/id/17/200',
+        type: 'Projects'
       },
       {
         key: '2',
         text: 'Find your bliss back packers shore tours Vanuatu not quite Fiji seas the day romance at sea the love boat languid afternoons trip of a lifetime.',
-        uri: 'https://picsum.photos/id/1018/200'
+        uri: 'https://picsum.photos/id/1018/200',
+        type: 'Projects'
       },
 
       {
         key: '3',
         text: 'Just another TikTok trend flight ban coronacast Amazon getting richer stay at home drinking bleach.',
-        uri: 'https://picsum.photos/id/1019/200'
+        uri: 'https://picsum.photos/id/1019/200',
+        type: 'Projects'
       },
       {
         key: '4',
         text: 'Just another TikTok trend flight ban coronacast Amazon getting richer stay at home drinking bleach.',
-        uri: 'https://picsum.photos/id/1020/200'
+        uri: 'https://picsum.photos/id/1020/200',
+        type: 'Projects'
       },
       {
         key: '5',
         text: 'Just another TikTok trend flight ban coronacast Amazon getting richer stay at home drinking bleach.',
-        uri: 'https://picsum.photos/id/1021/200'
+        uri: 'https://picsum.photos/id/1021/200',
+        type: 'Projects'
       }
     ]
   },
@@ -170,28 +196,33 @@ const SECTIONS = [
       {
         key: '1',
         text: 'Free wheeling free spirit Swedish denim your denim wear-and-tear story open air boyfriend jeans sexy denim spontaneous the true wanderer.',
-        uri: 'https://picsum.photos/id/1045/200'
+        uri: 'https://picsum.photos/id/1045/200',
+        type: 'Links'
       },
       {
         key: '2',
         text: 'Find your bliss back packers shore tours Vanuatu not quite Fiji seas the day romance at sea the love boat languid afternoons trip of a lifetime.',
-        uri: 'https://picsum.photos/id/1050/200'
+        uri: 'https://picsum.photos/id/1050/200',
+        type: 'Links'
       },
 
       {
         key: '3',
         text: 'Just another TikTok trend flight ban coronacast Amazon getting richer stay at home drinking bleach.',
-        uri: 'https://picsum.photos/id/1047/200'
+        uri: 'https://picsum.photos/id/1047/200',
+        type: 'Links'
       },
       {
         key: '4',
         text: 'Just another TikTok trend flight ban coronacast Amazon getting richer stay at home drinking bleach.',
-        uri: 'https://picsum.photos/id/1048/200'
+        uri: 'https://picsum.photos/id/1048/200',
+        type: 'Links'
       },
       {
         key: '5',
         text: 'Just another TikTok trend flight ban coronacast Amazon getting richer stay at home drinking bleach.',
-        uri: 'https://picsum.photos/id/1049/200'
+        uri: 'https://picsum.photos/id/1049/200',
+        type: 'Links'
       }
     ]
   }
@@ -209,10 +240,22 @@ export default function Works({ ...props }) {
     }, [props])
   );
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation();
 
   const ListItem = ({ item }) => {
     return (
-      <TouchableOpacity onLongPress={() => setModalVisible(true)}>
+      <TouchableOpacity
+        onLongPress={() => setModalVisible(true)}
+        onPress={() => {
+          if (item.type === 'Artwork') {
+            navigation.navigate('Workdetail' as never, {} as never);
+          } else if (item.type === 'Skill Videos') {
+            navigation.navigate('SkillVideo' as never, {} as never);
+          } else if (item.type === 'Projects') {
+            navigation.navigate('Presentation' as never, {} as never);
+          }
+        }}
+      >
         <View style={styles.item}>
           <Image
             source={{
@@ -235,7 +278,10 @@ export default function Works({ ...props }) {
 
   const VideoItem = ({ item }) => {
     return (
-      <TouchableOpacity onLongPress={() => setModalVisible(true)}>
+      <TouchableOpacity
+        onLongPress={() => setModalVisible(true)}
+        onPress={() => navigation.navigate('SkillVideo' as never, {} as never)}
+      >
         <View style={styles.item}>
           <View style={styles.playbtn}>
             <Icon1 name="play-circle" size={44} color="#FFFFFF" />
