@@ -99,6 +99,7 @@ export default function Certifications({ ...props }) {
       <View style={styles.list}>
         <FlatList
           data={Data}
+          showsVerticalScrollIndicator={false}
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
             <CertificateList
