@@ -10,74 +10,15 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import Octicon from 'react-native-vector-icons/Octicons';
+import Icon3 from 'react-native-vector-icons/Octicons';
+import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../utils/colors';
-
-const RenderItem = ({
-  key,
-  item,
-  visible,
-  setVisible,
-  selected,
-  setSelected
-}: {
-  key: string;
-  item: { label: string; isNew: boolean; value: string };
-  visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  selected: string;
-  setSelected: React.Dispatch<React.SetStateAction<string>>;
-}): ReactElement<any, any> => {
-  const onSelect = (Item: { label: string; isNew: boolean; value: string }) => {
-    // console.log('Selected', Item);
-  };
-
-  const onItemPress = (Item: {
-    label: string;
-    isNew: boolean;
-    value: string;
-  }): void => {
-    // setSelected(item);
-    onSelect(item);
-    setVisible(false);
-  };
-
-  return (
-    <View>
-      {item.value === '1' && (
-        <TouchableOpacity
-          style={styles.item1}
-          onPress={() => onItemPress(item)}
-        >
-          <Text style={styles.buttonText}>{item.label}</Text>
-          {item.isNew && (
-            <View style={styles.newView}>
-              <Text style={styles.newText}>New</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      )}
-      {item.value !== '1' ? (
-        <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
-          <Text style={styles.buttonText}>{item.label}</Text>
-          {item.isNew && (
-            <View style={styles.newView}>
-              <Text style={styles.newText}>New</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      ) : (
-        <></>
-      )}
-    </View>
-  );
-};
-
 interface Props {
   label: any;
 }
 
 const DropdownBottombutton: FC<Props> = props => {
+  const navigation = useNavigation();
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
   const [dropdownBottom, setDropdownBottom] = useState(0);
@@ -143,6 +84,51 @@ const DropdownBottombutton: FC<Props> = props => {
     );
 
     setVisible(true);
+  };
+
+  const onSelect = (item: { label: string; value: string }) => {
+    // console.log('Selected', item);
+  };
+
+  const renderItem = ({ item }): ReactElement<any, any> => {
+    return (
+      <View>
+        {item.value === '1' && (
+          <TouchableOpacity
+            style={styles.item3}
+            onPress={() => onItemPress(item)}
+          >
+            <Text style={styles.buttonText}>{item.label}</Text>
+            {item.isNew && (
+              <View style={styles.newView}>
+                <Text style={styles.newText}>New</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        )}
+        {item.value !== '1' ? (
+          <TouchableOpacity
+            style={styles.item}
+            onPress={() => onItemPress(item)}
+          >
+            <Text style={styles.buttonText}>{item.label}</Text>
+            {item.isNew && (
+              <View style={styles.newView}>
+                <Text style={styles.newText}>New</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        ) : (
+          <></>
+        )}
+      </View>
+    );
+  };
+  const onItemPress = (item): void => {
+    // setSelected(item);
+    onSelect(item);
+    setVisible(false);
+    navigation.navigate(item.label as never, {} as never);
   };
 
   return (

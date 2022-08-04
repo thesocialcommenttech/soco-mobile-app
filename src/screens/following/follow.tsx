@@ -6,12 +6,12 @@ import {
   TouchableWithoutFeedback
 } from 'react-native';
 import React, { useState } from 'react';
-import { Colors } from '../../utils/colors';
 import { useNavigation } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Following from './following';
 import Followers from './followers';
 import TopBar from '../../components/topBar';
+import { Colors } from '../../utils/colors';
 
 const Tab = createMaterialTopTabNavigator();
 
