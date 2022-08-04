@@ -9,7 +9,7 @@ import SkillVideo from '../screens/createPost/skillVideo';
 import VideoPlayer from '../screens/createPost/videoPlayer';
 import Presentation from '../screens/createPost/presentation';
 import Link from '../screens/createPost/link';
-import Follow from '../screens/following/follow';
+import Follow from '../screens/Following/follow';
 
 const Stack = createNativeStackNavigator();
 
