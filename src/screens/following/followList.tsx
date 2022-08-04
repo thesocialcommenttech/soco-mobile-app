@@ -10,11 +10,13 @@ import React from 'react';
 export default function followList({
   title,
   userId,
-  image
+  image,
+  unfollow
 }: {
   title: string;
   userId: string;
   image: string;
+  unfollow: boolean;
 }) {
   return (
     <>
@@ -24,13 +26,24 @@ export default function followList({
         }}
       >
         <View style={styles.mTab}>
-          <View style={styles.imageCon}>
-            <Image source={{ uri: image }} style={styles.img} />
+          <View style={styles.information}>
+            <View style={styles.imageCon}>
+              <Image source={{ uri: image }} style={styles.img} />
+            </View>
+            <View style={styles.followtext}>
+              <Text style={styles.name}>{title}</Text>
+              <Text style={styles.userid}>@ {userId}</Text>
+            </View>
           </View>
-          <View style={styles.followtext}>
-            <Text style={styles.name}>{title}</Text>
-            <Text>@ {userId}</Text>
-          </View>
+          {unfollow
+            ? [
+                <TouchableWithoutFeedback>
+                  <View style={styles.unfollowview}>
+                    <Text style={styles.unfollow}>UNFOLLOW</Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              ]
+            : []}
         </View>
       </TouchableWithoutFeedback>
     </>
@@ -39,13 +52,9 @@ export default function followList({
 
 const styles = StyleSheet.create({
   mTab: {
-    marginRight: '7%',
-    marginLeft: '7%',
-
     padding: '3%',
-    borderColor: 'lightgray',
-    borderWidth: 0.8,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   imageCon: {
     marginLeft: '4%'
@@ -56,11 +65,28 @@ const styles = StyleSheet.create({
     borderRadius: 25
   },
   followtext: {
-    marginLeft: '4%'
+    marginLeft: '4%',
+    marginTop: '1%'
   },
   name: {
     fontFamily: 'Roboto-Medium',
-    fontWeight: '500',
-    color: 'black'
+    fontWeight: '700',
+    color: 'black',
+    fontSize: 16
+  },
+  userid: {
+    color: '#7D7987',
+    fontSize: 15.5
+  },
+  information: {
+    flexDirection: 'row'
+  },
+  unfollow: {
+    color: '#7D7987',
+    fontWeight: '600'
+  },
+  unfollowview: {
+    marginTop: '3%',
+    marginRight: '1%'
   }
 });
