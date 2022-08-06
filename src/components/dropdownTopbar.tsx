@@ -257,7 +257,7 @@ function DropdownTopbar(props) {
       <Avatar
         size={30}
         rounded
-        title={auth.user?.name}
+        title={auth.user?.name[0]}
         titleStyle={styles.avatarTitle}
         source={{
           uri: staticFileSrc(auth.user?.profileImage)
@@ -392,7 +392,8 @@ const styles = StyleSheet.create({
     borderColor: 'white'
   },
   avatarTitle: {
-    color: 'white'
+    color: 'white',
+    textTransform: 'uppercase'
   },
   name: {
     fontSize: 18,
