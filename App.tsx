@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import axios from 'axios';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { Provider } from 'react-redux';
@@ -6,6 +7,8 @@ import Routes from './src/navigation/routes';
 //import { StyleSheet } from 'react-native';
 import store from './src/store';
 import './src/utils/ignoreWarnings';
+
+axios.defaults.baseURL = 'https://thesocialcomment-backend-test.herokuapp.com';
 
 const App = () => {
   return (
