@@ -158,29 +158,27 @@ function AppTabs() {
 
 const MainStack = () => {
   return (
-    <NavigationContainer>
-      <MyStack.Navigator>
-        <MyStack.Screen
-          name="App"
-          component={AppTabs}
-          options={{ headerShown: false }}
-        />
-        <MyStack.Screen
-          name="Search"
-          component={SearchScreen}
-          options={{
-            headerShown: false
-          }}
-        />
-        <MyStack.Screen
-          name="Notifications"
-          component={NotificationsScreen}
-          options={{
-            headerShown: false
-          }}
-        />
-      </MyStack.Navigator>
-    </NavigationContainer>
+    <MyStack.Navigator>
+      <MyStack.Screen
+        name="App"
+        component={AppTabs}
+        options={{ headerShown: false }}
+      />
+      <MyStack.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{
+          headerShown: false
+        }}
+      />
+      <MyStack.Screen
+        name="Notifications"
+        component={NotificationsScreen}
+        options={{
+          headerShown: false
+        }}
+      />
+    </MyStack.Navigator>
   );
 };
 

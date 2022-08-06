@@ -1,18 +1,28 @@
-import { User } from '../login_interfaces/login.interfce';
+import { User } from '../login_interface/login.interface';
 
-export interface RegisterReqeust {
-  name?: string;
-  username?: string;
-  email?: string;
-  password?: string;
-  academic?: string;
-  agreement?: boolean;
-  dob?: string;
-  gender?: string;
+export interface RegisterAccountData {
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  agreement: boolean;
+  referal?: string;
+}
+
+export interface RegisterPersonalData {
+  academic: string;
+  dob: string | Date | number;
+  gender: string;
   city?: string;
   pincode?: string;
-  referal?: string;
   state?: string;
+}
+
+export type RegisterRequest = RegisterAccountData & RegisterPersonalData;
+
+export enum SubcriptionsPlan {
+  premium2999 = 'premium2999',
+  premium1000 = 'premium1000'
 }
 
 export interface RegisterResponse {

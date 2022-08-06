@@ -11,13 +11,13 @@ import React, { useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
 import { TextInput } from 'react-native-paper';
-import { FormikHelpers, useFormik } from 'formik';
+import { useFormik } from 'formik';
 import { object, string, boolean } from 'yup';
 import { CheckBox } from '@rneui/base';
 import { Colors } from '../../utils/colors';
-import { RegisterRequest } from '../../utils/typings/register_interface/register.interface';
-import { RegisterReqeust } from '../../utils/typings/register_interfaces/register.interfce';
-var logo = require('../../assets/images/logos/Untitled.png');
+import { RegisterAccountData } from '../../utils/typings/register_interfaces/register.interfce';
+import { useRegisterData } from '~/src/state/registerScreenState';
+import logo from '../../assets/images/logos/Untitled.png';
 
 const CustomCheckBox = (props: any) => {
   return (
@@ -41,60 +41,51 @@ const CustomCheckBox = (props: any) => {
 };
 
 const RegisterOneScreen = ({ navigation }) => {
-  const [isSecure, setIsSecure] = useState(true);
-  const state: RegisterReqeust = {
-    name: null,
-    username: null,
-    email: null,
-    password: null,
-    academic: null,
-    agreement: false,
-    dob: null,
-    gender: null,
-    city: null,
-    pincode: null,
-    referal: null,
-    state: null
-  };
+  const [isPasswordHidden, setIsPasswordHidden] = useState<boolean>(true);
 
-  const onNext = (
-    values: RegisterRequest,
-    formikActions: FormikHelpers<RegisterRequest>
-  ) => {
-    const payload = {
-      ...values
-    };
-    formikActions.setSubmitting(false);
-    navigation.navigate('RegisterTwo', payload);
-  };
+  const { setAccountDetails } = useRegisterData();
 
-  const NextSchema = object().shape({
+  function onNext(values: RegisterAccountData) {
+    setAccountDetails(values);
+    navigation.navigate('RegisterTwo');
+  }
+
+  const NextSchema = object({
     email: string()
+      .trim()
       .email('Invalid email address')
       .required('Email is Required'),
-    password: string().required('Password is Required'),
-    name: string().required('Name is Required'),
-    username: string().required('Username is Required'),
+    password: string().trim().required('Password is Required'),
+    name: string().trim().required('Name is Required'),
+    username: string().trim().required('Username is Required'),
+    referal: string().trim(),
     agreement: boolean().oneOf(
       [true],
       'You must agree to the terms and conditions and privacy policy'
     )
   });
 
-  const Eyelick = () => {
-    setIsSecure(!isSecure);
+  const Eyeclick = () => {
+    setIsPasswordHidden(!isPasswordHidden);
   };
 
-  const formik = useFormik({
-    initialValues: state,
+  const formik = useFormik<RegisterAccountData>({
+    initialValues: {
+      name: '',
+      username: '',
+      email: '',
+      password: '',
+      agreement: false,
+      referal: ''
+    },
     validationSchema: NextSchema,
     onSubmit: onNext
   });
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.outContainer}>
-        <ScrollView>
+    <ScrollView>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.outContainer}>
           <View style={styles.container}>
             <Image style={styles.logo} source={logo} />
             <Text style={styles.register}>Register</Text>
@@ -122,6 +113,7 @@ const RegisterOneScreen = ({ navigation }) => {
               label="Email"
               inputStyle={styles.emailTB}
               onChangeText={formik.handleChange('email')}
+              keyboardType="email-address"
               value={formik.values.email}
               errorTxt={formik.touched.email && formik.errors.email}
               onBlur={formik.handleBlur('email')}
@@ -130,13 +122,13 @@ const RegisterOneScreen = ({ navigation }) => {
             <TextInputWithLabel
               placeholder="Password"
               label="Password"
-              isSecureTextEntry={isSecure}
+              isSecureTextEntry={isPasswordHidden}
               inputStyle={styles.passTB}
               right={
                 <TextInput.Icon
                   color={Colors.Secondary}
-                  name={isSecure ? 'eye-outline' : 'eye-off-outline'}
-                  onPress={Eyelick}
+                  name={isPasswordHidden ? 'eye-outline' : 'eye-off-outline'}
+                  onPress={() => setIsPasswordHidden(!isPasswordHidden)}
                   style={styles.eye}
                 />
               }
@@ -168,12 +160,12 @@ const RegisterOneScreen = ({ navigation }) => {
               text="Next"
               onPress={formik.handleSubmit}
               btnStyle={styles.nextBtn}
-              submitting={formik.isSubmitting}
+              // submitting={formik.isSubmitting}
             />
           </View>
-        </ScrollView>
-      </View>
-    </TouchableWithoutFeedback>
+        </View>
+      </TouchableWithoutFeedback>
+    </ScrollView>
   );
 };
 
@@ -191,19 +183,19 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.White
   },
   logo: {
-    marginTop: '5%',
-    width: '57%',
+    marginTop: 25,
+    width: 180,
     resizeMode: 'contain'
   },
   register: {
     fontFamily: 'Roboto-Medium',
     fontSize: 32,
-    fontWeight: '500',
-    marginBottom: 20,
+    fontWeight: '700',
+    marginBottom: 10,
+    marginTop: 30,
     color: Colors.Black,
     fontStyle: 'normal',
-    lineHeight: 32,
-    marginTop: '3%'
+    lineHeight: 32
   },
   accDet: {
     fontFamily: 'Roboto-Medium',
@@ -257,8 +249,8 @@ const styles = StyleSheet.create({
   },
   eye: {
     justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: '50%'
+    alignItems: 'center'
+    // marginTop: '50%'
   },
   nextBtn: {
     backgroundColor: Colors.Primary,

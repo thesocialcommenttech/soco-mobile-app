@@ -6,11 +6,11 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
 import { FormikHelpers, useFormik } from 'formik';
-import { object, string } from 'yup';
+import { object, string, date } from 'yup';
 import { useDispatch } from 'react-redux';
 import CustomRadioButton from '../../components/customRadioButton';
 import { TextInput } from 'react-native-paper';
@@ -18,77 +18,75 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { Colors } from '../../utils/colors';
 import { register } from '../../utils/services/register_service/register.service';
-import { RegisterRequest } from '../../utils/typings/register_interface/register.interface';
 import { AuthActionTypes, setAuthToLogin } from '../../store/actions/auth';
 import { ThunkDispatch } from 'redux-thunk';
 import { IRootReducer } from '~/src/store/reducers';
-import { setAuthCredentials } from '../../lib/auth-credentials';
+import { useRegisterData } from '~/src/state/registerScreenState';
+import { RegisterPersonalData } from '~/src/utils/typings/register_interfaces/register.interfce';
+import dayjs from 'dayjs';
+import { RootRouteContext } from '~/src/contexts/root-route.context';
 
-const RegisterTwoScreen = ({ route, navigation }) => {
-  const state = route.params;
+function RegisterTwoScreen({ route, navigation }) {
+  const {
+    accountDetails,
+    resetRegisterFormData,
+    personalDetails,
+    setPersonalDetails
+  } = useRegisterData();
 
-  const [date, setDate] = useState(new Date());
+  const { showPostRegisterationFlow } = useContext(RootRouteContext);
+
+  // const [date, setDate] = useState(new Date());
   const dispatch =
     useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
 
-  const onChange = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate;
-    setDate(currentDate);
-  };
-
-  const showMode = currentMode => {
+  const showDatepicker = () => {
     DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode: currentMode,
+      value: (formik.values.dob as Date) ?? new Date(),
+      onChange: async (event, selectedDate) => {
+        await formik.setFieldValue('dob', selectedDate);
+        setPersonalDetails({ ...personalDetails, dob: selectedDate });
+      },
+      mode: 'date',
       is24Hour: true
     });
   };
 
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
   const onRegister = async (
-    values: RegisterRequest,
-    formikActions: FormikHelpers<RegisterRequest>
+    values: RegisterPersonalData,
+    formikActions: FormikHelpers<RegisterPersonalData>
   ) => {
-    const payload: RegisterRequest = {
-      ...state,
-      academic: values.academic,
-      gender: values.gender,
-      dob: date.toLocaleDateString()
-    };
-    const response = await register(payload);
+    try {
+      const result = await register({ ...accountDetails, ...values });
 
-    if (response.data?.success) {
-      console.log('success', response.data);
-      formikActions.resetForm();
-      await setAuthCredentials({
-        user_id: response.data.user._id,
-        token: response.data.token
-      });
-      navigation.navigate('OptionalInfo', response.data);
-      // dispatch(
-      //   setAuthToLogin({
-      //     user: response.data.user,
-      //     token: response.data.token
-      //   })
-      // );
-    } else {
-      console.log('ERR', response.data);
+      if (result.data?.success) {
+        dispatch(
+          setAuthToLogin({
+            user: result.data.user,
+            token: result.data.token
+          })
+        );
+        formikActions.resetForm();
+        resetRegisterFormData();
+        // navigation.navigate('OptionalInfo', result.data);
+        showPostRegisterationFlow(true);
+      }
+    } catch (error) {
+      console.error(error);
     }
-    formikActions.setSubmitting(false);
   };
 
-  const RegisterSchema = object().shape({
-    gender: string().required('Gender is required'),
-    academic: string().required('Academic is required')
-  });
-
-  const formik = useFormik({
-    initialValues: state,
-    validationSchema: RegisterSchema,
+  const formik = useFormik<RegisterPersonalData>({
+    initialValues: {
+      academic: personalDetails?.academic,
+      dob: personalDetails?.dob,
+      gender: personalDetails?.gender
+    },
+    validationSchema: object().shape({
+      gender: string().required('Gender is required'),
+      academic: string().required('Academic is required'),
+      dob: date().required('Date of Birth is required').nullable()
+    }),
     onSubmit: onRegister
   });
 
@@ -107,29 +105,43 @@ const RegisterTwoScreen = ({ route, navigation }) => {
             <Text style={styles.perDet}>Personal Details</Text>
             <CustomRadioButton
               label={'Gender'}
-              option1="Male"
-              option2="Female"
-              onPress={(option: string) => {
-                formik.setFieldValue('gender', option);
+              options={['Male', 'Female']}
+              initialSelection={formik.values.gender}
+              // option2="Female"
+              onSelectionChange={async selection => {
+                await formik.setFieldValue('gender', selection.option);
+                setPersonalDetails({
+                  ...personalDetails,
+                  gender: selection.option
+                });
               }}
-              onBlur={formik.handleBlur('gender')}
+              // onBlur={formik.handleBlur('gender')}
               errorTxt={formik.touched.gender && formik.errors.gender}
             />
             <CustomRadioButton
               label={'Academic'}
-              option1="Graduate"
-              option2="Undergraduate"
-              onPress={(option: string) => {
-                formik.setFieldValue('academic', option);
+              options={['Graduate', 'Undergraduate']}
+              // option2=
+              onSelectionChange={async selection => {
+                await formik.setFieldValue('academic', selection.option);
+                setPersonalDetails({
+                  ...personalDetails,
+                  academic: selection.option
+                });
               }}
-              onBlur={formik.handleBlur('academic')}
+              initialSelection={formik.values.academic}
+              // onBlur={formik.handleBlur('academic')}
               errorTxt={formik.touched.academic && formik.errors.academic}
             />
             <TextInputWithLabel
               placeholder="dd/mm/yyyy"
               label="Date of Birth"
               inputStyle={styles.dobTB}
-              value={date.toLocaleDateString()}
+              value={
+                formik.values.dob
+                  ? dayjs(formik.values.dob).format('DD/MM/YYYY')
+                  : ''
+              }
               errorTxt={formik.touched.dob && formik.errors.dob}
               onBlur={formik.handleBlur('dob')}
               right={
@@ -146,14 +158,13 @@ const RegisterTwoScreen = ({ route, navigation }) => {
               text="Register"
               onPress={formik.handleSubmit}
               btnStyle={styles.registerBtn}
-              submitting={formik.isSubmitting}
             />
           </View>
         </ScrollView>
       </View>
     </TouchableWithoutFeedback>
   );
-};
+}
 
 export default RegisterTwoScreen;
 

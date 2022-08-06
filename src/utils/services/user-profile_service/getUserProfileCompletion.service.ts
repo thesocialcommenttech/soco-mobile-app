@@ -5,7 +5,7 @@ export function getUserProfileCompletion(): Promise<
   AxiosResponse<GetUserProfileCompletionResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/profile/profile-completion',
+    url: 'user/profile/profile-completion',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

@@ -1,28 +1,70 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { Colors } from '../utils/colors';
 
-const CustomRadioButton = ({ ...props }) => {
-  const [one, setone] = React.useState(false);
-  const [two, settwo] = React.useState(false);
+const CustomRadioButton = (props: {
+  onSelectionChange: (selection: { index: number; option: string }) => void;
+  options: string[];
+  errorTxt: string;
+  label: string;
+  initialSelection?: string;
+}) => {
+  // const [one, setone] = React.useState(false);
+  // const [two, settwo] = React.useState(false);
 
-  const selectOption1 = () => {
-    props.onPress(props.option1);
-    setone(true);
-    settwo(false);
+  const [selectedOption, setSelectedOption] = useState<number>(
+    props.options.indexOf(props.initialSelection)
+  );
+
+  const selectOption1 = (optionIndex: number) => {
+    setSelectedOption(optionIndex);
+    props.onSelectionChange({
+      index: optionIndex,
+      option: props.options[optionIndex]
+    });
+    // setone(true);
+    // settwo(false);
   };
-  const selectOption2 = () => {
-    props.onPress(props.option2);
-    setone(false);
-    settwo(true);
-  };
+
+  // const selectOption2 = () => {
+  //   props.onPress(props.option2);
+  //   // setone(false);
+  //   // settwo(true);
+  // };
+
   return (
     <View>
       <View style={styles.labelBox}>
         <Text style={styles.label}>{props.label}</Text>
       </View>
       <View style={styles.radioContainer}>
-        <TouchableOpacity
+        {props.options.map((option, i) => (
+          <TouchableOpacity
+            key={i + option}
+            style={
+              selectedOption !== i
+                ? styles.radioButton
+                : [
+                    {
+                      ...styles.radioButton,
+                      backgroundColor: Colors.LightPrimary
+                    }
+                  ]
+            }
+            onPress={() => selectOption1(i)}
+          >
+            <Text
+              style={
+                selectedOption !== i
+                  ? styles.optionText
+                  : [{ ...styles.optionText, fontWeight: '700' }]
+              }
+            >
+              {option}
+            </Text>
+          </TouchableOpacity>
+        ))}
+        {/* <TouchableOpacity
           style={
             one === false
               ? styles.radioButton
@@ -67,7 +109,7 @@ const CustomRadioButton = ({ ...props }) => {
           >
             {props.option2}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       {props.errorTxt && <Text style={styles.error}>{props.errorTxt}</Text>}
     </View>

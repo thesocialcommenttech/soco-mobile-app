@@ -1,9 +1,43 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import {
+  ColorValue,
+  KeyboardTypeOptions,
+  NativeSyntheticEvent,
+  NativeTouchEvent,
+  RecursiveArray,
+  RegisteredStyle,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextInputFocusEventData,
+  TextStyle,
+  View
+} from 'react-native';
+import React, { ReactNode, useState } from 'react';
 import { TextInput } from 'react-native-paper';
 import { Colors } from '../utils/colors';
 
-const TextInputWithLabel = ({ ...props }) => {
+const TextInputWithLabel = (
+  props: Partial<{
+    maxLength: number;
+    label: string;
+    inputStyle: StyleProp<TextStyle>;
+    placeholder: string;
+    onChangeText: (value: string) => void;
+    isSecureTextEntry: boolean;
+    placeholderTextColor: ColorValue;
+    errorTxt: string;
+    right: ReactNode;
+    left: ReactNode;
+    onBlur: ((e: NativeSyntheticEvent<TextInputFocusEventData>) => void) &
+      ((args: any) => void);
+    keyboardType: KeyboardTypeOptions;
+    value: string;
+    editable: boolean;
+    multiline: boolean;
+    numberOfLines: number;
+    onAccessibilityTap: () => void;
+  }>
+) => {
   const [textLength, setTextLength] = useState(0);
   const checktextLength = () => {
     if (textLength > props.maxLength) {
@@ -41,11 +75,13 @@ const TextInputWithLabel = ({ ...props }) => {
         }
         underlineColorAndroid={'transparent'}
         outlineColor={props.errorTxt ? Colors.Red : Colors.GrayBorder}
-        activeOutlineColor={props.errorTxt ? Colors.Red : 'blue'}
+        activeOutlineColor={props.errorTxt ? Colors.Red : Colors.Secondary}
         selectionColor={'black'}
         right={props.right}
+        onAccessibilityTap={props.onAccessibilityTap}
         left={props.left}
         onBlur={props.onBlur}
+        keyboardType={props.keyboardType}
         value={props.value}
         editable={props.editable}
         multiline={props.multiline}

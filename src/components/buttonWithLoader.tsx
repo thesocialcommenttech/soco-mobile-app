@@ -1,8 +1,25 @@
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import {
+  GestureResponderEvent,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ViewStyle
+} from 'react-native';
 import React from 'react';
 import { Colors } from '../utils/colors';
 
-const ButtonWithLoader = ({ text, onPress, btnStyle, submitting }) => {
+const ButtonWithLoader = ({
+  text,
+  onPress,
+  btnStyle,
+  submitting
+}: {
+  text: string;
+  onPress: (event: GestureResponderEvent) => void;
+  btnStyle?: StyleProp<ViewStyle>;
+  submitting?: boolean;
+}) => {
   // add rgba color opacity
   const backgroundColor = submitting
     ? 'rgba(255, 202, 18, 0.4)'

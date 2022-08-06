@@ -12,7 +12,6 @@ export interface LoginRequestData {
 }
 
 export interface LoginResponseData {
-  message(arg0: string, message: any);
   success?: boolean;
   user?: User;
   token?: string;

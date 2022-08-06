@@ -5,11 +5,9 @@ export function getInterestCategories(): Promise<
   AxiosResponse<GetInterestCategoriesResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: 'https://thesocialcomment-backend-test.herokuapp.com/category/interest-categories',
+    url: 'category/interest-categories',
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    headers: { 'Content-Type': 'application/json' }
   };
 
   return axios.request<GetInterestCategoriesResponse>(config);
