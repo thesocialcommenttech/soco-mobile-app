@@ -77,8 +77,9 @@ function DiscoverScreen({ navigation }) {
     });
 
     if (result.data.success) {
-      setPosts(result.data.posts);
+      setPosts([...posts,...result.data.posts]);
     }
+    //console.log(result);
     setLoading(false);
   }
 
@@ -179,11 +180,25 @@ function DiscoverScreen({ navigation }) {
             <ActivityIndicator color={'#0063ff'} size={32} />
           </View>
         ) : (
-          <ScrollView>
-            {posts.map((post, i) => {
+          <>
+            {/* {posts.map((post, i) => {
               return <Post key={post._id} data={post} />;
-            })}
-          </ScrollView>
+            })} */}
+            <FlatList
+              data={posts}
+              onEndReachedThreshold={0.33}
+              onEndReached={() => setPageState({
+                pageNo: pageState.pageNo + 1,
+                pageSize: pageState.pageSize
+              })}
+              renderItem={({ item }) => (
+                <Post
+                key={item._id}
+                data={item}
+            />
+        )}
+      />
+      </>
         )}
       </>
     </ScreenWithTopBar>
