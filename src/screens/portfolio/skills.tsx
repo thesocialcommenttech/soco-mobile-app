@@ -67,6 +67,7 @@ export default function Skills({ ...props }) {
     <View style={styles.container}>
       <FlatList
         data={Data}
+        showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <SkillList skill={item.skill} rating={item.rating} />
@@ -79,8 +80,8 @@ export default function Skills({ ...props }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: '4%',
-    marginLeft: '5%',
-    marginRight: '6.2%'
+    paddingLeft: '5%',
+    paddingRight: '6.2%',
+    backgroundColor: 'white'
   }
 });

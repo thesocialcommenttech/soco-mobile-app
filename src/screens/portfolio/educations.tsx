@@ -60,8 +60,9 @@ export default function Educations({ ...props }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginLeft: '5%',
-    marginRight: '6%'
+    paddingLeft: '5%',
+    paddingRight: '6%',
+    backgroundColor: 'white'
   },
   degreeview: {
     flexDirection: 'row',

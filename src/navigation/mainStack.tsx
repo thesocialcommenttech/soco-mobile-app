@@ -11,7 +11,6 @@ import HomeStack from './homeStack';
 import PortfolioStack from './portfolioStack';
 import ProfileStack from './profileStack';
 import SearchScreen from '../screens/search/search';
-import store from '../store';
 import { useSelector } from 'react-redux';
 import { IAuthState } from '../store/reducers/auth';
 import { IRootReducer } from '../store/reducers';
@@ -158,27 +157,29 @@ function AppTabs() {
 
 const MainStack = () => {
   return (
-    <MyStack.Navigator>
-      <MyStack.Screen
-        name="App"
-        component={AppTabs}
-        options={{ headerShown: false }}
-      />
-      <MyStack.Screen
-        name="Search"
-        component={SearchScreen}
-        options={{
-          headerShown: false
-        }}
-      />
-      <MyStack.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{
-          headerShown: false
-        }}
-      />
-    </MyStack.Navigator>
+    <NavigationContainer>
+      <MyStack.Navigator>
+        <MyStack.Screen
+          name="App"
+          component={AppTabs}
+          options={{ headerShown: false }}
+        />
+        <MyStack.Screen
+          name="Search"
+          component={SearchScreen}
+          options={{
+            headerShown: false
+          }}
+        />
+        <MyStack.Screen
+          name="Notifications"
+          component={NotificationsScreen}
+          options={{
+            headerShown: false
+          }}
+        />
+      </MyStack.Navigator>
+    </NavigationContainer>
   );
 };
 

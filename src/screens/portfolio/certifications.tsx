@@ -99,6 +99,7 @@ export default function Certifications({ ...props }) {
       <View style={styles.list}>
         <FlatList
           data={Data}
+          showsVerticalScrollIndicator={false}
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
             <CertificateList
@@ -117,7 +118,8 @@ export default function Certifications({ ...props }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: 'white'
   },
   list: {
     marginLeft: '2%',
