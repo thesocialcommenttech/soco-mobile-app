@@ -356,7 +356,7 @@ export default function Portfolio() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   text: {
     color: 'black'

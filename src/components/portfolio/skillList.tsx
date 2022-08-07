@@ -70,7 +70,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: '3%'
+    marginTop: '3%',
+    marginBottom: '1%'
   },
   progress: {
     transform: [{ rotateY: '180deg' }],

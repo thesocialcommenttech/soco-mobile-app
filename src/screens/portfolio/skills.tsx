@@ -80,8 +80,8 @@ export default function Skills({ ...props }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: '4%',
-    marginLeft: '5%',
-    marginRight: '6.2%'
+    paddingLeft: '5%',
+    paddingRight: '6.2%',
+    backgroundColor: 'white'
   }
 });

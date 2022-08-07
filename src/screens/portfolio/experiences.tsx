@@ -111,9 +111,10 @@ export default function Experiences({ ...props }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginLeft: '5.5%',
-    marginRight: '7%',
-    marginTop: '2%'
+    paddingLeft: '5.5%',
+    paddingRight: '7%',
+    paddingTop: '2%',
+    backgroundColor: 'white'
   },
   optionview: {
     marginTop: 'auto',

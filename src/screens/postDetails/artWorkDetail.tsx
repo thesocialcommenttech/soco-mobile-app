@@ -101,7 +101,6 @@ export default function ArtWorkDetail() {
             <View style={styles.icon}>
               {heart
                 ? [
-                    // eslint-disable-next-line prettier/prettier
                   <TouchableWithoutFeedback onPress={() => {setHeart(false);}}>
                       <Icon1 name="heart" size={18} color="black" />
                     </TouchableWithoutFeedback>
@@ -235,10 +234,11 @@ export default function ArtWorkDetail() {
 
 const styles = StyleSheet.create({
   container: {
-    marginLeft: 15,
-    marginRight: 15,
-    marginTop: '2%',
-    marginBottom: '20%'
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: '2%',
+    paddingBottom: '20%',
+    backgroundColor: 'white'
   },
   heading: {
     color: 'black',

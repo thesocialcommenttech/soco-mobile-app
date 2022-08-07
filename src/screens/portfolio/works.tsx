@@ -302,7 +302,7 @@ export default function Works({ ...props }) {
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       <Modal1
         isVisible={modalVisible}
         backdropColor="black"
@@ -358,6 +358,9 @@ export default function Works({ ...props }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white'
+  },
   heading: {
     fontSize: 17,
     fontWeight: 'bold',

@@ -30,6 +30,8 @@ export default function Bio({ ...props }) {
   );
 
   return (
+    <ScrollView>
+    <>
     <View style={styles.container}>
       <Modal1
         isVisible={modalVisible}
@@ -88,7 +90,6 @@ export default function Bio({ ...props }) {
           paused={true}
         />
       </View>
-      <ScrollView>
         <View style={styles.biography}>
           <Text style={styles.biographytext}>Biography</Text>
           <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>
@@ -103,14 +104,17 @@ export default function Bio({ ...props }) {
           Ethical Hacking, Android Application Development, Web
           Development-Intro, Terminal based Chatting Platform, Encryption
         </Text>
-      </ScrollView>
     </View>
+    </>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: 'white',
+    paddingBottom: '2%'
   },
   text: {
     color: 'black'
@@ -144,8 +148,8 @@ const styles = StyleSheet.create({
   },
   video: {
     width: '100%',
-    height: '30%',
-    marginTop: '4%'
+    height: 200,
+    marginTop: '4%',
   },
   biography: {
     flexDirection: 'row',
