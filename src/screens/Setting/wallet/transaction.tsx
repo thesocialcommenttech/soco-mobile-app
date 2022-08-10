@@ -44,8 +44,9 @@ export default function Transaction() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginLeft: '6%',
-    marginRight: '6%',
-    marginTop: '4%'
+    paddingLeft: '6%',
+    paddingRight: '6%',
+    paddingTop: '4%',
+    backgroundColor: 'white'
   }
 });

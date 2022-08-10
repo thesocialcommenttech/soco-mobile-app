@@ -174,9 +174,10 @@ export default function Interest() {
 
 const styles = StyleSheet.create({
   container: {
-    marginLeft: '4.5%',
-    marginRight: '4.5%',
-    flex: 1
+    paddingLeft: '4.5%',
+    paddingRight: '4.5%',
+    flex: 1,
+    backgroundColor: 'white'
   },
   fCont: {
     flexDirection: 'row',

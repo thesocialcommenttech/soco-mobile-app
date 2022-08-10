@@ -96,9 +96,10 @@ export default function AddAccount() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: '4%',
-    marginLeft: '4%',
-    marginRight: '4%'
+    paddingTop: '4%',
+    paddingLeft: '4%',
+    paddingRight: '4%',
+    backgroundColor: 'white'
   },
   typetext: {
     fontSize: 16,

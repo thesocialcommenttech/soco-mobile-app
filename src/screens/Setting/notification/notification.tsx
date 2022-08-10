@@ -49,9 +49,10 @@ export default function Notification() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: '8%',
-    marginRight: '5%',
-    marginLeft: '5%'
+    paddingTop: '8%',
+    paddingRight: '5%',
+    paddingLeft: '5%',
+    backgroundColor: 'white'
   },
   boldtext: {
     fontFamily: 'Roboto-Medium',

@@ -118,7 +118,8 @@ export default function Referals() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: '2%'
+    padding: '2%',
+    backgroundColor: 'white'
   },
   box: {
     borderWidth: 1,
