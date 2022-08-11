@@ -46,7 +46,14 @@ function HomeScreen({ navigation }) {
       ) : (
         <ScrollView>
           {feed.map((post, i) => (
-            <Post key={i} data={post} />
+            <Post
+              key={i}
+              data={post}
+              postWrapperStyle={{
+                borderTopWidth: 1,
+                borderTopColor: Colors.GrayLine
+              }}
+            />
           ))}
         </ScrollView>
       )}

@@ -181,9 +181,6 @@ function DiscoverScreen({ navigation }) {
           </View>
         ) : (
           <>
-            {/* {posts.map((post, i) => {
-              return <Post key={post._id} data={post} />;
-            })} */}
             <FlatList
               data={posts}
               onEndReachedThreshold={0.33}
@@ -195,6 +192,10 @@ function DiscoverScreen({ navigation }) {
                 <Post
                 key={item._id}
                 data={item}
+                postWrapperStyle={{
+                  borderTopWidth: 1,
+                  borderTopColor: Colors.GrayLine
+                }}
             />
         )}
       />

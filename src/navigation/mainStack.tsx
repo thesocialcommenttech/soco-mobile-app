@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
-import * as React from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -11,9 +10,6 @@ import HomeStack from './homeStack';
 import PortfolioStack from './portfolioStack';
 import ProfileStack from './profileStack';
 import SearchScreen from '../screens/search/search';
-import { useSelector } from 'react-redux';
-import { IAuthState } from '../store/reducers/auth';
-import { IRootReducer } from '../store/reducers';
 import NotificationsScreen from '../screens/notifications/notifications';
 
 const MyTab = createBottomTabNavigator();

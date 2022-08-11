@@ -343,7 +343,22 @@ const ProfileScreen = ({ navigation }) => {
             </ScrollView>
 
             {posts.map(post => (
-              <Post key={post._id} data={post} />
+              <Post
+                key={post._id}
+                data={{
+                  ...post,
+                  postedBy: {
+                    _id: auth.user._id,
+                    name: auth.user.name,
+                    profileImage: auth.user.profileImage,
+                    username: auth.user.username
+                  }
+                }}
+                postWrapperStyle={{
+                  borderTopWidth: 1,
+                  borderTopColor: Colors.GrayLine
+                }}
+              />
             ))}
           </ScrollView>
           <DropdownBottombutton label={undefined} />
