@@ -1,5 +1,10 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { GetPostsResponse } from '../../typings/user-posts_interface/getPosts.interface';
+import { PostStatus, PostType } from '../../typings/post';
+import {
+  GetPostsOfTypeRequestData,
+  GetPostsOfTypeResponse,
+  GetPostsResponse
+} from '../../typings/user-posts_interface/getPosts.interface';
 
 export function getPosts(
   userID: string,
@@ -13,4 +18,18 @@ export function getPosts(
     params: { userID: userID, projection, pageNo, size }
   };
   return axios.request<GetPostsResponse>(config);
+}
+
+export function getAllPostsOfType({
+  userID,
+  projection = '',
+  postType,
+  postStatus
+}: GetPostsOfTypeRequestData) {
+  const config: AxiosRequestConfig = {
+    url: `user/post/all/${postType}`,
+    method: 'GET',
+    params: { userID, projection, ...(postStatus && { postStatus }) }
+  };
+  return axios.request<GetPostsOfTypeResponse>(config);
 }

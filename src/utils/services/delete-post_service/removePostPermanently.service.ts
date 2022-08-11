@@ -1,15 +1,12 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { RemovePostPermanentlyResponse } from '../../typings/delete-post_interface/removePostPermanently.interface';
+import { Post } from '../../typings/post';
 
-export function removePostPermanently(): Promise<
-  AxiosResponse<RemovePostPermanentlyResponse>
-> {
+export function removePostPermanently(postID: Post['_id']) {
   const config: AxiosRequestConfig = {
-    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/delete',
+    url: 'user/post/delete',
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    params: { postID }
   };
 
   return axios.request<RemovePostPermanentlyResponse>(config);

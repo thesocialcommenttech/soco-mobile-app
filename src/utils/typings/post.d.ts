@@ -20,7 +20,7 @@ interface PostComment {
   comment: string;
 }
 
-type PostStatus = 'draft' | 'published' | 'trashed';
+type PostStatus = 'draft' | 'published' | 'trash';
 
 interface CommonPostData {
   _id?: string;

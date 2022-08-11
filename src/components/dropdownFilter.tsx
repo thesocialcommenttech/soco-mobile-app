@@ -1,183 +1,74 @@
-import React, { FC, ReactElement, useRef, useState } from 'react';
-import {
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native';
-import Octicon from 'react-native-vector-icons/Octicons';
+import React, { useMemo, useRef, useState } from 'react';
+import { StyleSheet, Text, TouchableHighlight } from 'react-native';
 import { Colors } from '../utils/colors';
+import { PostType } from '../utils/typings/post';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Color from 'color';
+import Bottomsheet, { DropdownOption } from './bottomsheet/Bottomsheet';
 
-const RenderItem = ({
-  key,
-  item,
-  visible,
-  setVisible,
-  selected,
-  setSelected,
-  props
-}: {
-  key: string;
-  item: { label: string; isNew: boolean; value: string };
-  visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  selected: string;
-  setSelected: React.Dispatch<React.SetStateAction<string>>;
-  props: any;
-}): ReactElement<any, any> => {
-  const onSelect = (Item: { label: string; value: string }) => {
-    setSelected(item.label);
-    props.setLabel(item.label);
-    // console.log('Selected', item);
-  };
+export type OptionKey = Exclude<PostType, 'link' | 'shared'>;
 
-  const onItemPress = (Item: { label: string; value: string }): void => {
-    // setSelected(item);
-    onSelect(item);
-    setVisible(false);
-  };
-  return (
-    <View>
-      {item.value === '1' && (
-        <TouchableOpacity
-          style={styles.item3}
-          onPress={() => onItemPress(item)}
-        >
-          <Text style={styles.buttonText1}>{item.label}</Text>
-          {item.isNew && (
-            <View style={styles.newView}>
-              <Text style={styles.newText}>New</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      )}
-      {item.value !== '1' ? (
-        <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
-          <Text style={styles.buttonText1}>{item.label}</Text>
-          {item.isNew && (
-            <View style={styles.newView}>
-              <Text style={styles.newText}>New</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      ) : (
-        <></>
-      )}
-    </View>
-  );
+type DropdownOptionItem = Record<OptionKey, string>;
+
+export const optionsList: DropdownOptionItem = {
+  blog: 'Blogs',
+  artwork: 'Artworks',
+  skill: 'Skill Videos',
+  project: 'Projects',
+  article: 'Articles',
+  presentation: 'Presentations'
 };
 
-interface Props {
-  label: any;
-  setLabel: any;
-}
-
-const DropdownFilter: FC<Props> = props => {
+function DropdownFilter(props: {
+  optionKey: OptionKey;
+  onOptionChange?: (optionKey: OptionKey) => void;
+}) {
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
-  const [dropdownTop, setDropdownTop] = useState(0);
-  const [dropdownLeft, setDropdownLeft] = useState(0);
-  const [selected, setSelected] = useState('All');
-  const data = [
-    {
-      label: 'All',
-      isNew: false,
-      value: '1'
-    },
-    {
-      label: 'Blogs',
-      isNew: false,
-      value: '2'
-    },
-    {
-      label: 'Artworks',
-      isNew: false,
-      value: '3'
-    },
-    {
-      label: 'Skill Videos',
-      isNew: false,
-      value: '4'
-    },
-    {
-      label: 'Projects',
-      isNew: false,
-      value: '5'
-    },
-    {
-      label: 'Articles',
-      isNew: false,
-      value: '6'
-    },
-    {
-      label: 'Presentations',
-      isNew: false,
-      value: '7'
-    }
-  ];
+  const [selectedOption, setSelectedOption] = useState(props.optionKey);
 
-  const openDropdown = (): void => {
-    DropdownButton.current.measure(
-      (
-        fx: number,
-        fy: number,
-        width: number,
-        height: number,
-        px: number,
-        py: number
-      ) => {
-        // console.log('Component width is: ' + width);
-        // console.log('Component height is: ' + height);
-        // console.log('X offset to frame: ' + fx);
-        // console.log('Y offset to frame: ' + fy);
-        // console.log('X offset to page: ' + px);
-        // console.log('Y offset to page: ' + py);
-        setDropdownTop(height + py);
-        setDropdownLeft(px);
-      }
-    );
-
-    setVisible(true);
-  };
+  const selectedOptionLabel = useMemo(
+    () => optionsList[selectedOption],
+    [selectedOption]
+  );
 
   return (
     <>
-      <TouchableOpacity
-        onPress={() => {
-          visible ? setVisible(false) : openDropdown();
-        }}
+      {/* Toggle Button */}
+      <TouchableHighlight
+        underlayColor={Colors.Gray100}
+        onPress={() => setVisible(true)}
         ref={DropdownButton}
         style={styles.button}
       >
-        <Text style={styles.buttonText}>{selected}</Text>
-        <Octicon name="chevron-down" size={20} color={Colors.Gray600} />
-      </TouchableOpacity>
-      <Modal visible={visible} transparent animationType="fade">
-        <TouchableWithoutFeedback onPress={() => setVisible(false)}>
-          <View style={styles.modalOverlay} />
-        </TouchableWithoutFeedback>
-        <ScrollView style={[styles.dropdown]}>
-          {data.map(item => {
-            return (
-              <RenderItem
-                key={item.value}
-                item={item}
-                visible={visible}
-                setVisible={setVisible}
-                selected={selected}
-                setSelected={setSelected}
-                props={props}
-              />
-            );
-          })}
-        </ScrollView>
-      </Modal>
+        <>
+          <Text style={styles.buttonText}>{selectedOptionLabel}</Text>
+          <MaterialCommunityIcons
+            name="chevron-down"
+            size={16}
+            color={Colors.Gray200}
+          />
+        </>
+      </TouchableHighlight>
+
+      {/* BottomSheet */}
+      <Bottomsheet visible={visible} onClose={() => setVisible(false)}>
+        {Object.keys(optionsList).map((optionKey, i) => (
+          <DropdownOption
+            key={i + optionKey}
+            optionKey={optionKey as OptionKey}
+            label={optionsList[optionKey]}
+            onOptionPress={(option: OptionKey) => {
+              setSelectedOption(option);
+              setVisible(false);
+              props.onOptionChange?.(option);
+            }}
+          />
+        ))}
+      </Bottomsheet>
     </>
   );
-};
+}
 
 const styles = StyleSheet.create({
   buttonText: {
@@ -187,80 +78,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginRight: '2%'
   },
-  buttonText1: {
-    color: Colors.Black,
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium'
-  },
-  dropdown: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    width: '100%',
-    borderRadius: 12,
-    zIndex: 999,
-    height: 'auto',
-    // paddingTop: '8%',
-    // paddingBottom: '8%',
-    bottom: 0,
-    paddingLeft: '8%'
-  },
-  item: {
-    flexDirection: 'row',
-    paddingBottom: '8%',
-    paddingLeft: '2%'
-  },
-  item3: {
-    // paddingHorizontal: '1%'
-    flexDirection: 'row',
-    paddingTop: '8%',
-    paddingBottom: '8%',
-    paddingLeft: '2%'
-  },
-  avatar: {
-    backgroundColor: 'white',
-    borderWidth: 1.5,
-    borderColor: 'white'
-  },
-  avatar2: {
-    backgroundColor: 'white',
-    borderColor: 'white'
-  },
-  avatarTitle: {
-    color: 'white'
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)'
-  },
   button: {
-    paddingVertical: '3%',
-    paddingHorizontal: '3%',
-    backgroundColor: Colors.White,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    paddingLeft: 13,
+    // backgroundColor: Colors.White,
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-    width: '45%',
-    borderRadius: 10,
+    // width: '45%',
+    borderRadius: 5,
     borderWidth: 1,
-    borderColor: Colors.Gray600
-  },
-  pad: {
-    height: '5%'
-  },
-  newView: {
-    backgroundColor: Colors.Secondary,
-    borderRadius: 19,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    marginLeft: '5%'
-  },
-  newText: {
-    color: 'white',
-    fontSize: 11
+    borderColor: Color(Colors.Gray200).lighten(0.2).hex()
   }
 });
 
