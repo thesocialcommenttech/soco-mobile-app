@@ -5,6 +5,8 @@ import HomeScreen from '../screens/home/home';
 import SearchScreen from '../screens/search/search';
 import TrashScreen from '../screens/trash/trash';
 import OriginalSettingStack from './settingStack';
+import PortfolioStack from './portfolioStack';
+import ProfileStack from './profileStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +31,16 @@ const HomeStack = () => {
       <Stack.Screen
         name="Setting"
         component={OriginalSettingStack}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Portfolio"
+        component={PortfolioStack}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileStack}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

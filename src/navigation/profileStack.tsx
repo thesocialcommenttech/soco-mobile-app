@@ -10,6 +10,7 @@ import VideoPlayer from '../screens/createPost/videoPlayer';
 import Presentation from '../screens/createPost/presentation';
 import Link from '../screens/createPost/link';
 import Follow from '../screens/following/follow';
+import PortfolioStack from './portfolioStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,6 +65,11 @@ const ProfileStack = () => {
       <Stack.Screen
         name="Follower"
         component={Follow}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Portfolio"
+        component={PortfolioStack}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

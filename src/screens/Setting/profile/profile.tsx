@@ -250,8 +250,9 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginLeft: '4%',
-    marginRight: '4%'
+    paddingLeft: '4%',
+    paddingRight: '4%',
+    backgroundColor: 'white'
   },
   heading: {
     fontFamily: 'Roboto-Medium',

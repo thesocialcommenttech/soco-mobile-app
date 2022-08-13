@@ -80,7 +80,8 @@ export default function MainSettingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: '1.5%'
+    margin: '1.5%',
+    backgroundColor: 'white'
   },
   heading: {
     marginTop: '5.6%',

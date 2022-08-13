@@ -57,6 +57,15 @@ const RenderItem = ({
     if (item.label === 'Trash') {
       navigation.navigate('Trash');
     }
+    if (item.label === 'Settings') {
+      navigation.navigate('Setting');
+    }
+    if (item.label === 'Portfolio') {
+      navigation.navigate('Portfolio');
+    }
+    if (item.label === 'Profile') {
+      navigation.navigate('Profile');
+    }
   };
   return (
     <TouchableOpacity

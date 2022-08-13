@@ -301,7 +301,8 @@ export default function Kyc() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: '2.5%'
+    padding: '2.5%',
+    backgroundColor: 'white'
   },
   yellowbox: {
     backgroundColor: Colors.LightPrimary,

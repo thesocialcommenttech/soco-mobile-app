@@ -4,6 +4,8 @@ import DiscoverScreen from '../screens/discover/discover';
 import DraftsScreen from '../screens/drafts/drafts';
 import TrashScreen from '../screens/trash/trash';
 import OriginalSettingStack from './settingStack';
+import PortfolioStack from './portfolioStack';
+import ProfileStack from './profileStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +30,16 @@ const DiscoverStack = () => {
       <Stack.Screen
         name="Setting"
         component={OriginalSettingStack}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Portfolio"
+        component={PortfolioStack}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileStack}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

@@ -118,9 +118,10 @@ export default function Subscriptions() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginLeft: '5%',
-    marginRight: '4%',
-    marginTop: '3%'
+    paddingLeft: '5%',
+    paddingRight: '4%',
+    paddingTop: '3%',
+    backgroundColor: 'white'
   },
   mainmessage: {
     padding: 15,
