@@ -43,6 +43,7 @@
     "react-native-image-picker": "^4.8.4",
     "react-native-image-slider-box": "^1.1.24",
     "react-native-keyboard-aware-view": "^0.0.14",
+    "react-native-linear-gradient": "^2.6.2",
     "react-native-material-dropdown": "^0.11.1",
     "react-native-material-menu": "^2.0.0",
     "react-native-modal": "^13.0.1",
