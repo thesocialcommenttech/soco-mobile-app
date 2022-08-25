@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
 import React from 'react';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../utils/colors';
-import color from 'color';
+import { Blue, Colors } from '../utils/colors';
+import Color from 'color';
 
 export default function Categorybox(props: {
   text: string;
@@ -16,8 +16,8 @@ export default function Categorybox(props: {
       <TouchableHighlight
         underlayColor={
           props.selected
-            ? color(Colors.Secondary).darken(0.1).hex()
-            : color(Colors.LightSecondary).darken(0.05).hex()
+            ? Color(Colors.Secondary).darken(0.1).hex()
+            : Color(Colors.LightSecondary).darken(0.05).hex()
         }
         style={[
           styles.container,
@@ -40,7 +40,15 @@ export default function Categorybox(props: {
           </Text>
           {props.cancelable && (
             <TouchableHighlight
-              underlayColor="rgba(255, 255, 255, 0.1)"
+              underlayColor={
+                props.selected
+                  ? Color('white').alpha(0.1).rgb().string()
+                  : Color(Blue.primary)
+                      .alpha(0.1)
+                      .desaturate(0.5)
+                      .rgb()
+                      .string()
+              }
               onPress={() => {
                 props.onCancel?.();
               }}
@@ -49,7 +57,11 @@ export default function Categorybox(props: {
               <MaterialCommunityIcon
                 name="close"
                 size={15}
-                color={'rgba(255, 255, 255, 0.5)'}
+                color={
+                  props.selected
+                    ? 'rgba(255, 255, 255, 0.5)'
+                    : Color(Blue.primary).alpha(0.5).rgb().string()
+                }
                 suppressHighlighting={true}
               />
             </TouchableHighlight>

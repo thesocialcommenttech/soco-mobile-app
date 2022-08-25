@@ -9,7 +9,7 @@ import { loginAction } from '../store/actions/auth';
 import { IRootReducer } from '../store/reducers';
 import Logo from '~/src/assets/images/logos/thesocialcomment-logo.png';
 import TextLogo from '~/src/assets/images/logos/image.png';
-import { NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import OptionalStack from './optionalStack';
 import { RootRouteContext } from '../contexts/root-route.context';
@@ -68,7 +68,15 @@ export default function Routes() {
   } else {
     return (
       <RootRouteContext.Provider value={RootRouteContextValue}>
-        <NavigationContainer>
+        <NavigationContainer
+          theme={{
+            ...DefaultTheme,
+            colors: {
+              ...DefaultTheme.colors,
+              background: 'white'
+            }
+          }}
+        >
           <RootStack.Navigator screenOptions={{ headerShown: false }}>
             {(() => {
               if (!auth.authenticated) {

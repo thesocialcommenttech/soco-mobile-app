@@ -1,15 +1,10 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ResendEmailVerificationResponse } from '../../typings/user-profile_interface/resendEmailVerification.interface';
 
-export function resendEmailVerification(
-  email: string
-): Promise<AxiosResponse<ResendEmailVerificationResponse>> {
+export function resendEmailVerification(email: string) {
   const config: AxiosRequestConfig = {
-    url: `https://thesocialcomment-backend-test.herokuapp.com/user/email-verification/request/${email}`,
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    url: `user/email-verification/request/${email}`,
+    method: 'GET'
   };
 
   return axios.request<ResendEmailVerificationResponse>(config);

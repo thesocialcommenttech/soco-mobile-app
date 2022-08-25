@@ -1,3 +1,5 @@
+import { User } from './getUserData.interface';
+
 interface Post {
   likes?: boolean;
   published?: boolean;
@@ -18,7 +20,7 @@ interface UserData {
   _id?: string;
 }
 
-export interface GetUserProfileDataResponse {
+export interface GetUserProfileDataResponse<T extends keyof User> {
   success?: boolean;
-  userData?: UserData;
+  userData?: Pick<User, T>;
 }

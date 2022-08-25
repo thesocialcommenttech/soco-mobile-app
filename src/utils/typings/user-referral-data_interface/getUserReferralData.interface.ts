@@ -1,5 +1,6 @@
 export interface GetUserReferralDataResponse {
-  referalCode?: string;
-  success?: boolean;
+  referalCode: string;
+  referal: string;
+  success: boolean;
   _id?: string;
 }

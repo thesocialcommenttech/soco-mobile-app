@@ -4,26 +4,23 @@ import {
   UploadUserKYCResponse
 } from '../../typings/wallet_interfaces/uploadUserKYC.interface';
 
-export function uploadUserKYC({
-  name,
-  pan_number,
-  dob,
-  pan_front_image,
-  pan_back_image
-}: UploadUserKYCRequest): Promise<AxiosResponse<UploadUserKYCResponse>> {
+export function uploadUserKYC(
+  data: UploadUserKYCRequest
+): Promise<AxiosResponse<UploadUserKYCResponse>> {
+  const formdata = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    formdata.append(key, value);
+  });
+  console.log(data);
+
   const config: AxiosRequestConfig = {
-    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/kyc',
+    url: 'user/kyc',
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'multipart/form-data'
     },
-    data: {
-      name,
-      pan_number,
-      dob,
-      pan_front_image,
-      pan_back_image
-    }
+    data: formdata
   };
   return axios.request<UploadUserKYCResponse>(config);
 }

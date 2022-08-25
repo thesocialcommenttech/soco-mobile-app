@@ -7,78 +7,105 @@ import {
   View
 } from 'react-native';
 import React, { useState } from 'react';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Clipboard from '@react-native-clipboard/clipboard';
+import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
+import { Route } from '@react-navigation/native';
+import SectionHeader from '~/src/components/screens/settings/SectionHeader';
+import Button from '~/src/components/theme/Button';
+import { Black, Green, Red } from '~/src/utils/colors';
+import WithdrawAccount from '~/src/components/settingsComponents/WithdrawAccount';
 
-export default function TransactionDetail() {
-  const copyToClipboard = text => {
+export default function TransactionDetail({
+  route: {
+    params: { transactionType }
+  }
+}: {
+  route: Route<string, { transactionType: 'credit' | 'debit' }>;
+}) {
+  function copyToClipboard(text) {
     Clipboard.setString(text);
-  };
-
-  const showToast = () => {
     ToastAndroid.show('ID copied to Clipboard', ToastAndroid.SHORT);
-  };
+  }
 
   const [id] = useState('1585250968912DB5-42Z1JAL3X3');
   return (
-    <View style={styles.container}>
-      <Text style={styles.amttext}>Amount</Text>
-      <Text style={styles.amount}>₹ 100</Text>
-      <Text style={styles.date}>@ 15 May 2020 9:30 am</Text>
-      <Text style={styles.closingBalance}>Closing Balance: ₹ 240</Text>
-      <Text style={styles.withdrawview}>Withdrawn To</Text>
-      <View style={styles.row}>
-        <View style={styles.imageview}>
-          <Image source={require('../../../assets/images/icons/UPI.png')} />
+    <>
+      <SettingScreenHeader
+        title={transactionType === 'credit' ? 'Credit' : 'Withdrawn'}
+      />
+      <View style={styles.container}>
+        <View style={styles.section}>
+          <SectionHeader label="Amount" style={styles.amttext} />
+          <Text style={styles.amount}>₹ 100</Text>
+          <Text style={styles.date}>@ 15 May 2020 9:30 am</Text>
+          <Text style={styles.closingBalance}>Closing Balance: ₹ 240</Text>
         </View>
-        <Text style={styles.upitrans}>testxxx@sbi</Text>
+
+        {/* <Text style={styles.withdrawview}>Withdrawn To</Text> */}
+        {transactionType === 'debit' && (
+          <View style={styles.section}>
+            <SectionHeader label="Withdrawn To" style={styles.amttext} />
+            <WithdrawAccount
+              title="testxxx@sbi"
+              type="upi"
+              showMoreOpts={false}
+            />
+          </View>
+        )}
+
+        <View style={styles.section}>
+          <SectionHeader label="Transaction ID" style={styles.amttext} />
+          <Text
+            onLongPress={() => copyToClipboard(id)}
+            style={styles.transtext}
+          >
+            {id}
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <SectionHeader label="Status" style={styles.amttext} />
+          <Text
+            style={[
+              styles.status,
+              { color: true ? Green.primary : Red.primary }
+            ]}
+          >
+            {true ? 'Processed' : 'Failed'}
+          </Text>
+          {/* <Text style={styles.statuscancelled}>Failed</Text> */}
+        </View>
       </View>
-      <View style={styles.withdrawdet}>
-        <Text style={styles.amttext}>Transaction ID</Text>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            copyToClipboard(id);
-            showToast();
-          }}
-        >
-          <Icon name="content-copy" size={20} color="#BDBDBD" />
-        </TouchableWithoutFeedback>
-      </View>
-      <Text style={styles.transtext}>{id}</Text>
-      <Text style={styles.status}>Status</Text>
-      <Text style={styles.statusprocessed}>Processed</Text>
-      <Text style={styles.statuscancelled}>Failed</Text>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginLeft: '6%',
-    marginRight: '6%',
-    marginTop: '4%'
+    padding: 20,
+    paddingTop: 0
+  },
+  section: {
+    marginBottom: 30
   },
   amttext: {
-    fontFamily: 'Roboto-Normal',
-    color: '#7D7987',
-    fontSize: 16
+    marginBottom: 20
   },
   amount: {
     color: 'black',
     fontSize: 24,
-    marginTop: '6%',
-    fontFamily: 'Roboto',
-    fontWeight: '600'
+    fontFamily: 'Roboto-Medium',
+    marginBottom: 20
   },
   date: {
-    marginTop: '6%',
-    color: 'black',
+    color: Black[700],
     fontSize: 15
   },
   closingBalance: {
-    marginTop: '2%',
-    color: 'black',
+    marginTop: 5,
+    color: Black[700],
     fontSize: 15
   },
   withdrawdet: {
@@ -92,38 +119,22 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   row: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems: 'center'
   },
-  imageview: {
-    marginTop: '7.5%'
-  },
+  imageview: {},
   upitrans: {
-    marginTop: '6.6%',
-    marginLeft: '5%',
-    color: '#000000',
-    fontSize: 15
+    marginLeft: 15,
+    color: 'black',
+    fontSize: 16
   },
   transtext: {
-    marginTop: '6%',
-    fontSize: 15,
+    fontSize: 16,
     color: 'black'
   },
   status: {
-    fontFamily: 'Roboto-Normal',
-    color: '#7D7987',
     fontSize: 16,
-    marginTop: '9%'
-  },
-  statusprocessed: {
-    color: '#00A300',
-    fontSize: 18,
-    fontWeight: '500',
-    marginTop: '6%'
-  },
-  statuscancelled: {
-    color: '#EE0000',
-    fontSize: 18,
-    fontWeight: '500',
-    marginTop: '6%'
+    fontFamily: 'Roboto-Medium',
+    textTransform: 'uppercase'
   }
 });

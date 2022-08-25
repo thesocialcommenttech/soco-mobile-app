@@ -18,23 +18,25 @@ interface Portfolio {
   certifications?: string[];
 }
 
-interface Posts {
+interface NotificationAchievementPosts {
   views?: boolean;
   likes?: boolean;
   published?: boolean;
 }
 interface NotificationAchievement {
-  posts?: Posts;
+  posts?: NotificationAchievementPosts;
   followers?: boolean;
 }
 interface Notification {
   achievement?: NotificationAchievement;
+  newsletter?: boolean;
 }
 
 interface Wallet {
   current_financial_year_balance?: number;
   balance?: number;
   wallet_id?: string;
+  rzp_contact_id?: string;
 }
 
 export interface PostTypeState {
@@ -63,9 +65,11 @@ export interface User {
   kyc?: boolean;
   premium?: boolean;
   email_verified?: boolean;
+  premium_validity_timestamp?: Date | string;
   interested_categories?: string[];
   _id?: string;
   name?: string;
+  phone?: number;
   password?: string;
   username?: string;
   email?: string;

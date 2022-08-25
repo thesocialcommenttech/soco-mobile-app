@@ -20,7 +20,7 @@ import {
 } from '~/src/components/headers/OptionalStackHeader';
 import { useNavigation } from '@react-navigation/native';
 
-type SelectionCategory = Interests & { selected?: boolean };
+export type SelectionCategory = Interests & { selected?: boolean };
 
 function CategoriesScreen() {
   const navigation = useNavigation();

@@ -12,3 +12,13 @@ export interface UpdateUserEmailResponse {
   success?: boolean;
   result?: Result;
 }
+
+export interface CheckAvailabilityRequest {
+  property: 'email' | 'username';
+  value: string;
+}
+
+export interface CheckAvailabilityResponse {
+  success: boolean;
+  availablity: boolean;
+}

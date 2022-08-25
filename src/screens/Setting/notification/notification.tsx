@@ -1,112 +1,125 @@
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
-import React, { useState } from 'react';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import ToggleSwitch from 'toggle-switch-react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Colors } from '../../../utils/colors';
+import { Black, Blue } from '../../../utils/colors';
+import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
+import { changeNotificationSettings } from '~/src/utils/services/notification_services/changeNotificationSettings.service';
+import { ChangeNotificationSettingsRequest } from '~/src/utils/typings/notifications_interface/changeNotificationSettings.interface';
+import { getUserProfileData } from '~/src/utils/services/user-profile_service/getUserProfileData.service';
+import { User } from '~/src/utils/typings/user-profile_interface/getUserData.interface';
 
 export default function Notification() {
-  const [isEnabled, setIsEnabled] = useState(false);
-  const navigation = useNavigation();
-  // const toggleSwitch = () => {
-  //   setIsEnabled(previousState => !previousState);
-  //   console.log(isEnabled);
-  // };
+  const [loading, setLoading] = useState(true);
+  const [notificationSettings, setNotificationSettings] =
+    useState<User['notification']>();
+
+  async function fetchNotificationSettings() {
+    setLoading(true);
+    const result = await getUserProfileData<'notification'>('notification');
+
+    if (result.data.success) {
+      setNotificationSettings(result.data.userData.notification);
+    }
+
+    setLoading(false);
+  }
+
+  async function updateNotificationSettings(
+    key: keyof ChangeNotificationSettingsRequest,
+    value: boolean
+  ) {
+    setNotificationSettings({ ...notificationSettings, [key]: value });
+    await changeNotificationSettings({ [key]: value });
+  }
+
+  useEffect(() => {
+    fetchNotificationSettings();
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.row}>
-        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={28} color="black" />
-        </TouchableWithoutFeedback>
-        <Text style={styles.mheader}>Notification</Text>
-      </View>
-      <View style={styles.mainview}>
-        <Text style={styles.boldtext}>Email Preferences</Text>
-        <View style={styles.information}>
-          <Text style={styles.newsletter}>Newsletter</Text>
-          <ToggleSwitch
-            isOn={isEnabled}
-            onColor="blue"
-            offColor="lightgray"
-            size="small"
-            onToggle={() => setIsEnabled(!isEnabled)}
-            trackOffStyle={styles.offtrack}
-            trackOnStyle={styles.ontrack}
-            thumbOffStyle={styles.thumboff}
-            thumbOnStyle={styles.thumbon}
-          />
+    <>
+      <SettingScreenHeader title="Notifications" />
+      <View style={styles.container}>
+        <View style={styles.notif}>
+          <View style={styles.notifHeader}>
+            <Text style={styles.notifTitle}>Newsletter</Text>
+            <Text style={styles.notifDesc}>
+              Receive newsletters sent periodically containing best suggested
+              post for you
+            </Text>
+          </View>
+          <View style={styles.notifActionCt}>
+            <ToggleSwitch
+              icon={
+                loading && <ActivityIndicator color={Black[500]} size={14} />
+              }
+              disabled={loading}
+              isOn={notificationSettings?.newsletter ?? false}
+              size="medium"
+              onToggle={() =>
+                updateNotificationSettings(
+                  'newsletter',
+                  !notificationSettings?.newsletter
+                )
+              }
+              trackOffStyle={[
+                styles.offtrack,
+                loading && { backgroundColor: Black[100] }
+              ]}
+              trackOnStyle={[styles.ontrack]}
+              thumbOffStyle={[
+                styles.thumboff,
+                loading && { backgroundColor: Black[100] }
+              ]}
+              thumbOnStyle={[styles.thumbon]}
+            />
+          </View>
         </View>
-        <Text style={styles.newsletterLine}>
-          Receive newsletters sent periodically containing best suggested post
-          for you
-        </Text>
       </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: '8%',
-    paddingRight: '5%',
-    paddingLeft: '5%',
-    backgroundColor: 'white'
+    padding: 20,
+    paddingTop: 0,
+    marginTop: 10
   },
-  boldtext: {
-    fontFamily: 'Roboto-Medium',
-    fontWeight: '400',
-    color: '#7D7987',
-    fontSize: 17
+  notifHeader: { marginRight: 10, flexGrow: 1 },
+  notifActionCt: {
+    marginTop: 5
   },
-  bottomruler: {
-    borderBottomColor: Colors.BottomRulerColor,
-    borderBottomWidth: 1,
-    marginTop: '2%'
-  },
-  information: {
-    marginTop: '4%',
-    justifyContent: 'space-between',
-    flexDirection: 'row'
-  },
-  switch: {
-    marginTop: '3.5%',
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    marginLeft: '0.5%'
-  },
-  newsletter: {
+  notifTitle: {
     color: 'black',
-    fontSize: 17,
-    fontFamily: 'Roboto-Medium',
-    lineHeight: 30
-  },
-  newsletterLine: {
-    lineHeight: 18,
     fontSize: 16,
-    marginTop: '4%',
-    color: '#BDBDBD'
+    fontFamily: 'Roboto-Medium'
+    // lineHeight: 30
+  },
+  notifDesc: {
+    lineHeight: 18,
+    fontSize: 14,
+    marginTop: 5,
+    color: Black[600]
   },
   offtrack: {
-    backgroundColor: 'white',
-    borderColor: 'black',
-    borderWidth: 2
+    backgroundColor: Black[200]
   },
   ontrack: {
-    backgroundColor: Colors.LightSecondary,
-    borderColor: 'blue',
-    borderWidth: 2
+    backgroundColor: Black[200]
   },
   thumbon: {
-    backgroundColor: 'blue',
-    marginLeft: '1%'
+    backgroundColor: Blue.primary,
+    elevation: 10
   },
   thumboff: {
-    backgroundColor: 'black'
+    backgroundColor: Black[600]
   },
-  mainview: {
-    marginTop: '6%'
+  notif: {
+    // marginTop: 30,
+    flexDirection: 'row',
+    alignItems: 'flex-start'
   },
   row: {
     flexDirection: 'row'

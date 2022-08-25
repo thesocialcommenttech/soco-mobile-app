@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   optionLabel: {
     color: Colors.Black,
     fontSize: 16,
-    fontFamily: 'Roboto-Medium'
+    fontFamily: 'Roboto'
   },
   optionIcon: {
     paddingRight: 10,

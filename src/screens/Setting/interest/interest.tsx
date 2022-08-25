@@ -3,170 +3,186 @@ import {
   Text,
   View,
   TextInput,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  ScrollView,
+  Animated,
+  ActivityIndicator
 } from 'react-native';
-import React from 'react';
-import Categorybox from '../../../components/settingsComponents/categoryBox';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
-import { Colors } from '../../../utils/colors';
+import { Black, Blue, Colors } from '../../../utils/colors';
+import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
+import SectionHeader from '~/src/components/screens/settings/SectionHeader';
+import { Input } from '~/src/components/theme/Input';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getUserInterests } from '~/src/utils/services/settings_services/interests_services/getUserInterests.service';
+import { GetUserInterestsResponse } from '~/src/utils/typings/settings_interfaces/interests_interface/getUserInterests.interface';
+import Categorybox from '~/src/components/categoryBox';
+import Button from '~/src/components/theme/Button';
+import Loading from '~/src/components/theme/Loading';
+import { useSelector } from 'react-redux';
+import { IRootReducer } from '~/src/store/reducers';
+import { getInterestCategories } from '~/src/utils/services/settings_services/interests_services/getInterestCategories.service';
+import {
+  GetInterestCategoriesResponse,
+  Interests
+} from '~/src/utils/typings/settings_interfaces/interests_interface/getInterestCategories.interface';
+import { isNumber } from 'lodash';
+import { removeUserInterest } from '~/src/utils/services/user-profile_service/removeUseInterests.service';
+import { addUserInterests } from '~/src/utils/services/user-profile_service/userInterests.service';
+import { SelectionCategory } from '../../categories/categories';
 
-const Data = [
-  {
-    id: 1,
-    text: 'Computer Application'
-  },
-  {
-    id: 2,
-    text: 'Stats. Analysis'
-  },
-  {
-    id: 3,
-    text: 'Programming Language'
-  },
-  {
-    id: 4,
-    text: 'Software Engineering'
-  },
-  {
-    id: 5,
-    text: 'Technology'
-  },
-  {
-    id: 6,
-    text: 'Information Technology'
-  }
-];
+function UserInterestCategory(props: {
+  onRemove: () => void;
+  interest: Interests;
+}) {
+  const fadeOut = useRef(new Animated.Value(1)).current;
+  const fadeIn = useRef(new Animated.Value(0)).current;
+  const shrinkIn = useRef(new Animated.Value(1)).current;
 
-const Data1 = [
-  {
-    id: 10,
-    text: 'Stock Market'
-  },
-  {
-    id: 11,
-    text: 'Instrumentation Control'
-  },
-  {
-    id: 12,
-    text: 'Design Graphic'
-  },
-  {
-    id: 13,
-    text: 'Artificial Intelligence'
-  },
-  {
-    id: 14,
-    text: 'Robotics'
-  },
-  {
-    id: 15,
-    text: 'Social Science'
-  },
-  {
-    id: 16,
-    text: 'Machine Learning'
-  },
-  {
-    id: 17,
-    text: 'Pen and Ink'
-  }
-];
+  const [loading, setLoading] = useState(false);
 
-export default function Interest() {
-  var components = [];
-  var components1 = [];
-  const navigation = useNavigation();
-  const selectClose = data => {
-    console.log(data);
-  };
+  function toggleLoading() {
+    if (loading) {
+      setLoading(false);
+      Animated.parallel([
+        Animated.timing(fadeOut, {
+          toValue: 0.1,
+          duration: 100,
+          useNativeDriver: true
+        }),
+        Animated.timing(fadeIn, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true
+        })
+      ]).stop();
+    } else {
+      setLoading(true);
 
-  const selectCategory = data => {
-    console.log(data);
-  };
-
-  const search = text => {
-    console.log(text);
-  };
-  if (!components1.length) {
-    for (let i = 0; i < Data.length; i++) {
-      components1.push(
-        <Categorybox
-          selectCategory={selectCategory}
-          backgroundstyle={styles.backgroundstyle}
-          textstyle={styles.textstyle}
-          text={Data[i].text}
-          cancel="True"
-          selectClose={selectClose}
-        />
-      );
+      Animated.parallel([
+        Animated.timing(fadeOut, {
+          toValue: 0.1,
+          duration: 100,
+          useNativeDriver: true
+        }),
+        Animated.timing(fadeIn, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true
+        })
+      ]).start();
     }
   }
 
-  if (!components.length) {
-    for (let i = 0; i < Data1.length; i++) {
-      components.push(
-        <Categorybox
-          selectCategory={selectCategory}
-          backgroundstyle={styles.selectbackgroundstyle}
-          textstyle={styles.selecttextstyle}
-          text={Data1[i].text}
-          cancel="False"
-          selectClose={selectClose}
-        />
-      );
+  async function removeInterest() {
+    try {
+      toggleLoading();
+      const result = await removeUserInterest(props.interest._id);
+      if (result.data.success) {
+        Animated.parallel([
+          Animated.timing(fadeOut, {
+            toValue: 0,
+            duration: 100,
+            useNativeDriver: true
+          }),
+          Animated.timing(fadeIn, {
+            toValue: 0,
+            duration: 100,
+            useNativeDriver: true
+          }),
+          Animated.timing(shrinkIn, {
+            toValue: 0,
+            duration: 100,
+            useNativeDriver: true
+          })
+        ]).start(() => {
+          props.onRemove();
+        });
+      }
+    } catch (error) {
+      toggleLoading();
     }
   }
 
   return (
-    <>
-      <View style={styles.container}>
-        <View style={styles.flexrow}>
-          <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-            <Icon1 name="arrow-left" size={28} color="black" />
-          </TouchableWithoutFeedback>
-          <Text style={styles.mheader}>Interests</Text>
-        </View>
-        <View style={styles.fCont}>
-          <Text style={styles.boldtext}>My Interests</Text>
-          <Text style={styles.normaltext}>Total {Data.length} Interests</Text>
-        </View>
-        <View style={styles.selectedCategories}>{components1}</View>
+    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <Animated.View
+        style={{ opacity: fadeOut, transform: [{ scaleX: shrinkIn }] }}
+      >
+        <Categorybox
+          text={props.interest.category}
+          selected={true}
+          cancelable={true}
+          onCancel={loading ? undefined : removeInterest}
+        />
+      </Animated.View>
 
-        <View style={styles.addcategories}>
-          <View style={styles.fCont}>
-            <Text style={styles.boldtext}>Add Interests</Text>
-            <Text style={styles.normaltext}>
-              {10 - Data.length} selection Left
+      <Animated.View style={{ opacity: fadeIn, position: 'absolute' }}>
+        <ActivityIndicator size={16} color={Black[500]} animating={loading} />
+      </Animated.View>
+    </View>
+  );
+}
+
+export default function Interest() {
+  const [userInterests, setUserInterests] =
+    useState<GetUserInterestsResponse['interested_categories']>();
+  const [loading, setLoading] = useState(true);
+  const auth = useSelector((root: IRootReducer) => root.auth);
+
+  async function fetchUserInterests() {
+    setLoading(true);
+    const result = await getUserInterests(auth.user._id);
+    if (result.data.success) {
+      setUserInterests(result.data.interested_categories);
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    fetchUserInterests();
+  }, []);
+
+  return (
+    <>
+      <SettingScreenHeader title="Interests" />
+
+      <View style={styles.container}>
+        <SectionHeader label="My Interests" style={styles.fCont}>
+          {isNumber(userInterests?.length) && (
+            <Text style={styles.heading_subText}>
+              Total {userInterests?.length} Interests
             </Text>
+          )}
+        </SectionHeader>
+
+        {loading ? (
+          <Loading />
+        ) : (
+          <View style={styles.selectedCategories}>
+            {userInterests?.length > 0 ? (
+              userInterests?.map((interest, i) => (
+                <UserInterestCategory
+                  key={interest._id}
+                  interest={interest}
+                  onRemove={() => {
+                    userInterests.splice(i, 1);
+                    setUserInterests([...userInterests]);
+                  }}
+                />
+              ))
+            ) : (
+              <Text style={{ color: Black[500] }}>
+                We don't know any of your interests
+              </Text>
+            )}
           </View>
-          {/* <View style={styles.maximum}>
-            <Text>Maximum 10 Interest can be selected</Text>
-          </View> */}
-          <View style={styles.searchbox}>
-            <View style={styles.searchIcon}>
-              <Icon name="search" size={15.5} color="#0063FF" />
-            </View>
-            <TextInput
-              placeholder="Search"
-              onChangeText={text => {
-                search(text);
-              }}
-              placeholderTextColor="#99969F"
-            />
-          </View>
-        </View>
-        <View style={styles.allcategory}>{components}</View>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            console.log('Button Pressed');
-          }}
-        >
-          <View style={styles.updatebtn}>
-            <Text style={styles.updatetxt}>Save</Text>
-          </View>
-        </TouchableWithoutFeedback>
+        )}
+
+        <AddInterestCategories selectedInterestsCount={userInterests?.length} />
       </View>
     </>
   );
@@ -174,44 +190,19 @@ export default function Interest() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: '4.5%',
-    paddingRight: '4.5%',
     flex: 1,
+    padding: 20,
     backgroundColor: 'white'
   },
   fCont: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
-  boldtext: {
-    fontFamily: 'Roboto-Medium',
-    fontWeight: '500',
-    color: '#7D7987',
-    lineHeight: 16,
-    fontSize: 15
-  },
-  normaltext: {
-    fontFamily: 'Roboto-Medium',
-    fontWeight: '400',
-    color: '#BDBDBD'
-  },
-  bottomruler: {
-    borderBottomColor: Colors.BottomRulerColor,
-    borderBottomWidth: 1,
-    marginTop: '3%'
-  },
-  backgroundstyle: {
-    backgroundColor: '#0063FF',
-    alignSelf: 'center',
-    paddingTop: 7,
-    paddingLeft: 7,
-    paddingBottom: 7,
-    paddingRight: 3,
-    borderRadius: 8,
-    flexDirection: 'row'
-  },
-  textstyle: {
-    color: 'white'
+  heading_subText: {
+    // fontFamily: 'Roboto-Medium',
+    color: Black[500],
+    fontSize: 13
   },
   selectedCategories: {
     marginTop: '6%',
@@ -222,65 +213,135 @@ const styles = StyleSheet.create({
     marginTop: '8%'
   },
   searchbox: {
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: '#7D7987',
-    marginTop: '7%',
-    flexDirection: 'row'
+    marginTop: '7%'
   },
   allcategory: {
-    marginTop: '3%',
-    alignItems: 'flex-start',
+    marginTop: 10,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 2
-  },
-  selectbackgroundstyle: {
-    backgroundColor: Colors.LightSecondary,
-    alignSelf: 'center',
-    padding: 9,
-    borderRadius: 10,
-    marginLeft: '1.5%',
-    marginBottom: '1%'
-  },
-  selecttextstyle: {
-    color: '#0063FF'
+    justifyContent: 'flex-start'
   },
   updatebtn: {
-    backgroundColor: '#0063FF',
-    paddingTop: 15,
-    paddingBottom: 15,
-    alignSelf: 'center',
-    fontFamily: 'Roboto-Medium',
-    borderRadius: 10,
-    marginTop: '3%',
-    width: '100%'
-  },
-  updatetxt: {
-    color: '#FFFFFF',
-    alignSelf: 'center',
-    fontWeight: '600',
-    fontSize: 15
-  },
-  searchIcon: {
-    marginTop: '4%',
-    marginLeft: '3%',
-    marginRight: '1.5%'
-  },
-  maximum: {
-    marginTop: '1.5%'
-  },
-  flexrow: {
-    flexDirection: 'row',
-    marginBottom: '6%',
-    marginLeft: '-1%',
-    marginTop: '3%'
-  },
-  mheader: {
-    color: 'black',
-    marginLeft: '4%',
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: '0.5%'
+    marginTop: 20
   }
 });
+
+function AddInterestCategories(props: {
+  selectedInterestsCount: number;
+  onInterestAdded?: (interests: Interests[]) => void;
+}) {
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<SelectionCategory[]>([]);
+  const [submittingInterests, setSubmittingInterests] = useState(false);
+
+  const unselectedCategories = useMemo(
+    () => categories.filter(item => !item.selected),
+    [categories]
+  );
+
+  const selectedCategories = useMemo(
+    () => categories.filter(item => item.selected),
+    [categories]
+  );
+
+  async function submitUserInterests() {
+    setSubmittingInterests(true);
+    const result = await addUserInterests(selectedCategories);
+
+    if (result.data.success) {
+      props.onInterestAdded?.(selectedCategories);
+    }
+    setSubmittingInterests(false);
+  }
+
+  function toggleCategorySelection(itemIndex: number, select: boolean) {
+    categories[itemIndex].selected = select;
+    setCategories([...categories]);
+  }
+
+  async function fetchData() {
+    setLoading(true);
+    const result = await getInterestCategories();
+
+    if (result.data.success) {
+      setCategories(result.data.interest_categories);
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return (
+    <>
+      <View style={styles.addcategories}>
+        <SectionHeader label="Add Interests" style={styles.fCont}>
+          {isNumber(props.selectedInterestsCount) && (
+            <Text style={styles.heading_subText}>
+              {10 - props.selectedInterestsCount - selectedCategories?.length}{' '}
+              selection Left
+            </Text>
+          )}
+        </SectionHeader>
+
+        <Input
+          style={styles.searchbox}
+          inputContainer={{ paddingLeft: 15 }}
+          inputProp={{
+            placeholder: 'Search',
+            style: {
+              paddingHorizontal: 15,
+              paddingVertical: 10,
+              paddingTop: 10,
+              paddingLeft: 15
+            },
+            onChangeText: text => {}
+          }}
+          prefix={<MaterialCommunityIcons name="magnify" size={20} />}
+        />
+      </View>
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          {selectedCategories?.length > 0 && (
+            <View style={styles.selectedCategories}>
+              {selectedCategories.map((category, i) => (
+                <Categorybox
+                  key={category._id}
+                  text={category.category}
+                  cancelable={true}
+                  selected={true}
+                  onCancel={() => {
+                    toggleCategorySelection(category.index, false);
+                  }}
+                />
+              ))}
+            </View>
+          )}
+          <ScrollView contentContainerStyle={styles.allcategory}>
+            {unselectedCategories?.map(category => (
+              <Categorybox
+                key={category._id}
+                text={category.category}
+                onPress={() => {
+                  toggleCategorySelection(category.index, true);
+                }}
+              />
+            ))}
+          </ScrollView>
+          <Button
+            text="Save"
+            btnStyle={styles.updatebtn}
+            type="filled"
+            fullWidth={true}
+            disabled={submittingInterests}
+            processing={submittingInterests}
+            onPress={submitUserInterests}
+          />
+        </>
+      )}
+    </>
+  );
+}
