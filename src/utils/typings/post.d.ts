@@ -1,3 +1,5 @@
+import { User } from './user-profile_interface/getUserData.interface';
+
 export type PostType =
   | 'blog'
   | 'artwork'
@@ -8,12 +10,10 @@ export type PostType =
   | 'shared'
   | 'article';
 
-interface PostedBy {
-  name?: string;
-  profileImage?: string;
-  username?: string;
-  _id?: string;
-}
+type PostedBy = Pick<
+  User,
+  '_id' | 'name' | 'username' | 'bio' | 'profileImage'
+>;
 
 interface PostComment {
   by: PostedBy;
@@ -22,10 +22,12 @@ interface PostComment {
 
 type PostStatus = 'draft' | 'published' | 'trash';
 
+type PostVoteType = 'up' | 'down';
+
 interface CommonPostData {
   _id?: string;
   postedBy?: PostedBy;
-  postedOn?: Date;
+  postedOn?: Date | string;
   updatedOn?: Date;
   publishedOn?: Date;
   postType?: PostType;
@@ -38,6 +40,9 @@ interface CommonPostData {
   downvotes?: number;
   comments?: number;
   shares?: number;
+  voted?: PostVoteType;
+  isFavorited?: boolean;
+  isFollowingAuthor?: boolean;
 }
 
 export interface BlogPost extends CommonPostData {

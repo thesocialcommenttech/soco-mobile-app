@@ -10,7 +10,7 @@ import { getUserData2 } from '../utils/services/user-profile_service/getUserData
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '../store/reducers';
 
-function TopBar(props: any) {
+function TopBar(props: { navigation: any }) {
   const auth = useSelector((root: IRootReducer) => root.auth);
   const [premium, setPremium] = useState(false);
 

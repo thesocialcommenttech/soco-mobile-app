@@ -13,61 +13,18 @@ import AddBlog from '../screens/portfolio/updatePortfolio/addBlog';
 
 const Stack = createNativeStackNavigator();
 
-const PortfolioStack = () => {
+function PortfolioStack() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Portfolio"
-        component={Portfolio}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Workdetail"
-        component={ArtWorkDetail}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="SkillVideo"
-        component={SkillVideoDetail}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Presentation"
-        component={PresentationDetail}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Updatebio"
-        component={UpdateBio}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Addexperience"
-        component={AddExperience}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Addcertificate"
-        component={AddCertificate}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Addskill"
-        component={AddSkill}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Addeducation"
-        component={AddEducation}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Addblog"
-        component={AddBlog}
-        options={{ headerShown: false }}
-      />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Portfolio" component={Portfolio} />
+      <Stack.Screen name="Updatebio" component={UpdateBio} />
+      <Stack.Screen name="Addexperience" component={AddExperience} />
+      <Stack.Screen name="Addcertificate" component={AddCertificate} />
+      <Stack.Screen name="Addskill" component={AddSkill} />
+      <Stack.Screen name="Addeducation" component={AddEducation} />
+      <Stack.Screen name="Addblog" component={AddBlog} />
     </Stack.Navigator>
   );
-};
+}
 
 export default PortfolioStack;

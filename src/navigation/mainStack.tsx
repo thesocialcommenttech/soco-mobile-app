@@ -11,9 +11,13 @@ import PortfolioStack from './portfolioStack';
 import ProfileStack from './profileStack';
 import SearchScreen from '../screens/search/search';
 import NotificationsScreen from '../screens/notifications/notifications';
+import ArtWorkDetail from '../screens/postDetails/artWorkDetail';
+import PresentationDetail from '../screens/postDetails/presentationDetail';
+import SkillVideoDetail from '../screens/postDetails/skillVideoDetail';
+import { MyStackPrams } from '../utils/typings/stack';
 
 const MyTab = createBottomTabNavigator();
-const MyStack = createNativeStackNavigator();
+const MyStack = createNativeStackNavigator<MyStackPrams>();
 
 function AppTabs() {
   return (
@@ -153,26 +157,15 @@ function AppTabs() {
 
 const MainStack = () => {
   return (
-    <MyStack.Navigator>
-      <MyStack.Screen
-        name="App"
-        component={AppTabs}
-        options={{ headerShown: false }}
-      />
-      <MyStack.Screen
-        name="Search"
-        component={SearchScreen}
-        options={{
-          headerShown: false
-        }}
-      />
-      <MyStack.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{
-          headerShown: false
-        }}
-      />
+    <MyStack.Navigator screenOptions={{ headerShown: false }}>
+      <MyStack.Screen name="App" component={AppTabs} />
+      <MyStack.Screen name="Search" component={SearchScreen} />
+      <MyStack.Screen name="Notifications" component={NotificationsScreen} />
+
+      {/* Post Screens */}
+      <MyStack.Screen name="Post_Artwork" component={ArtWorkDetail} />
+      <MyStack.Screen name="Post_Skill" component={SkillVideoDetail} />
+      <MyStack.Screen name="Post_Presentation" component={PresentationDetail} />
     </MyStack.Navigator>
   );
 };

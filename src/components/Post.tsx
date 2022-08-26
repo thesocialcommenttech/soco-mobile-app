@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
   ViewStyle
 } from 'react-native';
@@ -16,10 +17,14 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { Avatar } from '@rneui/base';
 import { Colors } from '../utils/colors';
 import { Post as IPost } from '../utils/typings/post';
+import { useNavigation } from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('screen').width;
 
-function FeatureImage(props: { image: string; postType: IPost['postType'] }) {
+export function FeatureImage(props: {
+  image: string;
+  postType: IPost['postType'];
+}) {
   const [featureImageSize, setFeatureImageSize] = useState<{
     width: number;
     height: number;
@@ -118,6 +123,8 @@ export default function Post({
   postWrapperStyle?: StyleProp<ViewStyle>;
   updatable?: boolean;
 }): ReactElement {
+  const navigation = useNavigation();
+
   return (
     <View style={[styles.cardContainer, postWrapperStyle]}>
       <View>
@@ -142,29 +149,55 @@ export default function Post({
           </>
         ) : (
           <>
-            <View style={styles.mainContent}>
-              <FeatureImage
-                image={data.featureImage}
-                postType={data.postType}
-              />
-              {data.postType === 'skill' && (
-                <View style={styles.videoPlayIcon}>
-                  <MaterialCommunityIcon
-                    name="play"
-                    size={32}
-                    color={'white'}
-                  />
-                </View>
-              )}
-              {data.postType === 'presentation' && (
-                <View style={styles.pptSlideCountCt}>
-                  <MaterialIcon name="collections" color="white" size={16} />
-                  <Text style={styles.pptSlideCountText}>
-                    {data.totalSlides}
-                  </Text>
-                </View>
-              )}
-            </View>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                let postScreenKey;
+                switch (data.postType) {
+                  case 'artwork':
+                    postScreenKey = 'Post_Artwork';
+                    break;
+                  case 'presentation':
+                    postScreenKey = 'Post_Presentation';
+                    break;
+                  case 'skill':
+                    postScreenKey = 'Post_Skill';
+                    break;
+
+                  default:
+                    return;
+                }
+                navigation.navigate(
+                  postScreenKey as never,
+                  {
+                    post_id: data._id
+                  } as never
+                );
+              }}
+            >
+              <View style={styles.mainContent}>
+                <FeatureImage
+                  image={data.featureImage}
+                  postType={data.postType}
+                />
+                {data.postType === 'skill' && (
+                  <View style={styles.videoPlayIcon}>
+                    <MaterialCommunityIcon
+                      name="play"
+                      size={32}
+                      color={'white'}
+                    />
+                  </View>
+                )}
+                {data.postType === 'presentation' && (
+                  <View style={styles.pptSlideCountCt}>
+                    <MaterialIcon name="collections" color="white" size={16} />
+                    <Text style={styles.pptSlideCountText}>
+                      {data.totalSlides}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </TouchableWithoutFeedback>
             <View style={styles.postTitleCt}>
               <Text style={styles.postTitle}>{data.title}</Text>
             </View>

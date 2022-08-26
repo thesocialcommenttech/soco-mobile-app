@@ -1,15 +1,15 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { Post } from '../../typings/post';
 import { AddPostToUserFavResponse } from '../../typings/user-posts_interface/addPostToUserFav.interface';
 
 export function addPostToUserFav(
-  action: string
-): Promise<AxiosResponse<AddPostToUserFavResponse>> {
+  action: 'remove' | 'add',
+  postID: Post['_id']
+) {
   const config: AxiosRequestConfig = {
-    url: `https://thesocialcomment-backend-test.herokuapp.com/user/profile/favourite/${action}`,
+    url: `user/profile/favourite/${action}`,
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    params: { postID }
   };
   return axios.request<AddPostToUserFavResponse>(config);
 }

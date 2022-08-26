@@ -1,41 +1,17 @@
-interface By {
-  name?: string;
-  profileImage?: string;
-  username?: string;
-  _id?: string;
+import { Post } from '../post';
+
+export interface GetPostRequest {
+  postType: Post['postType'];
+  postID: Post['_id'];
+  projection: string;
+  edit?: boolean;
 }
 
-interface Comment {
-  by?: By;
-  comment?: string;
-}
-
-interface PostedBy {
-  bio?: string;
-  name?: string;
-  profileImage?: string;
-  username?: string;
-  _id?: string;
-}
-
-interface Post {
-  comments?: Comment[];
-  contentJSON?: [{ insert?: string }];
-  downvotes?: string[];
-  isFavorited?: boolean;
-  isFollowingAuthor?: boolean;
-  postedBy?: PostedBy;
-  postedOn?: Date;
-  shares?: number;
-  tags?: string[];
-  title?: string;
-  upvotes?: string[];
-  voted?: string;
-  _id?: string;
-  views?: number;
-}
-
-export interface GetPostResponse {
-  success?: boolean;
-  post?: Post;
+export interface GetPostResponse<T> {
+  success: boolean;
+  post: Omit<T, 'upvotes' | 'downvotes' | 'comments'> & {
+    upvotes: any[];
+    downvotes: any[];
+    comments: any[];
+  };
 }

@@ -1,15 +1,19 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { GetPostResponse } from '../../typings/user-posts_interface/getPost.interface';
+import axios, { AxiosRequestConfig } from 'axios';
+import {
+  GetPostRequest,
+  GetPostResponse
+} from '../../typings/user-posts_interface/getPost.interface';
 
-export function getPost(
-  postType: string
-): Promise<AxiosResponse<GetPostResponse>> {
+export function getPost<T>({
+  postType,
+  postID,
+  projection = '',
+  edit
+}: GetPostRequest) {
   const config: AxiosRequestConfig = {
-    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/${postType}`,
+    url: `user/post/${postType}`,
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    params: { postID, projection, ...(edit && { edit }) }
   };
-  return axios.request<GetPostResponse>(config);
+  return axios.request<GetPostResponse<T>>(config);
 }

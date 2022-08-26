@@ -4,15 +4,11 @@ import {
   VotePostRequest
 } from '../../typings/user-posts_interface/votePost.interface';
 
-export function votePost({
-  type
-}: VotePostRequest): Promise<AxiosResponse<VotePostResponse>> {
+export function votePost({ voteType, postID }: VotePostRequest) {
   const config: AxiosRequestConfig = {
-    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/vote/${type}`,
+    url: `user/post/vote/${voteType}`,
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    params: { postID }
   };
   return axios.request<VotePostResponse>(config);
 }

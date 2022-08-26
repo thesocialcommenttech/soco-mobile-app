@@ -1,7 +1,10 @@
+import { Post, PostVoteType } from '../post';
+
 export interface VotePostResponse {
   success?: boolean;
 }
 
 export interface VotePostRequest {
-  type?: 'up' | 'down';
+  postID: Post['_id'];
+  voteType: PostVoteType;
 }

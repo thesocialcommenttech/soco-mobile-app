@@ -1,96 +1,154 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import TopBar from '../../components/topBar';
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import VideoPlayer from 'react-native-video-controls';
-import MainComponent from '../../components/postDetails/mainComponent';
+import { getPost } from '~/src/utils/services/user-posts_service/getPost.service';
+import { SkillVideoPost } from '~/src/utils/typings/post';
+import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPost.interface';
+import { PostViewRoute } from '~/src/utils/typings/stack';
+import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
+import AuthorCard from '~/src/components/screens/post-view/AuthorCard';
+import PostAuthorNTimestamp from '~/src/components/screens/post-view/PostAuthorNTimestamp';
+import PostComments from '~/src/components/screens/post-view/PostComments';
+import PostDescription from '~/src/components/screens/post-view/PostDescription';
+import PostInteractions from '~/src/components/screens/post-view/PostInteractions';
+import PostTags from '~/src/components/screens/post-view/PostTags';
+import PostTitle from '~/src/components/screens/post-view/PostTitle';
+import { staticFileSrc } from '~/src/utils/methods';
+import Skeleton from '~/src/components/theme/Skeleton';
 
-const Data1 = [
-  {
-    title: 'Chat App UI Desgin',
-    uri: 'https://reactnative.dev/img/tiny_logo.png',
-    author: 'Robert Fox',
-    postDate: '04 Jan, 2020',
-    like: 3,
-    dislike: 0,
-    detailText:
-      'Yves, Coco and Christian not another blogger Ed Hardy was never fashionblog post just another Vogue fashion night out fashion royalty.Backstage pass behind the scenes wild and lethal I’m Hugo’s boss I dont do fashion I am fashion the new look long live the queen - long live Kate Moss.',
-    authorNotename: 'Robert Fox',
-    tags: [
-      {
-        key: 1,
-        text: 'Design'
-      },
-      {
-        key: 2,
-        text: 'Chat App'
-      },
-      {
-        key: 3,
-        text: 'UI/UX'
-      },
-      {
-        key: 4,
-        text: 'Mobile Design'
-      },
-      {
-        key: 5,
-        text: 'Figma'
-      },
-      {
-        key: 6,
-        text: 'Design'
-      }
-    ],
-    authorID: '@ robert_Fox',
-    authorimf:
-      'My timeline is a blank canvas. But anywhere you look on this screen orwhatever you do with this screen you will always praise my work.'
+type SkillPostScreenData = GetPostResponse<
+  Pick<
+    SkillVideoPost,
+    | 'postedOn'
+    | 'postedBy'
+    | 'title'
+    | 'description'
+    | 'tags'
+    | 'featureImage'
+    | 'views'
+    | 'comments'
+    | 'upvotes'
+    | 'video'
+    | 'downvotes'
+    | 'shares'
+    | 'voted'
+    | 'isFavorited'
+    | '_id'
+  >
+>['post'];
+
+function Video(props: {
+  videoUrl: SkillPostScreenData['video'];
+  loading?: boolean;
+}) {
+  const windowDim = Dimensions.get('window');
+
+  if (props.loading) {
+    return (
+      <Skeleton
+        style={videoStyles({
+          winW: windowDim.width,
+          winH: windowDim.height
+        })}
+      />
+    );
   }
-];
 
-export default function SkillVideoDetail() {
-  const navigation = useNavigation();
-  const [isPremium] = useState(true);
-  const [profile] = useState(
-    'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIADoAPQMBIgACEQEDEQH/xAAbAAACAgMBAAAAAAAAAAAAAAAEBQMGAAECB//EADYQAAIBAwIDBQUFCQAAAAAAAAECAwAEEQUhBhIxIlFhcYETQaGxwRQyM0KRFlNiZJKTstHw/8QAGAEBAQEBAQAAAAAAAAAAAAAAAwIEAAH/xAAeEQACAgICAwAAAAAAAAAAAAAAAQIREiEDMQRRgf/aAAwDAQACEQMRAD8AsyLf8vbeYr/GOb4NmtETEfgxMT3wAf44psrSfvGrOaU/mX1Wi+ja9CS8Z0nKGGJuUKBh2Q9PHNDEpJ2XtZjn3IVk+fLTDXr6LT7GW9uoY5BEM4xgk9AKK4d1CK+0mO6tYUti4wzEdo/8a8bo5K+hGYLaMg4kt2O4LQuh/Vc11zy45YdR5u4PMrfB9651PWNQ08uuoWRuYT0uB2iPPurNLePVrMzryREMVMchBx6jNcpWVKFdmz9tTmZo4mAU9owlc+qnHwoQ3soODb/0Tj6imSaSoaRlSE5QgNG2N6GbSbv+Y/u5+tVYeJZGYIma3zYQ5rl8Fj3AVqdgFNcUIeJ7eTUbeGzjK4knQPnu3P0z6UYtxHpQjtY7cmEYUcmc/EYPoc0I06Nr9vE8iqscLPuepJAH1rvVOINNtpVikdnwe24QlF8z0oZy2auKKqxpcPAwMTSISy59mx3I8qQ8JaQdON1dCUGK6ctFGPypns59Kla1tdRP26N/aBm5FOduvd7j49RinLskNuW5cIi5wozsO4V3FvZ55GqRIyIw3UHI64odioOASAO41PG3YU4O4zQdw2H2x605lsJkmCyMNskdKhurgBT5UVHphOGlfl8F/wBmpjYW5ideTdhgsdyPGrxIzPH+J7w/tMze0+6gznp02+eaPHEC21rYxiBJWdsSSb55Sfceua3xfwvdi8mvYU50Z8OF6rtvSV3woMg5WRMqpHTyrNKma4OUemXbhO4S4u7tIEMcEb8/L3tuBt44J/SrcDsKpPA0NxDpclxLCyCVlPT8uBirULnmj2O9LCFICc8pbC+bs58KWzSdrc0WZcoCcDakl7K3tNqtIOTLvjIYVyuDseh2qUff9aiWrDB5LVZyeZmSTGOdPeO4g7Glc3DVnNIrXBSQA9BEAT4Z9O6nh/EPnWMB7Q0bhFuxVySSpMhjiVFCooVRsFUYAHdQt3piSAvB2H+BphWzVoNlUuJGiDpJ2XXYjxqu6pqsVrMFkYZI95qx8S7Xu3vRfma8l4sYnVmBJwEFUkTJn//Z'
-  );
-  const [name] = useState('John Doe');
-  const [percentProfile] = useState(75);
   return (
-    <View>
-      <ScrollView>
-        <TopBar
-          uri={profile}
-          username={name}
-          premium={isPremium}
-          percentProfile={percentProfile}
-          navigation={navigation}
-        />
-
-        <View style={styles.video}>
-          <VideoPlayer
-            source={{ uri: 'https://vjs.zencdn.net/v/oceans.mp4' }}
-            //style={styles.video}
-            disableBack={true}
-            disableFullscreen={true}
-            disableTimer={true}
-            paused={true}
-          />
-        </View>
-        <View style={styles.maincomponentview}>
-          <MainComponent data={Data1} />
-        </View>
-      </ScrollView>
-    </View>
+    <VideoPlayer
+      source={{ uri: staticFileSrc(props.videoUrl) }}
+      style={videoStyles({
+        winW: windowDim.width,
+        winH: windowDim.height
+      })}
+      disableBack={true}
+      disableFullscreen={true}
+      disableTimer={true}
+      paused={true}
+    />
   );
 }
 
-const styles = StyleSheet.create({
-  video: {
-    width: '100%',
-    height: '20%'
-  },
-  maincomponentview: {
-    marginBottom: '40%'
+export default function SkillVideoDetail() {
+  const navigation = useNavigation();
+  const route = useRoute<PostViewRoute>();
+
+  const [loading, setLoading] = useState(true);
+  const [post, setPost] = useState<SkillPostScreenData>();
+
+  async function fetchData() {
+    setLoading(true);
+
+    const result = await getPost<SkillPostScreenData>({
+      postID: route.params.post_id,
+      postType: 'skill',
+      projection:
+        'postedOn postedBy title description tags featureImage video views comments upvotes downvotes shares'
+    });
+
+    if (result.data.success) {
+      setPost(result.data.post);
+    }
+
+    setLoading(false);
   }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return (
+    <ScreenWithTopBar navigation={navigation}>
+      <ScrollView>
+        <Video videoUrl={post?.video} loading={loading} />
+        <View style={styles.container}>
+          <PostTitle title={post?.title} loading={loading} />
+          <PostAuthorNTimestamp
+            style={styles.MT}
+            profileImage={post?.postedBy.profileImage}
+            name={post?.postedBy.name}
+            timestamp={post?.postedOn as string}
+            authorId={post?.postedBy._id}
+            loading={loading}
+          />
+          <PostInteractions
+            downVotesCount={post?.downvotes.length}
+            upvotesCount={post?.upvotes.length}
+            favourite={post?.isFavorited}
+            downVoted={post?.voted === 'down'}
+            upVoted={post?.voted === 'up'}
+            postId={post?._id}
+            style={styles.MT}
+            loading={loading}
+          />
+          <PostDescription
+            description={post?.description}
+            style={styles.MT}
+            loading={loading}
+          />
+          <PostTags tags={post?.tags} style={styles.MT} loading={loading} />
+          <AuthorCard style={styles.MT} author={post?.postedBy} />
+          <PostComments
+            commentCount={post?.comments?.length}
+            comments={post?.comments}
+            postId={post?._id}
+            style={styles.MT}
+          />
+        </View>
+      </ScrollView>
+    </ScreenWithTopBar>
+  );
+}
+
+const videoStyles = ({ winW, winH }) => ({
+  width: winW,
+  height: winW / (16 / 9)
+});
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 15
+  },
+  MT: { marginTop: 10 }
 });
