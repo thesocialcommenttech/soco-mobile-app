@@ -14,14 +14,17 @@ import NotificationsScreen from '../screens/notifications/notifications';
 import ArtWorkDetail from '../screens/postDetails/artWorkDetail';
 import PresentationDetail from '../screens/postDetails/presentationDetail';
 import SkillVideoDetail from '../screens/postDetails/skillVideoDetail';
-import { MyStackPrams } from '../utils/typings/stack';
+import {
+  BottomTabStack,
+  MainStack as IMainStack
+} from '../utils/typings/stack';
 
-const MyTab = createBottomTabNavigator();
-const MyStack = createNativeStackNavigator<MyStackPrams>();
+const MyTab = createBottomTabNavigator<BottomTabStack>();
+const MyStack = createNativeStackNavigator<IMainStack>();
 
 function AppTabs() {
   return (
-    <MyTab.Navigator>
+    <MyTab.Navigator backBehavior="history">
       <MyTab.Screen
         name="HomeTab"
         component={HomeStack}

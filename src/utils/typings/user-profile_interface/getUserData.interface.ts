@@ -44,6 +44,8 @@ export interface PostTypeState {
   totalPosts: number;
 }
 
+export type PortfolioLock = 'PUBLIC' | 'PRIVATE';
+
 export interface User {
   address?: Record<string, any>;
   portfolio?: Portfolio;
@@ -54,7 +56,7 @@ export interface User {
   coverImage?: string;
   followers?: number;
   following?: number;
-  portfolioLock?: string;
+  portfolioLock?: PortfolioLock;
   posts?: string[];
   bio?: string;
   caption?: string;
@@ -80,12 +82,13 @@ export interface User {
   referalCode?: string;
   __v?: number;
   online?: boolean;
+  isFollowing?: boolean;
   totalPosts?: number;
   totalViews?: number;
-  favouritePostsCount: number;
-  followerUsersCount: number;
-  followingUsersCount: number;
-  postTypes: PostTypeState[];
+  favouritePostsCount?: number;
+  followerUsersCount?: number;
+  followingUsersCount?: number;
+  postTypes?: PostTypeState[];
 }
 
 export interface GetUserDataResponse {

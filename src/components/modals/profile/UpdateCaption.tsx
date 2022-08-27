@@ -15,12 +15,10 @@ import { useProfileData } from '~/src/state/profileScreenState';
 
 export default function UpdateCaptionModal({
   modalVisible,
-  setFinCaption,
   setModalVisible
 }: {
   modalVisible: boolean;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setFinCaption: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const [_updateCaption, _caption] = useProfileData(state => [
     state.updateCaption,

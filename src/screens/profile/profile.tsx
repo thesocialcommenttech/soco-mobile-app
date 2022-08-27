@@ -1,18 +1,18 @@
 import {
   Dimensions,
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Avatar } from '@rneui/base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import DropdownBottombutton from '../../components/dropdownBottombutton';
-import { Colors } from '../../utils/colors';
+import { Black, Blue, Colors, Yellow } from '../../utils/colors';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '../../store/reducers';
 import { getUserData2 } from '../../utils/services/user-profile_service/getUserData2.service';
@@ -21,14 +21,20 @@ import { GetPostsResponse } from '~/src/utils/typings/user-posts_interface/getPo
 import Post from '~/src/components/Post';
 import { staticFileSrc } from '~/src/utils/methods';
 import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
-import { ActivityIndicator } from 'react-native-paper';
 import { User } from '~/src/utils/typings/user-profile_interface/getUserData.interface';
 import { PostType } from '~/src/utils/typings/post';
 import UpdateCaptionModal from '~/src/components/modals/profile/UpdateCaption';
 import UpdateProfileCoverImageModal from '~/src/components/modals/profile/UpdateProfileCoverImage';
 import UpdateBioModal from '~/src/components/modals/profile/UpdateBio';
-import { useProfileData } from '~/src/state/profileScreenState';
-import Color from 'color';
+import { useProfileData, UserProfile } from '~/src/state/profileScreenState';
+import Loading from '~/src/components/theme/Loading';
+import Button from '~/src/components/theme/Button';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { ProfileScreenProps, ProfileTabRoute } from '~/src/utils/typings/stack';
+import { AxiosResponse } from 'axios';
+import { FollowUserResponse } from '~/src/utils/typings/follow-user_interface/followUser.interface';
+import { unfollowUser } from '~/src/utils/services/follow-user_service/unfollowUser.service';
+import { followUser } from '~/src/utils/services/follow-user_service/followUser.service';
 
 function PostState({ title, count }: { title: string; count: number }) {
   return (
@@ -41,7 +47,9 @@ function PostState({ title, count }: { title: string; count: number }) {
   );
 }
 
-const ProfileScreen = ({ navigation }) => {
+function ProfileScreen() {
+  const navigation = useNavigation<ProfileScreenProps['navigation']>();
+  const route = useRoute<ProfileTabRoute>();
   const auth = useSelector((state: IRootReducer) => state.auth);
   const [pageState, setPageState] = useState({
     pageNo: 0,
@@ -50,66 +58,17 @@ const ProfileScreen = ({ navigation }) => {
 
   const { setUserProfile, userProfile } = useProfileData();
 
-  // const [userProfile, setUserProfile] = useState<
-  //   { postTypes: Record<PostType, User['postTypes'][0]> } & Omit<
-  //     GetUserData2Response['user'],
-  //     'postTypes'
-  //   >
-  // >(null);
+  const mine = useMemo(
+    () => auth.user?.username === route.params?.username,
+    [auth.user, route.params]
+  );
+
   const [posts, setPosts] = useState<GetPostsResponse['posts']>(null);
 
   const [profileLoading, setProfileLoading] = useState(true);
   const [postsLoading, setPostsLoading] = useState(true);
 
-  const [background] = useState(
-    'https://images.unsplash.com/photo-1651006450901-9f487bafe481?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80'
-  );
-  const [profile] = useState(
-    'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIADoAPQMBIgACEQEDEQH/xAAbAAACAgMBAAAAAAAAAAAAAAAEBQMGAAECB//EADYQAAIBAwIDBQUFCQAAAAAAAAECAwAEEQUhBhIxIlFhcYETQaGxwRQyM0KRFlNiZJKTstHw/8QAGAEBAQEBAQAAAAAAAAAAAAAAAwIEAAH/xAAeEQACAgICAwAAAAAAAAAAAAAAAQIREiEDMQRRgf/aAAwDAQACEQMRAD8AsyLf8vbeYr/GOb4NmtETEfgxMT3wAf44psrSfvGrOaU/mX1Wi+ja9CS8Z0nKGGJuUKBh2Q9PHNDEpJ2XtZjn3IVk+fLTDXr6LT7GW9uoY5BEM4xgk9AKK4d1CK+0mO6tYUti4wzEdo/8a8bo5K+hGYLaMg4kt2O4LQuh/Vc11zy45YdR5u4PMrfB9651PWNQ08uuoWRuYT0uB2iPPurNLePVrMzryREMVMchBx6jNcpWVKFdmz9tTmZo4mAU9owlc+qnHwoQ3soODb/0Tj6imSaSoaRlSE5QgNG2N6GbSbv+Y/u5+tVYeJZGYIma3zYQ5rl8Fj3AVqdgFNcUIeJ7eTUbeGzjK4knQPnu3P0z6UYtxHpQjtY7cmEYUcmc/EYPoc0I06Nr9vE8iqscLPuepJAH1rvVOINNtpVikdnwe24QlF8z0oZy2auKKqxpcPAwMTSISy59mx3I8qQ8JaQdON1dCUGK6ctFGPypns59Kla1tdRP26N/aBm5FOduvd7j49RinLskNuW5cIi5wozsO4V3FvZ55GqRIyIw3UHI64odioOASAO41PG3YU4O4zQdw2H2x605lsJkmCyMNskdKhurgBT5UVHphOGlfl8F/wBmpjYW5ideTdhgsdyPGrxIzPH+J7w/tMze0+6gznp02+eaPHEC21rYxiBJWdsSSb55Sfceua3xfwvdi8mvYU50Z8OF6rtvSV3woMg5WRMqpHTyrNKma4OUemXbhO4S4u7tIEMcEb8/L3tuBt44J/SrcDsKpPA0NxDpclxLCyCVlPT8uBirULnmj2O9LCFICc8pbC+bs58KWzSdrc0WZcoCcDakl7K3tNqtIOTLvjIYVyuDseh2qUff9aiWrDB5LVZyeZmSTGOdPeO4g7Glc3DVnNIrXBSQA9BEAT4Z9O6nh/EPnWMB7Q0bhFuxVySSpMhjiVFCooVRsFUYAHdQt3piSAvB2H+BphWzVoNlUuJGiDpJ2XXYjxqu6pqsVrMFkYZI95qx8S7Xu3vRfma8l4sYnVmBJwEFUkTJn//Z'
-  );
-  const [name, setName] = useState('John Doe');
-  const [userName, setUserName] = useState('@johndoe');
   const [locked, setLocked] = useState(true);
-  const [bio, setBio] = useState(
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru.'
-  );
-  const [caption, setCaption] = useState(
-    'Round Robert parker montepulciano chianti oaked wine afficionado.'
-  );
-  const [finCaption, setFinCaption] = useState(
-    'Round Robert parker montepulciano chianti oaked wine afficionado.'
-  );
-  const [finBio, setFinBio] = useState(
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru.'
-  );
-  const [followers, setFollowers] = useState(32);
-  const [following, setFollowing] = useState(9);
-  const [views, setViews] = useState(245);
-  const [activities, setActivities] = useState({
-    All: 0,
-    Blogs: 0,
-    Artworks: 500,
-    Videos: 0,
-    Projects: 0,
-    Presentations: 0,
-    Articles: 0,
-    Links: 0
-  });
-
-  const getAll = (work: any) => {
-    return (
-      work.article.length +
-      work.blog.length +
-      work.artwork.length +
-      work.project.length +
-      work.presentation.length +
-      work.link.length
-    );
-  };
-  const [curLen, setCurLen] = useState(0);
-  const [curLen1, setCurLen1] = useState(0);
-  const [isPremium, setIsPremium] = useState(true);
-  const [percentProfile] = useState(75);
 
   async function fetchUserProfile() {
     setProfileLoading(true);
@@ -117,7 +76,7 @@ const ProfileScreen = ({ navigation }) => {
       'name email email_verified coverImage onboard isFollowing totalViews totalPosts postTypes.postType postTypes.totalPosts favouritePostsCount followerUsersCount followingUsersCount profileImage caption timelineTextureImage username bio portfolioLock premium';
 
     const result = await getUserData2(
-      auth.user.username,
+      route.params?.username ?? auth.user.username,
       profileProjection,
       auth.user?._id ?? null
     );
@@ -140,7 +99,7 @@ const ProfileScreen = ({ navigation }) => {
       'shares views postedOn link postedBy postType featureImage totalSlides description sharedPost title comments upvotes downvotes aim';
 
     const result = await getPosts(
-      auth.user._id,
+      route.params?.user_id ?? auth.user._id,
       pageState.pageNo,
       postProjection,
       pageState.pageSize
@@ -152,37 +111,34 @@ const ProfileScreen = ({ navigation }) => {
     setPostsLoading(false);
   }
 
-  useEffect(() => {
+  function fetchScreenData() {
     fetchUserProfile();
     fetchPosts();
+  }
+
+  useEffect(() => {
+    fetchScreenData();
   }, []);
-
-  const onDeletePost = async (id: string) => {
-    // try {
-    //   const res = await movePostToTrash();
-    //   console.log(res);
-    // } catch (error) {
-    //   console.log(error.response);
-    // }
-    console.log('delete', id);
-  };
-
-  const onEditPost = (id: string) => {
-    console.log('edit', id);
-  };
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
+
   return (
     <ScreenWithTopBar navigation={navigation}>
       {profileLoading || postsLoading ? (
-        <View style={styles.loadingCt}>
-          <ActivityIndicator color={'#0063ff'} size={32} />
-        </View>
+        <Loading />
       ) : (
         <>
-          <ScrollView style={styles.container}>
+          <ScrollView
+            style={styles.container}
+            refreshControl={
+              <RefreshControl
+                refreshing={profileLoading || postsLoading}
+                onRefresh={fetchScreenData}
+              />
+            }
+          >
             <View style={styles.coverCt}>
               <Image
                 source={{
@@ -212,7 +168,6 @@ const ProfileScreen = ({ navigation }) => {
                 <UpdateCaptionModal
                   modalVisible={modalVisible}
                   setModalVisible={setModalVisible}
-                  setFinCaption={setFinCaption}
                 />
                 <TouchableOpacity
                   style={styles.editCaption}
@@ -246,62 +201,89 @@ const ProfileScreen = ({ navigation }) => {
               <Text style={styles.name}>{userProfile.name}</Text>
               <Text style={styles.userName}>{userProfile.username}</Text>
             </View>
+
             <View style={styles.portfolioContainer}>
-              <TouchableOpacity style={styles.portfolio}>
-                <Text style={styles.portfolioText}>Portfolio</Text>
-              </TouchableOpacity>
-              {/* <View style={styles.verticleLine} /> */}
-              <TouchableOpacity
-                style={styles.portfolioLock}
-                onPress={() => setLocked(!locked)}
-              >
-                {locked ? (
-                  <MaterialCommunityIcon
-                    name="lock-outline"
-                    size={20}
-                    color={Colors.White}
-                  />
-                ) : (
-                  <MaterialCommunityIcon
-                    name="lock-off-outline"
-                    size={20}
-                    color={Colors.White}
-                  />
-                )}
-              </TouchableOpacity>
+              <Button
+                text="Portfolio"
+                fullWidth
+                type="filled"
+                disabled={!userProfile.premium}
+                onPress={() => {
+                  navigation.navigate('PortfolioTab');
+                }}
+                textStyle={{ color: 'white' }}
+                btnStyle={[
+                  styles.portfolio,
+                  mine && styles.portfolio_Mine,
+                  !userProfile.premium && styles.portfolioLocked
+                ]}
+              />
+              {mine ? (
+                <>
+                  <Button
+                    type="filled"
+                    onPress={() => {}}
+                    btnStyle={styles.portfolioLock}
+                  >
+                    <MaterialCommunityIcon
+                      name={locked ? 'lock-outline' : 'lock-off-outline'}
+                      size={20}
+                      color={Colors.White}
+                    />
+                  </Button>
+                </>
+              ) : (
+                <FollowToggleBtn />
+              )}
             </View>
+
             <View style={styles.bio}>
               <Text style={styles.bioText}>{userProfile.bio}</Text>
             </View>
-            <>
-              <UpdateBioModal
-                modalVisible1={modalVisible1}
-                setModalVisible1={setModalVisible1}
-              />
-              <View style={styles.updateBio}>
-                <TouchableOpacity
-                  style={styles.updateBioLink}
-                  onPress={() => setModalVisible1(!modalVisible1)}
-                >
-                  <MaterialCommunityIcon
-                    name="pencil-outline"
-                    size={18}
-                    color={Colors.Secondary}
-                  />
-                  <Text style={styles.updateBioText}>Update Bio</Text>
-                </TouchableOpacity>
+
+            <UpdateBioModal
+              modalVisible1={modalVisible1}
+              setModalVisible1={setModalVisible1}
+            />
+            <Button
+              type="text"
+              size="xs"
+              btnStyle={styles.updateBio}
+              onPress={() => setModalVisible1(!modalVisible1)}
+            >
+              <View style={styles.updateBioLink}>
+                <MaterialCommunityIcon
+                  name="pencil-outline"
+                  size={16}
+                  color={Blue.primary}
+                />
+                <Text style={styles.updateBioText}>Update Bio</Text>
               </View>
-            </>
+            </Button>
 
             <ScrollView horizontal={true} style={styles.stats}>
-              <ProfileState
-                title="Followers"
-                value={userProfile.followerUsersCount}
-              />
-              <ProfileState
-                title="Following"
-                value={userProfile.followingUsersCount}
-              />
+              <Button
+                btnStyle={{ padding: 0 }}
+                onPress={() => {
+                  navigation.navigate('Connections');
+                }}
+              >
+                <ProfileState
+                  title="Followers"
+                  value={userProfile.followerUsersCount}
+                />
+              </Button>
+              <Button
+                btnStyle={{ padding: 0 }}
+                onPress={() => {
+                  navigation.navigate('Connections', { screen: 'Followings' });
+                }}
+              >
+                <ProfileState
+                  title="Following"
+                  value={userProfile.followingUsersCount}
+                />
+              </Button>
               <ProfileState
                 title="Favourites"
                 value={userProfile.favouritePostsCount}
@@ -348,10 +330,10 @@ const ProfileScreen = ({ navigation }) => {
                 data={{
                   ...post,
                   postedBy: {
-                    _id: auth.user._id,
-                    name: auth.user.name,
-                    profileImage: auth.user.profileImage,
-                    username: auth.user.username
+                    _id: userProfile._id,
+                    name: userProfile.name,
+                    profileImage: userProfile.profileImage,
+                    username: userProfile.username
                   }
                 }}
                 postWrapperStyle={{
@@ -365,25 +347,17 @@ const ProfileScreen = ({ navigation }) => {
         </>
       )}
       {/* <View style={styles.stickyButton}>
-        <TouchableOpacity>
-          <Ionicon name="plus" size={25} color={Colors.Black} style={styles.plus} />
-        </TouchableOpacity>
-      </View> */}
+              <TouchableOpacity>
+                <Ionicon name="plus" size={25} color={Colors.Black} style={styles.plus} />
+              </TouchableOpacity>
+            </View> */}
     </ScreenWithTopBar>
   );
-};
+}
 
 export default ProfileScreen;
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    flex: 1,
-    backgroundColor: Colors.White
-  },
-  statusBar: {
-    backgroundColor: 'white',
-    height: '25%'
-  },
   container: {
     flex: 1,
     backgroundColor: Colors.White
@@ -448,59 +422,60 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 23,
-    fontWeight: '700',
+    // fontWeight: '700',
     fontFamily: 'Roboto-Medium',
     color: 'black'
   },
   userName: {
     fontSize: 16,
-    fontWeight: '400',
-    fontFamily: 'Roboto-Medium',
-    color: Colors.Gray600,
+    // fontWeight: '400',
+    fontFamily: 'Roboto-Regular',
+    color: Black[600],
     marginTop: 5
   },
   portfolioContainer: {
     flexDirection: 'row',
     marginTop: 20,
     marginHorizontal: 20
+    // width: '100%'
   },
   portfolio: {
-    backgroundColor: Colors.Secondary,
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
-    padding: 15,
+    // backgroundColor: Colors.Secondary,
+    // padding: 15,
     // height: 46,
     // justifyContent: 'center',
     // marginLeft: '8%',
     // width: '71%'
-    flexGrow: 1
+    flexGrow: 1,
+    flexShrink: 0,
+    marginRight: 20
   },
-  portfolioText: {
-    fontSize: 14,
-    fontWeight: '500',
-    fontFamily: 'Roboto-Medium',
-    // lineHeight: 16.41,
-    color: Colors.White,
-    textAlign: 'center',
-    marginLeft: 20
+  portfolio_Mine: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    marginRight: 0
   },
-  verticleLine: {
-    height: '100%',
-    width: 1
-    // backgroundColor: 'rgba(255, 255, 255, 0.1)'
+  portfolioLocked: {
+    backgroundColor: Blue[200]
   },
+  followBtn: {
+    flexGrow: 1,
+    flexShrink: 0
+  },
+  followBtnText: {
+    textTransform: 'capitalize'
+  },
+  unFollowBtn: { borderColor: Black[600] },
+  unFollowBtnText: { color: Black[600] },
+  // verticleLine: {
+  //   height: '100%',
+  //   width: 1
+  // },
   portfolioLock: {
-    backgroundColor: Colors.Secondary,
-    borderTopRightRadius: 8,
-    borderBottomRightRadius: 8,
-    borderLeftColor: Color(Colors.Secondary).lightness(55).hex().toString(),
-    borderLeftWidth: 1,
-    padding: 15,
-    // height: 46,
-    justifyContent: 'center',
-    // marginRight: '8%',
-    // width: '13%',
-    alignItems: 'center'
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderLeftColor: Blue[400],
+    borderLeftWidth: 1
   },
   bio: {
     marginTop: 20,
@@ -510,15 +485,14 @@ const styles = StyleSheet.create({
   },
   bioText: {
     fontSize: 14,
-    fontWeight: '400',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Regular',
     lineHeight: 18.2,
-    color: Colors.Gray600,
+    color: Black[600],
     textAlign: 'center'
   },
   updateBio: {
-    marginTop: '3%',
-    alignItems: 'center'
+    marginTop: 5,
+    alignSelf: 'center'
   },
   updateBioLink: {
     flexDirection: 'row',
@@ -526,16 +500,14 @@ const styles = StyleSheet.create({
   },
   updateBioText: {
     fontSize: 14,
-    fontWeight: '400',
-    fontFamily: 'Roboto-Medium',
-    lineHeight: 16.41,
-    color: Colors.Secondary,
+    // fontFamily: 'Roboto-Medium',
+    color: Blue.primary,
     textAlign: 'center',
-    marginLeft: '1%'
+    marginLeft: 3
   },
   stats: {
+    marginTop: 20
     // flexDirection: 'row',
-    marginTop: '8%'
     // alignItems: 'center',
     // justifyContent: 'center'
   },
@@ -545,7 +517,7 @@ const styles = StyleSheet.create({
   },
   statsText: {
     fontSize: 16,
-    fontWeight: '700',
+    // fontWeight: '700',
     fontFamily: 'Roboto-Medium',
     // lineHeight: 16.41,
     color: 'black',
@@ -553,50 +525,16 @@ const styles = StyleSheet.create({
   },
   statsLabel: {
     fontSize: 14,
-    fontWeight: '500',
-    fontFamily: 'Roboto-Medium',
-    lineHeight: 16.41,
-    color: Colors.Gray600,
+    fontFamily: 'Roboto-Regular',
+    color: Black[600],
     marginTop: 5,
     textAlign: 'center'
-  },
-  list: {
-    marginTop: '8%',
-    paddingHorizontal: '8%',
-    alignItems: 'center',
-    flexDirection: 'row'
-  },
-  listItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: '8%'
-  },
-  listText: {
-    fontSize: 14,
-    fontWeight: '500',
-    fontFamily: 'Roboto-Medium',
-    lineHeight: 16.41,
-    color: Colors.Secondary
-  },
-  listLabel: {
-    fontSize: 14,
-    fontWeight: '400',
-    fontFamily: 'Roboto-Medium',
-    lineHeight: 16.41,
-    color: Colors.Gray600
-  },
-  horizontalSeparator: {
-    height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    marginTop: '8%',
-    marginBottom: '8%'
   },
   activity: {
     flexGrow: 0,
     marginVertical: 15,
-    paddingLeft: 20
-    // marginHorizontal: '4%'
+    paddingLeft: 20,
+    paddingRight: 20
   },
   item: {
     flexDirection: 'row',
@@ -607,161 +545,25 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 14,
-    color: Colors.Gray600,
+    color: Black[600],
     textAlign: 'center'
   },
   circle: {
     width: 26,
-    height: 24,
+    height: 26,
     borderRadius: 100,
-    backgroundColor: Colors.LightPrimary,
+    backgroundColor: Yellow[200],
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 5,
-    padding: 5
+    marginLeft: 5
+    // padding: 5
   },
   itemCount: {
     fontSize: 14,
     fontWeight: '500',
     fontFamily: 'Roboto-Medium',
-    lineHeight: 14,
-    color: Colors.YellowTxt,
+    color: Yellow[700],
     textAlign: 'center'
-  },
-  cardContainer: {
-    padding: 20,
-    width: '100%',
-    marginLeft: '0%',
-    marginTop: '0%',
-    borderTopColor: 'white'
-  },
-  profileinfo: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  cardTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  },
-  cardTitleText: {
-    fontSize: 16,
-    fontWeight: '700',
-    fontFamily: 'Roboto-Medium',
-    marginLeft: '10%',
-    color: 'black'
-  },
-  avatar2: {
-    borderWidth: 1,
-    borderColor: Colors.White
-  },
-  mainContent: {
-    marginTop: '7%'
-  },
-  postPic: {
-    width: '100%',
-    height: 300,
-    borderRadius: 10
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: '9%'
-  },
-  cardFooterText: {
-    fontSize: 16,
-    fontWeight: '700',
-    fontFamily: 'Roboto-Medium',
-    lineHeight: 18.75,
-    color: Colors.Black
-  },
-  cardFooter2: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: '7%'
-  },
-  cardFooterText2: {
-    fontSize: 16,
-    fontWeight: '600',
-    fontFamily: 'Roboto-Medium',
-    color: Colors.Gray600
-  },
-  tag: {
-    backgroundColor: Colors.Gray100,
-    borderRadius: 5,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    marginLeft: '5%'
-  },
-  tagText: {
-    fontSize: 12,
-    fontWeight: '700',
-    fontFamily: 'Roboto-Medium',
-    color: Colors.Black
-  },
-  plusPos: {
-    position: 'absolute',
-    bottom: '3%',
-    right: '5%'
-  },
-  modalView: {
-    backgroundColor: 'white',
-    height: '100%',
-    width: '100%',
-    padding: 20
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center'
-  },
-  closeBtn: {
-    color: Colors.Gray400,
-    alignSelf: 'flex-end'
-  },
-  capTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    fontFamily: 'Roboto-Medium',
-    color: Colors.Black,
-    marginTop: '2%'
-  },
-  captionInput: {
-    backgroundColor: 'white',
-    marginTop: '8%',
-    borderColor: Colors.GrayBorder,
-    color: 'black',
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 20,
-    height: '22%',
-    textAlignVertical: 'top',
-    fontFamily: 'Roboto-Medium',
-    lineHeight: 21
-  },
-  maxChar: {
-    marginTop: '5%',
-    color: Colors.Gray200,
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium'
-  },
-  updateBtn: {
-    backgroundColor: Colors.Secondary,
-    borderRadius: 8,
-    marginTop: '6%',
-    paddingVertical: '4%',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  updateTxt: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium'
   },
   captionOnImg: {
     position: 'absolute',
@@ -780,33 +582,54 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     textAlign: 'center',
     padding: 4
-  },
-  subTitle: {
-    fontFamily: 'Inter',
-    fontSize: 12,
-    lineHeight: 14.52,
-    color: 'black',
-    marginTop: '4%'
-  },
-  eyeView: {
-    flexDirection: 'row',
-    marginLeft: 'auto',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  viewNum: {
-    color: 'black',
-    fontSize: 16,
-    marginLeft: '2%',
-    lineHeight: 18.75,
-    fontFamily: 'Roboto-Medium'
-  },
-  loadingCt: {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: 20
   }
 });
+
+function FollowToggleBtn() {
+  const { setUserProfile, userProfile } = useProfileData();
+  const [loading, setLoading] = useState(false);
+
+  async function toggleFollow() {
+    try {
+      setLoading(true);
+      let result: AxiosResponse<FollowUserResponse>;
+      if (userProfile.isFollowing) {
+        result = await unfollowUser(userProfile._id);
+      } else {
+        result = await followUser(userProfile._id);
+      }
+
+      if (result.data.success) {
+        setUserProfile({
+          ...userProfile,
+          isFollowing: !userProfile.isFollowing
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+  return (
+    <Button
+      text={userProfile.isFollowing ? 'Following' : 'Follow'}
+      fullWidth
+      type="outlined"
+      onPress={toggleFollow}
+      disabled={loading}
+      processing={loading}
+      btnStyle={[
+        styles.followBtn,
+        userProfile.isFollowing && styles.unFollowBtn
+      ]}
+      textStyle={[
+        styles.followBtnText,
+        userProfile.isFollowing && styles.unFollowBtnText
+      ]}
+    />
+  );
+}
 
 function ProfileState(props: { title: string; value: string | number }) {
   return (

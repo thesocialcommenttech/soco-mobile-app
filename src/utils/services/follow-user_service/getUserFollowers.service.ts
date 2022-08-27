@@ -1,24 +1,19 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import {
   GetUserFollowersRequest,
   GetUserFollowersResponse
 } from '../../typings/follow-user_interface/getUserFollowers.interface';
+import { User } from '../../typings/user-profile_interface/getUserData.interface';
 
-export function getUserFollowers({
+export function getUserFollowers<T extends keyof User>({
   proj,
   userID
-}: GetUserFollowersRequest): Promise<AxiosResponse<GetUserFollowersResponse>> {
+}: GetUserFollowersRequest) {
   const config: AxiosRequestConfig = {
-    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/profile/followers',
+    url: 'user/profile/followers',
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    data: {
-      proj,
-      userID
-    }
+    data: { proj, userID }
   };
 
-  return axios.request<GetUserFollowersResponse>(config);
+  return axios.request<GetUserFollowersResponse<T>>(config);
 }

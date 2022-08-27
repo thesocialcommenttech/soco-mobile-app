@@ -1,16 +1,9 @@
-export interface GetUserFollowingsRequest {
-  proj?: string;
-  userID?: string;
-}
+import { User } from '../user-profile_interface/getUserData.interface';
+import { GetUserFollowersRequest } from './getUserFollowers.interface';
 
-interface Following {
-  name?: string;
-  profileImage?: string;
-  username?: string;
-  _id?: string;
-}
+export type GetUserFollowingRequest = GetUserFollowersRequest;
 
-export interface GetUserFollowingsResponse {
-  following?: Following[];
+export interface GetUserFollowingsResponse<T extends keyof User> {
+  following?: Pick<User, T>[];
   success?: boolean;
 }

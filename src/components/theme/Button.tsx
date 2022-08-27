@@ -59,7 +59,7 @@ function Button(props: ButtonProps) {
   const btnSizeStyle = useMemo<ViewStyle>(() => {
     switch (props.size) {
       case 'xs':
-        return styles.btnSm;
+        return styles.btnXs;
       case 'sm':
         return styles.btnSm;
     }
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Medium',
     // fontWeight: '700',
     // lineHeight: 1,
-    includeFontPadding: false,
+    // includeFontPadding: false,
     textAlignVertical: 'center'
   },
   btnXs_text: { fontSize: 12 },

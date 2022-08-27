@@ -9,18 +9,24 @@ import SkillVideo from '../screens/createPost/skillVideo';
 import VideoPlayer from '../screens/createPost/videoPlayer';
 import Presentation from '../screens/createPost/presentation';
 import Link from '../screens/createPost/link';
-import Follow from '../screens/following/follow';
+import ConnectionsStack from '../screens/connection/ConnectionsStack';
 import PortfolioStack from './portfolioStack';
+import { useSelector } from 'react-redux';
+import { IRootReducer } from '../store/reducers';
+import { ProfileTabStack } from '../utils/typings/stack';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<ProfileTabStack>();
 
-const ProfileStack = () => {
+function ProfileStack() {
+  const authUser = useSelector((root: IRootReducer) => root.auth.user);
+
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
         options={{ headerShown: false }}
+        initialParams={{ username: authUser.username }}
       />
       <Stack.Screen
         name="Drafts"
@@ -63,17 +69,17 @@ const ProfileStack = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Follower"
-        component={Follow}
+        name="Connections"
+        component={ConnectionsStack}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="Portfolio"
-        component={PortfolioStack}
-        options={{ headerShown: false }}
-      />
+      {/* <Stack.Screen
+              name="Portfolio"
+              component={PortfolioStack}
+              options={{ headerShown: false }}
+            /> */}
     </Stack.Navigator>
   );
-};
+}
 
 export default ProfileStack;
