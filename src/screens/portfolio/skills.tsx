@@ -1,87 +1,68 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import React from 'react';
-import SkillList from '../../components/portfolio/skillList';
-import { useFocusEffect } from '@react-navigation/native';
+import Skill from '../../components/portfolio/Skill';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
+import Button from '~/src/components/theme/Button';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { usePortfolioData } from '~/src/contexts/portfolio.context';
+import { PortfolioUpdateBtn } from './portfolio';
 
-const Data = [
-  {
-    id: 1,
-    skill: 'HTML & CSS',
-    rating: 9
-  },
-  {
-    id: 2,
-    skill: 'Javascript',
-    rating: 9.5
-  },
-  {
-    id: 3,
-    skill: 'React',
-    rating: 9
-  },
-  {
-    id: 4,
-    skill: 'C++',
-    rating: 7
-  },
-  {
-    id: 5,
-    skill: 'Python',
-    rating: 8
-  },
-  {
-    id: 6,
-    skill: 'Programming',
-    rating: 8.5
-  },
-  {
-    id: 7,
-    skill: 'Devops',
-    rating: 9.5
-  },
-  {
-    id: 8,
-    skill: 'UI/UX',
-    rating: 9.5
-  },
-  {
-    id: 9,
-    skill: 'System Design',
-    rating: 7.5
-  }
-];
+export default function Skills() {
+  const { portfolio } = usePortfolioData();
+  const navigation =
+    useNavigation<PortfolioTabStackScreenProps['navigation']>();
 
-export default function Skills({ ...props }) {
   useFocusEffect(
     React.useCallback(() => {
-      //Alert.alert('Screen was focused');
-      props.extraData('Skills');
-      return () => {
-        //Alert.alert('Screen was unfocused');
-        // Useful for cleanup functions
-      };
-    }, [props])
+      navigation.getParent().setOptions({
+        headerRight: () => (
+          <PortfolioUpdateBtn
+            buttonProps={{
+              onPress: () => {
+                navigation.navigate('Addskill');
+              }
+            }}
+          />
+        )
+      });
+    }, [navigation])
   );
 
+  useFocusEffect(() => {
+    navigation.getParent().setOptions({
+      headerRight: () => (
+        <Button
+          onPress={() => {
+            navigation.navigate('Addskill');
+          }}
+          size="sm"
+        >
+          <MaterialCommunityIcons
+            name="plus-circle-outline"
+            size={24}
+            color="black"
+          />
+        </Button>
+      )
+    });
+  });
+
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={Data}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => (
-          <SkillList skill={item.skill} rating={item.rating} />
-        )}
-      />
-    </View>
+    <FlatList
+      contentContainerStyle={styles.container}
+      data={portfolio.skill}
+      keyExtractor={item => item._id}
+      renderItem={({ item }) => <Skill data={item} style={styles.skillItem} />}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingLeft: '5%',
-    paddingRight: '6.2%',
-    backgroundColor: 'white'
-  }
+    // flex: 1,
+    padding: 20,
+    paddingBottom: 0
+  },
+  skillItem: { marginBottom: 25 }
 });

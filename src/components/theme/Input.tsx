@@ -1,5 +1,6 @@
 import React, { Dispatch, ReactElement, SetStateAction, useState } from 'react';
 import {
+  GestureResponderEvent,
   LayoutRectangle,
   StyleProp,
   StyleSheet,
@@ -7,12 +8,14 @@ import {
   TextInput,
   TextInputProps,
   TouchableHighlight,
+  TouchableWithoutFeedback,
   View,
   ViewStyle
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Black, Blue, Red } from '~/src/utils/colors';
+import { Black, Blue, Red, Yellow } from '~/src/utils/colors';
 import Bottomsheet, { DropdownOption } from '../bottomsheet/Bottomsheet';
+import Button, { ButtonProps } from './Button';
 import VisibilityToggleBtn from './VisibilityToggleBtn';
 
 export function InputError({ error }: { error: string }) {
@@ -125,6 +128,7 @@ export type InputProps = {
   inputProp?: TextInputProps;
   prefix?: ReactElement;
   suffix?: ReactElement;
+  onPress?: (event: GestureResponderEvent) => void;
   error?: string;
   children?:
     | ReactElement
@@ -136,6 +140,37 @@ export type InputProps = {
       }) => ReactElement);
 };
 
+export function RadioButton(props: {
+  selected?: boolean;
+  buttonProps?: ButtonProps;
+}) {
+  return (
+    <Button
+      {...props.buttonProps}
+      btnStyle={[
+        props.buttonProps.btnStyle,
+        {
+          borderColor: Yellow.primary,
+          borderWidth: 1,
+          borderRadius: 8,
+          padding: 10,
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexGrow: 1
+        },
+        props.selected && {
+          backgroundColor: Yellow[100]
+        }
+      ]}
+      textStyle={[
+        props.buttonProps.textStyle,
+        { color: 'black', fontFamily: 'Roboto', textTransform: 'capitalize' },
+        props.selected && { fontFamily: 'Roboto-Medium' }
+      ]}
+    />
+  );
+}
+
 export function Input({
   label,
   style,
@@ -144,7 +179,8 @@ export function Input({
   prefix,
   suffix,
   error,
-  children
+  children,
+  onPress
 }: InputProps) {
   const [textInputDim, setTextInputDim] = useState<LayoutRectangle>();
   const [focused, setFocused] = useState(false);
@@ -153,54 +189,56 @@ export function Input({
     <>
       <View style={[styles.inputCt, !label && { marginTop: 0 }, style]}>
         {label && <Text style={styles.label}>{label}</Text>}
-        <View
-          style={[
-            styles.input,
-            prefix && { paddingLeft: 25 },
-            suffix && { paddingRight: 25 },
-            focused && styles.inputFocused,
-            error && styles.inputError,
-            inputContainer
-          ]}
-        >
-          {prefix}
-          {children ? (
-            typeof children === 'function' ? (
-              children({
-                focused,
-                setFocused,
-                textInputDim,
-                style: styles.textView
-              })
+        <TouchableWithoutFeedback onPress={e => onPress?.(e)}>
+          <View
+            style={[
+              styles.input,
+              prefix && { paddingLeft: 25 },
+              suffix && { paddingRight: 25 },
+              focused && styles.inputFocused,
+              error && styles.inputError,
+              inputContainer
+            ]}
+          >
+            {prefix}
+            {children ? (
+              typeof children === 'function' ? (
+                children({
+                  focused,
+                  setFocused,
+                  textInputDim,
+                  style: styles.textView
+                })
+              ) : (
+                children
+              )
             ) : (
-              children
-            )
-          ) : (
-            <TextInput
-              {...inputProp}
-              onFocus={e => {
-                inputProp?.onFocus?.(e);
-                setFocused(true);
-              }}
-              onBlur={e => {
-                inputProp?.onBlur?.(e);
-                setFocused(false);
-              }}
-              style={[
-                styles.text,
-                styles.textView,
-                !label && { paddingTop: 16 },
-                textInputDim && { width: textInputDim.width },
-                inputProp?.style
-              ]}
-              selectionColor={Blue[50]}
-              onLayout={e => {
-                setTextInputDim(e.nativeEvent.layout);
-              }}
-            />
-          )}
-          {suffix}
-        </View>
+              <TextInput
+                {...inputProp}
+                onFocus={e => {
+                  inputProp?.onFocus?.(e);
+                  setFocused(true);
+                }}
+                onBlur={e => {
+                  inputProp?.onBlur?.(e);
+                  setFocused(false);
+                }}
+                style={[
+                  styles.text,
+                  styles.textView,
+                  !label && { paddingTop: 16 },
+                  textInputDim && { width: textInputDim.width },
+                  inputProp?.style
+                ]}
+                selectionColor={Blue[50]}
+                onLayout={e => {
+                  setTextInputDim(e.nativeEvent.layout);
+                }}
+              />
+            )}
+            {suffix}
+          </View>
+        </TouchableWithoutFeedback>
       </View>
       {error && <InputError error={error} />}
     </>

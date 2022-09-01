@@ -1,30 +1,37 @@
-export interface GetPortforlioWorkDataRequest {
-  username?: string;
-}
+import {
+  ArticlePost,
+  ArtworkPost,
+  BlogPost,
+  LinkPost,
+  PresentationPost,
+  ProjectPost,
+  SkillVideoPost
+} from '../post';
 
-interface Certifications {
+export interface ICertification {
   certification_image_url?: string;
   credential_id?: string;
   credential_url?: string;
-  issue_date?: string;
+  issue_date?: Date | string;
+  expire_date?: Date | string;
   issuer_organization?: string;
   title?: string;
   _id?: string;
   do_expire?: boolean;
 }
 
-interface Education {
+export interface IEducation {
   course?: string;
   institute?: string;
   level?: string;
-  passYear?: Date;
+  passYear?: Date | 'completed';
   index?: number;
   order?: number;
   status?: string;
   _id?: string;
 }
 
-interface Experience {
+export interface Experience {
   company?: string;
   description?: string;
   from?: Date;
@@ -36,7 +43,7 @@ interface Experience {
   _id?: string;
 }
 
-interface Skill {
+export interface ISkill {
   level?: number;
   skill?: string;
   _id?: string;
@@ -50,35 +57,35 @@ interface Social_Accounts {
   twitter?: string;
 }
 
-interface Post {
-  featureImage?: string;
-  postType?: string;
-  title?: string;
-  _id?: string;
+// interface Post {
+//   featureImage?: string;
+//   postType?: string;
+//   title?: string;
+//   _id?: string;
+// }
+
+export interface Work {
+  article?: ArticlePost[];
+  artwork?: ArtworkPost[];
+  blog?: BlogPost[];
+  presentation?: PresentationPost[];
+  project?: ProjectPost[];
+  skill?: SkillVideoPost[];
+  link?: LinkPost[];
 }
 
-interface Work {
-  article?: Post[];
-  artwork?: Post[];
-  blog?: Post[];
-  presentation?: Post[];
-  project?: Post[];
-  skill?: Post[];
-  link?: Post[];
-}
-
-interface Data {
+export interface PortfolioData {
   bio?: string;
-  certifications?: Certifications[];
-  education?: Education[];
+  certifications?: ICertification[];
+  education?: IEducation[];
   experience?: Experience[];
   intro_video_url?: string;
-  skill?: Skill[];
+  skill?: ISkill[];
   social_accounts?: Social_Accounts;
   work?: Work;
 }
 
 export interface GetPortforlioWorkDataResponse {
   success?: boolean;
-  data?: Data;
+  data?: PortfolioData;
 }

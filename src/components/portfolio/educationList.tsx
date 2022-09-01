@@ -1,13 +1,27 @@
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+  ViewStyle
+} from 'react-native';
 import React, { useState } from 'react';
-import Icon1 from 'react-native-vector-icons/FontAwesome5';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal1 from 'react-native-modal';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Black, Blue, Yellow } from '~/src/utils/colors';
+import Button from '../theme/Button';
+import { IEducation } from '~/src/utils/typings/user-portfolio_interface/getPortforlioWorkData.interface';
+import dayjs from 'dayjs';
 
-export default function EducationList({ ...props }) {
+export default function Education(props: {
+  data: IEducation;
+  style?: StyleProp<ViewStyle>;
+}) {
   const [modalVisible, setModalVisible] = useState(false);
   return (
-    <View>
+    <View style={props.style}>
       <Modal1
         isVisible={modalVisible}
         backdropColor="black"
@@ -38,62 +52,63 @@ export default function EducationList({ ...props }) {
           </View>
         </>
       </Modal1>
-      <View style={styles.degreeview}>
-        <View style={styles.row}>
-          <Text style={styles.degree}>{props.degree}</Text>
-          {props.present
-            ? [
-                <View style={styles.presentview}>
-                  <Text style={styles.presenttext}>Present</Text>
-                </View>
-              ]
-            : [<Text style={styles.date}>{props.date}</Text>]}
+      <View style={styles.educationInfo}>
+        <View style={styles.courseCt}>
+          <Text style={styles.degree}>{props.data.course}</Text>
+          {props.data.status === 'completed' ? (
+            <Text style={styles.passYear}>
+              {dayjs(props.data.passYear).format('MMM YYYY')}
+            </Text>
+          ) : (
+            <Text style={styles.pursuingTag}>Pursuing</Text>
+          )}
         </View>
-        <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>
-          <Icon1 name="ellipsis-v" size={17} color="#BDBDBD" />
-        </TouchableWithoutFeedback>
+        <Text style={styles.instituteName}>{props.data.institute}</Text>
       </View>
-      <Text style={styles.details}>{props.information}</Text>
+      <Button
+        size="sm"
+        onPress={() => {
+          // props.toggleModal();
+        }}
+        btnStyle={styles.dropdownBtn}
+      >
+        <MaterialCommunityIcons
+          name="dots-vertical"
+          size={17}
+          color={Black[600]}
+        />
+      </Button>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  degreeview: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: '8%'
+  educationInfo: {
+    marginRight: 45
   },
-  row: {
-    flexDirection: 'row'
+  courseCt: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   degree: {
-    color: '#0063FF',
-    marginTop: 1,
+    color: Blue.primary,
+    // marginTop: 1,
     fontSize: 16
   },
-  presenttext: {
-    color: '#B88F00',
-    marginTop: 2,
-    marginLeft: 8,
-    marginRight: 8,
-    marginBottom: 2
+  pursuingTag: {
+    color: Yellow[700],
+    paddingHorizontal: 5,
+    borderRadius: 2,
+    backgroundColor: Yellow[100],
+    marginLeft: 5
   },
-  details: {
+  instituteName: {
     color: 'black',
-    marginTop: 8,
-    lineHeight: 17,
-    fontSize: 16
+    marginTop: 3
   },
-  date: {
-    color: '#7D7987',
-    marginLeft: 9,
-    marginTop: 2.3
-  },
-  presentview: {
-    backgroundColor: '#FFF7DB',
-    borderRadius: 10,
-    marginLeft: 9
+  passYear: {
+    color: Black[600],
+    marginLeft: 5
   },
   modal1: {
     width: '100%',
@@ -123,5 +138,10 @@ const styles = StyleSheet.create({
   optiontext: {
     color: 'black',
     marginLeft: '6.2%'
+  },
+  dropdownBtn: {
+    position: 'absolute',
+    right: 0,
+    top: 0
   }
 });

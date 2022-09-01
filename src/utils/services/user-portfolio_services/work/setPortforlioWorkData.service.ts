@@ -6,17 +6,12 @@ import {
 
 export function setPortforlioWorkData({
   postType,
-  postList
-}: SetPortforlioWorkDataRequest): Promise<
-  AxiosResponse<SetPortforlioWorkDataResponse>
-> {
+  postsList
+}: SetPortforlioWorkDataRequest) {
   const config: AxiosRequestConfig = {
     url: '/user/portfolio/add/work',
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    data: { postType, postList }
+    data: { postType, postsList }
   };
 
   return axios.request<SetPortforlioWorkDataResponse>(config);

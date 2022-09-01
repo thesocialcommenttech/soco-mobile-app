@@ -18,7 +18,7 @@ interface ButtonDimmension {
   h: number;
 }
 
-type ButtonProps = {
+export type ButtonProps = {
   onPress: (e: GestureResponderEvent) => void;
   children?:
     | ReactElement

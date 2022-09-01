@@ -1,16 +1,27 @@
-import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableWithoutFeedback,
+  StyleProp,
+  ViewStyle
+} from 'react-native';
 import React, { useState } from 'react';
 import ProgressCircle from 'react-native-progress-circle';
-import Icon1 from 'react-native-vector-icons/FontAwesome5';
-import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal1 from 'react-native-modal';
+import Button from '../theme/Button';
+import { Black, Blue } from '~/src/utils/colors';
+import { ISkill } from '~/src/utils/typings/user-portfolio_interface/getPortforlioWorkData.interface';
 
-export default function SkillList({ ...props }) {
-  const percentage = (props.rating / 10) * 100;
+export default function Skill(props: {
+  data: ISkill;
+  style?: StyleProp<ViewStyle>;
+}) {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, props.style]}>
       <Modal1
         isVisible={modalVisible}
         backdropColor="black"
@@ -28,13 +39,17 @@ export default function SkillList({ ...props }) {
             // }}
             >
               <View style={styles.modalrow}>
-                <Icon2 name="pencil-outline" size={22} color="black" />
+                <MaterialCommunityIcons
+                  name="pencil-outline"
+                  size={22}
+                  color="black"
+                />
                 <Text style={styles.optiontext}>Edit</Text>
               </View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback>
               <View style={styles.modalDelete}>
-                <Icon2 name="delete" size={22} color="black" />
+                <MaterialCommunityIcons name="delete" size={22} color="black" />
                 <Text style={styles.optiontext}>Delete</Text>
               </View>
             </TouchableWithoutFeedback>
@@ -44,24 +59,33 @@ export default function SkillList({ ...props }) {
       <View style={styles.progresscont}>
         <View style={styles.progress}>
           <ProgressCircle
-            percent={percentage}
-            radius={25}
-            borderWidth={4.5}
-            color="#0063FF"
-            shadowColor="#E0EBFF"
-            bgColor="#fff"
+            percent={props.data.level}
+            radius={20}
+            borderWidth={4}
+            color={Blue.primary}
+            shadowColor={Blue[100]}
+            bgColor="white"
           />
         </View>
-        <View>
-          <Text style={styles.skill}>{props.skill}</Text>
-          <Text style={styles.rating}>{props.rating}/10</Text>
+        <View style={styles.skillInfo}>
+          <Text style={styles.skill}>{props.data.skill}</Text>
+          <Text style={styles.rating}>{props.data.level / 10} / 10</Text>
         </View>
       </View>
-      <View style={styles.option}>
-        <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>
-          <Icon1 name="ellipsis-v" size={17} color="#BDBDBD" />
-        </TouchableWithoutFeedback>
-      </View>
+
+      <Button
+        size="sm"
+        onPress={() => {
+          // props.toggleModal();
+        }}
+        btnStyle={styles.dropdownBtn}
+      >
+        <MaterialCommunityIcons
+          name="dots-vertical"
+          size={17}
+          color={Black[600]}
+        />
+      </Button>
     </View>
   );
 }
@@ -69,29 +93,23 @@ export default function SkillList({ ...props }) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: '3%',
-    marginBottom: '1%'
+    justifyContent: 'space-between'
   },
   progress: {
-    transform: [{ rotateY: '180deg' }],
-    alignSelf: 'flex-start',
-    marginTop: '2%'
+    transform: [{ rotateY: '180deg' }]
   },
   progresscont: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    marginRight: 45
   },
+  skillInfo: { marginLeft: 20 },
   skill: {
-    color: '#000000',
-    fontSize: 16,
-    marginTop: '3%',
-    marginLeft: 18
+    color: 'black',
+    fontSize: 16
   },
   rating: {
-    color: '#7D7987',
-    fontSize: 16,
-    marginTop: '3%',
-    marginLeft: 18
+    color: Black[600],
+    marginTop: 2
   },
   option: {
     marginTop: '2%'
@@ -124,5 +142,10 @@ const styles = StyleSheet.create({
   optiontext: {
     color: 'black',
     marginLeft: '6.2%'
+  },
+  dropdownBtn: {
+    position: 'absolute',
+    right: 0,
+    top: 0
   }
 });

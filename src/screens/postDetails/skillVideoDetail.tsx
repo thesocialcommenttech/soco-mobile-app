@@ -1,7 +1,13 @@
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Dimensions,
+  ScrollView,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import VideoPlayer from 'react-native-video-controls';
 import { getPost } from '~/src/utils/services/user-posts_service/getPost.service';
 import { SkillVideoPost } from '~/src/utils/typings/post';
 import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPost.interface';
@@ -16,6 +22,7 @@ import PostTags from '~/src/components/screens/post-view/PostTags';
 import PostTitle from '~/src/components/screens/post-view/PostTitle';
 import { staticFileSrc } from '~/src/utils/methods';
 import Skeleton from '~/src/components/theme/Skeleton';
+import Video from '~/src/components/theme/Video';
 
 type SkillPostScreenData = GetPostResponse<
   Pick<
@@ -37,38 +44,6 @@ type SkillPostScreenData = GetPostResponse<
     | '_id'
   >
 >['post'];
-
-function Video(props: {
-  videoUrl: SkillPostScreenData['video'];
-  loading?: boolean;
-}) {
-  const windowDim = Dimensions.get('window');
-
-  if (props.loading) {
-    return (
-      <Skeleton
-        style={videoStyles({
-          winW: windowDim.width,
-          winH: windowDim.height
-        })}
-      />
-    );
-  }
-
-  return (
-    <VideoPlayer
-      source={{ uri: staticFileSrc(props.videoUrl) }}
-      style={videoStyles({
-        winW: windowDim.width,
-        winH: windowDim.height
-      })}
-      disableBack={true}
-      disableFullscreen={true}
-      disableTimer={true}
-      paused={true}
-    />
-  );
-}
 
 export default function SkillVideoDetail() {
   const navigation = useNavigation();

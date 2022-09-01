@@ -1,22 +1,10 @@
+import { StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
 import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
-  Keyboard,
-  PermissionsAndroid,
-  Platform,
-  Dimensions,
-  Image,
-  FlatList
-} from 'react-native';
-import React, { useEffect, useState } from 'react';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon2 from 'react-native-vector-icons/AntDesign';
-import { useNavigation } from '@react-navigation/native';
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Bio from './bio';
 import Experiences from './experiences';
@@ -24,339 +12,122 @@ import Certifications from './certifications';
 import Educations from './educations';
 import Skills from './skills';
 import Works from './works';
-import Modal1 from 'react-native-modal';
-import TextInputWithLabel from '../../components/textInputWithLabel';
-import { TextInput as TI } from 'react-native-paper';
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import ImageInputWithLabel from '../../components/createPost/imageInputWithLabel';
-import { launchImageLibrary } from 'react-native-image-picker';
-import Slider from '@react-native-community/slider';
-import AddWork from '../../components/portfolio/addWork';
+import { getPortforlioProfileData } from '~/src/utils/services/user-portfolio_services/getPortforlioProfileData.service';
+import { useSelector } from 'react-redux';
+import { IRootReducer } from '~/src/store/reducers';
+import {
+  PortfolioTabStack,
+  PortfolioTabStackScreenProps
+} from '~/src/utils/typings/stack';
+import Loading from '~/src/components/theme/Loading';
+import { getPortforlioWorkData } from '~/src/utils/services/user-portfolio_services/getPortforlioWorkData.service';
+import Button, { ButtonProps } from '~/src/components/theme/Button';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { usePortfolioData } from '~/src/contexts/portfolio.context';
+import { Black, Blue } from '~/src/utils/colors';
 
-const Tab = createMaterialTopTabNavigator();
+const Tab = createMaterialTopTabNavigator<PortfolioTabStack>();
+
+export function PortfolioUpdateBtn(props: { buttonProps: ButtonProps }) {
+  return (
+    <Button size="xs" {...props.buttonProps}>
+      <MaterialCommunityIcons
+        name="plus-circle-outline"
+        size={24}
+        color="black"
+      />
+    </Button>
+  );
+}
 
 export default function Portfolio() {
   const navigation = useNavigation();
-  const [activeTab, setActiveTab] = useState('Bio');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalVisible1, setModalVisible1] = useState(false);
-  const [modalVisible2, setModalVisible2] = useState(false);
-  const [modalVisible3, setModalVisible3] = useState(false);
-  const [modalVisible4, setModalVisible4] = useState(false);
-  const [modalVisible5, setModalVisible5] = useState(false);
-  const [modalVisible6, setModalVisible6] = useState(false);
-  const [modalVisible7, setModalVisible7] = useState(false);
-  const [date, setDate] = useState(new Date());
-  const [yes, setYes] = useState(true);
-  const [yes1, setYes1] = useState(false);
-  const [yes2, setYes2] = useState(true);
-  const [photoPath, setPhotoPath] = useState<any>();
-  const [value, setValue] = useState(40);
-  const [sliderActive, setSliderActive] = useState(false);
-  const [edunum, setEduNum] = useState(1);
+  const authUser = useSelector((root: IRootReducer) => root.auth.user);
 
-  const onChange = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate;
-    setDate(currentDate);
-    // dispatch(
-    //   setUserDetails({
-    //     ...state,
-    //     dob: currentDate.toLocaleDateString()
-    //   })
-    // );
-  };
+  const route = useRoute<PortfolioTabStackScreenProps['route']>();
+  const { portfolio, profile, setPortfolio, setProfile } = usePortfolioData();
+  const [loading, setLoading] = useState(true);
 
-  const showMode = currentMode => {
-    DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode: currentMode,
-      is24Hour: true
-    });
-  };
+  async function fetchData() {
+    setLoading(true);
+    const [profileResult, portfolioResult] = await Promise.all([
+      getPortforlioProfileData(route.params.username),
+      getPortforlioWorkData(route.params.username)
+    ]);
 
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const activescreen = text => {
-    setActiveTab(text);
-  };
-
-  const requestExternalWritePermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'External Storage Write Permission',
-            message: 'App needs write permission',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK'
-          }
-        );
-        // If WRITE_EXTERNAL_STORAGE Permission is granted
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        Alert.alert('Write permission err', err);
-      }
-      return false;
-    } else {
-      return true;
+    if (profileResult.data.success && portfolioResult.data.success) {
+      setProfile(profileResult.data.data);
+      setPortfolio(portfolioResult.data.data);
     }
-  };
 
-  const chooseImage = async type => {
-    const options = {
-      mediaType: type,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images'
-      }
-    };
-    let isStoragePermitted = await requestExternalWritePermission();
-    if (isStoragePermitted) {
-      launchImageLibrary(options, response => {
-        if (response.didCancel) {
-          Alert.alert('User cancelled Image picker');
-          return;
-        } else if (response.errorCode === 'camera_unavailable') {
-          Alert.alert('Image not available on device');
-          return;
-        } else if (response.errorCode === 'permission') {
-          Alert.alert('Permission not satisfied');
-          return;
-        } else if (response.errorCode === 'others') {
-          Alert.alert(response.errorMessage);
-          return;
-        }
-        setPhotoPath(response);
-      });
+    setLoading(false);
+  }
+
+  useFocusEffect(() => {
+    if (!profile && !portfolio) {
+      fetchData();
     }
-  };
+  });
 
-  const func = () => {
-    chooseImage('photo');
-  };
-
-  const left = (value * (Dimensions.get('window').width - 87)) / 100 - 15;
-
-  const openModal = () => {
-    if (activeTab === 'Experience') {
-      navigation.navigate('Addexperience' as never, {} as never);
-    } else if (activeTab === 'Certificates') {
-      navigation.navigate('Addcertificate' as never, {} as never);
-    } else if (activeTab === 'Skills') {
-      navigation.navigate('Addskill' as never, {} as never);
-    } else if (activeTab === 'Bio') {
-      setModalVisible(true);
-    } else if (activeTab === 'Education') {
-      navigation.navigate('Addeducation' as never, {} as never);
-    } else if (activeTab === 'Works') {
-      setModalVisible7(true);
-    }
-  };
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
-    <>
-      <View style={styles.container}>
-        <Modal1
-          isVisible={modalVisible}
-          backdropColor="black"
-          backdropOpacity={0.3}
-          animationIn="slideInUp"
-          style={styles.modal1}
-          onBackdropPress={() => setModalVisible(false)}
-        >
-          <>
-            <View style={styles.optionview}>
-              <TouchableWithoutFeedback
-              // onPress={() => {
-              //   chooseFile('photo');
-              //   setModalVisible1(false);
-              // }}
-              >
-                <View style={styles.modalrow}>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      navigation.navigate('Updatebio' as never, {} as never);
-                      setModalVisible(false);
-                    }}
-                  >
-                    <Text style={styles.optiontext}>Update Bio</Text>
-                  </TouchableWithoutFeedback>
-                </View>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback>
-                <View style={styles.modalDelete}>
-                  <TouchableWithoutFeedback>
-                    <Text style={styles.optiontext}>
-                      Update Social Accounts
-                    </Text>
-                  </TouchableWithoutFeedback>
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </>
-        </Modal1>
-
-        <Modal1
-          isVisible={modalVisible7}
-          backdropColor="black"
-          backdropOpacity={0.3}
-          animationIn="slideInUp"
-          style={styles.modal1}
-          onBackdropPress={() => setModalVisible7(false)}
-        >
-          <>
-            <View style={styles.optionview}>
-              <TouchableWithoutFeedback
-                onPress={() =>
-                  navigation.navigate('Addblog' as never, {} as never)
-                }
-              >
-                <Text style={styles.workselectiontext}>Blog</Text>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback>
-                <Text style={styles.workselectiontext}>Artwork</Text>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback>
-                <Text style={styles.workselectiontext}>Article</Text>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback>
-                <Text style={styles.workselectiontext}>Skill Video</Text>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback>
-                <Text style={styles.workselectiontext}>Project</Text>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback>
-                <Text style={styles.workselectiontext}>Presentation</Text>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback>
-                <Text style={styles.workselectiontext}>Link</Text>
-              </TouchableWithoutFeedback>
-            </View>
-          </>
-        </Modal1>
-
-        <View style={styles.flexrow}>
-          <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-            <Icon1 name="arrow-left" size={28} color="black" />
-          </TouchableWithoutFeedback>
-          <Text style={styles.mheader}>Portfolio</Text>
-          <View style={styles.plus}>
-            <TouchableWithoutFeedback onPress={() => openModal()}>
-              <Icon2 name="pluscircleo" size={25} color="black" />
-            </TouchableWithoutFeedback>
-          </View>
-        </View>
-        <Tab.Navigator
-          initialRouteName="Bio"
-          // screenListeners={{
-          //   tabBarOnPress: ({ e }) => {
-          //     console.log('Before changing');
-          //     console.log(activeTab);
-          //     console.log(e);
-          //     //setActiveTab(e.target);
-          //     console.log('After changing');
-          //     console.log(activeTab);
-          //   }
-          // }}
-          screenOptions={{
-            tabBarScrollEnabled: true,
-            tabBarLabelStyle: { fontSize: 13 },
-            tabBarActiveTintColor: 'black',
-            tabBarInactiveTintColor: '#BDBDBD',
-            tabBarIndicatorStyle: {
-              backgroundColor: '#0063FF',
-              height: 1.5
-            }
-          }}
-        >
-          <Tab.Screen
-            name="Bio"
-            children={() => <Bio extraData={activescreen} />}
-            // listeners={{
-            //   tabPress: e => {
-            //     const text = e.target;
-            //     const str = text.substring(0, text.indexOf('-'));
-            //     setActiveTab(str);
-            //     console.log(activeTab);
-            //   }
-            // }}
-          />
-          <Tab.Screen
-            name="Experiences"
-            children={() => <Experiences extraData={activescreen} />}
-            // listeners={{
-            //   tabPress: e => {
-            //     const text = e.target;
-            //     const str = text.substring(0, text.indexOf('-'));
-            //     setActiveTab(str);
-            //     console.log(activeTab);
-            //   }
-            // }}
-          />
-          <Tab.Screen
-            name="Certifications"
-            children={() => <Certifications extraData={activescreen} />}
-            // listeners={{
-            //   tabPress: e => {
-            //     const text = e.target;
-            //     const str = text.substring(0, text.indexOf('-'));
-            //     setActiveTab(str);
-            //     console.log(activeTab);
-            //   }
-            // }}
-          />
-          <Tab.Screen
-            name="Educations"
-            children={() => <Educations extraData={activescreen} />}
-            // listeners={{
-            //   tabPress: e => {
-            //     const text = e.target;
-            //     const str = text.substring(0, text.indexOf('-'));
-            //     setActiveTab(str);
-            //     console.log(activeTab);
-            //   }
-            // }}
-          />
-          <Tab.Screen
-            name="Skills"
-            children={() => <Skills extraData={activescreen} />}
-            // listeners={{
-            //   tabPress: e => {
-            //     const text = e.target;
-            //     const str = text.substring(0, text.indexOf('-'));
-            //     setActiveTab(str);
-            //     console.log(activeTab);
-            //   }
-            // }}
-          />
-          <Tab.Screen
-            name="Works"
-            children={() => <Works extraData={activescreen} />}
-            // listeners={{
-            //   tabPress: e => {
-            //     const text = e.target;
-            //     const str = text.substring(0, text.indexOf('-'));
-            //     setActiveTab(str);
-            //     console.log(activeTab);
-            //   }
-            // }}
-          />
-        </Tab.Navigator>
-      </View>
-    </>
+    <View style={styles.container}>
+      <Tab.Navigator
+        initialRouteName="Bio"
+        screenOptions={{
+          tabBarScrollEnabled: true,
+          tabBarPressColor: Black[200],
+          tabBarLabelStyle: { fontSize: 14, textTransform: 'capitalize' },
+          tabBarActiveTintColor: 'black',
+          tabBarInactiveTintColor: Black[500],
+          tabBarStyle: { elevation: 1 },
+          tabBarIndicatorStyle: {
+            backgroundColor: Blue.primary,
+            height: 1.5
+          }
+        }}
+      >
+        <Tab.Screen
+          name="Bio"
+          initialParams={{ username: authUser.username }}
+          component={Bio}
+        />
+        <Tab.Screen
+          name="Experiences"
+          initialParams={{ username: authUser.username }}
+          component={Experiences}
+        />
+        <Tab.Screen
+          name="Certifications"
+          initialParams={{ username: authUser.username }}
+          component={Certifications}
+        />
+        <Tab.Screen
+          name="Educations"
+          initialParams={{ username: authUser.username }}
+          component={Educations}
+        />
+        <Tab.Screen
+          name="Skills"
+          initialParams={{ username: authUser.username }}
+          component={Skills}
+        />
+        <Tab.Screen
+          name="Works"
+          initialParams={{ username: authUser.username }}
+          component={Works}
+        />
+      </Tab.Navigator>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: 'white',
+    flex: 1
   },
   text: {
     color: 'black'

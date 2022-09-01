@@ -1,30 +1,70 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import {
+  Image,
+  LayoutRectangle,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+  ViewStyle
+} from 'react-native';
 import React, { useState } from 'react';
 import CheckBox from '@react-native-community/checkbox';
+import { staticFileSrc } from '~/src/utils/methods';
+import Button from '../theme/Button';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Black, Blue } from '~/src/utils/colors';
 
-export default function AddWork({ ...props }) {
+export default function AddWork(props: {
+  imageUri: string;
+  text: string;
+  style?: StyleProp<ViewStyle>;
+  onSelectionChange?: (isSelected: boolean) => void;
+}) {
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
+  const [dim, setDim] = useState<LayoutRectangle>();
+
+  function onItemPressed() {
+    setToggleCheckBox(!toggleCheckBox);
+    props.onSelectionChange?.(!toggleCheckBox);
+  }
+
   return (
-    <View style={styles.addblogview}>
-      <View style={styles.blogimageandtextview}>
-        <Image
-          style={styles.addblogimage}
-          source={{
-            uri: props.uri
-          }}
+    <View
+      style={[props.style, styles.addblogview]}
+      onLayout={e => {
+        setDim(e.nativeEvent.layout);
+      }}
+    >
+      <TouchableWithoutFeedback onPress={onItemPressed}>
+        <View style={styles.blogimageandtextview}>
+          <Image
+            style={styles.addblogimage}
+            source={{
+              uri: staticFileSrc(props.imageUri)
+            }}
+          />
+          <Text
+            style={[styles.addblogtext, dim && { width: dim.width - 190 }]}
+            numberOfLines={2}
+            lineBreakMode="middle"
+            textBreakStrategy="highQuality"
+          >
+            {props.text}
+          </Text>
+        </View>
+      </TouchableWithoutFeedback>
+      <Button size="xs" onPress={onItemPressed}>
+        <MaterialCommunityIcons
+          size={24}
+          color={Blue.primary}
+          name={
+            toggleCheckBox
+              ? 'checkbox-marked-outline'
+              : 'checkbox-blank-outline'
+          }
         />
-        <Text style={styles.addblogtext} numberOfLines={2}>
-          {props.text}
-        </Text>
-      </View>
-      <View>
-        <CheckBox
-          disabled={false}
-          value={toggleCheckBox}
-          onValueChange={newValue => setToggleCheckBox(newValue)}
-          tintColor={'#000000'}
-        />
-      </View>
+      </Button>
     </View>
   );
 }
@@ -32,24 +72,18 @@ export default function AddWork({ ...props }) {
 const styles = StyleSheet.create({
   addblogview: {
     flexDirection: 'row',
-    marginLeft: '4%',
-    marginRight: '4%',
-    marginTop: '3%',
     justifyContent: 'space-between'
   },
   addblogimage: {
-    height: 80,
     width: 120,
-    borderRadius: 7
+    height: 120 / (16 / 9),
+    borderRadius: 8,
+    backgroundColor: Black[200]
   },
   addblogtext: {
     color: 'black',
-    flexShrink: 1,
-    width: 150,
-    marginBottom: 5,
-    marginLeft: '3%',
-    lineHeight: 19,
-    fontSize: 15
+    flexWrap: 'wrap',
+    marginHorizontal: 15
   },
   blogimageandtextview: {
     flexDirection: 'row'

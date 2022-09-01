@@ -1,6 +1,6 @@
 interface Skill {
-  skill?: string;
-  level?: number;
+  skill: string;
+  level: number;
 }
 
 export interface AddPortforlioSkillRequest {

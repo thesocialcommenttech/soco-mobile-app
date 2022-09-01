@@ -18,33 +18,41 @@ import {
   BottomTabStack,
   MainStack as IMainStack
 } from '../utils/typings/stack';
+import { useSelector } from 'react-redux';
+import { IRootReducer } from '../store/reducers';
 
 const MyTab = createBottomTabNavigator<BottomTabStack>();
 const MyStack = createNativeStackNavigator<IMainStack>();
 
 function AppTabs() {
+  const authUser = useSelector((root: IRootReducer) => root.auth.user);
+
   return (
-    <MyTab.Navigator backBehavior="history">
+    <MyTab.Navigator
+      backBehavior="history"
+      screenOptions={{
+        tabBarHideOnKeyboard: true,
+        headerShown: false,
+        tabBarLabelStyle: {
+          marginBottom: '10%',
+          fontFamily: 'Roboto-Medium',
+          fontSize: 10,
+          color: Colors.GrayBorder
+        },
+        tabBarLabelPosition: 'below-icon',
+        tabBarActiveTintColor: 'white',
+        tabBarInactiveTintColor: 'gray',
+        tabBarStyle: {
+          height: '9%',
+          backgroundColor: Colors.BlackTab
+        }
+      }}
+    >
       <MyTab.Screen
         name="HomeTab"
         component={HomeStack}
         options={{
-          tabBarHideOnKeyboard: true,
-          headerShown: false,
           tabBarLabel: 'Home',
-          tabBarLabelStyle: {
-            marginBottom: '10%',
-            fontFamily: 'Roboto-Medium',
-            fontSize: 10,
-            color: Colors.GrayBorder
-          },
-          tabBarLabelPosition: 'below-icon',
-          tabBarActiveTintColor: 'white',
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: {
-            height: '9%',
-            backgroundColor: Colors.BlackTab
-          },
           tabBarIcon: tabinfo => {
             return (
               <MaterialCommunityIcon
@@ -61,22 +69,7 @@ function AppTabs() {
         name="DiscoverTab"
         component={DiscoverStack}
         options={{
-          tabBarHideOnKeyboard: true,
-          headerShown: false,
           tabBarLabel: 'Discover',
-          tabBarLabelStyle: {
-            marginBottom: '10%',
-            fontFamily: 'Roboto-Medium',
-            fontSize: 10,
-            color: Colors.GrayBorder
-          },
-          tabBarLabelPosition: 'below-icon',
-          tabBarActiveTintColor: 'white',
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: {
-            height: '9%',
-            backgroundColor: Colors.BlackTab
-          },
           tabBarIcon: tabinfo => {
             return (
               <Ionicon
@@ -92,22 +85,11 @@ function AppTabs() {
       <MyTab.Screen
         name="PortfolioTab"
         component={PortfolioStack}
+        initialParams={{ username: authUser.username }}
         options={{
-          tabBarHideOnKeyboard: true,
-          headerShown: false,
           tabBarLabel: 'Portfolio',
-          tabBarLabelStyle: {
-            marginBottom: '10%',
-            fontFamily: 'Roboto-Medium',
-            fontSize: 10,
-            color: Colors.GrayBorder
-          },
-          tabBarLabelPosition: 'below-icon',
-          tabBarActiveTintColor: 'white',
-          tabBarInactiveTintColor: 'gray',
           tabBarStyle: {
-            height: '9%',
-            backgroundColor: Colors.BlackTab
+            display: 'none'
           },
           tabBarIcon: tabinfo => {
             return (
@@ -125,23 +107,8 @@ function AppTabs() {
         name="ProfileTab"
         component={ProfileStack}
         options={{
-          tabBarHideOnKeyboard: true,
-          headerShown: false,
           tabBarLabel: 'Profile',
-          tabBarLabelStyle: {
-            marginBottom: '10%',
-            fontFamily: 'Roboto-Medium',
-            fontSize: 10,
-            color: Colors.GrayBorder
-          },
-          // tabBarActiveBackgroundColor: Colors.GrayBorder,
-          tabBarLabelPosition: 'below-icon',
-          tabBarActiveTintColor: 'white',
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: {
-            height: '9%',
-            backgroundColor: Colors.BlackTab
-          },
+
           tabBarIcon: tabinfo => {
             return (
               <MaterialCommunityIcon

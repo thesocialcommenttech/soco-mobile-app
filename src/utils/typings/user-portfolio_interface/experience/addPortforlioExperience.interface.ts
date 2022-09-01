@@ -1,10 +1,10 @@
 interface Experience {
   company?: string;
   description?: string;
-  from?: Date;
+  from?: Date | string;
   ongoing?: boolean;
   title?: string;
-  to?: Date;
+  to?: Date | string;
 }
 
 export interface AddPortfolioExperienceRequest {

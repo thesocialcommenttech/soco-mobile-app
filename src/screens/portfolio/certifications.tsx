@@ -6,66 +6,42 @@ import {
   View
 } from 'react-native';
 import React, { useState } from 'react';
-import CertificateList from '../../components/portfolio/certificateList';
+import Certification from '../../components/portfolio/Certificaction';
 import Modal1 from 'react-native-modal';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useFocusEffect } from '@react-navigation/native';
+import { PortfolioUpdateBtn } from './portfolio';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
+import { usePortfolioData } from '~/src/contexts/portfolio.context';
 
-const Data = [
-  {
-    id: 1,
-    company: 'Google',
-    date: 'Jan 2022',
-    code: 'ASCXC7899',
-    uri: 'https://reactnative.dev/img/tiny_logo.png'
-  },
-  {
-    id: 2,
-    company: 'Google',
-    date: 'Jan 2022',
-    code: 'ASCXC7899',
-    uri: 'https://reactnative.dev/img/tiny_logo.png'
-  },
-  {
-    id: 3,
-    company: 'Google',
-    date: 'Jan 2022',
-    code: 'ASCXC7899',
-    uri: 'https://reactnative.dev/img/tiny_logo.png'
-  },
-  {
-    id: 4,
-    company: 'Google',
-    date: 'Jan 2022',
-    code: 'ASCXC7899',
-    uri: 'https://reactnative.dev/img/tiny_logo.png'
-  },
-  {
-    id: 5,
-    company: 'Google',
-    date: 'Jan 2022',
-    code: 'ASCXC7899',
-    uri: 'https://reactnative.dev/img/tiny_logo.png'
-  }
-];
-
-export default function Certifications({ ...props }) {
+export default function Certifications() {
   const [modalVisible, setModalVisible] = useState(false);
+  const { portfolio } = usePortfolioData();
+  const navigation =
+    useNavigation<PortfolioTabStackScreenProps['navigation']>();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      navigation.getParent().setOptions({
+        headerRight: () => (
+          <PortfolioUpdateBtn
+            buttonProps={{
+              onPress: () => {
+                navigation.navigate('Addcertificate');
+              }
+            }}
+          />
+        )
+      });
+    }, [navigation])
+  );
+
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
-  useFocusEffect(
-    React.useCallback(() => {
-      //Alert.alert('Screen was focused');
-      props.extraData('Certificates');
-      return () => {
-        //Alert.alert('Screen was unfocused');
-        // Useful for cleanup functions
-      };
-    }, [props])
-  );
+
   return (
-    <View style={styles.container}>
+    <View>
       <Modal1
         isVisible={modalVisible}
         backdropColor="black"
@@ -96,35 +72,27 @@ export default function Certifications({ ...props }) {
           </View>
         </>
       </Modal1>
-      <View style={styles.list}>
-        <FlatList
-          data={Data}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => (
-            <CertificateList
-              company={item.company}
-              date={item.date}
-              code={item.code}
-              uri={item.uri}
-              toggleModal={toggleModal}
-            />
-          )}
-        />
-      </View>
+      <FlatList
+        style={{ overflow: 'visible' }}
+        contentContainerStyle={styles.container}
+        data={portfolio.certifications}
+        keyExtractor={item => item._id}
+        renderItem={({ item }) => (
+          <Certification data={item} style={styles.certificationItem} />
+        )}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: 'white'
+    // flex: 1,
+    padding: 20,
+    paddingBottom: 0
   },
-  list: {
-    marginLeft: '2%',
-    marginRight: '2%',
-    marginTop: '2%'
+  certificationItem: {
+    marginBottom: 20
   },
   modal1: {
     width: '100%',

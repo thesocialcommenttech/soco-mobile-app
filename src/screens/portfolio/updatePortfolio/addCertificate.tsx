@@ -1,371 +1,393 @@
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import React from 'react';
 import {
-  Alert,
-  Keyboard,
-  PermissionsAndroid,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native';
-import React, { useState } from 'react';
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+  DateTimePickerAndroid,
+  DateTimePickerEvent
+} from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
-import TextInputWithLabel from '../../../components/textInputWithLabel';
-import { TextInput as TI } from 'react-native-paper';
-import ImageInputWithLabel from '../../../components/createPost/imageInputWithLabel';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
+import Button from '~/src/components/theme/Button';
+import { useFormik } from 'formik';
+import { bool, date, object, string } from 'yup';
+import produce from 'immer';
+import { usePortfolioData } from '~/src/contexts/portfolio.context';
+import { addPortforlioCertification } from '~/src/utils/services/user-portfolio_services/certifications/addPortforlioCertification.service';
+import { AddPortforlioCertificationRequest } from '~/src/utils/typings/user-portfolio_interface/certifications/addPortforlioCertification.interface';
+import dayjs from 'dayjs';
+import { Input, RadioButton } from '~/src/components/theme/Input';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Black } from '~/src/utils/colors';
 
 export default function AddCertificate() {
-  const [date, setDate] = useState(new Date());
   const navigation = useNavigation();
-  const [yes1, setYes1] = useState(true);
-  const [photoPath, setPhotoPath] = useState<any>();
-  const showMode = currentMode => {
+
+  const { portfolio, setPortfolio } = usePortfolioData();
+
+  const addCertificationFormSchema = object({
+    title: string().trim().required('Title is required'),
+    issue_date: string().nullable().required('Issue date is required'),
+    credential_id: string().trim(),
+    issuer_organization: string().trim().required('Issuer is required'),
+    credential_url: string().url('Invalid Url').trim(),
+    do_expire: bool()
+      .default(true)
+      .oneOf([true, false])
+      .required('Is Expiry is required'),
+    expiration_date: string()
+      .nullable()
+      .when('do_expire', {
+        is: true,
+        then: string()
+          .nullable()
+          .required('Expiration date is required')
+          .test({
+            test: (value, ctx) => {
+              return dayjs(value).isAfter(ctx.parent.issue_date);
+            },
+            message: 'Expiration date cannot be before issue date'
+          }),
+        otherwise: string().nullable().default(null)
+      }),
+    certimage: object({
+      name: string().required(),
+      type: string()
+        .oneOf(
+          ['image/png', 'image/jpeg', 'image/jpg'],
+          'Only PNG, JPEG, JPG are allowed'
+        )
+        .required(),
+      uri: string().required()
+    })
+      .nullable()
+      .required('Certificate Image is required')
+  });
+
+  function openDatePicker(
+    currValue: string,
+    onChange: (event: DateTimePickerEvent, date?: Date) => void
+  ) {
     DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode: currentMode,
-      is24Hour: true
+      value: currValue ? new Date(currValue) : new Date(),
+      mode: 'date',
+      is24Hour: true,
+      onChange
     });
-  };
+  }
 
-  const requestExternalWritePermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'External Storage Write Permission',
-            message: 'App needs write permission',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK'
-          }
-        );
-        // If WRITE_EXTERNAL_STORAGE Permission is granted
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        Alert.alert('Write permission err', err);
-      }
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  const chooseImage = async type => {
-    const options = {
-      mediaType: type,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images'
-      }
-    };
-    let isStoragePermitted = await requestExternalWritePermission();
-    if (isStoragePermitted) {
-      launchImageLibrary(options, response => {
-        if (response.didCancel) {
-          Alert.alert('User cancelled Image picker');
-          return;
-        } else if (response.errorCode === 'camera_unavailable') {
-          Alert.alert('Image not available on device');
-          return;
-        } else if (response.errorCode === 'permission') {
-          Alert.alert('Permission not satisfied');
-          return;
-        } else if (response.errorCode === 'others') {
-          Alert.alert(response.errorMessage);
-          return;
-        }
-        setPhotoPath(response);
+  async function chooseFile() {
+    try {
+      const imageAsset = await launchImageLibrary({
+        selectionLimit: 1,
+        mediaType: 'photo',
+        includeBase64: false
       });
+
+      if (imageAsset.assets.length > 0) {
+        formik.setFieldValue('certimage', {
+          name: imageAsset.assets[0].fileName,
+          type: imageAsset.assets[0].type,
+          uri: imageAsset.assets[0].uri
+        });
+      }
+    } catch (error) {}
+  }
+
+  async function submitCertification(
+    values: AddPortforlioCertificationRequest
+  ) {
+    console.log(values);
+
+    const result = await addPortforlioCertification(values);
+
+    if (result.data.success) {
+      setPortfolio(
+        produce(portfolio, draft => {
+          draft.certifications.push(result.data.certification);
+        })
+      );
+
+      navigation.goBack();
     }
-  };
+  }
 
-  const func = () => {
-    chooseImage('photo');
-  };
+  const formik = useFormik<AddPortforlioCertificationRequest>({
+    initialValues: {
+      title: '',
+      issue_date: null,
+      credential_id: '',
+      issuer_organization: '',
+      credential_url: '',
+      do_expire: true,
+      expiration_date: '',
+      certimage: null
+    },
+    validationSchema: addCertificationFormSchema,
+    onSubmit: submitCertification
+  });
 
-  const onChange = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate;
-    setDate(currentDate);
-    // dispatch(
-    //   setUserDetails({
-    //     ...state,
-    //     dob: currentDate.toLocaleDateString()
-    //   })
-    // );
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
   return (
     <View>
       <ScrollView>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.addcertificateview}>
-            <View style={styles.addcertificateheader}>
-              <Text style={styles.addcertificatetxt}>Add Certificate</Text>
-              <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-                <Icon1 name="close" size={25} color="#C9D1D8" />
-              </TouchableWithoutFeedback>
-            </View>
-            <View style={styles.addexpdetails}>
-              {photoPath
-                ? [
-                    <ImageInputWithLabel
-                      label="Thumbnail"
-                      func={func}
-                      uri={photoPath.assets[0].uri}
-                      // onChangeText={formik.handleChange('email')}
-                      // value={formik.values.email}
-                      // errorTxt={formik.touched.email && formik.errors.email}
-                      // onBlur={formik.handleBlur('email')}
-                    />
-                  ]
-                : [
-                    <ImageInputWithLabel
-                      label="Thumbnail"
-                      func={func}
-                      // onChangeText={formik.handleChange('email')}
-                      // value={formik.values.email}
-                      // errorTxt={formik.touched.email && formik.errors.email}
-                      // onBlur={formik.handleBlur('email')}
-                    />
-                  ]}
-              <TextInputWithLabel
-                placeholder="Give Suitable Title"
-                label="Title"
-                inputStyle={styles.emailTB}
-                // onChangeText={formik.handleChange('username')}
-                // value={formik.values.username}
-                // errorTxt={formik.touched.username && formik.errors.username}
-                // onBlur={formik.handleBlur('username')}
-              />
-
-              <TextInputWithLabel
-                placeholder="Give Issuer institute name"
-                label="Issuer Name"
-                inputStyle={styles.emailTB}
-                // onChangeText={formik.handleChange('username')}
-                // value={formik.values.username}
-                // errorTxt={formik.touched.username && formik.errors.username}
-                // onBlur={formik.handleBlur('username')}
-              />
-
-              <TextInputWithLabel
-                placeholder="Give certificate id eg. ABCD1234X"
-                label="Certificate Id"
-                inputStyle={styles.emailTB}
-                // onChangeText={formik.handleChange('username')}
-                // value={formik.values.username}
-                // errorTxt={formik.touched.username && formik.errors.username}
-                // onBlur={formik.handleBlur('username')}
-              />
-
-              <TextInputWithLabel
-                placeholder="Give certificate url"
-                label="Certificate Url"
-                inputStyle={styles.emailTB}
-                // onChangeText={formik.handleChange('username')}
-                // value={formik.values.username}
-                // errorTxt={formik.touched.username && formik.errors.username}
-                // onBlur={formik.handleBlur('username')}
-              />
-
-              <TextInputWithLabel
-                placeholder="dd/mm/yyyy"
-                label="Issue Date"
-                inputStyle={styles.dobTB}
-                //value={date.toLocaleDateString()}
-                // errorTxt={formik.touched.dob && formik.errors.dob}
-                // onBlur={formik.handleBlur('dob')}
-                right={
-                  <TI.Icon
-                    color="#000"
-                    name={'calendar-blank'}
-                    style={styles.cal}
-                    onPress={showDatepicker}
+        <View style={styles.formCt}>
+          <Input
+            label="Thumbnail"
+            error={
+              formik.touched.certimage && (formik.errors.certimage as string)
+            }
+          >
+            {({ style }) => (
+              <View
+                style={[style, { flexDirection: 'row', paddingHorizontal: 20 }]}
+              >
+                {formik.values.certimage && (
+                  <Image
+                    style={{
+                      width: 170,
+                      height: 170 / (16 / 9),
+                      borderRadius: 8
+                    }}
+                    source={{ uri: formik.values.certimage.uri }}
                   />
+                )}
+                <Button
+                  btnStyle={{
+                    alignSelf: 'stretch',
+                    marginLeft: 20,
+                    flexGrow: 1,
+                    justifyContent: 'center'
+                  }}
+                  textStyle={{ color: Black[600] }}
+                  text={
+                    formik.values.certimage ? 'Change Image' : 'Select Image'
+                  }
+                  onPress={() => {
+                    chooseFile();
+                  }}
+                />
+              </View>
+            )}
+          </Input>
+
+          <Input
+            inputProp={{
+              placeholder: 'Give Suitable Title',
+              onChangeText: formik.handleChange('title'),
+              value: formik.values.title,
+              onBlur: formik.handleBlur('title')
+            }}
+            style={styles.MT}
+            label="Title"
+            error={formik.touched.title && formik.errors.title}
+          />
+
+          <Input
+            inputProp={{
+              placeholder: 'Give issuer institute name',
+              onChangeText: formik.handleChange('issuer_organization'),
+              value: formik.values.issuer_organization,
+              onBlur: formik.handleBlur('issuer_organization')
+            }}
+            style={styles.MT}
+            label="Issuer Name"
+            error={
+              formik.touched.issuer_organization &&
+              formik.errors.issuer_organization
+            }
+          />
+
+          <Input
+            inputProp={{
+              placeholder: 'Give certificate ID eg. ABCD123',
+              onChangeText: formik.handleChange('credential_id'),
+              value: formik.values.credential_id,
+              onBlur: formik.handleBlur('credential_id')
+            }}
+            style={styles.MT}
+            label="Certification ID"
+            error={formik.touched.credential_id && formik.errors.credential_id}
+          />
+
+          <Input
+            inputProp={{
+              placeholder: 'Give certification URL',
+              onChangeText: formik.handleChange('credential_url'),
+              value: formik.values.credential_url,
+              onBlur: formik.handleBlur('credential_url')
+            }}
+            style={styles.MT}
+            label="Certificat URL"
+            error={
+              formik.touched.credential_url && formik.errors.credential_url
+            }
+          />
+
+          <Input
+            label="Issue Date"
+            style={styles.MT}
+            onPress={() => {
+              formik.setFieldTouched('issue_date');
+              openDatePicker(
+                formik.values.issue_date,
+                async (event, selectedDate) => {
+                  if (event.type === 'set') {
+                    await formik.setFieldValue(
+                      'issue_date',
+                      selectedDate.toISOString()
+                    );
+                  }
                 }
-                editable={false}
-              />
-
-              <View style={styles.labelBox}>
-                <Text style={styles.label}>IS Expired</Text>
-              </View>
-              <View style={styles.selectionview}>
-                <TouchableWithoutFeedback onPress={() => setYes1(true)}>
-                  <View style={[yes1 ? styles.selectactive : styles.select]}>
-                    <Text
-                      style={[
-                        yes1 ? styles.intextactive : styles.intextinactive
-                      ]}
-                    >
-                      Yes
-                    </Text>
-                  </View>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={() => setYes1(false)}>
-                  <View style={[!yes1 ? styles.selectactive : styles.select]}>
-                    <Text
-                      style={[
-                        !yes1 ? styles.intextactive : styles.intextinactive
-                      ]}
-                    >
-                      No
-                    </Text>
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-
-              {!yes1
-                ? []
-                : [
-                    <TextInputWithLabel
-                      placeholder="dd/mm/yyyy"
-                      label="Expiry Date"
-                      inputStyle={styles.dobTB}
-                      //value={date.toLocaleDateString()}
-                      // errorTxt={formik.touched.dob && formik.errors.dob}
-                      // onBlur={formik.handleBlur('dob')}
-                      right={
-                        <TI.Icon
-                          color="#000"
-                          name={'calendar-blank'}
-                          style={styles.cal}
-                          onPress={showDatepicker}
-                        />
+              );
+            }}
+            inputProp={{
+              placeholder: 'dd/mm/yyyy',
+              value:
+                formik.values.issue_date &&
+                dayjs(formik.values.issue_date).format('DD/MM/YYYY'),
+              editable: false,
+              onChangeText: formik.handleChange('issue_date'),
+              onBlur: formik.handleBlur('issue_date')
+            }}
+            error={
+              formik.touched.issue_date && (formik.errors.issue_date as string)
+            }
+            suffix={
+              <Button
+                size="sm"
+                btnStyle={{ alignSelf: 'center', marginRight: -15 }}
+                onPress={e => {
+                  formik.setFieldTouched('issue_date');
+                  openDatePicker(
+                    formik.values.issue_date,
+                    async (event, selectedDate) => {
+                      if (event.type === 'set') {
+                        await formik.setFieldValue(
+                          'issue_date',
+                          selectedDate.toISOString()
+                        );
                       }
-                      editable={false}
-                    />
-                  ]}
-            </View>
-            <View style={styles.button}>
-              <TouchableWithoutFeedback>
-                <Text style={styles.btnText}>Add</Text>
-              </TouchableWithoutFeedback>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
+                    }
+                  );
+                }}
+              >
+                <MaterialCommunityIcons name="calendar" size={24} />
+              </Button>
+            }
+          />
+
+          <Input
+            label="Expiration"
+            style={styles.MT}
+            error={formik.touched.do_expire && formik.errors.do_expire}
+          >
+            {({ style }) => (
+              <View
+                style={[style, { flexDirection: 'row', paddingHorizontal: 20 }]}
+              >
+                <RadioButton
+                  selected={formik.values.do_expire}
+                  buttonProps={{
+                    fullWidth: true,
+                    text: 'Yes',
+                    btnStyle: { marginRight: 20 },
+                    onPress: () => {
+                      formik.setFieldValue('do_expire', true);
+                    }
+                  }}
+                />
+                <RadioButton
+                  selected={!formik.values.do_expire}
+                  buttonProps={{
+                    fullWidth: true,
+                    text: 'No',
+                    btnStyle: { flexGrow: 1 },
+                    onPress: () => {
+                      formik.setFieldValue('do_expire', false);
+                    }
+                  }}
+                />
+              </View>
+            )}
+          </Input>
+
+          {formik.values.do_expire && (
+            <Input
+              label="Expiry Date"
+              style={styles.MT}
+              onPress={() => {
+                formik.setFieldTouched('expiration_date');
+                openDatePicker(
+                  formik.values.expiration_date,
+                  async (event, selectedDate) => {
+                    if (event.type === 'set') {
+                      await formik.setFieldValue(
+                        'expiration_date',
+                        selectedDate.toISOString()
+                      );
+                    }
+                  }
+                );
+              }}
+              inputProp={{
+                placeholder: 'dd/mm/yyyy',
+                value:
+                  formik.values.expiration_date &&
+                  dayjs(formik.values.expiration_date).format('DD/MM/YYYY'),
+                editable: false,
+                onChangeText: formik.handleChange('expiration_date'),
+                onBlur: formik.handleBlur('expiration_date')
+              }}
+              error={
+                formik.touched.expiration_date &&
+                (formik.errors.expiration_date as string)
+              }
+              suffix={
+                <Button
+                  size="sm"
+                  btnStyle={{ alignSelf: 'center', marginRight: -15 }}
+                  onPress={e => {
+                    formik.setFieldTouched('expiration_date');
+                    openDatePicker(
+                      formik.values.expiration_date,
+                      async (event, selectedDate) => {
+                        if (event.type === 'set') {
+                          await formik.setFieldValue(
+                            'expiration_date',
+                            selectedDate.toISOString()
+                          );
+                        }
+                      }
+                    );
+                  }}
+                >
+                  <MaterialCommunityIcons name="calendar" size={24} />
+                </Button>
+              }
+            />
+          )}
+          <Button
+            type="filled"
+            fullWidth
+            text="Add"
+            processing={formik.isSubmitting}
+            disabled={formik.isSubmitting}
+            onPress={formik.handleSubmit}
+            btnStyle={styles.submitBtn}
+          />
+        </View>
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  addcertificateview: {
-    backgroundColor: 'white',
-    flex: 1
+  formCt: {
+    flex: 1,
+    padding: 20
   },
-  addcertificatetxt: {
-    color: 'black',
-    fontSize: 17,
-    fontWeight: '500'
+  MT: {
+    marginTop: 27
   },
-  addcertificateheader: {
-    marginLeft: '5%',
-    marginRight: '5%',
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  addexpdetails: {
-    marginLeft: '5%',
-    marginRight: '5%'
-  },
-  selectionview: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: '-0.2%',
-    borderWidth: 1,
-    borderColor: '#DCDCDC',
-    borderRadius: 5,
-    paddingTop: 10,
-    paddingLeft: 13,
-    paddingRight: 13,
-    paddingBottom: 15
-  },
-  select: {
-    borderColor: '#FFCA12',
-    borderWidth: 1.5,
-    borderRadius: 5,
-    paddingTop: '2.5%',
-    paddingBottom: '2.5%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '48%',
-    marginTop: '4%'
-  },
-  intextinactive: {
-    color: 'black'
-  },
-  intextactive: {
-    color: 'black',
-    fontWeight: 'bold'
-  },
-  selectactive: {
-    borderColor: '#FFCA12',
-    borderWidth: 1.5,
-    borderRadius: 5,
-    backgroundColor: '#FFF4CC',
-    paddingTop: '2.5%',
-    paddingBottom: '2.5%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '48%',
-    marginTop: '4%'
-  },
-  dobTB: {
-    marginTop: '-6%'
-  },
-  cal: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  emailTB: {
-    marginTop: '-5.5%',
-    paddingLeft: 10
-  },
-  label: {
-    fontSize: 14,
-    fontFamily: 'Roboto-Bold',
-    fontWeight: '800',
-    lineHeight: 14,
-    fontStyle: 'normal',
-    color: '#000',
-    padding: '2%',
-    marginBottom: '-3.5%',
-    textTransform: 'uppercase'
-  },
-  labelBox: {
-    backgroundColor: 'white',
-    alignSelf: 'flex-start',
-    marginLeft: '9.5%',
-    zIndex: 9999,
-    marginTop: '3%',
-    paddingLeft: 6,
-    paddingRight: 6,
-    marginBottom: '-1.5%'
-  },
-  button: {
-    marginTop: '7%',
-    marginBottom: '7%',
-    marginLeft: '5%',
-    marginRight: '5%',
-    paddingTop: 15,
-    paddingBottom: 15,
-    backgroundColor: '#0063FF',
-    borderRadius: 5,
-    alignItems: 'center'
-  },
-  btnText: {
-    color: '#FFFFFF',
-    fontWeight: '500'
+  submitBtn: {
+    marginTop: 30
   }
 });

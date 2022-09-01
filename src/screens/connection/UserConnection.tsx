@@ -13,7 +13,10 @@ import { User } from '~/src/utils/typings/user-profile_interface/getUserData.int
 import { staticFileSrc } from '~/src/utils/methods';
 import { Black } from '~/src/utils/colors';
 import { StackActions, useNavigation } from '@react-navigation/native';
-import { MainTabNavigation } from '~/src/utils/typings/stack';
+import {
+  ConnectionScreenProps,
+  MainTabNavigation
+} from '~/src/utils/typings/stack';
 import Button from '~/src/components/theme/Button';
 import { unfollowUser } from '~/src/utils/services/follow-user_service/unfollowUser.service';
 import { followUser } from '~/src/utils/services/follow-user_service/followUser.service';
@@ -31,7 +34,7 @@ export default function UserConnection({
   user: Pick<User, 'username' | 'name' | 'profileImage' | '_id'>;
   style?: StyleProp<ViewStyle>;
 }) {
-  const navigation = useNavigation<MainTabNavigation>();
+  const navigation = useNavigation<ConnectionScreenProps['navigation']>();
   const [loading, setLoading] = useState(false);
   const [following, setFollowing] = useState(isFollowing);
 

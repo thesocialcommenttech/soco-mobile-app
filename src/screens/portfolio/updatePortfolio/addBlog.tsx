@@ -7,125 +7,121 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import AddWork from '../../../components/portfolio/addWork';
-
-const Data = [
-  {
-    key: 1,
-    uri: 'https://reactnative.dev/img/tiny_logo.png',
-    text: 'Wear a mask bonk ban workout walk negronis bumping elbows and tapping feet fine dining ready made meals close contact.'
-  },
-  {
-    key: 2,
-    uri: 'https://reactnative.dev/img/tiny_logo.png',
-    text: 'Aged 60 dressing 30 conservative in your old age playing bridge RV roadtrips just call it weed still paying in cash lifestyle villages so whats the damage? semi-retired.'
-  },
-  {
-    key: 3,
-    uri: 'https://reactnative.dev/img/tiny_logo.png',
-    text: 'Wellness holotropic breathwork colon hydrotherapy what is wellness anyway? Im gluten free infrared sauna blanket super elixer.'
-  },
-  {
-    key: 4,
-    uri: 'https://reactnative.dev/img/tiny_logo.png',
-    text: 'Perplexed retail investor discount window lending wall street liquidity all about the Benjamins.'
-  },
-  {
-    key: 5,
-    uri: 'https://reactnative.dev/img/tiny_logo.png',
-    text: 'High vis vest backyard builder safety first scissor lift coffee break.'
-  },
-  {
-    key: 6,
-    uri: 'https://reactnative.dev/img/tiny_logo.png',
-    text: 'Tequilla and lime chicken three hat restaurant artisnal anything flame grilled campers duck pancakes a la carte.'
-  },
-  {
-    key: 7,
-    uri: 'https://reactnative.dev/img/tiny_logo.png',
-    text: 'Crystal waters cruise insider shore tours romance at sea whale shark diving back packers Vanuatu not quite Fiji the scenic route.'
-  }
-  // {
-  //   key: 8,
-  //   uri: 'https://reactnative.dev/img/tiny_logo.png',
-  //   text: 'Cinnamon wine tasting old world favorite French chardonnay quit hating on Merlot ask the sommelier I never drink anything with a screw cap new world wines the wine maker.'
-  // }
-];
+import Button from '~/src/components/theme/Button';
+import { getUserWorksForPortfolio } from '~/src/utils/services/user-portfolio_services/work/getUserWorksForPortfolio.service';
+import { GetUserWorksForPortfolioResponse } from '~/src/utils/typings/user-portfolio_interface/work/getUserWorksForPortfolio.interface';
+import Loading from '~/src/components/theme/Loading';
+import { setPortforlioWorkData } from '~/src/utils/services/user-portfolio_services/work/setPortforlioWorkData.service';
+import { IPortfolioStack_AddBlogScreen } from '~/src/utils/typings/stack';
+import { produce } from 'immer';
+import { usePortfolioData } from '~/src/contexts/portfolio.context';
 
 export default function AddBlog() {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<IPortfolioStack_AddBlogScreen['navigation']>();
+  const route = useRoute<IPortfolioStack_AddBlogScreen['route']>();
+
+  const postType = useMemo(() => route.params?.postType, [route.params]);
+
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
+  const selectedPosts = useRef<Set<string>>(new Set());
+  const { portfolio, setPortfolio } = usePortfolioData();
+
+  const [posts, setPosts] =
+    useState<GetUserWorksForPortfolioResponse['posts']>();
+
+  async function submitWork() {
+    setSubmitting(true);
+    const result = await setPortforlioWorkData({
+      postType: postType,
+      postsList: Array.from(selectedPosts.current)
+    });
+
+    if (result.data.success) {
+      setPortfolio(
+        produce(portfolio, draft => {
+          draft.work[postType].push(...(result.data.posts as any));
+        })
+      );
+      navigation.goBack();
+    }
+  }
+
+  async function fetchData() {
+    setLoading(true);
+    const result = await getUserWorksForPortfolio(route.params.postType);
+    if (result.data.success) {
+      setPosts(result.data.posts);
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <View style={styles.formCt}>
+      {loading ? (
+        <Loading />
+      ) : posts.length === 0 ? (
+        <Text style={{ textAlign: 'center' }}>
+          No {route.params.postType} to add
+        </Text>
+      ) : (
         <>
-          <View style={styles.blogview}>
-            <View style={styles.updatebioheader}>
-              <Text style={styles.updatebiotxt}>Add Blog</Text>
-              <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-                <Icon1 name="close" size={25} color="#C9D1D8" />
-              </TouchableWithoutFeedback>
-            </View>
-            <View style={styles.addblogview}>
-              <ScrollView>
-                <FlatList
-                  data={Data}
-                  keyExtractor={item => item.key.toString()}
-                  renderItem={({ item }) => (
-                    <AddWork uri={item.uri} text={item.text} />
-                  )}
-                />
-              </ScrollView>
-            </View>
-            <View style={styles.addblogbutton}>
-              <TouchableWithoutFeedback>
-                <Text style={styles.btnText}>Add</Text>
-              </TouchableWithoutFeedback>
-            </View>
-          </View>
+          <FlatList
+            data={posts}
+            keyExtractor={item => item._id}
+            renderItem={({ item }) => (
+              <AddWork
+                imageUri={item.featureImage}
+                text={item.title}
+                style={styles.workItem}
+                onSelectionChange={isSelected => {
+                  if (isSelected) {
+                    selectedPosts.current.add(item._id);
+                  } else {
+                    selectedPosts.current.delete(item._id);
+                  }
+                }}
+              />
+            )}
+          />
+          <Button
+            type="filled"
+            fullWidth
+            text="Add"
+            processing={submitting}
+            disabled={submitting}
+            onPress={submitWork}
+            btnStyle={styles.submitBtn}
+          />
         </>
-      </TouchableWithoutFeedback>
-    </>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  updatebioheader: {
-    marginLeft: '5%',
-    marginRight: '5%',
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between'
+  formCt: {
+    flex: 1,
+    padding: 20
   },
-  updatebiotxt: {
-    color: 'black',
-    fontSize: 17,
-    fontWeight: '500'
+  MT: {
+    marginTop: 27
   },
-  addblogbutton: {
-    marginTop: '3%',
-    marginBottom: '3%',
-    marginLeft: '5%',
-    marginRight: '5%',
-    paddingTop: 15,
-    paddingBottom: 15,
-    backgroundColor: '#0063FF',
-    borderRadius: 5,
-    alignItems: 'center'
+  submitBtn: {
+    marginTop: 30
   },
-  addblogview: {
-    flexDirection: 'row',
-    marginTop: '3%',
-    marginLeft: '1%',
-    marginRight: '1%',
-    justifyContent: 'space-between',
-    flex: 1
-  },
-  blogview: {
-    backgroundColor: 'white',
-    flex: 1
+  workItem: {
+    marginBottom: 20
   },
   btnText: {
     color: '#FFFFFF',

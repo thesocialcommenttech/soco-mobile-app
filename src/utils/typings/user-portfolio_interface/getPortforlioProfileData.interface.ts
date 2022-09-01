@@ -1,22 +1,21 @@
-export interface GetPortforlioProfileDataRequest {
-  username?: string;
-}
+import { User } from '../user-profile_interface/getUserData.interface';
 
-interface Data {
-  academics?: string;
-  dateOfBirth?: Date;
-  detected_skills?: string[];
-  email?: string;
-  name?: string;
-  phone?: number;
-  portfolioLock?: string;
-  profileImage?: string;
-  premium?: boolean;
-  username?: string;
-  _id?: string;
-}
+export type UserPortfolioProfile = Pick<
+  User,
+  | 'academics'
+  | 'bio'
+  | 'dateOfBirth'
+  | 'email'
+  | 'name'
+  | 'phone'
+  | 'portfolioLock'
+  | 'premium'
+  | 'profileImage'
+  | 'username'
+  | '_id'
+>;
 
 export interface GetPortforlioProfileDataResponse {
-  data?: Data;
+  data?: UserPortfolioProfile;
   success?: boolean;
 }

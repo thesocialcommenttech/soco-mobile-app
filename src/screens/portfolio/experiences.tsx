@@ -6,61 +6,44 @@ import {
   View
 } from 'react-native';
 import React, { useState } from 'react';
-import Experiencelist from '../../components/portfolio/experiencelist';
+import Experience from '../../components/portfolio/experiencelist';
 import Modal1 from 'react-native-modal';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useFocusEffect } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { PortfolioUpdateBtn } from './portfolio';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
+import { usePortfolioData } from '~/src/contexts/portfolio.context';
 
-const Data = [
-  {
-    id: 1,
-    title: 'Internship in CVision.ai',
-    date: 'Aug, 2019 — Sep, 2019',
-    detail:
-      'I am hired as a developer intern, my task is to build there web appwhich is GUI to run there AI model. Full web app is designed anddeveloped by me in react.'
-  },
-  {
-    id: 2,
-    title: 'Internship in CVision.ai',
-    date: 'Aug, 2019 — Sep, 2019',
-    detail:
-      'I am hired as a developer intern, my task is to build there web appwhich is GUI to run there AI model. Full web app is designed anddeveloped by me in react.'
-  },
-  {
-    id: 3,
-    title: 'Tech Lead in shopoasis',
-    date: 'Aug, 2019 — Sep, 2019',
-    detail:
-      'My work is to design and develop their e-commerce website. Also has the responsibility to create a scaleable architecture. Also to maintain the seller tools. And make sure it is easy to use for their sellers.'
-  },
-  {
-    id: 4,
-    title: 'Tech Lead in shopoasis',
-    date: 'Aug, 2019 — Sep, 2019',
-    detail:
-      'My work is to design and develop their e-commerce website. Also has the responsibility to create a scaleable architecture. Also to maintain the seller tools. And make sure it is easy to use for their sellers.'
-  }
-];
-
-export default function Experiences({ ...props }) {
+export default function Experiences() {
   const [modalVisible, setModalVisible] = useState(false);
+  const {
+    portfolio: { experience }
+  } = usePortfolioData();
+  const navigation =
+    useNavigation<PortfolioTabStackScreenProps['navigation']>();
+
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
 
   useFocusEffect(
     React.useCallback(() => {
-      //Alert.alert('Screen was focused');
-      props.extraData('Experience');
-      return () => {
-        //Alert.alert('Screen was unfocused');
-        // Useful for cleanup functions
-      };
-    }, [props])
+      navigation.getParent().setOptions({
+        headerRight: () => (
+          <PortfolioUpdateBtn
+            buttonProps={{
+              onPress: () => {
+                navigation.navigate('Addexperience');
+              }
+            }}
+          />
+        )
+      });
+    }, [navigation])
   );
 
   return (
-    <View style={styles.container}>
+    <View>
       <Modal1
         isVisible={modalVisible}
         backdropColor="black"
@@ -78,13 +61,17 @@ export default function Experiences({ ...props }) {
             // }}
             >
               <View style={styles.modalrow}>
-                <Icon1 name="pencil-outline" size={22} color="black" />
+                <MaterialCommunityIcons
+                  name="pencil-outline"
+                  size={22}
+                  color="black"
+                />
                 <Text style={styles.optiontext}>Edit</Text>
               </View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback>
               <View style={styles.modalDelete}>
-                <Icon1 name="delete" size={22} color="black" />
+                <MaterialCommunityIcons name="delete" size={22} color="black" />
                 <Text style={styles.optiontext}>Delete</Text>
               </View>
             </TouchableWithoutFeedback>
@@ -92,16 +79,11 @@ export default function Experiences({ ...props }) {
         </>
       </Modal1>
       <FlatList
-        data={Data}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.id.toString()}
+        contentContainerStyle={styles.container}
+        data={experience}
+        keyExtractor={item => item._id}
         renderItem={({ item }) => (
-          <Experiencelist
-            title={item.title}
-            date={item.date}
-            detail={item.detail}
-            toggleModal={toggleModal}
-          />
+          <Experience data={item} style={styles.experienceItem} />
         )}
       />
     </View>
@@ -110,11 +92,12 @@ export default function Experiences({ ...props }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingLeft: '5.5%',
-    paddingRight: '7%',
-    paddingTop: '2%',
-    backgroundColor: 'white'
+    // flex: 1,
+    padding: 20,
+    paddingBottom: 0
+  },
+  experienceItem: {
+    marginBottom: 20
   },
   optionview: {
     marginTop: 'auto',

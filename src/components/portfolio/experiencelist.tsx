@@ -1,43 +1,69 @@
-import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
 import React from 'react';
-import Icon1 from 'react-native-vector-icons/FontAwesome5';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Experience as IExperience } from '~/src/utils/typings/user-portfolio_interface/getPortforlioWorkData.interface';
+import dayjs from 'dayjs';
+import Button from '../theme/Button';
+import { Black } from '~/src/utils/colors';
 
-export default function Experiencelist({ ...props }) {
+export default function Experience(props: {
+  data: IExperience;
+  style?: StyleProp<ViewStyle>;
+}) {
   return (
-    <View style={styles.container}>
-      <View style={styles.row}>
-        <Text style={styles.title}>{props.title}</Text>
-        <TouchableWithoutFeedback onPress={() => props.toggleModal()}>
-          <Icon1 name="ellipsis-v" size={15} color="#BDBDBD" />
-        </TouchableWithoutFeedback>
-      </View>
-      <Text style={styles.date}>{props.date}</Text>
-      <Text style={styles.detail}>{props.detail}</Text>
+    <View style={[styles.container, props.style]}>
+      <Text style={styles.title}>{props.data.title}</Text>
+      <Button
+        size="sm"
+        onPress={() => {
+          // props.toggleModal();
+        }}
+        btnStyle={styles.dropdownBtn}
+      >
+        <MaterialCommunityIcons
+          name="dots-vertical"
+          size={17}
+          color={Black[600]}
+        />
+      </Button>
+      <Text style={styles.companyNduration}>
+        {props.data.company && (
+          <>
+            @ {props.data.company}
+            {'  |  '}
+          </>
+        )}
+        {dayjs(props.data.from).format('MMM YYYY')}
+        {'  '}-{'  '}
+        {props.data.ongoing ? 'Now' : dayjs(props.data.to).format('MMM YYYY')}
+      </Text>
+      <Text style={styles.description}>{props.data.description}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 30
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  date: {
-    color: 'black',
-    marginTop: '1.5%'
-  },
-  detail: {
-    color: '#7D7987',
-    lineHeight: 20,
-    marginTop: '2%'
-  },
+  container: {},
   title: {
     color: 'black',
-    fontWeight: '500',
-    fontSize: 15.5,
-    lineHeight: 17
+    fontFamily: 'Roboto-Medium',
+    fontSize: 16,
+    marginRight: 45,
+    textAlignVertical: 'bottom'
+  },
+  companyNduration: {
+    color: 'black',
+    marginTop: 5,
+    marginRight: 45
+  },
+  description: {
+    color: Black[600],
+    lineHeight: 20,
+    marginTop: 5
+  },
+  dropdownBtn: {
+    position: 'absolute',
+    right: 0,
+    top: 0
   }
 });

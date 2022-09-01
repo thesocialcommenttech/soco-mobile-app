@@ -1,348 +1,244 @@
-import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native';
-import React, { useState } from 'react';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import TextInputWithLabel from '../../../components/textInputWithLabel';
-import { TextInput as TI } from 'react-native-paper';
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import {
+  DateTimePickerAndroid,
+  DateTimePickerEvent
+} from '@react-native-community/datetimepicker';
+import { addPortforlioEducation } from '~/src/utils/services/user-portfolio_services/education/addPortforlioEducation.service';
+import { usePortfolioData } from '~/src/contexts/portfolio.context';
+import { useFormik } from 'formik';
+import { object, string } from 'yup';
+import { Input, RadioButton } from '~/src/components/theme/Input';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Button from '~/src/components/theme/Button';
+import { produce } from 'immer';
+import dayjs from 'dayjs';
+
+interface AddEducationForm {
+  institute: string;
+  status: 'completed' | 'pursuing';
+  passYear: Date;
+  course: string;
+  level: 'school' | 'graduation' | 'postGraduation';
+}
 
 export default function AddEducation() {
   const navigation = useNavigation();
-  const [edunum, setEduNum] = useState(1);
-  const [date, setDate] = useState(new Date());
-  const [yes2, setYes2] = useState(true);
+  const { portfolio, setPortfolio } = usePortfolioData();
 
-  const showMode = currentMode => {
+  function openDatePicker(
+    currValue: Date,
+    onChange: (event: DateTimePickerEvent, date?: Date) => void
+  ) {
     DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode: currentMode,
-      is24Hour: true
+      value: currValue ?? new Date(),
+      mode: 'date',
+      is24Hour: true,
+      onChange
     });
-  };
+  }
 
-  const onChange = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate;
-    setDate(currentDate);
-    // dispatch(
-    //   setUserDetails({
-    //     ...state,
-    //     dob: currentDate.toLocaleDateString()
-    //   })
-    // );
-  };
+  async function sumbitSkill(values: AddEducationForm) {
+    const result = await addPortforlioEducation({ education: values });
+    if (result.data.success) {
+      setPortfolio(
+        produce(portfolio, draft => {
+          draft.education.push(result.data.education);
+        })
+      );
+      navigation.goBack();
+    }
+  }
 
-  const showDatepicker = () => {
-    showMode('date');
-  };
+  const formik = useFormik<AddEducationForm>({
+    initialValues: {
+      institute: 'college engiing 2',
+      status: 'completed',
+      passYear: null,
+      course: 'B.tech',
+      level: 'graduation'
+    },
+    validationSchema: object({
+      institute: string().required('Institute name is required'),
+      status: string().required('Status is required'),
+      passYear: string().when('status', {
+        is: 'completed',
+        then: string().trim().nullable().required('Passout year is required'),
+        otherwise: string().trim().nullable()
+      }),
+      course: string().required('Course is required'),
+      level: string().required('Education level is required')
+    }),
+    onSubmit: sumbitSkill
+  });
 
   return (
-    <>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.addeducationview}>
-          <View style={styles.addeducationheader}>
-            <Text style={styles.addeducationtxt}>Add Education</Text>
-            <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-              <Icon1 name="close" size={25} color="#C9D1D8" />
-            </TouchableWithoutFeedback>
-          </View>
-          <View style={styles.educationdetail}>
-            <TextInputWithLabel
-              placeholder="Name of your Institute"
-              label="Institute Name"
-              inputStyle={styles.emailTB}
-              // onChangeText={formik.handleChange('username')}
-              // value={formik.values.username}
-              // errorTxt={formik.touched.username && formik.errors.username}
-              // onBlur={formik.handleBlur('username')}
+    <ScrollView contentContainerStyle={styles.formCt}>
+      <Input
+        inputProp={{
+          placeholder: 'Name of your institute',
+          onChangeText: formik.handleChange('institute'),
+          value: formik.values.institute,
+          onBlur: formik.handleBlur('institute')
+        }}
+        label="Institute Name"
+        error={formik.touched.institute && formik.errors.institute}
+      />
+
+      <Input
+        style={styles.MT}
+        inputProp={{
+          placeholder: 'Eg. 10th, 12th, B.Tech',
+          onChangeText: formik.handleChange('course'),
+          value: formik.values.course,
+          onBlur: formik.handleBlur('course')
+        }}
+        label="Course"
+        error={formik.touched.course && formik.errors.course}
+      />
+
+      <Input
+        label="Education Level"
+        style={styles.MT}
+        error={formik.touched.level && formik.errors.level}
+      >
+        {({ style }) => (
+          <View style={[style, { paddingHorizontal: 20 }]}>
+            <RadioButton
+              selected={formik.values.level === 'school'}
+              buttonProps={{
+                fullWidth: true,
+                text: 'Schooling',
+                onPress: () => {
+                  formik.setFieldValue('level', 'school');
+                }
+              }}
             />
-
-            <TextInputWithLabel
-              placeholder="Eg. 10th, 12th, B.Tech"
-              label="Course"
-              inputStyle={styles.emailTB}
-              // onChangeText={formik.handleChange('username')}
-              // value={formik.values.username}
-              // errorTxt={formik.touched.username && formik.errors.username}
-              // onBlur={formik.handleBlur('username')}
+            <RadioButton
+              selected={formik.values.level === 'graduation'}
+              buttonProps={{
+                fullWidth: true,
+                btnStyle: { marginTop: 10 },
+                text: 'Graducation',
+                onPress: () => {
+                  formik.setFieldValue('level', 'graduation');
+                }
+              }}
             />
-
-            <View style={styles.labelBox}>
-              <Text style={styles.label}>EDUCATION LEVEL</Text>
-            </View>
-
-            <View style={styles.boxoutlineview}>
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  setEduNum(1);
-                }}
-              >
-                <View
-                  style={[edunum === 1 ? styles.eduactiveview : styles.eduview]}
-                >
-                  <Text
-                    style={[
-                      edunum === 1 ? styles.eduactivetext : styles.edutext
-                    ]}
-                  >
-                    Schooling
-                  </Text>
-                </View>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  setEduNum(2);
-                }}
-              >
-                <View
-                  style={[edunum === 2 ? styles.eduactiveview : styles.eduview]}
-                >
-                  <Text
-                    style={[
-                      edunum === 2 ? styles.eduactivetext : styles.edutext
-                    ]}
-                  >
-                    Graduation
-                  </Text>
-                </View>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  setEduNum(3);
-                }}
-              >
-                <View
-                  style={[edunum === 3 ? styles.eduactiveview : styles.eduview]}
-                >
-                  <Text
-                    style={[
-                      edunum === 3 ? styles.eduactivetext : styles.edutext
-                    ]}
-                  >
-                    Post Graduation
-                  </Text>
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-            <View style={styles.labelBox}>
-              <Text style={styles.label}>STATUS</Text>
-            </View>
-            <View style={styles.selectionview}>
-              <TouchableWithoutFeedback onPress={() => setYes2(true)}>
-                <View style={[yes2 ? styles.selectactive : styles.select]}>
-                  <Text
-                    style={[yes2 ? styles.intextactive : styles.intextinactive]}
-                  >
-                    COMPLETED
-                  </Text>
-                </View>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback onPress={() => setYes2(false)}>
-                <View style={[!yes2 ? styles.selectactive : styles.select]}>
-                  <Text
-                    style={[
-                      !yes2 ? styles.intextactive : styles.intextinactive
-                    ]}
-                  >
-                    PURSUING
-                  </Text>
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-            {yes2
-              ? []
-              : [
-                  <TextInputWithLabel
-                    placeholder="dd/mm/yyyy"
-                    label="Passout Year"
-                    inputStyle={styles.dobTB}
-                    //value={date.toLocaleDateString()}
-                    // errorTxt={formik.touched.dob && formik.errors.dob}
-                    // onBlur={formik.handleBlur('dob')}
-                    right={
-                      <TI.Icon
-                        color="#000"
-                        name={'calendar-blank'}
-                        style={styles.cal}
-                        onPress={showDatepicker}
-                      />
-                    }
-                    editable={false}
-                  />
-                ]}
+            <RadioButton
+              selected={formik.values.level === 'postGraduation'}
+              buttonProps={{
+                fullWidth: true,
+                text: 'Post Graduation',
+                btnStyle: { marginTop: 10 },
+                onPress: () => {
+                  formik.setFieldValue('level', 'postGraduation');
+                }
+              }}
+            />
           </View>
-          <View style={styles.button}>
-            <TouchableWithoutFeedback>
-              <Text style={styles.btnText}>Add</Text>
-            </TouchableWithoutFeedback>
+        )}
+      </Input>
+
+      <Input
+        label="Status"
+        style={styles.MT}
+        error={formik.touched.status && formik.errors.status}
+      >
+        {({ style }) => (
+          <View
+            style={[style, { flexDirection: 'row', paddingHorizontal: 20 }]}
+          >
+            <RadioButton
+              selected={formik.values.status === 'completed'}
+              buttonProps={{
+                fullWidth: true,
+                text: 'Completed',
+                btnStyle: { marginRight: 20 },
+                onPress: () => {
+                  formik.setFieldValue('status', 'completed');
+                }
+              }}
+            />
+            <RadioButton
+              selected={formik.values.status === 'pursuing'}
+              buttonProps={{
+                fullWidth: true,
+                text: 'Graducation',
+                btnStyle: { flexGrow: 1 },
+                onPress: () => {
+                  formik.setFieldValue('status', 'pursuing');
+                }
+              }}
+            />
           </View>
-        </View>
-      </TouchableWithoutFeedback>
-    </>
+        )}
+      </Input>
+
+      {formik.values.status === 'completed' && (
+        <Input
+          label="Passout Year"
+          style={styles.MT}
+          onPress={() => {
+            openDatePicker(
+              formik.values.passYear as Date,
+              async (event, selectedDate) => {
+                await formik.setFieldValue('passYear', selectedDate);
+                formik.setFieldTouched('passYear');
+              }
+            );
+          }}
+          inputProp={{
+            placeholder: 'dd/mm/yyyy',
+            value:
+              formik.values.passYear &&
+              dayjs(formik.values.passYear).format('DD/MM/YYYY'),
+            editable: false,
+            onChangeText: formik.handleChange('passYear'),
+            onBlur: formik.handleBlur('passYear')
+          }}
+          error={formik.touched.passYear && (formik.errors.passYear as string)}
+          suffix={
+            <Button
+              size="sm"
+              btnStyle={{ alignSelf: 'center', marginRight: -15 }}
+              onPress={() => {
+                formik.setFieldTouched('passYear');
+                openDatePicker(
+                  formik.values.passYear as Date,
+                  async (event, selectedDate) => {
+                    await formik.setFieldValue('passYear', selectedDate);
+                  }
+                );
+              }}
+            >
+              <MaterialCommunityIcons name="calendar" size={24} />
+            </Button>
+          }
+        />
+      )}
+      <Button
+        type="filled"
+        fullWidth
+        text="Add"
+        processing={formik.isSubmitting}
+        disabled={formik.isSubmitting}
+        onPress={formik.handleSubmit}
+        btnStyle={styles.submitBtn}
+      />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  addeducationheader: {
-    marginLeft: '5%',
-    marginRight: '5%',
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between'
+  formCt: {
+    padding: 20
   },
-  addeducationtxt: {
-    color: 'black',
-    fontSize: 17,
-    fontWeight: '500'
+  MT: {
+    marginTop: 27
   },
-  addexpdetails: {
-    marginLeft: '5%',
-    marginRight: '5%'
-  },
-  label: {
-    fontSize: 14,
-    fontFamily: 'Roboto-Bold',
-    fontWeight: '800',
-    lineHeight: 14,
-    fontStyle: 'normal',
-    color: '#000',
-    padding: '2%',
-    marginBottom: '-3.5%',
-    textTransform: 'uppercase'
-  },
-  labelBox: {
-    backgroundColor: 'white',
-    alignSelf: 'flex-start',
-    marginLeft: '9.5%',
-    zIndex: 9999,
-    marginTop: '3%',
-    paddingLeft: 6,
-    paddingRight: 6,
-    marginBottom: '-1.5%'
-  },
-  addeducationview: {
-    backgroundColor: 'white',
-    flex: 1
-  },
-  educationdetail: {
-    marginLeft: '5%',
-    marginRight: '5%'
-  },
-  boxoutlineview: {
-    marginTop: '-0.2%',
-    borderWidth: 1,
-    borderColor: '#DCDCDC',
-    borderRadius: 5,
-    paddingTop: 10,
-    paddingBottom: 15
-  },
-  edutext: {
-    color: '#000000',
-    fontSize: 15,
-    lineHeight: 21
-  },
-  eduactivetext: {
-    color: '#000000',
-    fontWeight: '700',
-    fontSize: 15,
-    lineHeight: 21
-  },
-  eduview: {
-    borderWidth: 2,
-    borderColor: '#FFCA12',
-    paddingTop: 8,
-    paddingBottom: 8,
-    alignItems: 'center',
-    borderRadius: 5,
-    marginLeft: '3%',
-    marginRight: '3%',
-    marginTop: '3%',
-    backgroundColor: 'white'
-  },
-  eduactiveview: {
-    borderWidth: 2,
-    borderColor: '#FFCA12',
-    paddingTop: 8,
-    paddingBottom: 8,
-    alignItems: 'center',
-    borderRadius: 5,
-    marginLeft: '3%',
-    marginRight: '3%',
-    marginTop: '3%',
-    backgroundColor: '#FFF4CC'
-  },
-  emailTB: {
-    marginTop: '-5.5%',
-    paddingLeft: 10
-  },
-  selectionview: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: '-0.2%',
-    borderWidth: 1,
-    borderColor: '#DCDCDC',
-    borderRadius: 5,
-    paddingTop: 10,
-    paddingLeft: 13,
-    paddingRight: 13,
-    paddingBottom: 15
-  },
-  select: {
-    borderColor: '#FFCA12',
-    borderWidth: 1.5,
-    borderRadius: 5,
-    paddingTop: '2.5%',
-    paddingBottom: '2.5%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '48%',
-    marginTop: '4%'
-  },
-  intextinactive: {
-    color: 'black'
-  },
-  intextactive: {
-    color: 'black',
-    fontWeight: 'bold'
-  },
-  selectactive: {
-    borderColor: '#FFCA12',
-    borderWidth: 1.5,
-    borderRadius: 5,
-    backgroundColor: '#FFF4CC',
-    paddingTop: '2.5%',
-    paddingBottom: '2.5%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '48%',
-    marginTop: '4%'
-  },
-  dobTB: {
-    marginTop: '-6%'
-  },
-  cal: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  button: {
-    marginTop: '7%',
-    marginBottom: '7%',
-    marginLeft: '5%',
-    marginRight: '5%',
-    paddingTop: 15,
-    paddingBottom: 15,
-    backgroundColor: '#0063FF',
-    borderRadius: 5,
-    alignItems: 'center'
-  },
-  btnText: {
-    color: '#FFFFFF',
-    fontWeight: '500'
+  submitBtn: {
+    marginTop: 30
   }
 });

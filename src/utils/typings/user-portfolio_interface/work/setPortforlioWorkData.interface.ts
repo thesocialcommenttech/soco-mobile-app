@@ -1,16 +1,14 @@
-export interface SetPortforlioWorkDataRequest {
-  postType?: string;
-  postList?: string[];
-}
+import { LinkPost, Post, SharedPost } from '../../post';
 
-interface Post {
-  featureImage?: string;
-  postType?: string;
-  title?: string;
-  _id?: string;
+export interface SetPortforlioWorkDataRequest {
+  postType: Post['postType'];
+  postsList: Post['_id'][];
 }
 
 export interface SetPortforlioWorkDataResponse {
-  posts?: Post[];
+  posts?: Pick<
+    Exclude<Post, LinkPost | SharedPost>,
+    '_id' | 'title' | 'featureImage' | 'postType'
+  >[];
   success?: boolean;
 }

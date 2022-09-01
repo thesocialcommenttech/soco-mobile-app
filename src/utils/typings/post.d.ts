@@ -97,6 +97,11 @@ export interface SkillVideoPost extends CommonPostData {
   description: string;
   category: string[];
 }
+export interface LinkPost extends CommonPostData {
+  postType: 'link';
+  description: string;
+  link: string;
+}
 
 export type Post =
   | BlogPost
@@ -105,4 +110,5 @@ export type Post =
   | PresentationPost
   | ProjectPost
   | SharedPost
-  | SkillVideoPost;
+  | SkillVideoPost
+  | LinkPost;
