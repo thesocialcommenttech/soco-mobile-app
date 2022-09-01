@@ -1,196 +1,57 @@
-import React, { FC, ReactElement, useRef, useState } from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native';
-import Octicon from 'react-native-vector-icons/Octicons';
-import { Colors } from '../utils/colors';
+import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { Colors, Yellow } from '../utils/colors';
 import { useNavigation } from '@react-navigation/native';
+import Button from './theme/Button';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Bottomsheet, { DropdownOption } from './bottomsheet/Bottomsheet';
+import { ProfileScreenProps, ProfileTabStack } from '../utils/typings/stack';
 
-const RenderItem = ({
-  key,
-  item,
-  visible,
-  setVisible,
-  selected,
-  setSelected
-}: {
-  key: string;
-  item: { label: string; isNew: boolean; value: string };
-  visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  selected: string;
-  setSelected: React.Dispatch<React.SetStateAction<string>>;
-}): ReactElement<any, any> => {
-  const onSelect = (Item: { label: string; isNew: boolean; value: string }) => {
-    // console.log('Selected', Item);
-  };
-
-  const onItemPress = (Item: {
-    label: string;
-    isNew: boolean;
-    value: string;
-  }): void => {
-    // setSelected(item);
-    onSelect(item);
-    setVisible(false);
-  };
-
-  return (
-    <View>
-      {item.value === '1' && (
-        <TouchableOpacity
-          style={styles.item1}
-          onPress={() => onItemPress(item)}
-        >
-          <Text style={styles.buttonText}>{item.label}</Text>
-          {item.isNew && (
-            <View style={styles.newView}>
-              <Text style={styles.newText}>New</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      )}
-      {item.value !== '1' ? (
-        <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
-          <Text style={styles.buttonText}>{item.label}</Text>
-          {item.isNew && (
-            <View style={styles.newView}>
-              <Text style={styles.newText}>New</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      ) : (
-        <></>
-      )}
-    </View>
-  );
-};
-
-interface Props {
-  label: any;
-}
-
-const DropdownBottombutton: FC<Props> = props => {
-  const navigation = useNavigation();
+function CreatePostFAB() {
+  const navigation = useNavigation<ProfileScreenProps['navigation']>();
   const [visible, setVisible] = useState(false);
-  const DropdownButton = useRef(null);
-  const [dropdownBottom, setDropdownBottom] = useState(0);
-  const [selected, setSelected] = useState(undefined);
-  const data = [
-    {
-      label: 'Blog',
-      isNew: false,
-      value: '1'
-    },
-    {
-      label: 'Artwork',
-      isNew: false,
-      value: '2'
-    },
-    {
-      label: 'Skill Video',
-      isNew: false,
-      value: '3'
-    },
-    {
-      label: 'Project',
-      isNew: false,
-      value: '4'
-    },
-    {
-      label: 'Link',
-      isNew: true,
-      value: '5'
-    },
-    {
-      label: 'Article',
-      isNew: true,
-      value: '6'
-    },
-    {
-      label: 'Presentation',
-      isNew: true,
-      value: '7'
-    }
-  ];
 
-  const windowHeight = Dimensions.get('window').height;
-
-  const openDropdown = (): void => {
-    DropdownButton.current.measure(
-      (
-        fx: number,
-        fy: number,
-        width: number,
-        height: number,
-        px: number,
-        py: number
-      ) => {
-        // console.log('Component width is: ' + width);
-        // console.log('Component height is: ' + height);
-        // console.log('X offset to frame: ' + fx);
-        // console.log('Y offset to frame: ' + fy);
-        // console.log('X offset to page: ' + px);
-        // console.log('Y offset to page: ' + py);
-        setDropdownBottom(windowHeight - py);
-      }
-    );
-
-    setVisible(true);
-  };
-
-  const onSelect = (item: { label: string; value: string }) => {
-    // console.log('Selected', item);
-  };
-
-  const onItemPress = (item): void => {
-    // setSelected(item);
-    onSelect(item);
+  function onItemPress(item: keyof ProfileTabStack) {
     setVisible(false);
-    navigation.navigate(item.label as never, {} as never);
-  };
+    navigation.push(item);
+  }
 
   return (
     <>
-      <TouchableOpacity
+      <Button
+        type="filled"
         onPress={() => {
-          visible ? setVisible(false) : openDropdown();
+          setVisible(!visible);
         }}
-        ref={DropdownButton}
-        style={styles.stickyButton}
+        btnStyle={styles.stickyButton}
       >
-        <Octicon name="plus" size={30} color={Colors.Black} />
-      </TouchableOpacity>
-      <Modal visible={visible} transparent animationType="fade">
-        <TouchableWithoutFeedback onPress={() => setVisible(false)}>
-          <View style={styles.modalOverlay} />
-        </TouchableWithoutFeedback>
-        <ScrollView style={[styles.dropdown]}>
-          {data.map(item => {
-            return (
-              <RenderItem
-                key={item.value}
-                item={item}
-                visible={visible}
-                setVisible={setVisible}
-                selected={selected}
-                setSelected={setSelected}
-              />
-            );
-          })}
-        </ScrollView>
-      </Modal>
+        <MaterialCommunityIcons name="plus" size={30} color="black" />
+      </Button>
+      <Bottomsheet visible={visible} onClose={() => setVisible(false)}>
+        <DropdownOption
+          optionKey="artwork"
+          label="Artwork"
+          onOptionPress={option => onItemPress('Artwork')}
+        />
+        <DropdownOption
+          optionKey="skill_video"
+          label="Skill Video"
+          onOptionPress={option => onItemPress('Skill Video')}
+        />
+        <DropdownOption
+          optionKey="presentation"
+          label="Presentation"
+          onOptionPress={option => onItemPress('Presentation')}
+        />
+        <DropdownOption
+          optionKey="link"
+          label="Link"
+          onOptionPress={option => onItemPress('Link')}
+        />
+      </Bottomsheet>
     </>
   );
-};
+}
 
 const styles = StyleSheet.create({
   buttonText: {
@@ -239,12 +100,14 @@ const styles = StyleSheet.create({
   },
   stickyButton: {
     position: 'absolute',
-    backgroundColor: Colors.Primary,
+    backgroundColor: Yellow.primary,
     borderRadius: 250,
     right: 20,
     bottom: 20,
     width: 60,
     height: 60,
+    padding: 0,
+    paddingHorizontal: 0,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,
@@ -266,4 +129,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default DropdownBottombutton;
+export default CreatePostFAB;
