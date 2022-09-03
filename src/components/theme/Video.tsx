@@ -3,12 +3,36 @@ import React from 'react';
 import { staticFileSrc } from '~/src/utils/methods';
 import Skeleton from './Skeleton';
 import VideoPlayer from 'react-native-video-controls';
+import { VideoProperties } from 'react-native-video';
+interface VideoPlayerProps extends VideoProperties {
+  // props
+  toggleResizeModeOnFullscreen?: boolean;
+  controlAnimationTiming?: number;
+  doubleTapTime?: number;
+  controlTimeout?: number;
+  scrubbing?: number;
+  showOnStart?: boolean;
+  videoStyle?: VideoProperties['style'];
+  navigator?: any;
+  seekColor?: string;
+  style?: StyleProp<ViewStyle>;
+  tapAnywhereToPause?: boolean;
+  // events
+  onEnterFullscreen?: () => void;
+  onExitFullscreen?: () => void;
+  onHideControls?: () => void;
+  onShowControls?: () => void;
+  onError?: (err) => void;
+  onPause?: () => void;
+  onPlay?: () => void;
+  onBack?: () => void;
+  onEnd?: () => void;
+}
 
 type VideoProps = {
-  videoUrl: string;
+  videoUrl?: string;
   loading?: boolean;
-  style?: StyleProp<ViewStyle>;
-};
+} & VideoPlayerProps;
 
 function Video(props: VideoProps) {
   const windowDim = Dimensions.get('window');
@@ -26,7 +50,12 @@ function Video(props: VideoProps) {
 
   return (
     <VideoPlayer
+      disableBack={true}
+      disableFullscreen={true}
+      disableTimer={true}
+      paused={true}
       source={{ uri: staticFileSrc(props.videoUrl) }}
+      {...props}
       style={[
         {
           width: windowDim.width,
@@ -34,10 +63,6 @@ function Video(props: VideoProps) {
         },
         props.style
       ]}
-      disableBack={true}
-      disableFullscreen={true}
-      disableTimer={true}
-      paused={true}
     />
   );
 }
