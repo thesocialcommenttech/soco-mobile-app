@@ -24,30 +24,31 @@ export function InputError({ error }: { error: string }) {
 
 type SelectOption = Record<string, string>;
 
-export type SelectInputProps = {
-  label: string;
-  value?: string;
-  placeholder?: string;
-  selectOptions: SelectOption;
-  onValueChange: (key: string, label: string) => void;
+export type SelectInputProps = Omit<InputProps, 'prefix' | 'onPress'> & {
+  selectOptions?: SelectOption;
+  onValueChange?: (key: string, label: string) => void;
   optionListHeaderTitle?: string;
-  style?: StyleProp<ViewStyle>;
 };
 
-export function SelectInput({
-  label,
-  onValueChange,
-  placeholder,
-  value,
-  style,
-  selectOptions,
-  optionListHeaderTitle
-}: SelectInputProps) {
+export function SelectInput(props: SelectInputProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <View style={[styles.inputCt, style]}>
+      <Input
+        onPress={() => setOpen(true)}
+        suffix={
+          <MaterialCommunityIcons
+            name="chevron-down"
+            size={20}
+            color={Black[500]}
+            style={{ alignSelf: 'center' }}
+          />
+        }
+        {...props}
+        inputProp={{ ...props?.inputProp, editable: false }}
+      />
+      {/* <View style={[styles.inputCt, style]}>
         <Text style={styles.label}>{label}</Text>
         <TouchableHighlight
           underlayColor={Black[100]}
@@ -66,10 +67,10 @@ export function SelectInput({
             />
           </>
         </TouchableHighlight>
-      </View>
+      </View> */}
       <Bottomsheet visible={open} onClose={() => setOpen(false)}>
         <>
-          {optionListHeaderTitle && (
+          {props.optionListHeaderTitle && (
             <Text
               style={{
                 marginBottom: 10,
@@ -77,16 +78,16 @@ export function SelectInput({
                 fontSize: 16
               }}
             >
-              {optionListHeaderTitle}
+              {props.optionListHeaderTitle}
             </Text>
           )}
-          {Object.entries(selectOptions).map(([optkey, optLabel], i) => (
+          {Object.entries(props.selectOptions).map(([optkey, optLabel], i) => (
             <DropdownOption
               key={optkey + i}
               label={optLabel}
               optionKey={optkey}
               onOptionPress={() => {
-                onValueChange(optkey, optLabel);
+                props.onValueChange?.(optkey, optLabel);
                 setOpen(false);
               }}
             />
@@ -189,17 +190,19 @@ export function Input({
     <>
       <View style={[styles.inputCt, !label && { marginTop: 0 }, style]}>
         {label && <Text style={styles.label}>{label}</Text>}
-        <TouchableWithoutFeedback onPress={e => onPress?.(e)}>
-          <View
-            style={[
-              styles.input,
-              prefix && { paddingLeft: 25 },
-              suffix && { paddingRight: 25 },
-              focused && styles.inputFocused,
-              error && styles.inputError,
-              inputContainer
-            ]}
-          >
+        <TouchableHighlight
+          {...(onPress && { onPress: e => onPress?.(e) })}
+          underlayColor={Black[100]}
+          style={[
+            styles.input,
+            prefix && { paddingLeft: 25 },
+            suffix && { paddingRight: 25 },
+            focused && styles.inputFocused,
+            error && styles.inputError,
+            inputContainer
+          ]}
+        >
+          <>
             {prefix}
             {children ? (
               typeof children === 'function' ? (
@@ -237,8 +240,8 @@ export function Input({
               />
             )}
             {suffix}
-          </View>
-        </TouchableWithoutFeedback>
+          </>
+        </TouchableHighlight>
       </View>
       {error && <InputError error={error} />}
     </>
