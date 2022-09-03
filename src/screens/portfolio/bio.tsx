@@ -5,13 +5,13 @@ import { staticFileSrc } from '~/src/utils/methods';
 import Button from '~/src/components/theme/Button';
 import { Black } from '~/src/utils/colors';
 import Video from '~/src/components/theme/Video';
-import { PortfolioUpdateBtn } from './portfolio';
 import Bottomsheet, {
   DropdownOption
 } from '~/src/components/bottomsheet/Bottomsheet';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
+import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 
 export default function Bio() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -139,7 +139,7 @@ export default function Bio() {
           </View>
           <View style={styles.introVideo}>
             <Video
-              videoUrl={portfolio?.intro_video_url}
+              source={{ uri: portfolio?.intro_video_url }}
               style={styles.introVideo}
               // disableBack={true}
               // disableFullscreen={true}

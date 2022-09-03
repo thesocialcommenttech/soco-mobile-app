@@ -1,7 +1,6 @@
 import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useMemo, useState } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { PortfolioUpdateBtn } from './portfolio';
 import { Black } from '~/src/utils/colors';
 import WorkItem from '~/src/components/screens/portfolio/WorkItem';
 import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
@@ -10,6 +9,7 @@ import Bottomsheet, {
   DropdownOption
 } from '~/src/components/bottomsheet/Bottomsheet';
 import { Post } from '~/src/utils/typings/post';
+import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 
 export default function Works(props) {
   const { portfolio } = usePortfolioData();

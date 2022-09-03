@@ -6,7 +6,7 @@ import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
 import Button from '~/src/components/theme/Button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
-import { PortfolioUpdateBtn } from './portfolio';
+import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 
 export default function Skills() {
   const { portfolio } = usePortfolioData();

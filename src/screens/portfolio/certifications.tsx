@@ -9,10 +9,10 @@ import React, { useState } from 'react';
 import Certification from '../../components/portfolio/Certificaction';
 import Modal1 from 'react-native-modal';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { PortfolioUpdateBtn } from './portfolio';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
+import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 
 export default function Certifications() {
   const [modalVisible, setModalVisible] = useState(false);

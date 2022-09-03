@@ -1,10 +1,10 @@
 import { FlatList, StyleSheet, View } from 'react-native';
 import React from 'react';
 import Education from '../../components/portfolio/educationList';
-import { PortfolioUpdateBtn } from './portfolio';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
+import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 
 export default function Educations() {
   const { portfolio } = usePortfolioData();

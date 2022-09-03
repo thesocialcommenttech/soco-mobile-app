@@ -21,24 +21,10 @@ import {
 } from '~/src/utils/typings/stack';
 import Loading from '~/src/components/theme/Loading';
 import { getPortforlioWorkData } from '~/src/utils/services/user-portfolio_services/getPortforlioWorkData.service';
-import Button, { ButtonProps } from '~/src/components/theme/Button';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { Black, Blue } from '~/src/utils/colors';
 
 const Tab = createMaterialTopTabNavigator<PortfolioTabStack>();
-
-export function PortfolioUpdateBtn(props: { buttonProps: ButtonProps }) {
-  return (
-    <Button size="xs" {...props.buttonProps}>
-      <MaterialCommunityIcons
-        name="plus-circle-outline"
-        size={24}
-        color="black"
-      />
-    </Button>
-  );
-}
 
 export default function Portfolio() {
   const navigation = useNavigation();
