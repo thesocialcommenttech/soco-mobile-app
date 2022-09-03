@@ -1,19 +1,14 @@
-import { File } from '@babel/types';
+import { FileObject } from '../../file';
+import { LinkPost } from '../../post';
 
 export interface PostLinkRequest {
-  title?: string;
-  description?: string;
-  featureImage?: File;
-  tags?: string[];
-  link?: string;
-  postedOn?: Date;
-  postStatus?: string;
-}
-
-export interface PostLinkResponse {
-  link?: Pick<PostLinkRequest, 'link' | 'title'>;
-  _id?: string;
-  success?: boolean;
+  title: LinkPost['title'];
+  description: LinkPost['description'];
+  featureImage: FileObject;
+  tags: LinkPost['tags'];
+  link: LinkPost['link'];
+  postedOn: LinkPost['postedOn'];
+  postStatus: LinkPost['postStatus'];
 }
 
 export interface PostLinkResponse {

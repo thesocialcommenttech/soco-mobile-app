@@ -120,6 +120,26 @@ export type ProfileScreenProps = CompositeScreenProps<
   ProfileTab_ScreenProps
 >;
 
+export type UploadLinkScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<ProfileTabStack, 'Link'>,
+  ProfileTab_ScreenProps
+>;
+
+export type UploadArtworkScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<ProfileTabStack, 'Artwork'>,
+  ProfileTab_ScreenProps
+>;
+
+export type UploadPresentationScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<ProfileTabStack, 'Presentation'>,
+  ProfileTab_ScreenProps
+>;
+
+export type UploadSkillVideoScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<ProfileTabStack, 'Skill Video'>,
+  ProfileTab_ScreenProps
+>;
+
 export type ConnectionStackScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileTabStack, 'Connections'>,
   ProfileTab_ScreenProps

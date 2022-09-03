@@ -1,27 +1,28 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import {
   PostCreateArtworkRequest,
   PostCreateArtworkResponse
 } from '~/src/utils/typings/works_interface/artwork/postArtwork.interface';
 
-export function postArtwork({
-  title,
-  description,
-  tags,
-  category,
-  artwork,
-  postedOn,
-  postStatus
-}: PostCreateArtworkRequest): Promise<
-  AxiosResponse<PostCreateArtworkResponse>
-> {
-  const config: AxiosRequestConfig = {
-    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/create/artwork',
-    method: 'POST',
-    data: { title, description, tags, category, artwork, postedOn, postStatus },
-    headers: {
-      'Content-Type': 'application/json'
+export function postArtwork(data: PostCreateArtworkRequest) {
+  const form = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (['tags', 'category'].includes(key) && value) {
+      form.append(key, JSON.stringify(value));
+      return;
     }
+
+    if (typeof value === 'boolean' || value) {
+      form.append(key, value);
+    }
+  });
+
+  const config: AxiosRequestConfig = {
+    url: '/user/post/create/artwork',
+    method: 'POST',
+    data: form,
+    headers: { 'Content-Type': 'multipart/form-data' }
   };
 
   return axios.request<PostCreateArtworkResponse>(config);

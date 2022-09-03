@@ -1,185 +1,226 @@
-import {
-  Alert,
-  PermissionsAndroid,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native';
-import React, { useState } from 'react';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
-import ImageInputWithLabel from '../../components/createPost/imageInputWithLabel';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
-import TextInputWithLabel from '../../components/textInputWithLabel';
+import { useFormik } from 'formik';
+import { Input } from '~/src/components/theme/Input';
+import { object, string } from 'yup';
+import { FileObject } from '~/src/utils/typings/file';
+import Button from '~/src/components/theme/Button';
+import { Black, Green } from '~/src/utils/colors';
+import { postLink } from '~/src/utils/services/user-portfolio_services/link/postLink.service';
+import { UploadLinkScreenProps } from '~/src/utils/typings/stack';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { file } from '~/src/lib/yup-custom-schemas';
+interface LinkPostForm {
+  title: string;
+  description: string;
+  featureImage: FileObject;
+  tags: string;
+  link: string;
+}
 
-export default function Link() {
-  const navigation = useNavigation();
-  const [photoPath, setPhotoPath] = useState<any>();
+export default function UploadLink() {
+  const navigation = useNavigation<UploadLinkScreenProps['navigation']>();
 
-  const requestExternalWritePermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'External Storage Write Permission',
-            message: 'App needs write permission',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK'
-          }
-        );
-        // If WRITE_EXTERNAL_STORAGE Permission is granted
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        Alert.alert('Write permission err', err);
-      }
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  const chooseImage = async type => {
-    const options = {
-      mediaType: type,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images'
-      }
-    };
-    let isStoragePermitted = await requestExternalWritePermission();
-    if (isStoragePermitted) {
-      launchImageLibrary(options, response => {
-        if (response.didCancel) {
-          Alert.alert('User cancelled Image picker');
-          return;
-        } else if (response.errorCode === 'camera_unavailable') {
-          Alert.alert('Image not available on device');
-          return;
-        } else if (response.errorCode === 'permission') {
-          Alert.alert('Permission not satisfied');
-          return;
-        } else if (response.errorCode === 'others') {
-          Alert.alert(response.errorMessage);
-          return;
-        }
-        setPhotoPath(response);
+  async function chooseFile() {
+    try {
+      const imageAsset = await launchImageLibrary({
+        selectionLimit: 1,
+        mediaType: 'photo',
+        includeBase64: false
       });
-    }
-  };
 
-  const func = () => {
-    chooseImage('photo');
-  };
+      if (imageAsset.assets.length > 0) {
+        formik.setFieldValue('featureImage', {
+          name: imageAsset.assets[0].fileName,
+          type: imageAsset.assets[0].type,
+          uri: imageAsset.assets[0].uri
+        });
+      }
+    } catch (error) {}
+  }
+
+  async function submitLink(values: LinkPostForm) {
+    const result = await postLink({
+      ...values,
+      tags: values.tags.split(',').map(tag => tag.trim()),
+      postedOn: new Date().toString(),
+      postStatus: 'published'
+    });
+
+    if (result.data.success) {
+      navigation.pop();
+    }
+  }
+
+  const formik = useFormik<LinkPostForm>({
+    initialValues: {
+      title: '',
+      description: '',
+      featureImage: null,
+      tags: '',
+      link: ''
+    },
+    validationSchema: object({
+      title: string().trim().required('Title is required'),
+      description: string()
+        .trim()
+        .max(120, 'Cannot have more than 120 characters')
+        .required('Description is required'),
+      featureImage: file(
+        ['image/png', 'image/jpeg', 'image/jpg'],
+        'Only PNG, JPEG, JPG images are allowed'
+      ).required('Thumbnail is required'),
+      tags: string()
+        .matches(/^([a-zA-Z0-9, ]+)$/)
+        .trim()
+        .required('At least one tags is required'),
+      link: string().trim().url('Invalid link').required('Link is required')
+    }),
+    onSubmit: submitLink
+  });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      navigation.setOptions({
+        headerLeft: () => {
+          return (
+            <Button
+              size="xs"
+              onPress={() => navigation.goBack()}
+              btnStyle={{ marginRight: 20 }}
+            >
+              <MaterialCommunityIcons
+                name="arrow-left"
+                size={24}
+                color="black"
+              />
+            </Button>
+          );
+        }
+      });
+    }, [navigation])
+  );
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          size="sm"
+          processing={formik.isSubmitting}
+          disabled={formik.isSubmitting}
+          textStyle={{
+            color: Green.primary,
+            fontSize: 14,
+            letterSpacing: 0.2
+          }}
+          text="Publish"
+          onPress={formik.handleSubmit}
+        />
+      )
+    });
+  }, [formik.isSubmitting]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.flexrow}>
-        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-          <Icon1 name="arrow-left" size={28} color="black" />
-        </TouchableWithoutFeedback>
-        <Text style={styles.mheader}>Publish</Text>
-      </View>
-      <View style={styles.maincontent}>
-        {photoPath
-          ? [
-              <ImageInputWithLabel
-                label="Thumbnail"
-                func={func}
-                uri={photoPath.assets[0].uri}
-                // onChangeText={formik.handleChange('email')}
-                // value={formik.values.email}
-                // errorTxt={formik.touched.email && formik.errors.email}
-                // onBlur={formik.handleBlur('email')}
+    <ScrollView contentContainerStyle={styles.container}>
+      <Input
+        label="Thumbnail"
+        error={
+          formik.touched.featureImage &&
+          (formik.errors.featureImage?.type as string)
+        }
+      >
+        {({ style }) => (
+          <View
+            style={[style, { flexDirection: 'row', paddingHorizontal: 20 }]}
+          >
+            {formik.values.featureImage && (
+              <Image
+                style={{
+                  width: 170,
+                  height: 170 / (16 / 9),
+                  marginRight: 20,
+                  borderRadius: 8
+                }}
+                source={{ uri: formik.values.featureImage.uri }}
               />
-            ]
-          : [
-              <ImageInputWithLabel
-                label="Thumbnail"
-                func={func}
-                // onChangeText={formik.handleChange('email')}
-                // value={formik.values.email}
-                // errorTxt={formik.touched.email && formik.errors.email}
-                // onBlur={formik.handleBlur('email')}
-              />
-            ]}
-        <TextInputWithLabel
-          placeholder="Title"
-          label="Title"
-          inputStyle={styles.emailTB}
-          // onChangeText={formik.handleChange('email')}
-          // value={formik.values.email}
-          // errorTxt={formik.touched.email && formik.errors.email}
-          // onBlur={formik.handleBlur('email')}
-        />
-        <TextInputWithLabel
-          placeholder="Link"
-          label="Link"
-          inputStyle={styles.emailTB}
-          // onChangeText={formik.handleChange('email')}
-          // value={formik.values.email}
-          // errorTxt={formik.touched.email && formik.errors.email}
-          // onBlur={formik.handleBlur('email')}
-        />
-        <TextInputWithLabel
-          placeholder="Description of Link"
-          label="Description"
-          inputStyle={styles.descriptionTB}
-          multiline={true}
-          numberOfLines={5}
-          maxLength={120}
-          // onChangeText={formik.handleChange('email')}
-          // value={formik.values.email}
-          // errorTxt={formik.touched.email && formik.errors.email}
-          // onBlur={formik.handleBlur('email')}
-        />
-        <TextInputWithLabel
-          placeholder="Give Comma (,) separated tags"
-          label="Tags"
-          inputStyle={styles.emailTB}
-          // onChangeText={formik.handleChange('email')}
-          // value={formik.values.email}
-          // errorTxt={formik.touched.email && formik.errors.email}
-          // onBlur={formik.handleBlur('email')}
-        />
-      </View>
-    </View>
+            )}
+            <Button
+              btnStyle={{
+                alignSelf: 'stretch',
+                flexGrow: 1,
+                justifyContent: 'center'
+              }}
+              textStyle={{ color: Black[600] }}
+              text={
+                formik.values.featureImage ? 'Change Image' : 'Select Image'
+              }
+              onPress={() => {
+                chooseFile();
+              }}
+            />
+          </View>
+        )}
+      </Input>
+
+      <Input
+        inputProp={{
+          placeholder: 'Title for the link',
+          onChangeText: formik.handleChange('title'),
+          value: formik.values.title,
+          onBlur: formik.handleBlur('title')
+        }}
+        label="Title"
+        style={styles.MT}
+        error={formik.touched.title && formik.errors.title}
+      />
+      <Input
+        label="Link"
+        inputProp={{
+          placeholder: 'https://example.com/post',
+          onChangeText: formik.handleChange('link'),
+          value: formik.values.link,
+          onBlur: formik.handleBlur('link')
+        }}
+        style={styles.MT}
+        error={formik.touched.link && formik.errors.link}
+      />
+      <Input
+        label="Description"
+        inputProp={{
+          placeholder: 'Description of link',
+          onChangeText: formik.handleChange('description'),
+          value: formik.values.description,
+          onBlur: formik.handleBlur('description'),
+          style: { textAlignVertical: 'top' },
+          multiline: true,
+          numberOfLines: 5,
+          maxLength: 120
+        }}
+        style={styles.MT}
+        error={formik.touched.description && formik.errors.description}
+      />
+      <Input
+        label="Tags"
+        inputProp={{
+          placeholder: 'Comma (,) separated tags',
+          onChangeText: formik.handleChange('tags'),
+          value: formik.values.tags,
+          onBlur: formik.handleBlur('tags')
+        }}
+        style={styles.MT}
+        error={formik.touched.tags && formik.errors.tags}
+      />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    padding: 20
   },
-  flexrow: {
-    flexDirection: 'row',
-    marginTop: '4.5%',
-    justifyContent: 'space-between',
-    paddingLeft: '2%',
-    paddingRight: '2%'
-  },
-  mheader: {
-    color: '#00A300',
-    marginLeft: '4%',
-    fontSize: 18,
-    fontWeight: '600',
-    marginRight: '4%'
-  },
-  maincontent: {
-    marginLeft: '4%',
-    marginRight: '5%'
-  },
-  emailTB: {
-    marginTop: '-6%',
-    paddingLeft: 7
-  },
-  descriptionTB: {
-    marginTop: '-6%',
-    paddingLeft: 7,
-    paddingTop: 7
+  MT: {
+    marginTop: 27
   }
 });

@@ -28,8 +28,8 @@ interface CommonPostData {
   _id?: string;
   postedBy?: PostedBy;
   postedOn?: Date | string;
-  updatedOn?: Date;
-  publishedOn?: Date;
+  updatedOn?: Date | string;
+  publishedOn?: Date | string;
   postType?: PostType;
   postStatus?: PostStatus;
   title?: string;

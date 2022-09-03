@@ -8,17 +8,24 @@ import ArtWork from '../screens/createPost/artWork';
 import SkillVideo from '../screens/createPost/skillVideo';
 import VideoPlayer from '../screens/createPost/videoPlayer';
 import Presentation from '../screens/createPost/presentation';
-import Link from '../screens/createPost/link';
+import UploadLink from '../screens/createPost/link';
 import ConnectionsStack from '../screens/connection/ConnectionsStack';
 import PortfolioStack from './portfolioStack';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '../store/reducers';
-import { ProfileTabStack } from '../utils/typings/stack';
+import {
+  ProfileTabStack,
+  ProfileTab_ScreenProps
+} from '../utils/typings/stack';
+import Button from '../components/theme/Button';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator<ProfileTabStack>();
 
 function ProfileStack() {
   const authUser = useSelector((root: IRootReducer) => root.auth.user);
+  const navigation = useNavigation<ProfileTab_ScreenProps['navigation']>();
 
   return (
     <Stack.Navigator>
@@ -44,40 +51,22 @@ function ProfileStack() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Artwork"
-        component={ArtWork}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Skill Video"
-        component={SkillVideo}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="VideoPlayer"
-        component={VideoPlayer}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Presentation"
-        component={Presentation}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Link"
-        component={Link}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
         name="Connections"
         component={ConnectionsStack}
         options={{ headerShown: false }}
       />
-      {/* <Stack.Screen
-              name="Portfolio"
-              component={PortfolioStack}
-              options={{ headerShown: false }}
-            /> */}
+      <Stack.Group
+        screenOptions={{
+          headerShadowVisible: false,
+          headerTitle: () => null
+        }}
+      >
+        <Stack.Screen name="Artwork" component={ArtWork} />
+        <Stack.Screen name="Skill Video" component={SkillVideo} />
+        <Stack.Screen name="VideoPlayer" component={VideoPlayer} />
+        <Stack.Screen name="Presentation" component={Presentation} />
+        <Stack.Screen name="Link" component={UploadLink} />
+      </Stack.Group>
     </Stack.Navigator>
   );
 }

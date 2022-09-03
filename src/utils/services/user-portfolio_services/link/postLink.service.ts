@@ -1,22 +1,27 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import {
   PostLinkRequest,
   PostLinkResponse
 } from '~/src/utils/typings/user-portfolio_interface/link/postLink.interface';
 
-export function postLink({
-  title,
-  description,
-  featureImage,
-  tags,
-  link,
-  postedOn,
-  postStatus
-}: PostLinkRequest): Promise<AxiosResponse<PostLinkResponse>> {
+export function postLink(data: PostLinkRequest) {
+  const form = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (key === 'tags' && value) {
+      form.append(key, JSON.stringify(value));
+      return;
+    }
+    if (typeof value === 'boolean' || value) {
+      form.append(key, value);
+    }
+  });
+
   const config: AxiosRequestConfig = {
     url: '/user/post/create/link',
     method: 'POST',
-    data: { title, description, featureImage, tags, link, postedOn, postStatus }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: form
   };
 
   return axios.request<PostLinkResponse>(config);

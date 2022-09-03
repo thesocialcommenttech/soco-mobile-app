@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import {
-  UpdatePresentationRequest,
+  PostPresentationRequest,
   UpdatePresentationResponse
 } from '~/src/utils/typings/works_interface/presentation/updatePresentation.interface';
 
@@ -15,11 +15,11 @@ export function updatePresentation(
     title,
     postStatus,
     updatedOn
-  }: UpdatePresentationRequest,
+  }: PostPresentationRequest,
   postID: string
 ): Promise<AxiosResponse<UpdatePresentationResponse>> {
   const config: AxiosRequestConfig = {
-    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/update/presentation/${postID}`,
+    url: `/user/post/update/presentation/${postID}`,
     method: 'POST',
     data: {
       tags,

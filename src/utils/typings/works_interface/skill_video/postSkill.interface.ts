@@ -1,22 +1,18 @@
-import { File } from '@babel/types';
+import { FileObject } from '../../file';
+import { SkillVideoPost } from '../../post';
 export interface PostCreateSkillRequest {
-  title?: string;
-  description?: string;
-  tags?: string[];
-  category?: string[];
-  video?: File;
-  featureImage?: File;
-  postedOn?: string;
-  postStatus?: string;
-  updatedOn?: string;
-}
-
-interface Skill {
-  title?: string;
-  _id?: string;
+  title?: SkillVideoPost['title'];
+  description?: SkillVideoPost['description'];
+  tags?: SkillVideoPost['tags'];
+  category?: SkillVideoPost['category'];
+  video?: FileObject;
+  featureImage?: FileObject;
+  postedOn?: SkillVideoPost['postedOn'];
+  postStatus?: SkillVideoPost['postStatus'];
+  updatedOn?: SkillVideoPost['updatedOn'];
 }
 
 export interface PostCreateSkillResponse {
-  post?: Skill;
+  post?: Pick<SkillVideoPost, '_id' | 'title'>;
   success?: boolean;
 }

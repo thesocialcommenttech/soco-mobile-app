@@ -11,7 +11,7 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import { Avatar } from '@rneui/base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import CreatePostFAB from '../../components/dropdownBottombutton';
+import CreatePostFAB from '../../components/CreatePostFAB';
 import { Black, Blue, Colors, Yellow } from '../../utils/colors';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '../../store/reducers';

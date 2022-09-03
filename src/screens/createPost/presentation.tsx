@@ -2,206 +2,203 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
   View,
-  Alert,
-  TextInput,
-  Platform,
-  PermissionsAndroid,
   Dimensions,
-  FlatList,
-  Modal,
   Image
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
-import TextInputWithLabel from '../../components/textInputWithLabel';
-import { TextInput as Ti } from 'react-native-paper';
-import { launchImageLibrary } from 'react-native-image-picker';
-import CategoryList from '../../components/createPost/categoryList';
-import ImageInputWithLabel from '../../components/createPost/imageInputWithLabel';
-import Modal1 from 'react-native-modal';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  ImageLibraryOptions,
+  launchImageLibrary
+} from 'react-native-image-picker';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
+import Button from '~/src/components/theme/Button';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Black, Blue, Green, Red } from '~/src/utils/colors';
+import { useFormik } from 'formik';
+import { postPresentation } from '~/src/utils/services/post/postPresentation';
+import { FileObject } from '~/src/utils/typings/file';
+import { object, string, array } from 'yup';
+import { Input } from '~/src/components/theme/Input';
+import { file } from '~/src/lib/yup-custom-schemas';
+import { UploadPresentationScreenProps } from '~/src/utils/typings/stack';
+import { PostCategoryModal } from '~/src/components/createPost/CategorySelectionModal';
+import produce from 'immer';
+import Bottomsheet, {
+  DropdownOption
+} from '~/src/components/bottomsheet/Bottomsheet';
 
-const Data = [
-  {
-    id: 1,
-    name: 'Science',
-    selected: true
-  },
-  {
-    id: 2,
-    name: 'Astronomy',
-    selected: true
-  },
-  {
-    id: 3,
-    name: 'Technology',
-    selected: false
-  },
-  {
-    id: 4,
-    name: 'Information',
-    selected: false
-  },
-  {
-    id: 5,
-    name: 'Tutorial',
-    selected: false
-  },
-  {
-    id: 6,
-    name: 'Motivation',
-    selected: false
-  },
-  {
-    id: 7,
-    name: 'General Information',
-    selected: false
-  }
-];
-
-let images = [];
+interface UploadPresentationForm {
+  title: string;
+  tags: string;
+  description: string;
+  featureImage: FileObject;
+  slides: FileObject[];
+}
 
 export default function Presentation() {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<UploadPresentationScreenProps['navigation']>();
   const [modalVisible, setModalVisible] = useState(false);
   const [photoPath, setPhotoPath] = useState<any>();
   const [modalVisible1, setModalVisible1] = useState(false);
   const scrollRef = React.useRef(null);
-  const [index1, setIndex1] = useState(0);
-  const [imagesarr, setImagesarr] = useState(images);
+  const [currIndex, setCurrIndex] = useState(0);
+  // const [imagesarr, setImagesarr] = useState(images);
 
-  const requestExternalWritePermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'External Storage Write Permission',
-            message: 'App needs write permission',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK'
-          }
+  async function submitPresentation(values: UploadPresentationForm) {
+    const currentTimestamp = new Date().toString();
+    const result = await postPresentation({
+      ...values,
+      tags: values.tags.split(',').map(tag => tag.trim()),
+      totalSlides: formik.values.slides.length,
+      updatedOn: currentTimestamp,
+      postedOn: currentTimestamp,
+      postStatus: 'published'
+    });
+    if (result.data.success) {
+      navigation.pop();
+    }
+  }
+
+  const formik = useFormik({
+    initialValues: {
+      description: '',
+      featureImage: null,
+      slides: [],
+      tags: '',
+      title: ''
+    },
+    validationSchema: object({
+      title: string().trim().required('Title is required'),
+      description: string()
+        .trim()
+        .max(120, 'Cannot have more than 120 characters'),
+      tags: string().trim().required('Tags is required'),
+      featureImage: file(
+        ['image/png', 'image/jpeg', 'image/jpg'],
+        'Only PNG, JPEG, JPG images are allowed'
+      ).required('Feature image is required'),
+      slides: array(
+        file(
+          ['image/png', 'image/jpeg', 'image/jpg'],
+          'Only PNG, JPEG, JPG images are allowed'
+        ).required('Image is required')
+      )
+        .min(1, 'At least one slide is required')
+        .required('Slides is required')
+    }),
+    onSubmit: submitPresentation
+  });
+
+  useEffect(() => {
+    console.log(formik.errors);
+  }, [formik.errors]);
+
+  const moreThanOneSlide = useMemo(
+    () => formik.values.slides.length > 0,
+    [formik.values.slides]
+  );
+
+  const slideWithError = useMemo(
+    () =>
+      formik.errors.slides instanceof Array
+        ? formik.errors.slides.findIndex(slide => slide)
+        : -1,
+    [formik.errors.slides]
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      navigation.setOptions({
+        headerLeft: () => {
+          return (
+            <Button
+              size="xs"
+              onPress={() => navigation.goBack()}
+              btnStyle={{ marginRight: 20 }}
+            >
+              <MaterialCommunityIcons
+                name="arrow-left"
+                size={24}
+                color="black"
+              />
+            </Button>
+          );
+        }
+      });
+    }, [navigation])
+  );
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          size="sm"
+          processing={formik.isSubmitting}
+          disabled={formik.isSubmitting}
+          textStyle={{
+            color: Green.primary,
+            fontSize: 14,
+            letterSpacing: 0.2
+          }}
+          text="Publish"
+          onPress={formik.handleSubmit}
+        />
+      )
+    });
+  }, [formik.isSubmitting]);
+
+  async function chooseFile(options?: Partial<ImageLibraryOptions>) {
+    try {
+      const imageAsset = await launchImageLibrary({
+        mediaType: 'photo',
+        includeBase64: false,
+        ...options
+      });
+
+      if (!imageAsset.didCancel && imageAsset.assets.length > 0) {
+        return imageAsset;
+      }
+    } catch (error) {}
+  }
+
+  const insertSlidesAtLast = async () => {
+    const images = await chooseFile({ selectionLimit: 0 });
+    await formik.setFieldValue(
+      'slides',
+      produce(formik.values.slides, draft => {
+        images.assets.forEach(image => {
+          draft.push({
+            name: image.fileName,
+            type: image.type,
+            uri: image.uri
+          });
+        });
+      })
+    );
+    formik.setFieldTouched('slides');
+  };
+
+  const atPosition = async () => {
+    const images = await chooseFile({ selectionLimit: 0 });
+    formik.setFieldValue(
+      'slides',
+      produce(formik.values.slides, draft => {
+        draft.splice(
+          currIndex,
+          0,
+          ...images.assets.map(image => ({
+            name: image.fileName,
+            type: image.type,
+            uri: image.uri
+          }))
         );
-        // If WRITE_EXTERNAL_STORAGE Permission is granted
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        Alert.alert('Write permission err', err);
-      }
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  const chooseImage = async type => {
-    const options = {
-      mediaType: type,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images'
-      }
-    };
-    let isStoragePermitted = await requestExternalWritePermission();
-    if (isStoragePermitted) {
-      launchImageLibrary(options, async response => {
-        if (response.didCancel) {
-          Alert.alert('User cancelled Image picker');
-          return;
-        } else if (response.errorCode === 'camera_unavailable') {
-          Alert.alert('Image not available on device');
-          return;
-        } else if (response.errorCode === 'permission') {
-          Alert.alert('Permission not satisfied');
-          return;
-        } else if (response.errorCode === 'others') {
-          Alert.alert(response.errorMessage);
-          return;
-        }
-        await setPhotoPath(response);
-      });
-    }
-  };
-
-  const chooseFile = async type => {
-    const options = {
-      mediaType: type,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images'
-      }
-    };
-    let isStoragePermitted = await requestExternalWritePermission();
-    if (isStoragePermitted) {
-      launchImageLibrary(options, async response => {
-        if (response.didCancel) {
-          Alert.alert('User cancelled video picker');
-          return;
-        } else if (response.errorCode === 'camera_unavailable') {
-          Alert.alert('Video not available on device');
-          return;
-        } else if (response.errorCode === 'permission') {
-          Alert.alert('Permission not satisfied');
-          return;
-        } else if (response.errorCode === 'others') {
-          Alert.alert(response.errorMessage);
-          return;
-        }
-        atLast(response);
-      });
-    }
-  };
-
-  const chooseIMG = async type => {
-    const options = {
-      mediaType: type,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images'
-      }
-    };
-    let isStoragePermitted = await requestExternalWritePermission();
-    if (isStoragePermitted) {
-      launchImageLibrary(options, async response => {
-        if (response.didCancel) {
-          Alert.alert('User cancelled video picker');
-          return;
-        } else if (response.errorCode === 'camera_unavailable') {
-          Alert.alert('Video not available on device');
-          return;
-        } else if (response.errorCode === 'permission') {
-          Alert.alert('Permission not satisfied');
-          return;
-        } else if (response.errorCode === 'others') {
-          Alert.alert(response.errorMessage);
-          return;
-        }
-        atPosition(response);
-      });
-    }
-  };
-
-  const func = () => {
-    chooseImage('photo');
-  };
-
-  const atLast = response => {
-    setImagesarr([...imagesarr, response.assets[0].uri]);
-  };
-
-  const atPosition = response => {
-    images = imagesarr;
-    images.splice(index1, 0, response.assets[0].uri);
-    // setImagesarr(
-    //   ...imagesarr.slice(0, index1),
-    //   imgPath.assets[0].uri,
-    //   ...imagesarr.slice(index1)
-    // );
-    setImagesarr(images);
+      })
+    );
+    formik.setFieldTouched('slides');
   };
 
   const goToIndex = index => {
@@ -210,210 +207,307 @@ export default function Presentation() {
 
   return (
     <View style={styles.container}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(modalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.modaltopbar}>
-              <Text style={styles.textStyle}>Select Category</Text>
-              <TouchableWithoutFeedback
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Icon1 name="close" size={25} color="black" />
-              </TouchableWithoutFeedback>
-            </View>
-            <View style={styles.searchbox}>
-              <View style={styles.searchIcon}>
-                <Icon1 name="magnify" size={20} color="#0063FF" />
-              </View>
-              <TextInput
-                placeholder="Search Category Name"
-                // onChangeText={text => {
-                //   search(text);
-                // }}
-                style={styles.textinput}
-                placeholderTextColor="#99969F"
-              />
-            </View>
-            <View style={styles.list}>
-              <FlatList
-                data={Data}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => (
-                  <CategoryList name={item.name} selected={item.selected} />
-                )}
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <PostCategoryModal
+        show={modalVisible}
+        onChange={newSelection =>
+          formik.setFieldValue('category', newSelection)
+        }
+        onClose={() => setModalVisible(false)}
+      />
 
-      <Modal1
-        isVisible={modalVisible1}
-        backdropColor="black"
-        backdropOpacity={0.3}
-        animationIn="slideInUp"
-        style={styles.modal1}
-        onBackdropPress={() => setModalVisible1(false)}
+      <Bottomsheet
+        visible={modalVisible1}
+        onClose={() => setModalVisible1(false)}
       >
-        <View style={styles.optionview}>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              chooseFile('photo');
-              setModalVisible1(false);
-            }}
-          >
-            <Text style={styles.optiontext}>Append at Last</Text>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback>
-            <Text
-              style={styles.optiontext}
-              onPress={() => {
-                chooseIMG('photo');
-                setModalVisible1(false);
+        <DropdownOption
+          label="Append At Last"
+          optionKey="at_last"
+          onOptionPress={() => {
+            setModalVisible1(false);
+            insertSlidesAtLast();
+          }}
+        />
+        <DropdownOption
+          label="Insert Here"
+          optionKey="curr_pos"
+          onOptionPress={() => {
+            atPosition();
+            setModalVisible1(false);
+          }}
+        />
+      </Bottomsheet>
+
+      {/* <View style={styles.imageView}>
+        {formik.values.slides.length > 0 ? (
+          <View>
+            <SwiperFlatList
+              data={formik.values.slides}
+              renderItem={({ item }) => (
+                <Image
+                  source={{ uri: item.uri }}
+                  style={styles.imageComponent}
+                />
+              )}
+              onChangeIndex={({ index }) => {
+                setIndex1(index);
               }}
-            >
-              Insert Here
-            </Text>
-          </TouchableWithoutFeedback>
-        </View>
-      </Modal1>
+              ref={scrollRef}
+            />
+          </View>
+        ) : (
+          <View style={styles.noimageview}>
+            <TouchableWithoutFeedback onPress={() => chooseFile()}>
+              <Icon1 name="camera-outline" size={42} color="#BDBDBD" />
+            </TouchableWithoutFeedback>
+            <Text style={styles.selecttext}>Select Slide Image</Text>
+          </View>
+        )}
+      </View> */}
 
-      <View style={styles.flexrow}>
-        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-          <Icon1 name="arrow-left" size={28} color="black" />
-        </TouchableWithoutFeedback>
-        <Text style={styles.mheader}>Publish</Text>
-      </View>
-      <View style={styles.imageView}>
-        {imagesarr.length
-          ? [
-              <View>
+      <ScrollView>
+        <Input
+          inputContainer={{
+            borderWidth: 0,
+            borderRadius: 0,
+            flexDirection: 'column'
+          }}
+          error={
+            formik.touched.slides &&
+            typeof formik.errors.slides === 'string' &&
+            formik.errors.slides
+          }
+        >
+          {() => (
+            <View>
+              <View
+                style={{
+                  width: Dimensions.get('window').width,
+                  height: Dimensions.get('window').width / (16 / 9)
+                }}
+              >
                 <SwiperFlatList
-                  data={imagesarr}
-                  renderItem={({ item }) => (
-                    <Image
-                      source={{ uri: item }}
-                      style={styles.imageComponent}
-                    />
+                  data={formik.values.slides}
+                  style={{
+                    backgroundColor: Black[200]
+                  }}
+                  renderItem={({ item, index }) => (
+                    <View>
+                      <Image
+                        source={{ uri: item.uri }}
+                        style={styles.imageComponent}
+                      />
+                      {formik.touched.slides &&
+                        formik.errors.slides instanceof Array &&
+                        formik.errors.slides[index] && (
+                          <Text
+                            style={{
+                              padding: 8,
+                              position: 'absolute',
+                              bottom: 0,
+                              width: '100%',
+                              backgroundColor: Red.primary,
+                              color: 'white',
+                              fontFamily: 'Roboto-Medium'
+                            }}
+                          >
+                            {(formik.errors.slides[index] as FileObject)?.type}
+                          </Text>
+                        )}
+                    </View>
                   )}
                   onChangeIndex={({ index }) => {
-                    setIndex1(index);
+                    setCurrIndex(index);
                   }}
                   ref={scrollRef}
                 />
-              </View>
-            ]
-          : [
-              <View style={styles.noimageview}>
-                <TouchableWithoutFeedback onPress={() => chooseFile('photo')}>
-                  <Icon1 name="camera-outline" size={42} color="#BDBDBD" />
-                </TouchableWithoutFeedback>
-                <Text style={styles.selecttext}>Select Slide Image</Text>
-              </View>
-            ]}
-      </View>
 
-      <ScrollView>
-        <View style={styles.slideacc}>
-          <View style={styles.icon}>
-            <TouchableWithoutFeedback
-              onPress={() => {
-                if (index1 === 0) {
-                  goToIndex(imagesarr.length - 1);
-                } else {
-                  goToIndex(index1 - 1);
-                }
-              }}
-            >
-              <Icon1 name="chevron-left" size={26} color="#7D7987" />
-            </TouchableWithoutFeedback>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.numview}>
-              {imagesarr.length === 0
-                ? [
-                    <Text style={styles.number}>
-                      {index1}/{imagesarr.length} |{' '}
-                    </Text>
-                  ]
-                : [
-                    <Text style={styles.number}>
-                      {index1 + 1}/{imagesarr.length} |{' '}
-                    </Text>
+                {!moreThanOneSlide && (
+                  <View
+                    style={[
+                      { position: 'absolute', width: '100%', height: '100%' }
+                    ]}
+                  >
+                    <Button
+                      type="filled"
+                      size="sm"
+                      btnStyle={StyleSheet.flatten({
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'auto',
+                        flexGrow: 1,
+                        borderRadius: 0,
+                        backgroundColor: Black[300],
+                        width: '100%',
+                        height: '100%'
+                      })}
+                      onPress={insertSlidesAtLast}
+                    >
+                      <View style={{ alignItems: 'center' }}>
+                        <MaterialCommunityIcons
+                          name="presentation"
+                          size={34}
+                          color={Black[500]}
+                        />
+                        <Text
+                          style={{
+                            color: Black[500],
+                            fontFamily: 'Roboto-Medium',
+                            textTransform: 'uppercase'
+                          }}
+                        >
+                          Add Slide
+                        </Text>
+                      </View>
+                    </Button>
+                  </View>
+                )}
+              </View>
+              {formik.values.slides.length > 0 && (
+                <View
+                  style={[
+                    styles.pptControlsCt,
+                    formik.touched.slides &&
+                      formik.errors.slides && { backgroundColor: Red[100] }
                   ]}
+                >
+                  <Button
+                    size="sm"
+                    onPress={() => {
+                      if (currIndex === 0) {
+                        goToIndex(formik.values.slides.length - 1);
+                      } else {
+                        goToIndex(currIndex - 1);
+                      }
+                    }}
+                  >
+                    <Icon1 name="chevron-left" size={26} color={Black[500]} />
+                  </Button>
+                  {slideWithError !== -1 && (
+                    <Button
+                      size="sm"
+                      onPress={() => goToIndex(slideWithError)}
+                      btnStyle={{ position: 'absolute', left: 50 }}
+                    >
+                      <MaterialCommunityIcons
+                        name="alert-outline"
+                        size={24}
+                        color={Red.primary}
+                      />
+                    </Button>
+                  )}
+                  <View style={styles.numview}>
+                    <Text style={styles.number}>
+                      {currIndex + 1} / {formik.values.slides.length}
+                    </Text>
+                    <Button
+                      size="sm"
+                      btnStyle={{ alignSelf: 'center' }}
+                      onPress={() => setModalVisible1(true)}
+                      text="Add Slide"
+                    />
+                    <Button
+                      size="sm"
+                      btnStyle={{ alignSelf: 'center' }}
+                      onPress={() =>
+                        formik.setFieldValue(
+                          'slides',
+                          produce(formik.values.slides, draft => {
+                            draft.splice(currIndex, 1);
+                          })
+                        )
+                      }
+                    >
+                      <Icon1 name="delete-outline" size={16} color={Red[300]} />
+                    </Button>
+                  </View>
+                  <Button
+                    size="sm"
+                    onPress={() => {
+                      goToIndex((currIndex + 1) % formik.values.slides.length);
+                    }}
+                  >
+                    <Icon1 name="chevron-right" size={26} color={Black[500]} />
+                  </Button>
+                </View>
+              )}
             </View>
-            <TouchableWithoutFeedback onPress={() => setModalVisible1(true)}>
-              <Text style={styles.addslide}> Add Slide</Text>
-            </TouchableWithoutFeedback>
-            <View style={styles.dropdown}>
-              <TouchableWithoutFeedback onPress={() => setModalVisible1(true)}>
-                <Icon1 name="chevron-down" size={20} color="#0063FF" />
-              </TouchableWithoutFeedback>
-            </View>
-          </View>
-          <View style={styles.icon}>
-            <TouchableWithoutFeedback
-              onPress={() => {
-                goToIndex((index1 + 1) % imagesarr.length);
-              }}
-            >
-              <Icon1 name="chevron-right" size={26} color="#7D7987" />
-            </TouchableWithoutFeedback>
-          </View>
-        </View>
+          )}
+        </Input>
         <View style={styles.details}>
-          <TextInputWithLabel
-            placeholder="Title"
+          <Input
+            inputProp={{
+              placeholder: 'Title for the link',
+              onChangeText: formik.handleChange('title'),
+              value: formik.values.title,
+              onBlur: formik.handleBlur('title')
+            }}
             label="Title"
-            inputStyle={styles.emailTB}
-            // onChangeText={formik.handleChange('email')}
-            // value={formik.values.email}
-            // errorTxt={formik.touched.email && formik.errors.email}
-            // onBlur={formik.handleBlur('email')}
+            error={formik.touched.title && formik.errors.title}
           />
-          <TextInputWithLabel
-            placeholder="Description"
-            label="Description"
-            inputStyle={styles.descriptionTB}
-            multiline={true}
-            numberOfLines={5}
-            maxLength={120}
-            // onChangeText={formik.handleChange('email')}
-            // value={formik.values.email}
-            // errorTxt={formik.touched.email && formik.errors.email}
-            // onBlur={formik.handleBlur('email')}
-          />
-          {photoPath
-            ? [
-                <ImageInputWithLabel
-                  label="Thumbnail"
-                  func={func}
-                  uri={photoPath.assets[0].uri}
-                  // onChangeText={formik.handleChange('email')}
-                  // value={formik.values.email}
-                  // errorTxt={formik.touched.email && formik.errors.email}
-                  // onBlur={formik.handleBlur('email')}
-                />
-              ]
-            : [
-                <ImageInputWithLabel
-                  label="Thumbnail"
-                  func={func}
-                  // onChangeText={formik.handleChange('email')}
-                  // value={formik.values.email}
-                  // errorTxt={formik.touched.email && formik.errors.email}
-                  // onBlur={formik.handleBlur('email')}
-                />
-              ]}
 
-          <TouchableWithoutFeedback
+          <Input
+            label="Description"
+            inputProp={{
+              placeholder: 'Description of link',
+              onChangeText: formik.handleChange('description'),
+              value: formik.values.description,
+              onBlur: formik.handleBlur('description'),
+              style: { textAlignVertical: 'top' },
+              multiline: true,
+              numberOfLines: 5,
+              maxLength: 120
+            }}
+            style={styles.MT}
+            error={formik.touched.description && formik.errors.description}
+          />
+
+          <Input
+            label="Thumbnail"
+            style={styles.MT}
+            error={
+              formik.touched.featureImage &&
+              (formik.errors.featureImage?.type as string)
+            }
+          >
+            {({ style }) => (
+              <View
+                style={[style, { flexDirection: 'row', paddingHorizontal: 20 }]}
+              >
+                {formik.values.featureImage && (
+                  <Image
+                    style={{
+                      width: 170,
+                      height: 170 / (16 / 9),
+                      borderRadius: 8
+                    }}
+                    source={{ uri: formik.values.featureImage.uri }}
+                  />
+                )}
+                <Button
+                  btnStyle={{
+                    alignSelf: 'stretch',
+                    marginLeft: 20,
+                    flexGrow: 1,
+                    justifyContent: 'center'
+                  }}
+                  textStyle={{ color: Black[600] }}
+                  text={
+                    formik.values.featureImage ? 'Change Image' : 'Select Image'
+                  }
+                  onPress={async () => {
+                    const image = await chooseFile();
+                    formik.setFieldValue('featureImage', {
+                      name: image.assets[0].fileName,
+                      type: image.assets[0].type,
+                      uri: image.assets[0].uri
+                    });
+                  }}
+                />
+              </View>
+            )}
+          </Input>
+
+          {/* <TouchableWithoutFeedback
             onPress={() => {
               setModalVisible(true);
             }}
@@ -437,15 +531,18 @@ export default function Presentation() {
                 }
               />
             </View>
-          </TouchableWithoutFeedback>
-          <TextInputWithLabel
-            placeholder="Give Comma (,) separated tags"
+          </TouchableWithoutFeedback> */}
+
+          <Input
             label="Tags"
-            inputStyle={styles.emailTB}
-            // onChangeText={formik.handleChange('email')}
-            // value={formik.values.email}
-            // errorTxt={formik.touched.email && formik.errors.email}
-            // onBlur={formik.handleBlur('email')}
+            inputProp={{
+              placeholder: 'Comma (,) separated tags',
+              onChangeText: formik.handleChange('tags'),
+              value: formik.values.tags,
+              onBlur: formik.handleBlur('tags')
+            }}
+            style={styles.MT}
+            error={formik.touched.tags && formik.errors.tags}
           />
         </View>
       </ScrollView>
@@ -456,6 +553,9 @@ export default function Presentation() {
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  MT: {
+    marginTop: 27
   },
   flexrow: {
     flexDirection: 'row',
@@ -483,9 +583,7 @@ const styles = StyleSheet.create({
     paddingLeft: 7
   },
   details: {
-    paddingLeft: '4%',
-    paddingRight: '4%',
-    paddingBottom: '4%'
+    padding: 20
   },
   descriptionTB: {
     marginTop: '-6%',
@@ -557,20 +655,22 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width
   },
   addslide: {
-    color: '#0063FF',
-    fontSize: 15,
-    alignSelf: 'center',
-    marginTop: '8%',
-    fontWeight: '600'
+    color: Blue.primary,
+    marginRight: 5
+    // fontSize: 15,
+    // alignSelf: 'center',
+    // marginTop: '8%',
+    // fontWeight: '600'
   },
   fullscreen: {
     zIndex: 9999,
     marginBottom: '-7.5%',
     marginLeft: '1%'
   },
-  slideacc: {
+  pptControlsCt: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   icon: {
     marginTop: '2%',
@@ -578,18 +678,15 @@ const styles = StyleSheet.create({
     marginRight: '1.8%'
   },
   row: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   dropdown: {
     marginTop: '10%',
     marginLeft: '2%'
   },
-  number: {
-    color: '#BDBDBD'
-  },
-  numview: {
-    marginTop: '9.5%'
-  },
+  number: { color: Black[500], marginRight: 20 },
+  numview: { flexDirection: 'row', alignItems: 'center' },
   optionview: {
     height: '14%',
     marginTop: 'auto',
@@ -602,7 +699,7 @@ const styles = StyleSheet.create({
     marginTop: '5%'
   },
   imageComponent: {
-    height: 0.72 * Dimensions.get('window').width,
+    height: Dimensions.get('window').width / (16 / 9),
     width: Dimensions.get('window').width
   },
   modal1: {

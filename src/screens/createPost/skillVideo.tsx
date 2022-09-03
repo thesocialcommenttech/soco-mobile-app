@@ -2,341 +2,354 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
   View,
-  Modal,
-  Alert,
-  TextInput,
-  Platform,
-  PermissionsAndroid,
   Image,
-  Dimensions,
-  FlatList
+  Dimensions
 } from 'react-native';
-import React, { useState } from 'react';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
-import TextInputWithLabel from '../../components/textInputWithLabel';
-import { TextInput as Ti } from 'react-native-paper';
-import { launchImageLibrary } from 'react-native-image-picker';
-import CategoryList from '../../components/createPost/categoryList';
-import ImageInputWithLabel from '../../components/createPost/imageInputWithLabel';
-import VideoPlayer from 'react-native-video-controls';
+import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { launchImageLibrary, MediaType } from 'react-native-image-picker';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { array, object, string } from 'yup';
+import { useFormik } from 'formik';
+import { file } from '~/src/lib/yup-custom-schemas';
+import { Black, Green } from '~/src/utils/colors';
+import Button from '~/src/components/theme/Button';
+import { postSkill } from '~/src/utils/services/works_services/skill_video/postSkill.service';
+import { Input } from '~/src/components/theme/Input';
+import { FileObject } from '~/src/utils/typings/file';
+import Video from '~/src/components/theme/Video';
+import { PostCategoryModal } from '~/src/components/createPost/CategorySelectionModal';
+import { UploadSkillVideoScreenProps } from '~/src/utils/typings/stack';
 
-const Data = [
-  {
-    id: 1,
-    name: 'Science',
-    selected: true
-  },
-  {
-    id: 2,
-    name: 'Astronomy',
-    selected: true
-  },
-  {
-    id: 3,
-    name: 'Technology',
-    selected: false
-  },
-  {
-    id: 4,
-    name: 'Information',
-    selected: false
-  },
-  {
-    id: 5,
-    name: 'Tutorial',
-    selected: false
-  },
-  {
-    id: 6,
-    name: 'Motivation',
-    selected: false
-  },
-  {
-    id: 7,
-    name: 'General Information',
-    selected: false
-  }
-];
+interface UploadSkillForm {
+  title: string;
+  description: string;
+  tags: string;
+  category: string[];
+  video: FileObject;
+  featureImage: FileObject;
+}
 
 export default function SkillVideo() {
-  const navigation = useNavigation();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [filePath, setFilePath] = useState<any>();
-  const [photoPath, setPhotoPath] = useState<any>();
+  const navigation = useNavigation<UploadSkillVideoScreenProps['navigation']>();
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const winDim = Dimensions.get('window');
 
-  const requestExternalWritePermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'External Storage Write Permission',
-            message: 'App needs write permission',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK'
-          }
-        );
-        // If WRITE_EXTERNAL_STORAGE Permission is granted
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        Alert.alert('Write permission err', err);
-      }
-      return false;
-    } else {
-      return true;
+  async function submitPresentation(values: UploadSkillForm) {
+    const currentTimestamp = new Date().toString();
+    const result = await postSkill({
+      ...values,
+      tags: values.tags.split(',').map(tag => tag.trim()),
+      updatedOn: currentTimestamp,
+      postedOn: currentTimestamp,
+      postStatus: 'published'
+    });
+    if (result.data.success) {
+      navigation.pop();
     }
-  };
+  }
 
-  const chooseImage = async type => {
-    const options = {
-      mediaType: type,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images'
-      }
-    };
-    let isStoragePermitted = await requestExternalWritePermission();
-    if (isStoragePermitted) {
-      launchImageLibrary(options, response => {
-        console.log('Response = ', response);
-        if (response.didCancel) {
-          Alert.alert('User cancelled Image picker');
-          return;
-        } else if (response.errorCode === 'camera_unavailable') {
-          Alert.alert('Image not available on device');
-          return;
-        } else if (response.errorCode === 'permission') {
-          Alert.alert('Permission not satisfied');
-          return;
-        } else if (response.errorCode === 'others') {
-          Alert.alert(response.errorMessage);
-          return;
+  const formik = useFormik({
+    initialValues: {
+      description: 'Video Description',
+      featureImage: null,
+      tags: 'video, test',
+      title: 'Testing video of spongebob',
+      video: null,
+      category: []
+    },
+    validationSchema: object({
+      title: string().trim().required('Title is required'),
+      category: array(string().trim().required()).required(
+        'Category is required'
+      ),
+      description: string()
+        .trim()
+        .max(120, 'Cannot have more than 120 characters'),
+      tags: string().trim().required('Tags is required'),
+      featureImage: file(
+        ['image/png', 'image/jpeg', 'image/jpg'],
+        'Only PNG, JPEG, JPG images are allowed'
+      ).required('Feature image is required'),
+      video: file(['video/mp4'], 'Only MP4 is allowed').required(
+        'Video is required'
+      )
+    }),
+    onSubmit: submitPresentation
+  });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      navigation.setOptions({
+        headerLeft: () => {
+          return (
+            <Button
+              size="xs"
+              onPress={() => navigation.goBack()}
+              btnStyle={{ marginRight: 20 }}
+            >
+              <MaterialCommunityIcons
+                name="arrow-left"
+                size={24}
+                color="black"
+              />
+            </Button>
+          );
         }
-        setPhotoPath(response);
       });
-    }
+    }, [navigation])
+  );
+
+  const selectImage = async () => {
+    const images = await chooseFile('photo');
+
+    formik.setFieldValue('featureImage', {
+      name: images.assets[0].fileName,
+      type: images.assets[0].type,
+      uri: images.assets[0].uri
+    });
   };
 
-  const chooseFile = async type => {
-    const options = {
-      mediaType: type,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images'
+  const selectVideo = async () => {
+    const videos = await chooseFile('video');
+    formik.setFieldValue('video', {
+      name: videos.assets[0].fileName,
+      type: videos.assets[0].type,
+      uri: videos.assets[0].uri
+    });
+  };
+
+  const chooseFile = async (mediaType: MediaType) => {
+    try {
+      const imageAsset = await launchImageLibrary({
+        includeBase64: false,
+        selectionLimit: 1,
+        mediaType
+      });
+
+      if (!imageAsset.didCancel && imageAsset.assets.length > 0) {
+        return imageAsset;
       }
-    };
-    let isStoragePermitted = await requestExternalWritePermission();
-    if (isStoragePermitted) {
-      launchImageLibrary(options, response => {
-        console.log('Response = ', response);
-        if (response.didCancel) {
-          Alert.alert('User cancelled video picker');
-          return;
-        } else if (response.errorCode === 'camera_unavailable') {
-          Alert.alert('Video not available on device');
-          return;
-        } else if (response.errorCode === 'permission') {
-          Alert.alert('Permission not satisfied');
-          return;
-        } else if (response.errorCode === 'others') {
-          Alert.alert(response.errorMessage);
-          return;
-        }
-        setFilePath(response);
-      });
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const func = () => {
-    chooseImage('photo');
-  };
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          size="sm"
+          processing={formik.isSubmitting}
+          disabled={formik.isSubmitting}
+          textStyle={{
+            color: Green.primary,
+            fontSize: 14,
+            letterSpacing: 0.2
+          }}
+          text="Publish"
+          onPress={formik.handleSubmit}
+        />
+      )
+    });
+  }, [formik.isSubmitting]);
 
   return (
-    <View style={styles.container}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(modalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.modaltopbar}>
-              <Text style={styles.textStyle}>Select Category</Text>
-              <TouchableWithoutFeedback
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Icon1 name="close" size={25} color="black" />
-              </TouchableWithoutFeedback>
-            </View>
-            <View style={styles.searchbox}>
-              <View style={styles.searchIcon}>
-                <Icon1 name="magnify" size={20} color="#0063FF" />
-              </View>
-              <TextInput
-                placeholder="Search Category Name"
-                // onChangeText={text => {
-                //   search(text);
-                // }}
-                style={styles.textinput}
-                placeholderTextColor="#99969F"
-              />
-            </View>
-            <View style={styles.list}>
-              <FlatList
-                data={Data}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => (
-                  <CategoryList name={item.name} selected={item.selected} />
-                )}
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      <View style={styles.flexrow}>
-        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-          <Icon1 name="arrow-left" size={28} color="black" />
-        </TouchableWithoutFeedback>
-        <Text style={styles.mheader}>Publish</Text>
-      </View>
-      <View style={styles.imageView}>
-        {filePath
-          ? [
-              <View>
-                <VideoPlayer
-                  // ref={ref => (videoPlayer.current = ref)}
-                  // repeat={true}
-                  // paused={false}
-                  source={{
-                    uri: filePath.assets[0].uri
-                  }}
-                  disableBack={true}
-                  style={styles.video}
-                  //resizeMode={'cover'}
-                  onEnterFullscreen={() => {
-                    navigation.navigate(
-                      'VideoPlayer' as never,
-                      { uri: filePath.assets[0].uri } as never
-                    );
-                  }}
-                />
-              </View>
-            ]
-          : [
-              <>
-                <TouchableWithoutFeedback onPress={() => chooseFile('video')}>
-                  <Icon1 name="video-outline" size={42} color="#BDBDBD" />
-                </TouchableWithoutFeedback>
-                <Text style={styles.selecttext}>Select Video</Text>
-              </>
-            ]}
-      </View>
+    <>
+      <PostCategoryModal
+        show={showCategoryModal}
+        onChange={newSelection =>
+          formik.setFieldValue('category', newSelection)
+        }
+        onClose={() => setShowCategoryModal(false)}
+      />
 
       <ScrollView>
-        {filePath
-          ? [
-              <TouchableWithoutFeedback onPress={() => chooseFile('video')}>
-                <Text style={styles.changev}>Change Video</Text>
-              </TouchableWithoutFeedback>
-            ]
-          : []}
-        <View style={styles.details}>
-          <TextInputWithLabel
-            placeholder="Title"
-            label="Title"
-            inputStyle={styles.emailTB}
-            // onChangeText={formik.handleChange('email')}
-            // value={formik.values.email}
-            // errorTxt={formik.touched.email && formik.errors.email}
-            // onBlur={formik.handleBlur('email')}
-          />
-          <TextInputWithLabel
-            placeholder="Description"
-            label="Description"
-            inputStyle={styles.descriptionTB}
-            multiline={true}
-            numberOfLines={5}
-            maxLength={120}
-            // onChangeText={formik.handleChange('email')}
-            // value={formik.values.email}
-            // errorTxt={formik.touched.email && formik.errors.email}
-            // onBlur={formik.handleBlur('email')}
-          />
-          {photoPath
-            ? [
-                <ImageInputWithLabel
-                  label="Thumbnail"
-                  func={func}
-                  uri={photoPath.assets[0].uri}
-                  // onChangeText={formik.handleChange('email')}
-                  // value={formik.values.email}
-                  // errorTxt={formik.touched.email && formik.errors.email}
-                  // onBlur={formik.handleBlur('email')}
-                />
-              ]
-            : [
-                <ImageInputWithLabel
-                  label="Thumbnail"
-                  func={func}
-                  // onChangeText={formik.handleChange('email')}
-                  // value={formik.values.email}
-                  // errorTxt={formik.touched.email && formik.errors.email}
-                  // onBlur={formik.handleBlur('email')}
-                />
+        <Input
+          inputContainer={{
+            borderWidth: 0,
+            borderRadius: 0,
+            flexDirection: 'column'
+          }}
+          error={formik.touched.video && (formik.errors.video?.type as string)}
+        >
+          {() => (
+            <View
+              style={[
+                { width: '100%' },
+                formik.values.video && { marginBottom: 40 }
               ]}
-
-          <TouchableWithoutFeedback
-            onPress={() => {
-              setModalVisible(true);
-            }}
-          >
-            <View>
-              <TextInputWithLabel
-                placeholder="Select Category"
-                label="Category"
-                inputStyle={styles.emailTB}
-                // onChangeText={formik.handleChange('email')}
-                // value={formik.values.email}
-                // errorTxt={formik.touched.email && formik.errors.email}
-                // onBlur={formik.handleBlur('email')}
-                editable={false}
-                right={
-                  <Ti.Icon
-                    color={'#BDBDBD'}
-                    name={'chevron-down'}
-                    style={styles.eye}
-                  />
-                }
+            >
+              <Video
+                source={{
+                  uri: formik.values.video?.uri,
+                  type: formik.values.video?.type
+                }}
               />
+
+              <View
+                style={[
+                  { position: 'absolute', width: '100%' },
+                  formik.values.video && {
+                    alignSelf: 'center',
+                    transform: [{ translateY: winDim.width / (16 / 9) }]
+                  }
+                ]}
+              >
+                <Button
+                  type={!formik.values.video ? 'filled' : 'text'}
+                  size="sm"
+                  btnStyle={StyleSheet.flatten([
+                    {
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      alignSelf: 'auto',
+                      flexGrow: 1,
+                      borderRadius: 0
+                    },
+                    !formik.values.video && {
+                      backgroundColor: Black[200],
+                      width: '100%',
+                      height: 250
+                    }
+                  ])}
+                  onPress={selectVideo}
+                >
+                  <View style={{ alignItems: 'center' }}>
+                    {!formik.values.video && (
+                      <MaterialCommunityIcons
+                        name="video-outline"
+                        size={34}
+                        color={Black[500]}
+                      />
+                    )}
+                    <Text
+                      style={{
+                        color: Black[500],
+                        fontFamily: 'Roboto-Medium',
+                        textTransform: 'uppercase'
+                      }}
+                    >
+                      {formik.values.video ? 'Change Video' : 'Select Video'}
+                    </Text>
+                  </View>
+                </Button>
+              </View>
             </View>
-          </TouchableWithoutFeedback>
-          <TextInputWithLabel
-            placeholder="Give Comma (,) separated tags"
+          )}
+        </Input>
+
+        <View style={styles.details}>
+          <Input
+            inputProp={{
+              placeholder: 'Title for the link',
+              onChangeText: formik.handleChange('title'),
+              value: formik.values.title,
+              onBlur: formik.handleBlur('title')
+            }}
+            label="Title"
+            // style={styles.MT}
+            error={formik.touched.title && formik.errors.title}
+          />
+
+          <Input
+            label="Description"
+            inputProp={{
+              placeholder: 'Description of link',
+              onChangeText: formik.handleChange('description'),
+              value: formik.values.description,
+              onBlur: formik.handleBlur('description'),
+              style: { textAlignVertical: 'top' },
+              multiline: true,
+              numberOfLines: 5,
+              maxLength: 120
+            }}
+            style={styles.MT}
+            error={formik.touched.description && formik.errors.description}
+          />
+
+          <Input
+            label="Thumbnail"
+            style={styles.MT}
+            error={
+              formik.touched.featureImage &&
+              (formik.errors.featureImage?.type as string)
+            }
+          >
+            {({ style }) => (
+              <View
+                style={[style, { flexDirection: 'row', paddingHorizontal: 20 }]}
+              >
+                {formik.values.featureImage && (
+                  <Image
+                    style={{
+                      width: 170,
+                      height: 170 / (16 / 9),
+                      borderRadius: 8,
+                      marginRight: 20
+                    }}
+                    source={{ uri: formik.values.featureImage.uri }}
+                  />
+                )}
+                <Button
+                  btnStyle={{
+                    alignSelf: 'stretch',
+                    flexGrow: 1,
+                    justifyContent: 'center'
+                  }}
+                  textStyle={{ color: Black[600] }}
+                  text={
+                    formik.values.featureImage ? 'Change Image' : 'Select Image'
+                  }
+                  onPress={selectImage}
+                />
+              </View>
+            )}
+          </Input>
+
+          <Input
+            label="Category"
+            inputProp={{
+              value: formik.values.category.join(', '),
+              placeholder: 'Select category',
+              editable: false
+            }}
+            onPress={() => setShowCategoryModal(true)}
+            suffix={
+              <MaterialCommunityIcons
+                name="chevron-down"
+                size={20}
+                color={Black[500]}
+                style={{ alignSelf: 'center' }}
+              />
+            }
+            style={styles.MT}
+          />
+
+          <Input
             label="Tags"
-            inputStyle={styles.emailTB}
-            // onChangeText={formik.handleChange('email')}
-            // value={formik.values.email}
-            // errorTxt={formik.touched.email && formik.errors.email}
-            // onBlur={formik.handleBlur('email')}
+            inputProp={{
+              placeholder: 'Comma (,) separated tags',
+              onChangeText: formik.handleChange('tags'),
+              value: formik.values.tags,
+              onBlur: formik.handleBlur('tags')
+            }}
+            style={styles.MT}
+            error={formik.touched.tags && formik.errors.tags}
           />
         </View>
       </ScrollView>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  MT: {
+    marginTop: 27
   },
   flexrow: {
     flexDirection: 'row',
@@ -366,9 +379,7 @@ const styles = StyleSheet.create({
     paddingLeft: 7
   },
   details: {
-    paddingLeft: '4%',
-    paddingRight: '4%',
-    paddingBottom: '4%'
+    padding: 20
   },
   descriptionTB: {
     marginTop: '-6%',

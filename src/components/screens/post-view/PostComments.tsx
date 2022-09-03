@@ -40,8 +40,6 @@ export default function PostComments(props: {
   }
 
   useEffect(() => {
-    console.log(props);
-
     setCommentList(props.comments ?? []);
     setCommentCount(props.commentCount ?? 0);
   }, [props.comments, props.commentCount]);

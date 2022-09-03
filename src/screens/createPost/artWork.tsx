@@ -2,176 +2,153 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
   View,
   Modal,
-  Pressable,
-  Alert,
-  TextInput,
-  Platform,
-  PermissionsAndroid,
   Image,
   Dimensions,
-  FlatList
+  FlatList,
+  Animated,
+  TouchableHighlight
 } from 'react-native';
-import React, { useState } from 'react';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
-import TextInputWithLabel from '../../components/textInputWithLabel';
-import { TextInput as Ti } from 'react-native-paper';
+import React, { useEffect, useRef, useState } from 'react';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
-import CategoryList from '../../components/createPost/categoryList';
+import CategoryItem from '../../components/createPost/categoryItem';
+import { Black, Green } from '~/src/utils/colors';
+import Button from '~/src/components/theme/Button';
+import { useFormik } from 'formik';
+import { array, object, string } from 'yup';
+import { Input } from '~/src/components/theme/Input';
+import { postArtwork } from '~/src/utils/services/works_services/artwork/postArtwork.service';
+import { UploadArtworkScreenProps } from '~/src/utils/typings/stack';
+import { FileObject } from '~/src/utils/typings/file';
+import { file } from '~/src/lib/yup-custom-schemas';
+import { getCategories } from '~/src/utils/services/post/categories';
+import { Category } from '~/src/utils/typings/postCategory';
+import Loading from '~/src/components/theme/Loading';
+import { PostCategoryModal } from '~/src/components/createPost/CategorySelectionModal';
 
-const Data = [
-  {
-    id: 1,
-    name: 'Drawing',
-    selected: true
-  },
-  {
-    id: 2,
-    name: 'Architecture',
-    selected: true
-  },
-  {
-    id: 3,
-    name: 'Fashion Design',
-    selected: false
-  },
-  {
-    id: 4,
-    name: 'Visual Art',
-    selected: false
-  },
-  {
-    id: 5,
-    name: 'Interior Design',
-    selected: false
-  },
-  {
-    id: 6,
-    name: 'Shades',
-    selected: false
-  },
-  {
-    id: 7,
-    name: 'Stencil Art',
-    selected: false
-  }
-];
+interface UploadArtworkForm {
+  title: string;
+  description: string;
+  tags: string;
+  category: string[];
+  artwork: FileObject;
+}
 
 export default function ArtWork() {
-  const navigation = useNavigation();
-  const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation<UploadArtworkScreenProps['navigation']>();
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [filePath, setFilePath] = useState<any>();
   const [selected, setSelected] = useState(false);
 
-  const requestExternalWritePermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'External Storage Write Permission',
-            message: 'App needs write permission',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK'
-          }
-        );
-        // If WRITE_EXTERNAL_STORAGE Permission is granted
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        Alert.alert('Write permission err', err);
-      }
-      return false;
-    } else {
-      return true;
+  async function submitArtwork(values: UploadArtworkForm) {
+    const result = await postArtwork({
+      ...values,
+      tags: values.tags.split(',').map(tag => tag.trim()),
+      postedOn: new Date().toString(),
+      postStatus: 'published'
+    });
+    if (result.data.success) {
+      navigation.pop();
     }
-  };
+  }
 
-  const chooseFile = async type => {
-    const options = {
-      mediaType: type,
-      maxWidth: 300,
-      maxHeight: 550
-    };
-    let isStoragePermitted = await requestExternalWritePermission();
-    if (isStoragePermitted) {
-      launchImageLibrary(options, response => {
-        console.log('Response = ', response);
-        if (response.didCancel) {
-          Alert.alert('User cancelled camera picker');
-          return;
-        } else if (response.errorCode === 'camera_unavailable') {
-          Alert.alert('Camera not available on device');
-          return;
-        } else if (response.errorCode === 'permission') {
-          Alert.alert('Permission not satisfied');
-          return;
-        } else if (response.errorCode === 'others') {
-          Alert.alert(response.errorMessage);
-          return;
+  const formik = useFormik<UploadArtworkForm>({
+    initialValues: {
+      title: 'Mountain View',
+      description: 'Beautiful sceneary',
+      tags: 'mountain',
+      category: [],
+      artwork: null
+    },
+    validationSchema: object({
+      title: string().trim().required('Title is required'),
+      description: string()
+        .trim()
+        .max(120, 'Cannot have more than 120 characters'),
+      tags: string().trim().required('Tags is required'),
+      category: array(string().trim().required()).required(
+        'Category is required'
+      ),
+      artwork: file(
+        ['image/png', 'image/jpeg', 'image/jpg'],
+        'Only PNG, JPEG, JPG images are allowed'
+      ).required('Artwork is required')
+    }),
+    onSubmit: submitArtwork
+  });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      navigation.setOptions({
+        headerLeft: () => {
+          return (
+            <Button
+              size="xs"
+              onPress={() => navigation.goBack()}
+              btnStyle={{ marginRight: 20 }}
+            >
+              <MaterialCommunityIcons
+                name="arrow-left"
+                size={24}
+                color="black"
+              />
+            </Button>
+          );
         }
-        setFilePath(response);
       });
-    }
-  };
+    }, [navigation])
+  );
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          size="sm"
+          processing={formik.isSubmitting}
+          disabled={formik.isSubmitting}
+          textStyle={{
+            color: Green.primary,
+            fontSize: 14,
+            letterSpacing: 0.2
+          }}
+          text="Publish"
+          onPress={formik.handleSubmit}
+        />
+      )
+    });
+  }, [formik.isSubmitting]);
+
+  async function chooseFile() {
+    try {
+      const imageAsset = await launchImageLibrary({
+        selectionLimit: 1,
+        mediaType: 'photo',
+        includeBase64: false
+      });
+
+      if (imageAsset.assets.length > 0) {
+        formik.setFieldValue('artwork', {
+          name: imageAsset.assets[0].fileName,
+          type: imageAsset.assets[0].type,
+          uri: imageAsset.assets[0].uri
+        });
+      }
+    } catch (error) {}
+  }
 
   return (
     <View style={styles.container}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.modaltopbar}>
-              <Text style={styles.textStyle}>Select Category</Text>
-              <TouchableWithoutFeedback
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Icon1 name="close" size={25} color="black" />
-              </TouchableWithoutFeedback>
-            </View>
-            <View style={styles.searchbox}>
-              <View style={styles.searchIcon}>
-                <Icon1 name="magnify" size={20} color="#0063FF" />
-              </View>
-              <TextInput
-                placeholder="Search Category Name"
-                // onChangeText={text => {
-                //   search(text);
-                // }}
-                style={styles.textinput}
-                placeholderTextColor="#99969F"
-              />
-            </View>
-            <View style={styles.list}>
-              <FlatList
-                data={Data}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => (
-                  <CategoryList name={item.name} selected={item.selected} />
-                )}
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      <View style={styles.flexrow}>
-        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-          <Icon1 name="arrow-left" size={28} color="black" />
-        </TouchableWithoutFeedback>
-        <Text style={styles.mheader}>Publish</Text>
-      </View>
-      <View style={styles.imageView}>
+      <PostCategoryModal
+        show={showCategoryModal}
+        onChange={newSelection =>
+          formik.setFieldValue('category', newSelection)
+        }
+        onClose={() => setShowCategoryModal(false)}
+      />
+      {/* <View style={styles.imageView}>
         {filePath
           ? [
               <TouchableWithoutFeedback>
@@ -193,31 +170,133 @@ export default function ArtWork() {
                 <Text style={styles.selecttext}>Select Image</Text>
               </>
             ]}
-      </View>
+      </View> */}
+
       <ScrollView>
+        <Input
+          inputContainer={{
+            borderWidth: 0,
+            borderRadius: 0,
+            flexDirection: 'column'
+          }}
+          error={formik.touched.artwork && (formik.errors.artwork?.type as string)}
+        >
+          {() => (
+            <View
+              style={[
+                { width: '100%' },
+                formik.values.artwork && { marginBottom: 40 }
+              ]}
+            >
+              <Image
+                style={{
+                  width: '100%',
+                  height: 250,
+                  backgroundColor: Black[200]
+                }}
+                resizeMode="contain"
+                source={{ uri: formik.values.artwork?.uri }}
+              />
+
+              <View
+                style={[
+                  { position: 'absolute', width: '100%' },
+                  formik.values.artwork && {
+                    alignSelf: 'center',
+                    transform: [{ translateY: 250 }]
+                  }
+                ]}
+              >
+                <Button
+                  type={!formik.values.artwork ? 'filled' : 'text'}
+                  size="sm"
+                  btnStyle={StyleSheet.flatten([
+                    {
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      alignSelf: 'auto',
+                      flexGrow: 1
+                    },
+                    !formik.values.artwork && {
+                      backgroundColor: Black[200],
+                      width: '100%',
+                      height: 250
+                    }
+                  ])}
+                  onPress={() => chooseFile()}
+                >
+                  <View style={{ alignItems: 'center' }}>
+                    {!formik.values.artwork && (
+                      <MaterialCommunityIcons
+                        name="camera-outline"
+                        size={34}
+                        color={Black[500]}
+                      />
+                    )}
+                    <Text
+                      style={{
+                        color: Black[500],
+                        fontFamily: 'Roboto-Medium',
+                        textTransform: 'uppercase'
+                      }}
+                    >
+                      {formik.values.artwork ? 'Change Image' : 'Select Image'}
+                    </Text>
+                  </View>
+                </Button>
+              </View>
+            </View>
+          )}
+        </Input>
+
         <View style={styles.details}>
-          <TextInputWithLabel
-            placeholder="Title"
+          <Input
+            inputProp={{
+              placeholder: 'Title for the link',
+              onChangeText: formik.handleChange('title'),
+              value: formik.values.title,
+              onBlur: formik.handleBlur('title')
+            }}
             label="Title"
-            inputStyle={styles.emailTB}
-            // onChangeText={formik.handleChange('email')}
-            // value={formik.values.email}
-            // errorTxt={formik.touched.email && formik.errors.email}
-            // onBlur={formik.handleBlur('email')}
+            error={formik.touched.title && formik.errors.title}
           />
-          <TextInputWithLabel
-            placeholder="Description"
+
+          <Input
             label="Description"
-            inputStyle={styles.descriptionTB}
-            multiline={true}
-            numberOfLines={5}
-            maxLength={120}
-            // onChangeText={formik.handleChange('email')}
-            // value={formik.values.email}
-            // errorTxt={formik.touched.email && formik.errors.email}
-            // onBlur={formik.handleBlur('email')}
+            inputProp={{
+              placeholder: 'Description of link',
+              onChangeText: formik.handleChange('description'),
+              value: formik.values.description,
+              onBlur: formik.handleBlur('description'),
+              style: { textAlignVertical: 'top' },
+              multiline: true,
+              numberOfLines: 5,
+              maxLength: 120
+            }}
+            style={styles.MT}
+            error={formik.touched.description && formik.errors.description}
           />
-          <TouchableWithoutFeedback
+
+          <Input
+            label="Category"
+            inputProp={{
+              value: formik.values.category.join(', '),
+              placeholder: 'Select category',
+              editable: false
+            }}
+            onPress={() => setShowCategoryModal(true)}
+            suffix={
+              <MaterialCommunityIcons
+                name="chevron-down"
+                size={20}
+                color={Black[500]}
+                style={{ alignSelf: 'center' }}
+              />
+            }
+            style={styles.MT}
+          />
+
+          {/* <TouchableWithoutFeedback
             onPress={() => {
               setModalVisible(true);
             }}
@@ -241,15 +320,17 @@ export default function ArtWork() {
                 }
               />
             </View>
-          </TouchableWithoutFeedback>
-          <TextInputWithLabel
-            placeholder="Give Comma (,) separated tags"
+          </TouchableWithoutFeedback> */}
+          <Input
             label="Tags"
-            inputStyle={styles.emailTB}
-            // onChangeText={formik.handleChange('email')}
-            // value={formik.values.email}
-            // errorTxt={formik.touched.email && formik.errors.email}
-            // onBlur={formik.handleBlur('email')}
+            inputProp={{
+              placeholder: 'Comma (,) separated tags',
+              onChangeText: formik.handleChange('tags'),
+              value: formik.values.tags,
+              onBlur: formik.handleBlur('tags')
+            }}
+            style={styles.MT}
+            error={formik.touched.tags && formik.errors.tags}
           />
         </View>
       </ScrollView>
@@ -261,100 +342,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
-  flexrow: {
-    flexDirection: 'row',
-    marginTop: '4.5%',
-    justifyContent: 'space-between',
-    paddingLeft: '2%',
-    paddingRight: '2%'
-  },
-  mheader: {
-    color: '#00A300',
-    marginLeft: '4%',
-    fontSize: 18,
-    fontWeight: '600'
-  },
-  imageView: {
-    backgroundColor: '#F2F2F2',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '30%',
-    marginTop: '5%'
-  },
-  selecttext: {
-    color: '#BDBDBD'
-  },
-  emailTB: {
-    marginTop: '-6%',
-    paddingLeft: 7
+  MT: {
+    marginTop: 27
   },
   details: {
-    paddingLeft: '4%',
-    paddingRight: '4%',
-    paddingBottom: '4%'
-  },
-  descriptionTB: {
-    marginTop: '-6%',
-    paddingLeft: 7,
-    paddingTop: 7
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  modalView: {
-    marginTop: '10%',
-    backgroundColor: 'white',
-    height: '100%',
-    width: '100%'
-  },
-  textStyle: {
-    color: 'black',
-    fontWeight: '400',
-    marginLeft: '2%'
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center'
-  },
-  modaltopbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginLeft: '2%',
-    marginRight: '2%'
-  },
-  searchbox: {
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: '#7D7987',
-    marginTop: '7%',
-    flexDirection: 'row',
-    marginLeft: '3%',
-    marginRight: '2%'
-  },
-  searchIcon: {
-    marginTop: '4%',
-    marginLeft: '3%',
-    marginRight: '1.5%'
-  },
-  textinput: {
-    color: 'black',
-    marginTop: '0.5%'
-  },
-  list: {
-    marginTop: '6%'
-  },
-  eye: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: '-70%'
-  },
-  image: {
-    height: 0.27 * Dimensions.get('window').height,
-    width: 0.46 * Dimensions.get('window').width
-  },
-  imageview: {
-    zIndex: 9999
+    padding: 20
   }
 });

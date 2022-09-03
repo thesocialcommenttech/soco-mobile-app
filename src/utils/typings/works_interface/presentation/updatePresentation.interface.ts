@@ -1,15 +1,16 @@
-import { File } from '@babel/types';
+import { FileObject } from '../../file';
+import { PresentationPost } from '../../post';
 
-export interface UpdatePresentationRequest {
-  title?: string;
-  tags?: string[];
-  description?: string;
-  featureImage?: File;
-  slides?: File;
-  totalSlides?: number;
-  postedOn?: Date;
-  updatedOn?: Date;
-  postStatus?: string;
+export interface PostPresentationRequest {
+  title: PresentationPost['title'];
+  tags: PresentationPost['tags'];
+  description: PresentationPost['description'];
+  featureImage: FileObject;
+  slides: FileObject[];
+  totalSlides: PresentationPost['totalSlides'];
+  postedOn: PresentationPost['postedOn'];
+  updatedOn: PresentationPost['updatedOn'];
+  postStatus: PresentationPost['postStatus'];
 }
 
 interface SlideInfo {
