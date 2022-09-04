@@ -4,15 +4,12 @@ import {
   UploadUserKYCResponse
 } from '../../typings/wallet_interfaces/uploadUserKYC.interface';
 
-export function uploadUserKYC(
-  data: UploadUserKYCRequest
-): Promise<AxiosResponse<UploadUserKYCResponse>> {
+export function uploadUserKYC(data: UploadUserKYCRequest) {
   const formdata = new FormData();
 
   Object.entries(data).forEach(([key, value]) => {
     formdata.append(key, value);
   });
-  console.log(data);
 
   const config: AxiosRequestConfig = {
     url: 'user/kyc',

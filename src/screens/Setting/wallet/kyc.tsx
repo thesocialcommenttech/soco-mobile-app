@@ -38,10 +38,8 @@ function B(props: TextProps) {
   );
 }
 
-interface UserKycFormData
-  extends Omit<UploadUserKYCRequest, 'pan_back_image' | 'pan_front_image'> {
-  pan_back_image: string | FileObject;
-  pan_front_image: string | FileObject;
+interface UserKycFormData extends Omit<UploadUserKYCRequest, 'dob'> {
+  dob: Date;
 }
 
 export default function KycScreen() {
@@ -53,7 +51,10 @@ export default function KycScreen() {
   const imageRowWidth = useMemo(() => layout?.width / 2 - 10, [layout?.width]);
 
   async function submitKyc(values: UserKycFormData) {
-    const result = await uploadUserKYC(values as UploadUserKYCRequest);
+    const result = await uploadUserKYC({
+      ...values,
+      dob: values.dob.toString()
+    });
 
     if (result.data.success) {
       setKycDetails(result.data.kyc);
