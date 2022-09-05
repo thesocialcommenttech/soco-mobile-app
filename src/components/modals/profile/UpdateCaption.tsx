@@ -84,7 +84,9 @@ export default function UpdateCaptionModal({
           autoComplete="off"
           autoCapitalize="none"
         />
-        <Text style={styles.maxChar}>Max Characters: {caption.length}/150</Text>
+        <Text style={styles.maxChar}>
+          Max Characters: {caption?.length ?? 0}/150
+        </Text>
         <TouchableOpacity
           style={[styles.updateBtn, loading && styles.disabledBtn]}
           disabled={loading}

@@ -105,9 +105,11 @@ export type ConnectionTabStack = {
 // profile screen
 export type ProfileTabRoute = RouteProp<ProfileTabStack, 'Profile'>;
 
+export type MainStackScreenProps = NativeStackScreenProps<MainStack>;
+
 type App_ScreenProps = CompositeScreenProps<
   NativeStackScreenProps<MainStack, 'App'>,
-  NativeStackScreenProps<MainStack>
+  MainStackScreenProps
 >;
 
 export type ProfileTab_ScreenProps = CompositeScreenProps<

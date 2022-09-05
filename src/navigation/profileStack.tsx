@@ -33,6 +33,7 @@ function ProfileStack() {
         name="Profile"
         component={ProfileScreen}
         options={{ headerShown: false }}
+        getId={({ params }) => params.user_id + params.username}
         initialParams={{ username: authUser.username }}
       />
       <Stack.Screen

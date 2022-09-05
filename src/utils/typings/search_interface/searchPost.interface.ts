@@ -1,3 +1,5 @@
+import { PostType } from '../post';
+
 interface PostedBy {
   name?: string;
   profileImage?: string;
@@ -6,7 +8,7 @@ interface PostedBy {
 }
 
 export interface SearchedPost {
-  postType?: string;
+  postType?: PostType;
   postedBy?: PostedBy;
   title?: string;
   _id?: string;

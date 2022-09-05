@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import SearchBar from './searchBar';
 import Results from './results';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../../utils/colors';
+import { Black, Colors } from '../../utils/colors';
 import DropdownSearch from '../../components/dropdownSearch';
 import { searchUsername } from '~/src/utils/services/search_service/searchUsername.service';
 import { debounce } from 'lodash';
@@ -68,84 +68,85 @@ const SearchScreen = ({ navigation }) => {
   }, [searchPhrase]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <MaterialCommunityIcon
-          name="arrow-left"
-          size={24}
-          color="black"
-          onPress={() => {
-            navigation.goBack();
-          }}
-          style={styles.backIcon}
-        />
-        <SearchBar
-          onSearchPhraseClear={() => {
-            debouncedOnSearch(null);
-          }}
-          onSearchPhraseChange={debouncedOnSearch}
-        />
-      </View>
-      <View style={styles.util}>
-        <Text style={styles.utilText}>Search For</Text>
-        <DropdownSearch
-          options={[
-            {
-              label: 'User',
-              value: 'users'
-            },
-            {
-              label: 'Post',
-              value: 'posts'
-            }
-          ]}
-          onSelectionChange={selection => {
-            setSearchEntity(selection.value as any);
-            setSearchPhrase(null);
-            setSearchResults([]);
-          }}
-        />
-      </View>
-      {loading && (
-        <View style={styles.loadingCt}>
-          <ActivityIndicator size={24} color={Colors.Secondary} />
-        </View>
-      )}
-
-      {/* helper hint when search phares is less than 3 characters */}
-      {searchPhrase?.length < 3 && (
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: Colors.Gray100,
-            marginTop: 10,
-            borderRadius: 5
-          }}
-        >
+    <>
+      <View style={styles.container}>
+        <View style={styles.header}>
           <MaterialCommunityIcon
-            name="alert-circle-outline"
-            size={20}
-            color={Colors.Gray600}
+            name="arrow-left"
+            size={24}
+            color="black"
+            onPress={() => {
+              navigation.goBack();
+            }}
+            style={styles.backIcon}
           />
-          <Text
+          <SearchBar
+            onSearchPhraseClear={() => {
+              debouncedOnSearch(null);
+            }}
+            onSearchPhraseChange={debouncedOnSearch}
+          />
+        </View>
+        <View style={styles.util}>
+          <Text style={styles.utilText}>Search For</Text>
+          <DropdownSearch
+            options={[
+              {
+                label: 'User',
+                value: 'users'
+              },
+              {
+                label: 'Post',
+                value: 'posts'
+              }
+            ]}
+            onSelectionChange={selection => {
+              setSearchEntity(selection.value as any);
+              setSearchPhrase(null);
+              setSearchResults([]);
+            }}
+          />
+        </View>
+        {loading && (
+          <View style={styles.loadingCt}>
+            <ActivityIndicator size={24} color={Colors.Secondary} />
+          </View>
+        )}
+
+        {/* helper hint when search phares is less than 3 characters */}
+        {searchPhrase?.length < 3 && (
+          <View
             style={{
-              padding: 10,
-              textAlign: 'center',
-              color: Colors.Gray600
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: Colors.Gray100,
+              marginTop: 10,
+              borderRadius: 5
             }}
           >
-            Type at least 3 character
-          </Text>
-        </View>
-      )}
-
+            <MaterialCommunityIcon
+              name="alert-circle-outline"
+              size={20}
+              color={Colors.Gray600}
+            />
+            <Text
+              style={{
+                padding: 10,
+                textAlign: 'center',
+                color: Colors.Gray600
+              }}
+            >
+              Type at least 3 character
+            </Text>
+          </View>
+        )}
+      </View>
       {!loading && searchResults?.length > 0 && (
         <Results searchEntity={searchEntity} data={searchResults} />
       )}
-    </View>
+    </>
   );
 };
 
@@ -153,8 +154,7 @@ export default SearchScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+    // flex: 1,
     paddingHorizontal: 15,
     paddingTop: 15
   },
@@ -165,17 +165,16 @@ const styles = StyleSheet.create({
   },
   backIcon: {
     // marginLeft: '5%',
-    // backgroundColor: '#000'
+    // backgroundColor: 'black'
   },
-  title: {
-    width: '100%',
-    marginTop: 20,
-    fontSize: 25,
-    fontWeight: 'bold',
-    marginLeft: '10%',
-    color: '#000',
-    fontFamily: 'Roboto-Medium'
-  },
+  // title: {
+  //   width: '100%',
+  //   marginTop: 20,
+  //   fontSize: 25,
+  //   marginLeft: '10%',
+  //   color: 'black',
+  //   fontFamily: 'Roboto-Medium'
+  // },
   util: {
     marginTop: '5%',
     flexDirection: 'row',
@@ -184,7 +183,7 @@ const styles = StyleSheet.create({
   utilText: {
     fontSize: 16,
     fontFamily: 'Roboto-Medium',
-    color: Colors.Gray600
+    color: Black[600]
   },
   loadingCt: {
     display: 'flex',

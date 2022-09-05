@@ -1,39 +1,95 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Avatar } from '@rneui/base';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableHighlight
+} from 'react-native';
 import { staticFileSrc } from '~/src/utils/methods';
 import { SearchedPost } from '~/src/utils/typings/search_interface/searchPost.interface';
 import { SearchedUser } from '~/src/utils/typings/search_interface/searchUsername.interface';
-import { Colors } from '../../utils/colors';
+import { Black, Colors } from '../../utils/colors';
+import { useNavigation } from '@react-navigation/native';
+import { MainStackScreenProps } from '~/src/utils/typings/stack';
+import { PostType } from '~/src/utils/typings/post';
 
-// definition of the Item, which will be rendered in the FlatList
-const UserItem = ({ name, username, profilePic }) => {
+const UserItem = ({ user_id, name, username, profilePic }) => {
+  const navigation = useNavigation<MainStackScreenProps['navigation']>();
+
   return (
-    <View style={styles.userItem}>
-      <Avatar
-        rounded
-        size={38}
-        source={{
-          uri: profilePic
-        }}
-        containerStyle={styles.avatar}
-      />
-      <View style={styles.txt}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.username}>@{username}</Text>
-      </View>
-    </View>
+    <TouchableHighlight
+      underlayColor={Black[100]}
+      onPress={() =>
+        navigation.navigate('App', {
+          screen: 'ProfileTab',
+          params: { screen: 'Profile', params: { user_id, username } }
+        })
+      }
+      style={styles.userItem}
+    >
+      <>
+        <Avatar
+          rounded
+          size={38}
+          source={{
+            uri: profilePic
+          }}
+          containerStyle={styles.avatar}
+        />
+        <View style={styles.txt}>
+          <Text style={styles.name}>{name}</Text>
+          <Text style={styles.username}>@{username}</Text>
+        </View>
+      </>
+    </TouchableHighlight>
   );
 };
 
-const PostItem = ({ title, username }) => (
-  <View style={styles.postItem}>
-    <Text numberOfLines={2} style={styles.title}>
-      {title}
-    </Text>
-    <Text style={styles.username}>@{username}</Text>
-  </View>
-);
+const PostItem = ({
+  title,
+  post_id,
+  username,
+  postType
+}: {
+  post_id: string;
+  title: string;
+  username: string;
+  postType: PostType;
+}) => {
+  const navigation = useNavigation<MainStackScreenProps['navigation']>();
+
+  const postScreen = useMemo(() => {
+    switch (postType) {
+      case 'artwork':
+        return 'Post_Artwork';
+      case 'skill':
+        return 'Post_Skill';
+      case 'presentation':
+        return 'Post_Presentation';
+    }
+  }, [postType]);
+
+  return (
+    <TouchableHighlight
+      underlayColor={Black[100]}
+      onPress={() => {
+        if (postScreen) {
+          navigation.navigate(postScreen, { post_id });
+        }
+      }}
+      style={styles.postItem}
+    >
+      <>
+        <Text numberOfLines={2} style={styles.title}>
+          {title}
+        </Text>
+        <Text style={styles.username}>@{username}</Text>
+      </>
+    </TouchableHighlight>
+  );
+};
 
 // the filter
 function Results({
@@ -50,6 +106,7 @@ function Results({
           ? data.map((user: SearchedUser) => (
               <UserItem
                 key={user._id}
+                user_id={user._id}
                 name={user.name}
                 username={user.username}
                 profilePic={staticFileSrc(user.profileImage)}
@@ -59,7 +116,9 @@ function Results({
               <PostItem
                 key={post._id}
                 title={post.title}
-                username={[post.postedBy.username]}
+                postType={post.postType}
+                post_id={post._id}
+                username={post.postedBy.username}
               />
             ))}
       </View>
@@ -78,7 +137,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingVertical: 10
+    paddingVertical: 15,
+    paddingHorizontal: 15
   },
   avatar: {
     marginRight: 15
@@ -88,23 +148,22 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#000',
-    fontFamily: 'Roboto-Medium'
+    color: 'black',
+    // fontFamily: 'Roboto-Medium'
   },
   username: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: Colors.Gray600,
-    fontFamily: 'Roboto-Medium'
+    // fontSize: 16,
+    // marginBottom: 5,
+    color: Black[600]
+    // fontFamily: 'Roboto-Medium'
   },
   postItem: {
-    paddingVertical: 8
+    paddingVertical: 10,
+    paddingHorizontal: 15
   },
   title: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#000',
-    fontFamily: 'Roboto-Medium'
+    color: 'black'
+    // fontFamily: 'Roboto-Medium'
   }
 });

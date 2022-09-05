@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Octicon from 'react-native-vector-icons/Octicons';
 import { Colors } from '../utils/colors';
+import Bottomsheet, { DropdownOption } from './bottomsheet/Bottomsheet';
 
 interface DropdownItem {
   label: string;
@@ -49,7 +50,6 @@ function DropdownSearch(props: {
   onSelectionChange: (selection: DropdownItem) => void;
 }) {
   const [visible, setVisible] = useState(false);
-  const DropdownButton = useRef(null);
   const [selectedIndex, setSelectedIndex] = useState(
     props.currentSelectionIndex ?? 0
   );
@@ -60,7 +60,6 @@ function DropdownSearch(props: {
         onPress={() => {
           setVisible(!visible);
         }}
-        ref={DropdownButton}
         style={styles.button}
       >
         <Text style={styles.buttonText}>
@@ -68,26 +67,22 @@ function DropdownSearch(props: {
         </Text>
         <Octicon name="chevron-down" size={15} color={'#99969F'} />
       </TouchableOpacity>
-      <Modal visible={visible} transparent animationType="fade">
-        <TouchableWithoutFeedback onPress={() => setVisible(false)}>
-          <View style={styles.modalOverlay} />
-        </TouchableWithoutFeedback>
-        <ScrollView style={[styles.dropdown]}>
-          {props.options.map((item, i) => {
-            return (
-              <RenderItem
-                key={item.value}
-                item={item}
-                onItemPress={() => {
-                  setSelectedIndex(i);
-                  setVisible(false);
-                  props.onSelectionChange(item);
-                }}
-              />
-            );
-          })}
-        </ScrollView>
-      </Modal>
+      <Bottomsheet visible={visible} onClose={() => setVisible(false)}>
+        {props.options.map((item, i) => {
+          return (
+            <DropdownOption
+              key={item.value}
+              label={item.label}
+              optionKey={item.value}
+              onOptionPress={() => {
+                setSelectedIndex(i);
+                setVisible(false);
+                props.onSelectionChange(item);
+              }}
+            />
+          );
+        })}
+      </Bottomsheet>
     </>
   );
 }

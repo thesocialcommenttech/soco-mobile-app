@@ -159,11 +159,13 @@ function ProfileScreen() {
                   containerStyle={styles.avatar}
                 />
               </View>
-              <View style={styles.captionOnImg}>
-                <Text style={styles.captionOnImgTxt}>
-                  {userProfile.caption}
-                </Text>
-              </View>
+              {userProfile.caption && (
+                <View style={styles.captionOnImg}>
+                  <Text style={styles.captionOnImgTxt}>
+                    {userProfile.caption}
+                  </Text>
+                </View>
+              )}
               <>
                 <UpdateCaptionModal
                   modalVisible={modalVisible}
