@@ -20,6 +20,7 @@ import {
 } from '../utils/typings/stack';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '../store/reducers';
+import SideMenu from '../components/SideMenu';
 
 const MyTab = createBottomTabNavigator<BottomTabStack>();
 const MyStack = createNativeStackNavigator<IMainStack>();
@@ -28,100 +29,103 @@ function AppTabs() {
   const authUser = useSelector((root: IRootReducer) => root.auth.user);
 
   return (
-    <MyTab.Navigator
-      backBehavior="history"
-      screenOptions={{
-        tabBarHideOnKeyboard: true,
-        headerShown: false,
-        tabBarLabelStyle: {
-          marginBottom: '10%',
-          fontFamily: 'Roboto-Medium',
-          fontSize: 10,
-          color: Colors.GrayBorder
-        },
-        tabBarLabelPosition: 'below-icon',
-        tabBarActiveTintColor: 'white',
-        tabBarInactiveTintColor: 'gray',
-        tabBarStyle: {
-          height: '9%',
-          backgroundColor: Colors.BlackTab
-        }
-      }}
-    >
-      <MyTab.Screen
-        name="HomeTab"
-        component={HomeStack}
-        options={{
-          tabBarLabel: 'Home',
-          tabBarIcon: tabinfo => {
-            return (
-              <MaterialCommunityIcon
-                name="home-outline"
-                size={30}
-                color={tabinfo.focused ? 'white' : 'gray'}
-                style={Styles.homeIcon}
-              />
-            );
-          }
-        }}
-      />
-      <MyTab.Screen
-        name="DiscoverTab"
-        component={DiscoverStack}
-        options={{
-          tabBarLabel: 'Discover',
-          tabBarIcon: tabinfo => {
-            return (
-              <Ionicon
-                name="compass-outline"
-                size={30}
-                color={tabinfo.focused ? 'white' : 'gray'}
-                style={Styles.discoverIcon}
-              />
-            );
-          }
-        }}
-      />
-      <MyTab.Screen
-        name="PortfolioTab"
-        component={PortfolioStack}
-        initialParams={{ username: authUser.username }}
-        options={{
-          tabBarLabel: 'Portfolio',
-          tabBarStyle: {
-            display: 'none'
+    <>
+      <MyTab.Navigator
+        backBehavior="history"
+        screenOptions={{
+          tabBarHideOnKeyboard: true,
+          headerShown: false,
+          tabBarLabelStyle: {
+            marginBottom: '10%',
+            fontFamily: 'Roboto-Medium',
+            fontSize: 10,
+            color: Colors.GrayBorder
           },
-          tabBarIcon: tabinfo => {
-            return (
-              <MaterialCommunityIcon
-                name="account-box-outline"
-                size={30}
-                color={tabinfo.focused ? 'white' : 'gray'}
-                style={Styles.portfolioIcon}
-              />
-            );
+          tabBarLabelPosition: 'below-icon',
+          tabBarActiveTintColor: 'white',
+          tabBarInactiveTintColor: 'gray',
+          tabBarStyle: {
+            height: '9%',
+            backgroundColor: Colors.BlackTab
           }
         }}
-      />
-      <MyTab.Screen
-        name="ProfileTab"
-        component={ProfileStack}
-        options={{
-          tabBarLabel: 'Profile',
+      >
+        <MyTab.Screen
+          name="HomeTab"
+          component={HomeStack}
+          options={{
+            tabBarLabel: 'Home',
+            tabBarIcon: tabinfo => {
+              return (
+                <MaterialCommunityIcon
+                  name="home-outline"
+                  size={30}
+                  color={tabinfo.focused ? 'white' : 'gray'}
+                  style={Styles.homeIcon}
+                />
+              );
+            }
+          }}
+        />
+        <MyTab.Screen
+          name="DiscoverTab"
+          component={DiscoverStack}
+          options={{
+            tabBarLabel: 'Discover',
+            tabBarIcon: tabinfo => {
+              return (
+                <Ionicon
+                  name="compass-outline"
+                  size={30}
+                  color={tabinfo.focused ? 'white' : 'gray'}
+                  style={Styles.discoverIcon}
+                />
+              );
+            }
+          }}
+        />
+        <MyTab.Screen
+          name="PortfolioTab"
+          component={PortfolioStack}
+          initialParams={{ username: authUser.username }}
+          options={{
+            tabBarLabel: 'Portfolio',
+            tabBarStyle: {
+              display: 'none'
+            },
+            tabBarIcon: tabinfo => {
+              return (
+                <MaterialCommunityIcon
+                  name="account-box-outline"
+                  size={30}
+                  color={tabinfo.focused ? 'white' : 'gray'}
+                  style={Styles.portfolioIcon}
+                />
+              );
+            }
+          }}
+        />
+        <MyTab.Screen
+          name="ProfileTab"
+          component={ProfileStack}
+          options={{
+            tabBarLabel: 'Profile',
 
-          tabBarIcon: tabinfo => {
-            return (
-              <MaterialCommunityIcon
-                name="account-circle-outline"
-                size={30}
-                color={tabinfo.focused ? 'white' : 'gray'}
-                style={Styles.profileIcon}
-              />
-            );
-          }
-        }}
-      />
-    </MyTab.Navigator>
+            tabBarIcon: tabinfo => {
+              return (
+                <MaterialCommunityIcon
+                  name="account-circle-outline"
+                  size={30}
+                  color={tabinfo.focused ? 'white' : 'gray'}
+                  style={Styles.profileIcon}
+                />
+              );
+            }
+          }}
+        />
+      </MyTab.Navigator>
+      <SideMenu />
+    </>
   );
 }
 

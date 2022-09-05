@@ -1,18 +1,36 @@
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import Ionicon from 'react-native-vector-icons/Ionicons';
+import {
+  Image,
+  StyleSheet,
+  TouchableHighlight,
+  TouchableHighlightProps,
+  View
+} from 'react-native';
+import React, { useEffect } from 'react';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import DropdownTopbar from './dropdownTopbar';
-import { Colors } from '../utils/colors';
-import logo from '../assets/images/logos/thesocialcomment-logo.png';
-import Textlogo from '../assets/images/logos/soco-premium.png';
+import { useSideMenuState } from './SideMenu';
+import { Black, Colors } from '../utils/colors';
 import { getUserData2 } from '../utils/services/user-profile_service/getUserData2.service';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '../store/reducers';
+import { staticFileSrc } from '../utils/methods';
+import create from 'zustand';
+import Logo from '~/src/assets/images/logos/thesocialcomment-logo.png';
+import Textlogo from '~/src/assets/images/logos/soco-premium.png';
+import { omit } from 'lodash';
+interface ITopBarState {
+  premium: boolean;
+  setPremium: (premium: boolean) => void;
+}
+
+export const useTopBarState = create<ITopBarState>()(set => ({
+  premium: undefined,
+  setPremium: premium => set({ premium })
+}));
 
 function TopBar(props: { navigation: any }) {
   const auth = useSelector((root: IRootReducer) => root.auth);
-  const [premium, setPremium] = useState(false);
+  const { premium, setPremium } = useTopBarState();
+  const { setOpen } = useSideMenuState();
 
   async function fetchUserData() {
     try {
@@ -27,7 +45,9 @@ function TopBar(props: { navigation: any }) {
   }
 
   useEffect(() => {
-    fetchUserData();
+    if (typeof premium !== 'boolean') {
+      fetchUserData();
+    }
   }, []);
 
   return (
@@ -35,24 +55,30 @@ function TopBar(props: { navigation: any }) {
       {premium ? (
         <Image style={styles.textLogo} source={Textlogo} />
       ) : (
-        <Image style={styles.logo} source={logo} />
+        <Image style={styles.logo} source={Logo} />
       )}
       <View style={styles.rightContainer}>
-        <TouchableOpacity
+        <TopBarRightButton
           onPress={() => {
             props.navigation.navigate('Search');
           }}
         >
-          <Ionicon name="search" size={21} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
+          <MaterialCommunityIcon name="magnify" size={22} color="white" />
+        </TopBarRightButton>
+        <TopBarRightButton
           onPress={() => {
             props.navigation.navigate('Notifications');
           }}
         >
           <MaterialCommunityIcon name="bell-outline" size={22} color="white" />
-        </TouchableOpacity>
-        <DropdownTopbar label={props} />
+        </TopBarRightButton>
+
+        <TopBarRightButton onPress={() => setOpen(true)}>
+          <Image
+            style={styles.profileImage}
+            source={{ uri: staticFileSrc(auth.user?.profileImage) }}
+          />
+        </TopBarRightButton>
       </View>
     </View>
   );
@@ -65,7 +91,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     height: 60,
     flexDirection: 'row',
-    backgroundColor: Colors.BlackTab,
+    backgroundColor: Black[900],
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingLeft: 10,
@@ -85,19 +111,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '35%',
-    marginRight: '2%'
+    width: '30%'
+    // marginRight: '2%'
   },
-  avatar: {
+  profileImageBtn: {
+    backgroundColor: Black.primary,
+    padding: 5,
+    borderRadius: 5
+  },
+  profileImage: {
     backgroundColor: 'white',
+    width: 25,
+    height: 25,
+    borderRadius: 40,
     borderWidth: 1.5,
     borderColor: 'white'
-  },
-  avatarTitle: {
-    color: 'white'
   },
   closeBtn: {
     textAlign: 'right',
     color: Colors.Secondary
   }
 });
+
+function TopBarRightButton(props: TouchableHighlightProps) {
+  return (
+    <TouchableHighlight
+      underlayColor={Black[800]}
+      {...omit(props, 'style', 'children')}
+      style={[styles.profileImageBtn, props.style]}
+    >
+      {props.children}
+    </TouchableHighlight>
+  );
+}
