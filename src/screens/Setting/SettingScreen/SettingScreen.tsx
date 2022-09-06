@@ -10,9 +10,9 @@ export default function MainSettingScreen() {
 
   return (
     <>
-      <TopBar navigation={navigation} />
+      {/* <TopBar navigation={navigation} /> */}
       <View style={styles.container}>
-        <SettingScreenHeader showBackBtn={false} title="Settings" />
+        {/* <SettingScreenHeader showBackBtn={false} title="Settings" /> */}
         <View style={styles.mainList}>
           <SettingTab
             label="Profile"
@@ -34,7 +34,11 @@ export default function MainSettingScreen() {
             screenKey="Referral"
             icon="wallet-giftcard"
           />
-          <SettingTab label="Wallet" screenKey="WalletStack" icon="wallet-outline" />
+          <SettingTab
+            label="Wallet"
+            screenKey="WalletStack"
+            icon="wallet-outline"
+          />
           <SettingTab
             label="Subscription"
             screenKey="Subscription"

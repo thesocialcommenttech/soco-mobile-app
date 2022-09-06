@@ -10,21 +10,16 @@ import Experience from '../../components/portfolio/experiencelist';
 import Modal1 from 'react-native-modal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
+import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
 
 export default function Experiences() {
   const [modalVisible, setModalVisible] = useState(false);
   const {
     portfolio: { experience }
   } = usePortfolioData();
-  const navigation =
-    useNavigation<PortfolioTabStackScreenProps['navigation']>();
-
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
-  };
+  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
 
   useFocusEffect(
     React.useCallback(() => {

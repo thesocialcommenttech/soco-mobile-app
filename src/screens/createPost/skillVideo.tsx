@@ -20,7 +20,7 @@ import { Input } from '~/src/components/theme/Input';
 import { FileObject } from '~/src/utils/typings/file';
 import Video from '~/src/components/theme/Video';
 import { PostCategoryModal } from '~/src/components/createPost/CategorySelectionModal';
-import { UploadSkillVideoScreenProps } from '~/src/utils/typings/stack';
+import { UploadPostScreenProps } from '~/src/types/navigation/main';
 
 interface UploadSkillForm {
   title: string;
@@ -32,7 +32,7 @@ interface UploadSkillForm {
 }
 
 export default function SkillVideo() {
-  const navigation = useNavigation<UploadSkillVideoScreenProps['navigation']>();
+  const navigation = useNavigation<UploadPostScreenProps['navigation']>();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const winDim = Dimensions.get('window');
 

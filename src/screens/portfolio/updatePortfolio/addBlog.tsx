@@ -1,14 +1,5 @@
-import {
-  FlatList,
-  Keyboard,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AddWork from '../../../components/portfolio/addWork';
 import Button from '~/src/components/theme/Button';
@@ -16,14 +7,14 @@ import { getUserWorksForPortfolio } from '~/src/utils/services/user-portfolio_se
 import { GetUserWorksForPortfolioResponse } from '~/src/utils/typings/user-portfolio_interface/work/getUserWorksForPortfolio.interface';
 import Loading from '~/src/components/theme/Loading';
 import { setPortforlioWorkData } from '~/src/utils/services/user-portfolio_services/work/setPortforlioWorkData.service';
-import { IPortfolioStack_AddBlogScreen } from '~/src/utils/typings/stack';
 import { produce } from 'immer';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
+import { IPortfolioStack_AddBlogScreenProps } from '~/src/types/navigation/portfolio';
 
 export default function AddBlog() {
   const navigation =
-    useNavigation<IPortfolioStack_AddBlogScreen['navigation']>();
-  const route = useRoute<IPortfolioStack_AddBlogScreen['route']>();
+    useNavigation<IPortfolioStack_AddBlogScreenProps['navigation']>();
+  const route = useRoute<IPortfolioStack_AddBlogScreenProps['route']>();
 
   const postType = useMemo(() => route.params?.postType, [route.params]);
 

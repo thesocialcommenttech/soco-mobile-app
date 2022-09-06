@@ -63,7 +63,7 @@ export default function Password() {
 
   return (
     <View style={styles.container}>
-      <SettingScreenHeader title="Password" />
+      {/* <SettingScreenHeader title="Password" /> */}
       <View style={styles.headingview}>
         <SectionHeader label="Change Password" />
         <PasswordInput

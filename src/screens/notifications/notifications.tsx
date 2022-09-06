@@ -1,5 +1,11 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import React, {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { Colors } from '../../utils/colors';
@@ -12,6 +18,8 @@ import {
 import { format } from 'timeago.js';
 import { ActivityIndicator } from 'react-native-paper';
 import { markNotificationsAsRead } from '~/src/utils/services/notification_services/markNotificationsAsRead.service';
+import { useFocusEffect } from '@react-navigation/native';
+import { App_ScreenProps } from '~/src/types/navigation/app';
 
 function NotificationItem({
   notification
@@ -147,7 +155,11 @@ function NotificationItem({
   );
 }
 
-const NotificationsScreen = ({ navigation }) => {
+const NotificationsScreen = ({
+  navigation
+}: {
+  navigation: App_ScreenProps['navigation'];
+}) => {
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] =
     useState<GetNotificatiosnresponse['notifications']>();
@@ -177,17 +189,38 @@ const NotificationsScreen = ({ navigation }) => {
     setLoading(false);
   }
 
+  useFocusEffect(() => {
+    navigation.setOptions({
+      title: 'Notifications',
+      headerShown: true,
+      headerShadowVisible: false,
+      headerRight: props => (
+        <TouchableOpacity
+          onPress={() => {
+            fetchNotifications();
+          }}
+        >
+          <MaterialCommunityIcon name="refresh" size={24} color="black" />
+        </TouchableOpacity>
+      )
+    });
+  });
+
   useEffect(() => {
     fetchNotifications();
-
-    setTimeout(() => {
-      markAsRead();
-    }, 1000);
   }, []);
+
+  useEffect(() => {
+    if (!loading && unreadNotifications?.length > 0) {
+      setTimeout(() => {
+        markAsRead();
+      }, 1000);
+    }
+  }, [unreadNotifications]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <TouchableOpacity
           onPress={() => {
             navigation.goBack();
@@ -201,14 +234,7 @@ const NotificationsScreen = ({ navigation }) => {
           />
         </TouchableOpacity>
         <Text style={styles.headerText}>Notifications</Text>
-        <TouchableOpacity
-          onPress={() => {
-            fetchNotifications();
-          }}
-        >
-          <MaterialCommunityIcon name="refresh" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
+      </View> */}
       {loading ? (
         <View style={styles.loadingCt}>
           <ActivityIndicator size={24} color={Colors.Secondary} />

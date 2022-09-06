@@ -17,7 +17,7 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { Avatar } from '@rneui/base';
 import { Colors } from '../utils/colors';
 import { Post as IPost } from '../utils/typings/post';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('screen').width;
 
@@ -87,22 +87,36 @@ function PostFooter({ timestamp, postType, viewsCount }) {
   );
 }
 
-function PostHeader({ profileImage, name }) {
+function PostHeader(props: {
+  profileImage: string;
+  name: string;
+  username: string;
+  navigation: NavigationProp<any>;
+}) {
   return (
     <View style={styles.cardTitle}>
-      <View style={styles.profileinfo}>
-        <Avatar
-          size={36}
-          rounded
-          source={{
-            uri: staticFileSrc(profileImage)
-          }}
-          activeOpacity={0.7}
-          placeholderStyle={{ backgroundColor: Colors.Gray100 }}
-          containerStyle={styles.avatar2}
-        />
-        <Text style={styles.cardTitleText}>{name}</Text>
-      </View>
+      <TouchableWithoutFeedback
+        onPress={() =>
+          props.navigation.navigate('ProfileStack', {
+            screen: 'Profile',
+            params: { username: props.username }
+          })
+        }
+      >
+        <View style={styles.profileinfo}>
+          <Avatar
+            size={36}
+            rounded
+            source={{
+              uri: staticFileSrc(props.profileImage)
+            }}
+            activeOpacity={0.7}
+            placeholderStyle={{ backgroundColor: Colors.Gray100 }}
+            containerStyle={styles.avatar2}
+          />
+          <Text style={styles.cardTitleText}>{props.name}</Text>
+        </View>
+      </TouchableWithoutFeedback>
       <TouchableOpacity>
         <MaterialCommunityIcon
           name="share-variant-outline"
@@ -131,6 +145,8 @@ export default function Post({
         <PostHeader
           profileImage={data.postedBy.profileImage}
           name={data.postedBy.name}
+          username={data.postedBy.username}
+          navigation={navigation}
         />
         {data.postType === 'shared' ? (
           <>
@@ -151,7 +167,7 @@ export default function Post({
           <>
             <TouchableWithoutFeedback
               onPress={() => {
-                let postScreenKey;
+                let postScreenKey: string;
                 switch (data.postType) {
                   case 'artwork':
                     postScreenKey = 'Post_Artwork';

@@ -79,7 +79,7 @@ export default function AddWithdrawAccount() {
           <SelectInput
             label="Account Type"
             optionListHeaderTitle="Select Account Type"
-            value={accountType}
+            inputProp={{ value: accountType }}
             onValueChange={type => setAccountType(type as any)}
             selectOptions={{
               upi: 'UPI',

@@ -12,8 +12,14 @@ import { SearchPostResponse } from '~/src/utils/typings/search_interface/searchP
 import { SearchUsernameResponse } from '~/src/utils/typings/search_interface/searchUsername.interface';
 import { AxiosResponse } from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
+import { App_ScreenProps } from '~/src/types/navigation/app';
 
-const SearchScreen = ({ navigation }) => {
+const SearchScreen = ({
+  navigation
+}: {
+  navigation: App_ScreenProps['navigation'];
+}) => {
   const [searchPhrase, setSearchPhrase] = useState<string>(null);
   const [searchEntity, setSearchEntity] = useState<'users' | 'posts'>('users');
   const [searchResults, setSearchResults] = useState<
@@ -54,22 +60,12 @@ const SearchScreen = ({ navigation }) => {
     setLoading(false);
   }
 
-  useEffect(() => {
-    // canceling debouncing of onSearchPhraseChangehandler events
-    // on this component unmont
-    return () => {
-      debouncedOnSearch.cancel();
-    };
-  }, []);
-
-  // listening to changes in searchPhrase state
-  useEffect(() => {
-    fetchSearchedQuery(searchPhrase);
-  }, [searchPhrase]);
-
-  return (
-    <>
-      <View style={styles.container}>
+  useFocusEffect(() => {
+    navigation.setOptions({
+      title: 'Notifications',
+      headerShown: true,
+      headerShadowVisible: false,
+      header: props => (
         <View style={styles.header}>
           <MaterialCommunityIcon
             name="arrow-left"
@@ -87,18 +83,32 @@ const SearchScreen = ({ navigation }) => {
             onSearchPhraseChange={debouncedOnSearch}
           />
         </View>
+      )
+    });
+  });
+
+  useEffect(() => {
+    // canceling debouncing of onSearchPhraseChangehandler events
+    // on this component unmont
+    return () => {
+      debouncedOnSearch.cancel();
+    };
+  }, []);
+
+  // listening to changes in searchPhrase state
+  useEffect(() => {
+    fetchSearchedQuery(searchPhrase);
+  }, [searchPhrase]);
+
+  return (
+    <>
+      <View style={styles.container}>
         <View style={styles.util}>
           <Text style={styles.utilText}>Search For</Text>
           <DropdownSearch
             options={[
-              {
-                label: 'User',
-                value: 'users'
-              },
-              {
-                label: 'Post',
-                value: 'posts'
-              }
+              { label: 'User', value: 'users' },
+              { label: 'Post', value: 'posts' }
             ]}
             onSelectionChange={selection => {
               setSearchEntity(selection.value as any);
@@ -161,22 +171,13 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'center'
+    alignItems: 'center',
+    padding: 15,
+    paddingBottom: 0
   },
-  backIcon: {
-    // marginLeft: '5%',
-    // backgroundColor: 'black'
-  },
-  // title: {
-  //   width: '100%',
-  //   marginTop: 20,
-  //   fontSize: 25,
-  //   marginLeft: '10%',
-  //   color: 'black',
-  //   fontFamily: 'Roboto-Medium'
-  // },
+  backIcon: {},
   util: {
-    marginTop: '5%',
+    // marginTop: '5%',
     flexDirection: 'row',
     justifyContent: 'space-between'
   },

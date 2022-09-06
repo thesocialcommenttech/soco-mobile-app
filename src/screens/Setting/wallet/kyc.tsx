@@ -132,7 +132,7 @@ export default function KycScreen() {
 
   return (
     <>
-      <SettingScreenHeader title="KYC" />
+      {/* <SettingScreenHeader title="KYC" /> */}
       {loading ? (
         <Loading />
       ) : (

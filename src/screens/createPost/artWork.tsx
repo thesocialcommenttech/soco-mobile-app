@@ -1,33 +1,18 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  Modal,
-  Image,
-  Dimensions,
-  FlatList,
-  Animated,
-  TouchableHighlight
-} from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
-import CategoryItem from '../../components/createPost/categoryItem';
 import { Black, Green } from '~/src/utils/colors';
 import Button from '~/src/components/theme/Button';
 import { useFormik } from 'formik';
 import { array, object, string } from 'yup';
 import { Input } from '~/src/components/theme/Input';
 import { postArtwork } from '~/src/utils/services/works_services/artwork/postArtwork.service';
-import { UploadArtworkScreenProps } from '~/src/utils/typings/stack';
 import { FileObject } from '~/src/utils/typings/file';
 import { file } from '~/src/lib/yup-custom-schemas';
-import { getCategories } from '~/src/utils/services/post/categories';
-import { Category } from '~/src/utils/typings/postCategory';
-import Loading from '~/src/components/theme/Loading';
 import { PostCategoryModal } from '~/src/components/createPost/CategorySelectionModal';
+import { UploadPostScreenProps } from '~/src/types/navigation/main';
 
 interface UploadArtworkForm {
   title: string;
@@ -38,10 +23,8 @@ interface UploadArtworkForm {
 }
 
 export default function ArtWork() {
-  const navigation = useNavigation<UploadArtworkScreenProps['navigation']>();
+  const navigation = useNavigation<UploadPostScreenProps['navigation']>();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [filePath, setFilePath] = useState<any>();
-  const [selected, setSelected] = useState(false);
 
   async function submitArtwork(values: UploadArtworkForm) {
     const result = await postArtwork({
@@ -57,9 +40,9 @@ export default function ArtWork() {
 
   const formik = useFormik<UploadArtworkForm>({
     initialValues: {
-      title: 'Mountain View',
-      description: 'Beautiful sceneary',
-      tags: 'mountain',
+      title: '',
+      description: '',
+      tags: '',
       category: [],
       artwork: null
     },
@@ -148,29 +131,6 @@ export default function ArtWork() {
         }
         onClose={() => setShowCategoryModal(false)}
       />
-      {/* <View style={styles.imageView}>
-        {filePath
-          ? [
-              <TouchableWithoutFeedback>
-                <View style={styles.imageview}>
-                  <Image
-                    style={styles.image}
-                    source={{
-                      uri: filePath.assets[0].uri
-                    }}
-                  />
-                </View>
-              </TouchableWithoutFeedback>
-            ]
-          : [
-              <>
-                <TouchableWithoutFeedback onPress={() => chooseFile('photo')}>
-                  <Icon1 name="camera" size={38} color="#BDBDBD" />
-                </TouchableWithoutFeedback>
-                <Text style={styles.selecttext}>Select Image</Text>
-              </>
-            ]}
-      </View> */}
 
       <ScrollView>
         <Input
@@ -179,7 +139,9 @@ export default function ArtWork() {
             borderRadius: 0,
             flexDirection: 'column'
           }}
-          error={formik.touched.artwork && (formik.errors.artwork?.type as string)}
+          error={
+            formik.touched.artwork && (formik.errors.artwork?.type as string)
+          }
         >
           {() => (
             <View
@@ -296,31 +258,6 @@ export default function ArtWork() {
             style={styles.MT}
           />
 
-          {/* <TouchableWithoutFeedback
-            onPress={() => {
-              setModalVisible(true);
-            }}
-          >
-            <View>
-              <TextInputWithLabel
-                placeholder="Select Category"
-                label="Category"
-                inputStyle={styles.emailTB}
-                // onChangeText={formik.handleChange('email')}
-                // value={formik.values.email}
-                // errorTxt={formik.touched.email && formik.errors.email}
-                // onBlur={formik.handleBlur('email')}
-                editable={false}
-                right={
-                  <Ti.Icon
-                    color={'#BDBDBD'}
-                    name={'chevron-down'}
-                    style={styles.eye}
-                  />
-                }
-              />
-            </View>
-          </TouchableWithoutFeedback> */}
           <Input
             label="Tags"
             inputProp={{

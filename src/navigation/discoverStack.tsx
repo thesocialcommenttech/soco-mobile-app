@@ -1,15 +1,12 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import DiscoverScreen from '../screens/discover/discover';
-import DraftsScreen from '../screens/drafts/drafts';
-import TrashScreen from '../screens/trash/trash';
-import OriginalSettingStack from './settingStack';
-import PortfolioStack from './portfolioStack';
-import ProfileStack from './profileStack';
+import ProfileTab from './profileStack';
+import { DiscoverStack } from '../types/navigation/discover';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<DiscoverStack>();
 
-const DiscoverStack = () => {
+function DiscoverTab() {
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -18,32 +15,12 @@ const DiscoverStack = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Drafts"
-        component={DraftsScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Trash"
-        component={TrashScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Setting"
-        component={OriginalSettingStack}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Portfolio"
-        component={PortfolioStack}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Profile"
-        component={ProfileStack}
+        name="ProfileStack"
+        component={ProfileTab}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
-};
+}
 
-export default DiscoverStack;
+export default DiscoverTab;

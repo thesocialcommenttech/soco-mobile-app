@@ -9,17 +9,16 @@ import Bottomsheet, {
   DropdownOption
 } from '~/src/components/bottomsheet/Bottomsheet';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
+import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
 
 export default function Bio() {
   const [modalVisible, setModalVisible] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const { profile, portfolio } = usePortfolioData();
 
-  const navigation =
-    useNavigation<PortfolioTabStackScreenProps['navigation']>();
+  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
 
   useFocusEffect(
     React.useCallback(() => {

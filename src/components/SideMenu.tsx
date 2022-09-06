@@ -23,9 +23,9 @@ import { Black, Colors } from '~/src/utils/colors';
 import { staticFileSrc } from '~/src/utils/methods';
 import { getUserData2 } from '~/src/utils/services/user-profile_service/getUserData2.service';
 import { getUserProfileCompletion } from '~/src/utils/services/user-profile_service/getUserProfileCompletion.service';
-import { App_ScreenProps } from '~/src/utils/typings/stack';
 import CircularProgress from './circularIndicator';
 import Button from './theme/Button';
+import { App_ScreenProps } from '../types/navigation/app';
 
 interface ISideMenuState {
   open: boolean;
@@ -218,12 +218,8 @@ function SideMenu() {
         isNew: false,
         navigateTo: () => {
           setOpen(false);
-          navigation.navigate('App', {
-            screen: 'ProfileTab',
-            params: {
-              screen: 'Setting',
-              params: { screen: 'Referral' }
-            }
+          navigation.navigate('Setting', {
+            screen: 'Referral'
           });
         }
       }
@@ -237,12 +233,8 @@ function SideMenu() {
         isNew: false,
         navigateTo: () => {
           setOpen(false);
-          navigation.navigate('App', {
-            screen: 'ProfileTab',
-            params: {
-              screen: 'Setting',
-              params: { screen: 'WalletStack' }
-            }
+          navigation.navigate('Setting', {
+            screen: 'WalletStack'
           });
         }
       }
@@ -267,10 +259,7 @@ function SideMenu() {
         isNew: false,
         navigateTo: () => {
           setOpen(false);
-          navigation.navigate('App', {
-            screen: 'ProfileTab',
-            params: { screen: 'Setting', params: { screen: 'Setting' } }
-          });
+          navigation.navigate('Setting');
         }
       }
     },

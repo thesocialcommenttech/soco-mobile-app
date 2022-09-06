@@ -11,7 +11,7 @@ import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon1 from 'react-native-vector-icons/Feather';
 import WithdrawAccount from '../../../components/settingsComponents/WithdrawAccount';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
 import { Black, Blue, Green } from '~/src/utils/colors';
 import Button from '~/src/components/theme/Button';
@@ -50,6 +50,12 @@ export default function WalletMain() {
     setLoading(false);
   }
 
+  useFocusEffect(() => {
+    navigation.setOptions({
+      title: !loading && !data.kyc ? 'Update KYC' : 'Wallet'
+    });
+  });
+
   useEffect(() => {
     getData();
   }, []);
@@ -60,7 +66,7 @@ export default function WalletMain() {
 
   return (
     <>
-      <SettingScreenHeader title="Wallet" />
+      {/* <SettingScreenHeader title="Wallet" /> */}
       <ScrollView style={styles.container}>
         <>
           <View style={styles.walletBalanceCt}>
@@ -177,7 +183,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 0
+    paddingTop: 10
   },
   walletBalanceCt: {
     flexDirection: 'row',

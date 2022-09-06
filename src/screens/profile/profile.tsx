@@ -30,11 +30,11 @@ import { useProfileData, UserProfile } from '~/src/state/profileScreenState';
 import Loading from '~/src/components/theme/Loading';
 import Button from '~/src/components/theme/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { ProfileScreenProps, ProfileTabRoute } from '~/src/utils/typings/stack';
 import { AxiosResponse } from 'axios';
 import { FollowUserResponse } from '~/src/utils/typings/follow-user_interface/followUser.interface';
 import { unfollowUser } from '~/src/utils/services/follow-user_service/unfollowUser.service';
 import { followUser } from '~/src/utils/services/follow-user_service/followUser.service';
+import { ProfileScreenProps } from '~/src/types/navigation/profile';
 
 function PostState({ title, count }: { title: string; count: number }) {
   return (
@@ -49,7 +49,7 @@ function PostState({ title, count }: { title: string; count: number }) {
 
 function ProfileScreen() {
   const navigation = useNavigation<ProfileScreenProps['navigation']>();
-  const route = useRoute<ProfileTabRoute>();
+  const route = useRoute<ProfileScreenProps['route']>();
   const auth = useSelector((state: IRootReducer) => state.auth);
   const [pageState, setPageState] = useState({
     pageNo: 0,
@@ -211,7 +211,13 @@ function ProfileScreen() {
                 type="filled"
                 disabled={!userProfile.premium}
                 onPress={() => {
-                  navigation.navigate('PortfolioTab');
+                  if (mine) {
+                    navigation.navigate('PortfolioTab');
+                  } else {
+                    navigation.navigate('PortfolioStack', {
+                      username: userProfile.username
+                    });
+                  }
                 }}
                 textStyle={{ color: 'white' }}
                 btnStyle={[

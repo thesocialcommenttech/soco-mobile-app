@@ -144,7 +144,7 @@ export default function Profile() {
 
   return (
     <>
-      <SettingScreenHeader title="Profile" />
+      {/* <SettingScreenHeader title="Profile" /> */}
       <ScrollView>
         {loading ? (
           <Loading />
@@ -228,10 +228,12 @@ export default function Profile() {
               <SectionHeader label="Personal Information" />
               <SelectInput
                 label="Gender"
-                value={formik.values.gender}
+                inputProp={{
+                  value: formik.values.gender,
+                  placeholder: 'Select Gender'
+                }}
                 style={{ marginTop: 30 }}
                 onValueChange={key => formik.setFieldValue('gender', key)}
-                placeholder="Select Gender"
                 selectOptions={{ male: 'Male', female: 'Female' }}
               />
               <TextInputWithLabel
@@ -251,10 +253,12 @@ export default function Profile() {
               <SectionHeader label="Educational Detail" />
               <SelectInput
                 label="Academics"
-                value={formik.values.academics}
+                inputProp={{
+                  value: formik.values.academics,
+                  placeholder: 'Select Academics'
+                }}
                 style={{ marginTop: 30 }}
                 onValueChange={key => formik.setFieldValue('academics', key)}
-                placeholder="Select Academics"
                 selectOptions={{
                   undergraduate: 'Undergraduate',
                   graduate: 'Graduate'

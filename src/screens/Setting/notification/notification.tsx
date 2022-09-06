@@ -38,7 +38,7 @@ export default function Notification() {
 
   return (
     <>
-      <SettingScreenHeader title="Notifications" />
+      {/* <SettingScreenHeader title="Notifications" /> */}
       <View style={styles.container}>
         <View style={styles.notif}>
           <View style={styles.notifHeader}>

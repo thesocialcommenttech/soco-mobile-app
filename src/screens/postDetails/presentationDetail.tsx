@@ -13,7 +13,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
 import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
 import { getPost } from '~/src/utils/services/user-posts_service/getPost.service';
-import { PostViewRoute } from '~/src/utils/typings/stack';
 import { PresentationPost } from '~/src/utils/typings/post';
 import { staticFileSrc } from '~/src/utils/methods';
 import Skeleton from '~/src/components/theme/Skeleton';
@@ -26,6 +25,7 @@ import PostAuthorNTimestamp from '~/src/components/screens/post-view/PostAuthorN
 import PostInteractions from '~/src/components/screens/post-view/PostInteractions';
 import PostTags from '~/src/components/screens/post-view/PostTags';
 import PostDescription from '~/src/components/screens/post-view/PostDescription';
+import { PostViewScreenProps } from '~/src/types/navigation/main';
 
 type PresentationPostScreenData = GetPostResponse<
   Pick<
@@ -152,8 +152,8 @@ function Presentation(props: {
 }
 
 export default function PresentationDetail() {
-  const navigation = useNavigation();
-  const route = useRoute<PostViewRoute>();
+  const navigation = useNavigation<PostViewScreenProps['navigation']>();
+  const route = useRoute<PostViewScreenProps['route']>();
 
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<PresentationPostScreenData>();

@@ -1,13 +1,6 @@
 // SearchBar.js
 import React, { useMemo, useState } from 'react';
-import {
-  StyleSheet,
-  TextInput,
-  View,
-  Keyboard,
-  Button,
-  Text
-} from 'react-native';
+import { StyleSheet, TextInput, View, Keyboard } from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { Colors } from '../../utils/colors';

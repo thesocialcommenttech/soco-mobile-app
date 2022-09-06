@@ -23,12 +23,12 @@ import { FileObject } from '~/src/utils/typings/file';
 import { object, string, array } from 'yup';
 import { Input } from '~/src/components/theme/Input';
 import { file } from '~/src/lib/yup-custom-schemas';
-import { UploadPresentationScreenProps } from '~/src/utils/typings/stack';
 import { PostCategoryModal } from '~/src/components/createPost/CategorySelectionModal';
 import produce from 'immer';
 import Bottomsheet, {
   DropdownOption
 } from '~/src/components/bottomsheet/Bottomsheet';
+import { UploadPostScreenProps } from '~/src/types/navigation/main';
 
 interface UploadPresentationForm {
   title: string;
@@ -39,10 +39,8 @@ interface UploadPresentationForm {
 }
 
 export default function Presentation() {
-  const navigation =
-    useNavigation<UploadPresentationScreenProps['navigation']>();
+  const navigation = useNavigation<UploadPostScreenProps['navigation']>();
   const [modalVisible, setModalVisible] = useState(false);
-  const [photoPath, setPhotoPath] = useState<any>();
   const [modalVisible1, setModalVisible1] = useState(false);
   const scrollRef = React.useRef(null);
   const [currIndex, setCurrIndex] = useState(0);

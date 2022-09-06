@@ -23,13 +23,13 @@ import PostTags from '~/src/components/screens/post-view/PostTags';
 import PostTitle from '~/src/components/screens/post-view/PostTitle';
 import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
 import { getPost } from '~/src/utils/services/user-posts_service/getPost.service';
-import { PostViewRoute } from '~/src/utils/typings/stack';
 import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPost.interface';
 import { ArtworkPost } from '~/src/utils/typings/post';
 import { staticFileSrc } from '~/src/utils/methods';
 import Skeleton from '~/src/components/theme/Skeleton';
 import { ImageProps } from 'react-native';
 import { Black } from '~/src/utils/colors';
+import { PostViewScreenProps } from '~/src/types/navigation/main';
 
 type ArtworkPostScreenData = GetPostResponse<
   Pick<
@@ -100,8 +100,8 @@ export function PostImage(props: {
 }
 
 export default function ArtWorkDetail() {
-  const navigation = useNavigation();
-  const route = useRoute<PostViewRoute>();
+  const navigation = useNavigation<PostViewScreenProps['navigation']>();
+  const route = useRoute<PostViewScreenProps['route']>();
 
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<ArtworkPostScreenData>();

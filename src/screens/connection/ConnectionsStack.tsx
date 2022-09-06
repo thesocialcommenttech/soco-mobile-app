@@ -5,10 +5,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Connections from './Connections';
 import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
-import {
-  ConnectionStackScreenProps,
-  ConnectionTabStack as IConnectionTabStack
-} from '~/src/utils/typings/stack';
+import { IConnectionTabStack } from '~/src/types/navigation/connections';
+import { ConnectionStackScreenProps } from '~/src/types/navigation/profile';
 
 const ConnectionTabStack = createMaterialTopTabNavigator<IConnectionTabStack>();
 

@@ -2,16 +2,15 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import React from 'react';
 import Skill from '../../components/portfolio/Skill';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
 import Button from '~/src/components/theme/Button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
+import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
 
 export default function Skills() {
   const { portfolio } = usePortfolioData();
-  const navigation =
-    useNavigation<PortfolioTabStackScreenProps['navigation']>();
+  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
 
   useFocusEffect(
     React.useCallback(() => {

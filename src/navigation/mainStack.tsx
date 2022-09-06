@@ -1,162 +1,64 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import Ionicon from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Colors } from '../utils/colors';
-import DiscoverStack from './discoverStack';
-import HomeStack from './homeStack';
-import PortfolioStack from './portfolioStack';
-import ProfileStack from './profileStack';
 import SearchScreen from '../screens/search/search';
 import NotificationsScreen from '../screens/notifications/notifications';
 import ArtWorkDetail from '../screens/postDetails/artWorkDetail';
 import PresentationDetail from '../screens/postDetails/presentationDetail';
 import SkillVideoDetail from '../screens/postDetails/skillVideoDetail';
-import {
-  BottomTabStack,
-  MainStack as IMainStack
-} from '../utils/typings/stack';
-import { useSelector } from 'react-redux';
-import { IRootReducer } from '../store/reducers';
-import SideMenu from '../components/SideMenu';
+import BottomTabBar from './BottomTabBar';
+import SettingStack from './settingStack';
+import ArtWork from '../screens/createPost/artWork';
+import UploadLink from '../screens/createPost/link';
+import Presentation from '../screens/createPost/presentation';
+import SkillVideo from '../screens/createPost/skillVideo';
+import { IMainStack, PostViewScreenParam } from '../types/navigation/main';
 
-const MyTab = createBottomTabNavigator<BottomTabStack>();
 const MyStack = createNativeStackNavigator<IMainStack>();
 
-function AppTabs() {
-  const authUser = useSelector((root: IRootReducer) => root.auth.user);
+function MainStack() {
+  const getPostScreenId = ({ params }: { params: PostViewScreenParam }) =>
+    params.post_id;
 
-  return (
-    <>
-      <MyTab.Navigator
-        backBehavior="history"
-        screenOptions={{
-          tabBarHideOnKeyboard: true,
-          headerShown: false,
-          tabBarLabelStyle: {
-            marginBottom: '10%',
-            fontFamily: 'Roboto-Medium',
-            fontSize: 10,
-            color: Colors.GrayBorder
-          },
-          tabBarLabelPosition: 'below-icon',
-          tabBarActiveTintColor: 'white',
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: {
-            height: '9%',
-            backgroundColor: Colors.BlackTab
-          }
-        }}
-      >
-        <MyTab.Screen
-          name="HomeTab"
-          component={HomeStack}
-          options={{
-            tabBarLabel: 'Home',
-            tabBarIcon: tabinfo => {
-              return (
-                <MaterialCommunityIcon
-                  name="home-outline"
-                  size={30}
-                  color={tabinfo.focused ? 'white' : 'gray'}
-                  style={Styles.homeIcon}
-                />
-              );
-            }
-          }}
-        />
-        <MyTab.Screen
-          name="DiscoverTab"
-          component={DiscoverStack}
-          options={{
-            tabBarLabel: 'Discover',
-            tabBarIcon: tabinfo => {
-              return (
-                <Ionicon
-                  name="compass-outline"
-                  size={30}
-                  color={tabinfo.focused ? 'white' : 'gray'}
-                  style={Styles.discoverIcon}
-                />
-              );
-            }
-          }}
-        />
-        <MyTab.Screen
-          name="PortfolioTab"
-          component={PortfolioStack}
-          initialParams={{ username: authUser.username }}
-          options={{
-            tabBarLabel: 'Portfolio',
-            tabBarStyle: {
-              display: 'none'
-            },
-            tabBarIcon: tabinfo => {
-              return (
-                <MaterialCommunityIcon
-                  name="account-box-outline"
-                  size={30}
-                  color={tabinfo.focused ? 'white' : 'gray'}
-                  style={Styles.portfolioIcon}
-                />
-              );
-            }
-          }}
-        />
-        <MyTab.Screen
-          name="ProfileTab"
-          component={ProfileStack}
-          options={{
-            tabBarLabel: 'Profile',
-
-            tabBarIcon: tabinfo => {
-              return (
-                <MaterialCommunityIcon
-                  name="account-circle-outline"
-                  size={30}
-                  color={tabinfo.focused ? 'white' : 'gray'}
-                  style={Styles.profileIcon}
-                />
-              );
-            }
-          }}
-        />
-      </MyTab.Navigator>
-      <SideMenu />
-    </>
-  );
-}
-
-const MainStack = () => {
   return (
     <MyStack.Navigator screenOptions={{ headerShown: false }}>
-      <MyStack.Screen name="App" component={AppTabs} />
+      <MyStack.Screen name="App" component={BottomTabBar} />
       <MyStack.Screen name="Search" component={SearchScreen} />
       <MyStack.Screen name="Notifications" component={NotificationsScreen} />
 
+      <MyStack.Screen name="Setting" component={SettingStack} />
+
       {/* Post Screens */}
-      <MyStack.Screen name="Post_Artwork" component={ArtWorkDetail} />
-      <MyStack.Screen name="Post_Skill" component={SkillVideoDetail} />
-      <MyStack.Screen name="Post_Presentation" component={PresentationDetail} />
+      <MyStack.Screen
+        name="Post_Artwork"
+        component={ArtWorkDetail}
+        getId={getPostScreenId}
+      />
+      <MyStack.Screen
+        name="Post_Skill"
+        component={SkillVideoDetail}
+        getId={getPostScreenId}
+      />
+      <MyStack.Screen
+        name="Post_Presentation"
+        component={PresentationDetail}
+        getId={getPostScreenId}
+      />
+
+      {/* Upload Post Screens */}
+      <MyStack.Group
+        screenOptions={{
+          headerShown: true,
+          headerShadowVisible: false,
+          headerTitle: () => null
+        }}
+      >
+        <MyStack.Screen name="Upload_Artwork" component={ArtWork} />
+        <MyStack.Screen name="Upload_SkillVideo" component={SkillVideo} />
+        <MyStack.Screen name="Upload_Presentation" component={Presentation} />
+        <MyStack.Screen name="Upload_Link" component={UploadLink} />
+      </MyStack.Group>
     </MyStack.Navigator>
   );
-};
+}
 
 export default MainStack;
-
-const Styles = StyleSheet.create({
-  homeIcon: {
-    marginTop: 5
-  },
-  discoverIcon: {
-    marginTop: 5
-  },
-  portfolioIcon: {
-    marginTop: 5
-  },
-  profileIcon: {
-    marginTop: 5
-  }
-});

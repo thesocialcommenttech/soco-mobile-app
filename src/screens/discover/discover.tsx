@@ -13,7 +13,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { Avatar, Card } from '@rneui/base';
 import { TextInput } from 'react-native';
-import { Colors } from '../../utils/colors';
+import { Blue, Colors } from '../../utils/colors';
 import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
 import { getDiscoveredPosts } from '~/src/utils/services/getDiscoveredUsers_service/getDiscoveredUsers.service';
 import { PostType } from '~/src/utils/typings/post';
@@ -77,7 +77,7 @@ function DiscoverScreen({ navigation }) {
     });
 
     if (result.data.success) {
-      setPosts([...posts,...result.data.posts]);
+      setPosts([...posts, ...result.data.posts]);
     }
     //console.log(result);
     setLoading(false);
@@ -164,42 +164,42 @@ function DiscoverScreen({ navigation }) {
         </View> */}
         <ScrollView style={styles.activity} horizontal={true}>
           {postTypeFilterOptions.map((item, i) => (
-            <>
-              <PostTypeFilterOption
-                key={i}
-                label={item.label}
-                isSelected={postTypeFilter === item.value}
-                onPress={() => setPostTypeFilter(item.value)}
-              />
-            </>
+            <PostTypeFilterOption
+              key={i + item.value}
+              label={item.label}
+              isSelected={postTypeFilter === item.value}
+              onPress={() => setPostTypeFilter(item.value)}
+            />
           ))}
           <View style={styles.padd} />
         </ScrollView>
         {loading ? (
           <View style={styles.loadingCt}>
-            <ActivityIndicator color={'#0063ff'} size={32} />
+            <ActivityIndicator color={Blue.primary} size={32} />
           </View>
         ) : (
           <>
             <FlatList
               data={posts}
+              keyExtractor={item => item._id}
               onEndReachedThreshold={0.33}
-              onEndReached={() => setPageState({
-                pageNo: pageState.pageNo + 1,
-                pageSize: pageState.pageSize
-              })}
+              onEndReached={() =>
+                setPageState({
+                  pageNo: pageState.pageNo + 1,
+                  pageSize: pageState.pageSize
+                })
+              }
               renderItem={({ item }) => (
                 <Post
-                key={item._id}
-                data={item}
-                postWrapperStyle={{
-                  borderTopWidth: 1,
-                  borderTopColor: Colors.GrayLine
-                }}
+                  data={item}
+                  postWrapperStyle={{
+                    borderTopWidth: 1,
+                    borderTopColor: Colors.GrayLine
+                  }}
+                />
+              )}
             />
-        )}
-      />
-      </>
+          </>
         )}
       </>
     </ScreenWithTopBar>

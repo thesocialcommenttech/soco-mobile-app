@@ -5,15 +5,15 @@ import { useNavigation } from '@react-navigation/native';
 import Button from './theme/Button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Bottomsheet, { DropdownOption } from './bottomsheet/Bottomsheet';
-import { ProfileScreenProps, ProfileTabStack } from '../utils/typings/stack';
+import { MainStack, ProfileScreenProps } from '../utils/typings/stack';
 
 function CreatePostFAB() {
   const navigation = useNavigation<ProfileScreenProps['navigation']>();
   const [visible, setVisible] = useState(false);
 
-  function onItemPress(item: keyof ProfileTabStack) {
+  function onItemPress(item: keyof MainStack) {
     setVisible(false);
-    navigation.push(item);
+    navigation.navigate(item);
   }
 
   return (
@@ -31,22 +31,22 @@ function CreatePostFAB() {
         <DropdownOption
           optionKey="artwork"
           label="Artwork"
-          onOptionPress={option => onItemPress('Artwork')}
+          onOptionPress={option => onItemPress('Upload_Artwork')}
         />
         <DropdownOption
           optionKey="skill_video"
           label="Skill Video"
-          onOptionPress={option => onItemPress('Skill Video')}
+          onOptionPress={option => onItemPress('Upload_SkillVideo')}
         />
         <DropdownOption
           optionKey="presentation"
           label="Presentation"
-          onOptionPress={option => onItemPress('Presentation')}
+          onOptionPress={option => onItemPress('Upload_Presentation')}
         />
         <DropdownOption
           optionKey="link"
           label="Link"
-          onOptionPress={option => onItemPress('Link')}
+          onOptionPress={option => onItemPress('Upload_Link')}
         />
       </Bottomsheet>
     </>

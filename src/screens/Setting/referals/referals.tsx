@@ -70,7 +70,7 @@ export default function Referals() {
 
   return (
     <>
-      <SettingScreenHeader title="Refferals" />
+      {/* <SettingScreenHeader title="Refferals" /> */}
       <ScrollView>
         <View style={styles.container}>
           {loading ? (
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 0
+    paddingTop: 10
   },
   box: {
     borderWidth: 1,

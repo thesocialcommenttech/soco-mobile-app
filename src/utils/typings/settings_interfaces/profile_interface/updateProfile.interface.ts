@@ -1,6 +1,8 @@
+import { User } from '../../user-profile_interface/getUserData.interface';
+
 export interface UpdateProfileRequest {
   academics?: string;
-  gender?: string;
+  gender?: User['gender'];
   name?: string;
   phone?: number;
   username?: string;

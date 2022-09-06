@@ -13,7 +13,6 @@ import DropdownFilter, {
 import DropdownMore from '../../components/dropdownMore';
 import { Colors } from '../../utils/colors';
 import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
-import { Post } from '~/src/utils/typings/post';
 import { removePostPermanently } from '~/src/utils/services/delete-post_service/removePostPermanently.service';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '~/src/store/reducers';

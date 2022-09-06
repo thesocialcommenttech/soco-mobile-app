@@ -52,34 +52,6 @@ export default function Bank({
           (formContorler.errors.bank_ifsc as string)
         }
       />
-
-      {/* <TextInputWithLabel
-        placeholder="Account holder name"
-        label="Account Holder Name"
-        inputStyle={styles.upiTB}
-        onChangeText={formContorler.handleChange('upi')}
-        value={formContorler.values.upi}
-        errorTxt={formContorler.touched.upi && formContorler.errors.upi}
-        onBlur={formContorler.handleBlur('upi')}
-      /> */}
-      {/* <TextInputWithLabel
-        placeholder="Account Number"
-        label="Account number"
-        inputStyle={styles.upiTB}
-        onChangeText={formContorler.handleChange('upi')}
-        value={formContorler.values.upi}
-        errorTxt={formContorler.touched.upi && formContorler.errors.upi}
-        onBlur={formContorler.handleBlur('upi')}
-      /> */}
-      {/* <TextInputWithLabel
-        placeholder="Bank IFSC"
-        label="IFSC"
-        inputStyle={styles.upiTB}
-        onChangeText={formContorler.handleChange('upi')}
-        value={formContorler.values.upi}
-        errorTxt={formContorler.touched.upi && formContorler.errors.upi}
-        onBlur={formContorler.handleBlur('upi')}
-      /> */}
     </View>
   );
 }

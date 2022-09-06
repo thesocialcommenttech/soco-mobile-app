@@ -8,16 +8,23 @@ import SettingSubscriptionsScreen from '../screens/Setting/subsciptions/subscrip
 import Profile from '../screens/Setting/profile/profile';
 import Password from '../screens/Setting/password/password';
 import WalletStack from './walletStack';
+import { ISettingStack } from '../types/navigation/setting';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<ISettingStack>();
 
-export default function OriginalSettingStack() {
+export default function SettingStack() {
   return (
     <Stack.Navigator
       initialRouteName="Setting"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShadowVisible: false }}
     >
-      <Stack.Screen name="Setting" component={Main} />
+      <Stack.Screen
+        name="Setting"
+        component={Main}
+        options={{
+          title: 'Settings'
+        }}
+      />
       <Stack.Screen name="Interests" component={Interest} />
       <Stack.Screen name="Notification" component={Notification} />
       <Stack.Screen name="Referral" component={Referral} />
@@ -27,7 +34,11 @@ export default function OriginalSettingStack() {
       />
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Password" component={Password} />
-      <Stack.Screen name="WalletStack" component={WalletStack} />
+      <Stack.Screen
+        name="WalletStack"
+        component={WalletStack}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }

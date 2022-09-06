@@ -154,7 +154,7 @@ export default function SettingSubscriptionsScreen() {
 
   return (
     <>
-      <SettingScreenHeader title="Subscriptions" />
+      {/* <SettingScreenHeader title="Subscriptions" /> */}
       <View style={styles.container}>
         {loading ? (
           <Skeleton height={70} />
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 0
+    paddingTop: 10
   },
   mainmessage: {
     padding: 15,

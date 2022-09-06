@@ -1,18 +1,9 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native';
+import { StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import React, { useState } from 'react';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Clipboard from '@react-native-clipboard/clipboard';
 import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
 import { Route } from '@react-navigation/native';
 import SectionHeader from '~/src/components/screens/settings/SectionHeader';
-import Button from '~/src/components/theme/Button';
 import { Black, Green, Red } from '~/src/utils/colors';
 import WithdrawAccount from '~/src/components/settingsComponents/WithdrawAccount';
 

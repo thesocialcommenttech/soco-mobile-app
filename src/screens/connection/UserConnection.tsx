@@ -13,15 +13,12 @@ import { User } from '~/src/utils/typings/user-profile_interface/getUserData.int
 import { staticFileSrc } from '~/src/utils/methods';
 import { Black } from '~/src/utils/colors';
 import { StackActions, useNavigation } from '@react-navigation/native';
-import {
-  ConnectionScreenProps,
-  MainTabNavigation
-} from '~/src/utils/typings/stack';
 import Button from '~/src/components/theme/Button';
 import { unfollowUser } from '~/src/utils/services/follow-user_service/unfollowUser.service';
 import { followUser } from '~/src/utils/services/follow-user_service/followUser.service';
 import { AxiosResponse } from 'axios';
 import { FollowUserResponse } from '~/src/utils/typings/follow-user_interface/followUser.interface';
+import { ConnectionScreenProps } from '~/src/types/navigation/connections';
 
 export default function UserConnection({
   user,

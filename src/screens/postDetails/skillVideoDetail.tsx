@@ -1,17 +1,9 @@
-import {
-  Dimensions,
-  ScrollView,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle
-} from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { getPost } from '~/src/utils/services/user-posts_service/getPost.service';
 import { SkillVideoPost } from '~/src/utils/typings/post';
 import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPost.interface';
-import { PostViewRoute } from '~/src/utils/typings/stack';
 import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
 import AuthorCard from '~/src/components/screens/post-view/AuthorCard';
 import PostAuthorNTimestamp from '~/src/components/screens/post-view/PostAuthorNTimestamp';
@@ -20,9 +12,8 @@ import PostDescription from '~/src/components/screens/post-view/PostDescription'
 import PostInteractions from '~/src/components/screens/post-view/PostInteractions';
 import PostTags from '~/src/components/screens/post-view/PostTags';
 import PostTitle from '~/src/components/screens/post-view/PostTitle';
-import { staticFileSrc } from '~/src/utils/methods';
-import Skeleton from '~/src/components/theme/Skeleton';
 import Video from '~/src/components/theme/Video';
+import { PostViewScreenProps } from '~/src/types/navigation/main';
 
 type SkillPostScreenData = GetPostResponse<
   Pick<
@@ -46,8 +37,8 @@ type SkillPostScreenData = GetPostResponse<
 >['post'];
 
 export default function SkillVideoDetail() {
-  const navigation = useNavigation();
-  const route = useRoute<PostViewRoute>();
+  const navigation = useNavigation<PostViewScreenProps['navigation']>();
+  const route = useRoute<PostViewScreenProps['route']>();
 
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<SkillPostScreenData>();
@@ -76,7 +67,7 @@ export default function SkillVideoDetail() {
   return (
     <ScreenWithTopBar navigation={navigation}>
       <ScrollView>
-        <Video videoUrl={post?.video} loading={loading} />
+        <Video source={{ uri: post?.video }} loading={loading} />
         <View style={styles.container}>
           <PostTitle title={post?.title} loading={loading} />
           <PostAuthorNTimestamp

@@ -12,10 +12,10 @@ import { SearchedPost } from '~/src/utils/typings/search_interface/searchPost.in
 import { SearchedUser } from '~/src/utils/typings/search_interface/searchUsername.interface';
 import { Black, Colors } from '../../utils/colors';
 import { useNavigation } from '@react-navigation/native';
-import { MainStackScreenProps } from '~/src/utils/typings/stack';
 import { PostType } from '~/src/utils/typings/post';
+import { MainStackScreenProps } from '~/src/types/navigation/main';
 
-const UserItem = ({ user_id, name, username, profilePic }) => {
+function UserItem({ user_id, name, username, profilePic }) {
   const navigation = useNavigation<MainStackScreenProps['navigation']>();
 
   return (
@@ -45,9 +45,9 @@ const UserItem = ({ user_id, name, username, profilePic }) => {
       </>
     </TouchableHighlight>
   );
-};
+}
 
-const PostItem = ({
+function PostItem({
   title,
   post_id,
   username,
@@ -57,7 +57,7 @@ const PostItem = ({
   title: string;
   username: string;
   postType: PostType;
-}) => {
+}) {
   const navigation = useNavigation<MainStackScreenProps['navigation']>();
 
   const postScreen = useMemo(() => {
@@ -89,7 +89,7 @@ const PostItem = ({
       </>
     </TouchableHighlight>
   );
-};
+}
 
 // the filter
 function Results({
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 16,
-    color: 'black',
+    color: 'black'
     // fontFamily: 'Roboto-Medium'
   },
   username: {

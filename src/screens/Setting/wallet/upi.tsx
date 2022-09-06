@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
 import React from 'react';
 import { useFormik } from 'formik';
-import { object, string } from 'yup';
 import { Input } from '~/src/components/theme/Input';
 
 export default function Upi({

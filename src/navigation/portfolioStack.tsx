@@ -10,21 +10,18 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AddSkill from '../screens/portfolio/updatePortfolio/addSkill';
 import AddEducation from '../screens/portfolio/updatePortfolio/addEducation';
 import AddBlog from '../screens/portfolio/updatePortfolio/addBlog';
-import { TouchableHighlight } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useSelector } from 'react-redux';
-import { IRootReducer } from '../store/reducers';
-import {
-  IPortfolioStack,
-  PortfolioStackScreenProps
-} from '../utils/typings/stack';
 import { PortfolioDataProvider } from '../contexts/portfolio.context';
 import Button from '../components/theme/Button';
 import { Black } from '../utils/colors';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AddSocialAccounts from '../screens/portfolio/updatePortfolio/addSocialAccounts';
+import {
+  IPortfolioTabStack,
+  PortfolioStackScreenProps
+} from '../types/navigation/portfolio';
 
-const Stack = createNativeStackNavigator<IPortfolioStack>();
+const Stack = createNativeStackNavigator<IPortfolioTabStack>();
 
 function CloseModalBtn() {
   const navigation = useNavigation();

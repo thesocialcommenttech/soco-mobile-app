@@ -9,9 +9,9 @@ import { FileObject } from '~/src/utils/typings/file';
 import Button from '~/src/components/theme/Button';
 import { Black, Green } from '~/src/utils/colors';
 import { postLink } from '~/src/utils/services/user-portfolio_services/link/postLink.service';
-import { UploadLinkScreenProps } from '~/src/utils/typings/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { file } from '~/src/lib/yup-custom-schemas';
+import { UploadPostScreenProps } from '~/src/types/navigation/main';
 interface LinkPostForm {
   title: string;
   description: string;
@@ -21,7 +21,7 @@ interface LinkPostForm {
 }
 
 export default function UploadLink() {
-  const navigation = useNavigation<UploadLinkScreenProps['navigation']>();
+  const navigation = useNavigation<UploadPostScreenProps['navigation']>();
 
   async function chooseFile() {
     try {

@@ -10,15 +10,14 @@ import Certification from '../../components/portfolio/Certificaction';
 import Modal1 from 'react-native-modal';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
+import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
 
 export default function Certifications() {
   const [modalVisible, setModalVisible] = useState(false);
   const { portfolio } = usePortfolioData();
-  const navigation =
-    useNavigation<PortfolioTabStackScreenProps['navigation']>();
+  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
 
   useFocusEffect(
     React.useCallback(() => {

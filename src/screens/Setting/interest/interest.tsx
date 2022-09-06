@@ -2,17 +2,12 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
-  TouchableWithoutFeedback,
   ScrollView,
   Animated,
   ActivityIndicator
 } from 'react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
-import { Black, Blue, Colors } from '../../../utils/colors';
+import { Black } from '../../../utils/colors';
 import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
 import SectionHeader from '~/src/components/screens/settings/SectionHeader';
 import { Input } from '~/src/components/theme/Input';
@@ -25,10 +20,7 @@ import Loading from '~/src/components/theme/Loading';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '~/src/store/reducers';
 import { getInterestCategories } from '~/src/utils/services/settings_services/interests_services/getInterestCategories.service';
-import {
-  GetInterestCategoriesResponse,
-  Interests
-} from '~/src/utils/typings/settings_interfaces/interests_interface/getInterestCategories.interface';
+import { Interests } from '~/src/utils/typings/settings_interfaces/interests_interface/getInterestCategories.interface';
 import { isNumber } from 'lodash';
 import { removeUserInterest } from '~/src/utils/services/user-profile_service/removeUseInterests.service';
 import { addUserInterests } from '~/src/utils/services/user-profile_service/userInterests.service';
@@ -148,7 +140,7 @@ export default function Interest() {
 
   return (
     <>
-      <SettingScreenHeader title="Interests" />
+      {/* <SettingScreenHeader title="Interests" /> */}
 
       <View style={styles.container}>
         <SectionHeader label="My Interests" style={styles.fCont}>

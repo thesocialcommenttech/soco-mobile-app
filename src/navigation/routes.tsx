@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
-import MainStack from './mainStack';
-import AuthStack from './authStack';
 import { getAuthCredentials } from '../lib/auth-credentials';
 import { loginAction } from '../store/actions/auth';
 import { IRootReducer } from '../store/reducers';
@@ -11,7 +9,6 @@ import Logo from '~/src/assets/images/logos/thesocialcomment-logo.png';
 import TextLogo from '~/src/assets/images/logos/image.png';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import OptionalStack from './optionalStack';
 import { RootRouteContext } from '../contexts/root-route.context';
 
 const RootStack = createNativeStackNavigator();

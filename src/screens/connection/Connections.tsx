@@ -7,8 +7,8 @@ import { IRootReducer } from '~/src/store/reducers';
 import { User } from '~/src/utils/typings/user-profile_interface/getUserData.interface';
 import Loading from '~/src/components/theme/Loading';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { ConnectionScreenProps } from '~/src/utils/typings/stack';
 import { getUserFollowings } from '~/src/utils/services/follow-user_service/getUserFollowings.service';
+import { ConnectionScreenProps } from '~/src/types/navigation/connections';
 
 type UserProjection = 'name' | 'username' | 'profileImage' | '_id';
 type UserConnections = Pick<User, UserProjection>[];
