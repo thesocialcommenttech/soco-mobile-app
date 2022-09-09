@@ -5,6 +5,7 @@ import {
   StyleProp,
   StyleSheet,
   Text,
+  TouchableHighlight,
   View,
   ViewStyle
 } from 'react-native';
@@ -13,22 +14,22 @@ import { staticFileSrc } from '~/src/utils/methods';
 import { User } from '~/src/utils/typings/user-profile_interface/getUserData.interface';
 import Skeleton from '../../theme/Skeleton';
 import { omit } from 'lodash';
+import { useNavigation } from '@react-navigation/native';
+import { Post } from '~/src/utils/typings/post';
 
 export default function PostAuthorNTimestamp(props: {
-  profileImage: string;
-  name: string;
-  timestamp: string;
-  authorId: User['_id'];
+  user: Post['postedBy'];
+  timestamp: Post['postedOn'];
   style?: StyleProp<ViewStyle>;
   loading?: boolean;
 }) {
+  const navigation = useNavigation();
+
   if (props.loading) {
     return (
       <View style={[styles.userview, props.style]}>
-        <View style={styles.userphotoandname}>
-          <Skeleton style={omit(styles.userimg, 'backgroundColor')} />
-          <Skeleton height={14} width={110} />
-        </View>
+        <Skeleton style={omit(styles.userimg, 'backgroundColor')} />
+        <Skeleton height={14} width={110} />
         <Skeleton height={14} width={100} />
       </View>
     );
@@ -36,13 +37,24 @@ export default function PostAuthorNTimestamp(props: {
 
   return (
     <View style={[styles.userview, props.style]}>
-      <View style={styles.userphotoandname}>
-        <Image
-          style={styles.userimg}
-          source={{ uri: staticFileSrc(props.profileImage) }}
-        />
-        <Text style={styles.usrname}>{props.name}</Text>
-      </View>
+      <TouchableHighlight
+        underlayColor={Black[100]}
+        onPress={() =>
+          navigation.navigate('ProfileStack', {
+            screen: 'Profile',
+            params: { username: props.user.username }
+          })
+        }
+        style={styles.userphotoandname}
+      >
+        <>
+          <Image
+            style={styles.userimg}
+            source={{ uri: staticFileSrc(props.user.profileImage) }}
+          />
+          <Text style={styles.usrname}>{props.user.name}</Text>
+        </>
+      </TouchableHighlight>
       <Text style={styles.postdate}>
         {dayjs(props.timestamp).format('DD, MMM YYYY')}
       </Text>
@@ -58,7 +70,9 @@ const styles = StyleSheet.create({
   },
   userphotoandname: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingRight: 10,
+    borderRadius: 20
   },
   userimg: {
     width: 30,

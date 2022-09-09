@@ -134,10 +134,8 @@ export default function ArtWorkDetail() {
           <PostTitle title={post?.title} loading={loading} />
           <PostAuthorNTimestamp
             style={styles.MT}
-            profileImage={post?.postedBy.profileImage}
-            name={post?.postedBy.name}
-            timestamp={post?.postedOn as string}
-            authorId={post?.postedBy._id}
+            user={post?.postedBy}
+            timestamp={post?.postedOn}
             loading={loading}
           />
           <PostInteractions
