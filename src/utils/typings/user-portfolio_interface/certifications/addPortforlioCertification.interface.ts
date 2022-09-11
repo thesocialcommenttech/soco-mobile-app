@@ -9,7 +9,7 @@ export interface AddPortforlioCertificationRequest {
   expiration_date?: string;
   credential_url?: string;
   do_expire?: boolean;
-  certimage?: FileObject;
+  certimage?: FileObject | string;
 }
 
 export interface AddPortforlioCertificationResponse {

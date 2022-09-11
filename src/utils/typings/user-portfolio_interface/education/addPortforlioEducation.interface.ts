@@ -1,3 +1,5 @@
+import { IEducation } from '../getPortforlioWorkData.interface';
+
 interface Education {
   course?: string;
   institute?: string;
@@ -10,12 +12,7 @@ export interface AddPortforlioEducationRequest {
   education?: Education;
 }
 
-interface ResponseEducation extends Education {
-  order?: number;
-  _id?: string;
-}
-
 export interface AddPortforlioEducationResponse {
   success?: boolean;
-  education?: ResponseEducation;
+  education?: IEducation;
 }

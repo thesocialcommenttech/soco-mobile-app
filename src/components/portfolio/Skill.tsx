@@ -13,80 +13,97 @@ import Modal1 from 'react-native-modal';
 import Button from '../theme/Button';
 import { Black, Blue } from '~/src/utils/colors';
 import { ISkill } from '~/src/utils/typings/user-portfolio_interface/getPortforlioWorkData.interface';
+import { useNavigation } from '@react-navigation/native';
+import produce from 'immer';
+import { usePortfolioData } from '~/src/contexts/portfolio.context';
+import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
+import { removePortforlioEducation } from '~/src/utils/services/user-portfolio_services/education/removePortforlioEducation.service';
+import Bottomsheet, { DropdownOption } from '../bottomsheet/Bottomsheet';
+import { removePortforlioSkill } from '~/src/utils/services/user-portfolio_services/skills/removePortforlioSkill.service';
 
 export default function Skill(props: {
   data: ISkill;
   style?: StyleProp<ViewStyle>;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
+  const [isRemoving, setIsRemoving] = useState(false);
+  const { portfolio, setPortfolio } = usePortfolioData();
+
+  const remove = async () => {
+    setIsRemoving(true);
+    const result = await removePortforlioSkill({
+      skillId: props.data._id
+    });
+
+    if (result.data.success) {
+      setPortfolio(
+        produce(portfolio, draft => {
+          const index = draft.skill.findIndex(ed => ed._id === props.data._id);
+          draft.skill.splice(index, 1);
+        })
+      );
+    }
+  };
 
   return (
-    <View style={[styles.container, props.style]}>
-      <Modal1
-        isVisible={modalVisible}
-        backdropColor="black"
-        backdropOpacity={0.3}
-        animationIn="slideInUp"
-        style={styles.modal1}
-        onBackdropPress={() => setModalVisible(false)}
+    <>
+      <Bottomsheet
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
       >
-        <>
-          <View style={styles.optionview}>
-            <TouchableWithoutFeedback
-            // onPress={() => {
-            //   chooseFile('photo');
-            //   setModalVisible1(false);
-            // }}
-            >
-              <View style={styles.modalrow}>
-                <MaterialCommunityIcons
-                  name="pencil-outline"
-                  size={22}
-                  color="black"
-                />
-                <Text style={styles.optiontext}>Edit</Text>
-              </View>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback>
-              <View style={styles.modalDelete}>
-                <MaterialCommunityIcons name="delete" size={22} color="black" />
-                <Text style={styles.optiontext}>Delete</Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </>
-      </Modal1>
-      <View style={styles.progresscont}>
-        <View style={styles.progress}>
-          <ProgressCircle
-            percent={props.data.level}
-            radius={20}
-            borderWidth={4}
-            color={Blue.primary}
-            shadowColor={Blue[100]}
-            bgColor="white"
-          />
-        </View>
-        <View style={styles.skillInfo}>
-          <Text style={styles.skill}>{props.data.skill}</Text>
-          <Text style={styles.rating}>{props.data.level / 10} / 10</Text>
-        </View>
-      </View>
-
-      <Button
-        size="sm"
-        onPress={() => {
-          // props.toggleModal();
-        }}
-        btnStyle={styles.dropdownBtn}
-      >
-        <MaterialCommunityIcons
-          name="dots-vertical"
-          size={17}
-          color={Black[600]}
+        <DropdownOption
+          optionKey="edit"
+          label="Edit"
+          onOptionPress={option => {
+            setModalVisible(false);
+            navigation.navigate('Addskill', { data: props.data });
+          }}
         />
-      </Button>
-    </View>
+        <DropdownOption
+          optionKey="delete"
+          label="Delete"
+          onOptionPress={option => {
+            setModalVisible(false);
+            remove();
+          }}
+        />
+      </Bottomsheet>
+      <View
+        style={[styles.container, props.style, isRemoving && styles.removing]}
+      >
+        <View style={styles.progresscont}>
+          <View style={styles.progress}>
+            <ProgressCircle
+              percent={props.data.level}
+              radius={20}
+              borderWidth={4}
+              color={Blue.primary}
+              shadowColor={Blue[100]}
+              bgColor="white"
+            />
+          </View>
+          <View style={styles.skillInfo}>
+            <Text style={styles.skill}>{props.data.skill}</Text>
+            <Text style={styles.rating}>{props.data.level / 10} / 10</Text>
+          </View>
+        </View>
+
+        <Button
+          size="sm"
+          disabled={isRemoving}
+          processing={isRemoving}
+          onPress={() => setModalVisible(!modalVisible)}
+          btnStyle={styles.dropdownBtn}
+        >
+          <MaterialCommunityIcons
+            name="dots-vertical"
+            size={17}
+            color={Black[600]}
+          />
+        </Button>
+      </View>
+    </>
   );
 }
 
@@ -94,6 +111,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between'
+  },
+  removing: {
+    opacity: 0.3
   },
   progress: {
     transform: [{ rotateY: '180deg' }]

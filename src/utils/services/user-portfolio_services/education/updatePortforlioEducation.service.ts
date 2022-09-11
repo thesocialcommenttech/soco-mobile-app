@@ -7,15 +7,10 @@ import {
 export function updatePortforlioEducation({
   education,
   indexID
-}: UpdatePortforlioEducationRequest): Promise<
-  AxiosResponse<UpdatePortforlioEducationResponse>
-> {
+}: UpdatePortforlioEducationRequest) {
   const config: AxiosRequestConfig = {
     url: '/user/portfolio/update/education',
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
     data: { education, indexID }
   };
 

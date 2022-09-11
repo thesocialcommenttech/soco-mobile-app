@@ -9,12 +9,12 @@ import Loading from '~/src/components/theme/Loading';
 import { setPortforlioWorkData } from '~/src/utils/services/user-portfolio_services/work/setPortforlioWorkData.service';
 import { produce } from 'immer';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
-import { IPortfolioStack_AddBlogScreenProps } from '~/src/types/navigation/portfolio';
+import { PortfolioSubScreen_ScreenProps } from '~/src/types/navigation/portfolio';
 
 export default function AddBlog() {
   const navigation =
-    useNavigation<IPortfolioStack_AddBlogScreenProps['navigation']>();
-  const route = useRoute<IPortfolioStack_AddBlogScreenProps['route']>();
+    useNavigation<PortfolioSubScreen_ScreenProps<'Addblog'>['navigation']>();
+  const route = useRoute<PortfolioSubScreen_ScreenProps<'Addblog'>['route']>();
 
   const postType = useMemo(() => route.params?.postType, [route.params]);
 

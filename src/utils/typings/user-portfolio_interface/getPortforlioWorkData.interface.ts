@@ -23,11 +23,11 @@ export interface ICertification {
 export interface IEducation {
   course?: string;
   institute?: string;
-  level?: string;
-  passYear?: Date | 'completed';
+  level?: 'school' | 'graduation' | 'postGraduation';
+  passYear?: Date;
   index?: number;
   order?: number;
-  status?: string;
+  status?: 'completed' | 'pursuing';
   _id?: string;
 }
 

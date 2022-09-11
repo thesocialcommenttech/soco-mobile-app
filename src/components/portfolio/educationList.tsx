@@ -1,90 +1,105 @@
-import {
-  StyleProp,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-  ViewStyle
-} from 'react-native';
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import React, { useState } from 'react';
-import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
-import Modal1 from 'react-native-modal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Black, Blue, Yellow } from '~/src/utils/colors';
 import Button from '../theme/Button';
 import { IEducation } from '~/src/utils/typings/user-portfolio_interface/getPortforlioWorkData.interface';
 import dayjs from 'dayjs';
+import Bottomsheet, { DropdownOption } from '../bottomsheet/Bottomsheet';
+import { useNavigation } from '@react-navigation/native';
+import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
+import { removePortforlioEducation } from '~/src/utils/services/user-portfolio_services/education/removePortforlioEducation.service';
+import { usePortfolioData } from '~/src/contexts/portfolio.context';
+import { produce } from 'immer';
 
 export default function Education(props: {
   data: IEducation;
   style?: StyleProp<ViewStyle>;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
+  const [isRemoving, setIsRemoving] = useState(false);
+  const { portfolio, setPortfolio } = usePortfolioData();
+
+  const remove = async () => {
+    setIsRemoving(true);
+    const result = await removePortforlioEducation({
+      educationId: props.data._id
+    });
+
+    if (result.data.success) {
+      setPortfolio(
+        produce(portfolio, draft => {
+          const index = draft.education.findIndex(
+            ed => ed._id === props.data._id
+          );
+          draft.education.splice(index, 1);
+        })
+      );
+    }
+  };
+
   return (
-    <View style={props.style}>
-      <Modal1
-        isVisible={modalVisible}
-        backdropColor="black"
-        backdropOpacity={0.3}
-        animationIn="slideInUp"
-        style={styles.modal1}
-        onBackdropPress={() => setModalVisible(false)}
+    <>
+      <Bottomsheet
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
       >
-        <>
-          <View style={styles.optionview}>
-            <TouchableWithoutFeedback
-            // onPress={() => {
-            //   chooseFile('photo');
-            //   setModalVisible1(false);
-            // }}
-            >
-              <View style={styles.modalrow}>
-                <Icon2 name="pencil-outline" size={22} color="black" />
-                <Text style={styles.optiontext}>Edit</Text>
-              </View>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback>
-              <View style={styles.modalDelete}>
-                <Icon2 name="delete" size={22} color="black" />
-                <Text style={styles.optiontext}>Delete</Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </>
-      </Modal1>
-      <View style={styles.educationInfo}>
-        <View style={styles.courseCt}>
-          <Text style={styles.degree}>{props.data.course}</Text>
-          {props.data.status === 'completed' ? (
-            <Text style={styles.passYear}>
-              {dayjs(props.data.passYear).format('MMM YYYY')}
-            </Text>
-          ) : (
-            <Text style={styles.pursuingTag}>Pursuing</Text>
-          )}
-        </View>
-        <Text style={styles.instituteName}>{props.data.institute}</Text>
-      </View>
-      <Button
-        size="sm"
-        onPress={() => {
-          // props.toggleModal();
-        }}
-        btnStyle={styles.dropdownBtn}
-      >
-        <MaterialCommunityIcons
-          name="dots-vertical"
-          size={17}
-          color={Black[600]}
+        <DropdownOption
+          optionKey="edit"
+          label="Edit"
+          onOptionPress={option => {
+            setModalVisible(false);
+            navigation.navigate('Addeducation', { data: props.data });
+          }}
         />
-      </Button>
-    </View>
+        <DropdownOption
+          optionKey="delete"
+          label="Delete"
+          onOptionPress={option => {
+            setModalVisible(false);
+            remove();
+          }}
+        />
+      </Bottomsheet>
+      <View style={[props.style, isRemoving && styles.removingEd]}>
+        <View style={styles.educationInfo}>
+          <View style={styles.courseCt}>
+            <Text style={styles.degree}>{props.data.course}</Text>
+            {props.data.status === 'completed' ? (
+              <Text style={styles.passYear}>
+                {dayjs(props.data.passYear).format('MMM YYYY')}
+              </Text>
+            ) : (
+              <Text style={styles.pursuingTag}>Pursuing</Text>
+            )}
+          </View>
+          <Text style={styles.instituteName}>{props.data.institute}</Text>
+        </View>
+        <Button
+          size="sm"
+          disabled={isRemoving}
+          processing={isRemoving}
+          onPress={() => setModalVisible(!modalVisible)}
+          btnStyle={styles.dropdownBtn}
+        >
+          <MaterialCommunityIcons
+            name="dots-vertical"
+            size={17}
+            color={Black[600]}
+          />
+        </Button>
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   educationInfo: {
     marginRight: 45
+  },
+  removingEd: {
+    opacity: 0.3
   },
   courseCt: {
     flexDirection: 'row',
@@ -109,35 +124,6 @@ const styles = StyleSheet.create({
   passYear: {
     color: Black[600],
     marginLeft: 5
-  },
-  modal1: {
-    width: '100%',
-    marginLeft: 0,
-    marginBottom: 0
-  },
-  modalrow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: '2%',
-    marginLeft: '4%',
-    marginBottom: '2%',
-    padding: '2%'
-  },
-  modalDelete: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: '4%',
-    marginBottom: '2%',
-    padding: '2%'
-  },
-  optionview: {
-    marginTop: 'auto',
-    backgroundColor: 'white',
-    borderRadius: 8
-  },
-  optiontext: {
-    color: 'black',
-    marginLeft: '6.2%'
   },
   dropdownBtn: {
     position: 'absolute',

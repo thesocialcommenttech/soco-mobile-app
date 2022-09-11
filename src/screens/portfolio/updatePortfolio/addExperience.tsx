@@ -1,6 +1,10 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
-import React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useMemo } from 'react';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import {
   DateTimePickerAndroid,
   DateTimePickerEvent
@@ -14,6 +18,8 @@ import dayjs from 'dayjs';
 import { addPortforlioExperience } from '~/src/utils/services/user-portfolio_services/experience/addPortforlioExperience.service';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import produce from 'immer';
+import { PortfolioSubScreen_ScreenProps } from '~/src/types/navigation/portfolio';
+import { updatePortforlioExperience } from '~/src/utils/services/user-portfolio_services/experience/updatePortforlioExperience.service';
 
 const addExperienceFormSchema = object({
   title: string().trim().required('Title is required'),
@@ -52,6 +58,10 @@ interface PortfolioExperienceForm {
 
 export default function AddExperience() {
   const navigation = useNavigation();
+  const route =
+    useRoute<PortfolioSubScreen_ScreenProps<'Addexperience'>['route']>();
+
+  const isEdit = useMemo(() => !!route.params?.data, [route.params?.data]);
 
   const { portfolio, setPortfolio } = usePortfolioData();
 
@@ -68,10 +78,33 @@ export default function AddExperience() {
   }
 
   async function sumbitExperience(values) {
-    const result = await addPortforlioExperience({ experience: values });
+    const result = await (() => {
+      if (isEdit) {
+        return updatePortforlioExperience({
+          experience: values,
+          indexID: route.params.data._id
+        });
+      } else {
+        return addPortforlioExperience({ experience: values });
+      }
+    })();
+
     if (result.data.success) {
       setPortfolio(
         produce(portfolio, draft => {
+          if (isEdit) {
+            const index = draft.experience.findIndex(
+              ed => ed._id === route.params.data._id
+            );
+
+            // updating only the changed keys
+            for (const key in result.data.experience) {
+              draft.experience[index][key] = result.data.experience[key];
+            }
+
+            return;
+          }
+
           draft.experience.push(result.data.experience);
         })
       );
@@ -91,6 +124,22 @@ export default function AddExperience() {
     validationSchema: addExperienceFormSchema,
     onSubmit: sumbitExperience
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.data) {
+        const experience = route.params.data;
+        formik.setValues({
+          company: experience.company,
+          description: experience.description,
+          from: experience.from,
+          ongoing: experience.ongoing,
+          title: experience.title,
+          to: experience.to
+        });
+      }
+    }, [route.params?.data])
+  );
 
   return (
     <ScrollView>
@@ -253,7 +302,7 @@ export default function AddExperience() {
         <Button
           type="filled"
           fullWidth
-          text="Add"
+          text={isEdit ? 'Update' : 'Add'}
           processing={formik.isSubmitting}
           disabled={formik.isSubmitting}
           onPress={formik.handleSubmit}

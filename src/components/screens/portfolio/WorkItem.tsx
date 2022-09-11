@@ -12,10 +12,14 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { staticFileSrc } from '~/src/utils/methods';
 import { Post, PresentationPost, SharedPost } from '~/src/utils/typings/post';
-import { PortfolioTabStackScreenProps } from '~/src/utils/typings/stack';
 import Modal1 from 'react-native-modal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Black } from '~/src/utils/colors';
+import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
+import { usePortfolioData } from '~/src/contexts/portfolio.context';
+import { removePortforlioWork } from '~/src/utils/services/user-portfolio_services/work/removePortforlioWork.service';
+import Bottomsheet, { DropdownOption } from '../../bottomsheet/Bottomsheet';
+import produce from 'immer';
 
 export default function WorkItem({
   item
@@ -23,8 +27,28 @@ export default function WorkItem({
   item: Exclude<Post, SharedPost>;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
-  const navigation =
-    useNavigation<PortfolioTabStackScreenProps['navigation']>();
+  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
+  const [isRemoving, setIsRemoving] = useState(false);
+  const { portfolio, setPortfolio } = usePortfolioData();
+
+  const remove = async () => {
+    setIsRemoving(true);
+    const result = await removePortforlioWork({
+      postId: item._id,
+      postType: item.postType
+    });
+
+    if (result.data.success) {
+      setPortfolio(
+        produce(portfolio, draft => {
+          const index = draft.work[item.postType].findIndex(
+            ed => ed._id === item._id
+          );
+          draft.work[item.postType].splice(index, 1);
+        })
+      );
+    }
+  };
 
   function onClickPost() {
     let postScreenKey;
@@ -47,25 +71,19 @@ export default function WorkItem({
 
   return (
     <>
-      <Modal1
-        isVisible={modalVisible}
-        backdropColor="black"
-        backdropOpacity={0.3}
-        animationIn="slideInUp"
-        style={styles.modal1}
-        onBackdropPress={() => setModalVisible(false)}
+      <Bottomsheet
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
       >
-        <>
-          <View style={styles.optionview}>
-            <TouchableWithoutFeedback>
-              <View style={styles.modalDelete}>
-                <MaterialCommunityIcons name="delete" size={22} color="black" />
-                <Text style={styles.optiontext}>Delete</Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </>
-      </Modal1>
+        <DropdownOption
+          optionKey="delete"
+          label="Delete"
+          onOptionPress={option => {
+            setModalVisible(false);
+            remove();
+          }}
+        />
+      </Bottomsheet>
       <TouchableHighlight
         onLongPress={() => setModalVisible(true)}
         onPress={onClickPost}
@@ -76,7 +94,8 @@ export default function WorkItem({
           <View
             style={[
               styles.thumbnailCt,
-              item.postType === 'artwork' && styles.artworkImage
+              item.postType === 'artwork' && styles.artworkImage,
+              isRemoving && styles.removing
             ]}
           >
             <Image
@@ -143,6 +162,9 @@ const styles = StyleSheet.create({
     height: 170 / (16 / 9),
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  removing: {
+    opacity: 0.3
   },
   artworkImage: { height: 170 },
   //   image: {

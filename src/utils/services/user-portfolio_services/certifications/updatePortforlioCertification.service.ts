@@ -5,31 +5,23 @@ import {
 } from '~/src/utils/typings/user-portfolio_interface/certifications/updatePortforlioCertification.interface';
 
 export function updatePortforlioCertification({
-  title,
-  issue_date,
-  credential_id,
-  issuer_organization,
-  credential_url,
-  do_expire,
-  certimage
-}: UpdatePortforlioCertificationRequest): Promise<
-  AxiosResponse<UpdatePortforlioCertificationResponse>
-> {
+  certification,
+  indexID
+}: UpdatePortforlioCertificationRequest) {
+  const form = new FormData();
+
+  for (const key in certification) {
+    if (typeof certification[key] === 'boolean' || certification[key]) {
+      form.append(key, certification[key]);
+    }
+  }
+
   const config: AxiosRequestConfig = {
     url: '/user/portfolio/update/certification',
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    data: {
-      title,
-      issue_date,
-      credential_id,
-      issuer_organization,
-      credential_url,
-      do_expire,
-      certimage
-    }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: form,
+    params: { indexID }
   };
 
   return axios.request<UpdatePortforlioCertificationResponse>(config);

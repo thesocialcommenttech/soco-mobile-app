@@ -1,6 +1,10 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
-import React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useMemo } from 'react';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import {
   DateTimePickerAndroid,
   DateTimePickerEvent
@@ -14,17 +18,27 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Button from '~/src/components/theme/Button';
 import { produce } from 'immer';
 import dayjs from 'dayjs';
+import { PortfolioSubScreen_ScreenProps } from '~/src/types/navigation/portfolio';
+import { IEducation } from '~/src/utils/typings/user-portfolio_interface/getPortforlioWorkData.interface';
+import { updatePortforlioEducation } from '~/src/utils/services/user-portfolio_services/education/updatePortforlioEducation.service';
 
 interface AddEducationForm {
-  institute: string;
-  status: 'completed' | 'pursuing';
+  institute: IEducation['institute'];
+  status: IEducation['status'];
   passYear: Date;
-  course: string;
-  level: 'school' | 'graduation' | 'postGraduation';
+  course: IEducation['course'];
+  level: IEducation['level'];
 }
 
 export default function AddEducation() {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<
+      PortfolioSubScreen_ScreenProps<'Addeducation'>['navigation']
+    >();
+  const route =
+    useRoute<PortfolioSubScreen_ScreenProps<'Addeducation'>['route']>();
+  const isEdit = useMemo(() => !!route.params?.data, [route.params?.data]);
+
   const { portfolio, setPortfolio } = usePortfolioData();
 
   function openDatePicker(
@@ -40,10 +54,33 @@ export default function AddEducation() {
   }
 
   async function sumbitSkill(values: AddEducationForm) {
-    const result = await addPortforlioEducation({ education: values });
+    const result = await (() => {
+      if (isEdit) {
+        return updatePortforlioEducation({
+          education: values,
+          indexID: route.params.data._id
+        });
+      } else {
+        return addPortforlioEducation({ education: values });
+      }
+    })();
+
     if (result.data.success) {
       setPortfolio(
         produce(portfolio, draft => {
+          if (isEdit) {
+            const index = draft.education.findIndex(
+              ed => ed._id === route.params.data._id
+            );
+
+            // updating only the changed keys
+            for (const key in result.data.education) {
+              draft.education[index][key] = result.data.education[key];
+            }
+
+            return;
+          }
+
           draft.education.push(result.data.education);
         })
       );
@@ -53,11 +90,11 @@ export default function AddEducation() {
 
   const formik = useFormik<AddEducationForm>({
     initialValues: {
-      institute: 'college engiing 2',
+      institute: '',
       status: 'completed',
       passYear: null,
-      course: 'B.tech',
-      level: 'graduation'
+      course: '',
+      level: null
     },
     validationSchema: object({
       institute: string().required('Institute name is required'),
@@ -72,6 +109,21 @@ export default function AddEducation() {
     }),
     onSubmit: sumbitSkill
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.data) {
+        const education = route.params.data;
+        formik.setValues({
+          course: education.course,
+          institute: education.institute,
+          level: education.level,
+          passYear: education.passYear,
+          status: education.status
+        });
+      }
+    }, [route.params?.data])
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.formCt}>
@@ -221,7 +273,7 @@ export default function AddEducation() {
       <Button
         type="filled"
         fullWidth
-        text="Add"
+        text={isEdit ? 'Update' : 'Add'}
         processing={formik.isSubmitting}
         disabled={formik.isSubmitting}
         onPress={formik.handleSubmit}

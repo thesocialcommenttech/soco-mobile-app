@@ -1,9 +1,8 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import {
   AddPortforlioCertificationRequest,
   AddPortforlioCertificationResponse
 } from '~/src/utils/typings/user-portfolio_interface/certifications/addPortforlioCertification.interface';
-import { isNil, isEmpty } from 'lodash';
 
 export function addPortforlioCertification(
   data: AddPortforlioCertificationRequest
@@ -11,7 +10,11 @@ export function addPortforlioCertification(
   const form = new FormData();
 
   Object.entries(data).forEach(([key, value]) => {
-    if (typeof value === 'boolean' || value) {
+    if (
+      (key === 'certimage' && typeof value === 'object') ||
+      typeof value === 'boolean' ||
+      value
+    ) {
       form.append(key, value);
     }
   });

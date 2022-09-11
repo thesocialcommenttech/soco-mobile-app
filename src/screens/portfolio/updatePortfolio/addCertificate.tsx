@@ -1,15 +1,19 @@
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   DateTimePickerAndroid,
   DateTimePickerEvent
 } from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import Button from '~/src/components/theme/Button';
 import { useFormik } from 'formik';
-import { bool, date, object, string } from 'yup';
-import produce from 'immer';
+import { bool, date, lazy, object, string } from 'yup';
+import { produce } from 'immer';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { addPortforlioCertification } from '~/src/utils/services/user-portfolio_services/certifications/addPortforlioCertification.service';
 import { AddPortforlioCertificationRequest } from '~/src/utils/typings/user-portfolio_interface/certifications/addPortforlioCertification.interface';
@@ -17,10 +21,17 @@ import dayjs from 'dayjs';
 import { Input, RadioButton } from '~/src/components/theme/Input';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Black } from '~/src/utils/colors';
+import { updatePortforlioCertification } from '~/src/utils/services/user-portfolio_services/certifications/updatePortforlioCertification.service';
+import { PortfolioSubScreen_ScreenProps } from '~/src/types/navigation/portfolio';
+import { file } from '~/src/lib/yup-custom-schemas';
+import { staticFileSrc } from '~/src/utils/methods';
 
 export default function AddCertificate() {
   const navigation = useNavigation();
+  const route =
+    useRoute<PortfolioSubScreen_ScreenProps<'Addcertificate'>['route']>();
 
+  const isEdit = useMemo(() => !!route.params?.data, [route.params?.data]);
   const { portfolio, setPortfolio } = usePortfolioData();
 
   const addCertificationFormSchema = object({
@@ -48,18 +59,18 @@ export default function AddCertificate() {
           }),
         otherwise: string().nullable().default(null)
       }),
-    certimage: object({
-      name: string().required(),
-      type: string()
-        .oneOf(
-          ['image/png', 'image/jpeg', 'image/jpg'],
-          'Only PNG, JPEG, JPG are allowed'
-        )
-        .required(),
-      uri: string().required()
-    })
-      .nullable()
-      .required('Certificate Image is required')
+    certimage: lazy(value =>
+      (() => {
+        if (typeof value === 'string') {
+          return string().trim();
+        } else {
+          return file(
+            ['image/png', 'image/jpeg', 'image/jpg'],
+            'Only PNG, JPEG, JPG are allowed'
+          ).nullable();
+        }
+      })().required('Certificate Image is required')
+    )
   });
 
   function openDatePicker(
@@ -95,13 +106,37 @@ export default function AddCertificate() {
   async function submitCertification(
     values: AddPortforlioCertificationRequest
   ) {
-    console.log(values);
-
-    const result = await addPortforlioCertification(values);
+    const result = await (() => {
+      if (isEdit) {
+        return updatePortforlioCertification({
+          certification: produce(values, draft => {
+            if (typeof draft.certimage === 'string') {
+              delete draft.certimage;
+            }
+          }),
+          indexID: route.params.data._id
+        });
+      } else {
+        return addPortforlioCertification(values);
+      }
+    })();
 
     if (result.data.success) {
       setPortfolio(
         produce(portfolio, draft => {
+          if (isEdit) {
+            const index = draft.certifications.findIndex(
+              ed => ed._id === route.params.data._id
+            );
+
+            // updating only the changed keys
+            for (const key in result.data.certification) {
+              draft.certifications[index][key] = result.data.certification[key];
+            }
+
+            return;
+          }
+
           draft.certifications.push(result.data.certification);
         })
       );
@@ -125,6 +160,24 @@ export default function AddCertificate() {
     onSubmit: submitCertification
   });
 
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.data) {
+        const certifciate = route.params.data;
+        formik.setValues({
+          certimage: certifciate.certification_image_url,
+          credential_id: certifciate.credential_id,
+          credential_url: certifciate.credential_url,
+          do_expire: certifciate.do_expire,
+          expiration_date: certifciate.expire_date as string,
+          issue_date: certifciate.issue_date as string,
+          issuer_organization: certifciate.issuer_organization,
+          title: certifciate.title
+        });
+      }
+    }, [route.params?.data])
+  );
+
   return (
     <View>
       <ScrollView>
@@ -146,7 +199,12 @@ export default function AddCertificate() {
                       height: 170 / (16 / 9),
                       borderRadius: 8
                     }}
-                    source={{ uri: formik.values.certimage.uri }}
+                    source={{
+                      uri:
+                        typeof formik.values.certimage === 'string'
+                          ? staticFileSrc(formik.values.certimage)
+                          : formik.values.certimage.uri
+                    }}
                   />
                 )}
                 <Button
@@ -367,7 +425,7 @@ export default function AddCertificate() {
           <Button
             type="filled"
             fullWidth
-            text="Add"
+            text={isEdit ? 'Update' : 'Add'}
             processing={formik.isSubmitting}
             disabled={formik.isSubmitting}
             onPress={formik.handleSubmit}

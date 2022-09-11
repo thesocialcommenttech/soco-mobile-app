@@ -15,7 +15,6 @@ import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
 
 export default function Bio() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const { profile, portfolio } = usePortfolioData();
 
   const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
@@ -24,58 +23,44 @@ export default function Bio() {
     React.useCallback(() => {
       navigation.getParent().setOptions({
         headerRight: () => (
-          <PortfolioUpdateBtn
-            buttonProps={{
-              onPress: () => {
-                setModalVisible(true);
-              }
-            }}
-          />
+            <PortfolioUpdateBtn
+              buttonProps={{
+                onPress: () => {
+                  setModalVisible(true);
+                }
+              }}
+            />
         )
       });
     }, [navigation])
   );
 
   return (
-    <ScrollView>
-      <>
+    <>
         <View style={styles.container}>
-          <Bottomsheet
-            visible={modalVisible}
-            onClose={() => setModalVisible(false)}
-          >
-            <DropdownOption
-              optionKey="update_social_account"
-              label="Update Social Accounts"
-              onOptionPress={option => {
-                setModalVisible(false);
-                navigation.navigate('AddSocialAccounts');
-              }}
-            />
-            <DropdownOption
-              optionKey="update_bio"
-              label="Update Bio"
-              onOptionPress={option => {
-                setModalVisible(false);
-                navigation.navigate('Updatebio');
-              }}
-            />
-          </Bottomsheet>
-          {/* <Modal
-            visible={showUpdateModal}
-            animationType="slide"
-            onDismiss={() => setShowUpdateModal(false)}
-            // backdropColor="black"
-            // backdropOpacity={0.3}
-            // animationIn="slideInUp"
-            // coverScreen={true}
-            presentationStyle="overFullScreen"
-            style={styles.modal1}
-            // onBackdropPress={() => setShowUpdateModal(false)}
-          >
-            <UpdateBio />
-          </Modal> */}
-
+      <Bottomsheet
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      >
+        <DropdownOption
+          optionKey="update_social_account"
+          label="Update Social Accounts"
+          onOptionPress={option => {
+            setModalVisible(false);
+            navigation.navigate('AddSocialAccounts');
+          }}
+        />
+        <DropdownOption
+          optionKey="update_bio"
+          label="Update Bio"
+          onOptionPress={option => {
+            setModalVisible(false);
+            navigation.navigate('Updatebio');
+          }}
+        />
+      </Bottomsheet>
+      <ScrollView>
+        <View style={styles.container}>
           <View style={styles.imageview}>
             <Image
               style={styles.userProfileImage}
@@ -160,8 +145,8 @@ export default function Bio() {
             <Text style={styles.bio}>{portfolio?.bio}</Text>
           </View>
         </View>
-      </>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 }
 
