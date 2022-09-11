@@ -25,6 +25,7 @@ export type IPortfolioTabStack = {
   Addeducation: { data: IEducation };
   AddSocialAccounts: undefined;
   Addblog: { postType: Exclude<Post, SharedPost>['postType'] };
+  PortfolioTheme: { uri: string };
 };
 
 export type PortfolioStackScreenProps = BottomTabScreenProps<

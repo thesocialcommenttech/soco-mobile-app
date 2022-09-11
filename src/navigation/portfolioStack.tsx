@@ -20,6 +20,7 @@ import {
   IPortfolioTabStack,
   PortfolioStackScreenProps
 } from '../types/navigation/portfolio';
+import PortfolioThemeView from '../screens/PortfolioThemeView';
 
 const Stack = createNativeStackNavigator<IPortfolioTabStack>();
 
@@ -70,6 +71,11 @@ function PortfolioStack() {
           name="Portfolio"
           component={Portfolio}
           initialParams={{ username: route.params.username }}
+        />
+        <Stack.Screen
+          name="PortfolioTheme"
+          component={PortfolioThemeView}
+          options={{ headerShown: false }}
         />
         <Stack.Group
           screenOptions={{

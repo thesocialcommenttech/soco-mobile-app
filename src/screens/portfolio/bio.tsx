@@ -12,10 +12,12 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
+import PortfolioDropdown from '~/src/components/screens/portfolio/PortfolioDropdown';
 
 export default function Bio() {
   const [modalVisible, setModalVisible] = useState(false);
   const { profile, portfolio } = usePortfolioData();
+  const [showThemesList, setShowThemesList] = useState(false);
 
   const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
 
@@ -23,6 +25,18 @@ export default function Bio() {
     React.useCallback(() => {
       navigation.getParent().setOptions({
         headerRight: () => (
+          <>
+            <Button
+              onPress={() => setShowThemesList(true)}
+              size="xs"
+              btnStyle={{ marginRight: 10 }}
+            >
+              <MaterialCommunityIcons
+                name="layers-outline"
+                size={24}
+                color="black"
+              />
+            </Button>
             <PortfolioUpdateBtn
               buttonProps={{
                 onPress: () => {
@@ -30,6 +44,7 @@ export default function Bio() {
                 }
               }}
             />
+          </>
         )
       });
     }, [navigation])
@@ -37,7 +52,12 @@ export default function Bio() {
 
   return (
     <>
-        <View style={styles.container}>
+      <PortfolioDropdown
+        visible={showThemesList}
+        navigation={navigation}
+        username={profile.username}
+        onClose={() => setShowThemesList(false)}
+      />
       <Bottomsheet
         visible={modalVisible}
         onClose={() => setModalVisible(false)}

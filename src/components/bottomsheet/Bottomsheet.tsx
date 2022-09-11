@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     zIndex: 999,
     height: 'auto',
+    maxHeight: '50%',
     paddingVertical: 15,
     bottom: 0
   },
