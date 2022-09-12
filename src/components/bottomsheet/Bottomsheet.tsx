@@ -7,7 +7,8 @@ import {
   TouchableHighlight,
   StyleSheet,
   StyleProp,
-  ViewStyle
+  ViewStyle,
+  Dimensions
 } from 'react-native';
 import React, { ReactElement } from 'react';
 import { Colors } from '~/src/utils/colors';
@@ -65,7 +66,17 @@ export default function Bottomsheet({
       </TouchableWithoutFeedback>
 
       {/* Options List */}
-      <ScrollView style={[styles.dropdown, bodyStyle]}>{children}</ScrollView>
+      <ScrollView
+        style={[
+          styles.dropdown,
+          {
+            maxHeight: Dimensions.get('screen').height / 2
+          },
+          bodyStyle
+        ]}
+      >
+        {children}
+      </ScrollView>
     </Modal>
   );
 }
@@ -88,7 +99,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     zIndex: 999,
     height: 'auto',
-    maxHeight: '50%',
     paddingVertical: 15,
     bottom: 0
   },
