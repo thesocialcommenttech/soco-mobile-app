@@ -16,7 +16,7 @@ export function postPresentation(data: PostPresentationRequest) {
     }
 
     if (key === 'slides' && value) {
-      value.forEach((file: FileObject, i) => {
+      value.forEach((file: PostPresentationRequest['slides'][0], i) => {
         if (typeof file === 'object') {
           file = produce(file, draft => {
             draft.name = `${i}_${draft.name}`;

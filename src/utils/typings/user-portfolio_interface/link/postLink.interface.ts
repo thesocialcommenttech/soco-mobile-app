@@ -3,9 +3,9 @@ import { LinkPost } from '../../post';
 
 export interface PostLinkRequest {
   title: LinkPost['title'];
-  description: LinkPost['description'];
+  description?: LinkPost['description'];
   featureImage: FileObject;
-  tags: LinkPost['tags'];
+  tags?: LinkPost['tags'];
   link: LinkPost['link'];
   postedOn: LinkPost['postedOn'];
   postStatus: LinkPost['postStatus'];

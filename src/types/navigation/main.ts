@@ -17,10 +17,10 @@ export type IMainStack = {
   Notifications: {};
   Setting: NavigatorScreenParams<ISettingStack>;
   // upload post
-  Upload_Artwork: {};
-  Upload_SkillVideo: {};
-  Upload_Presentation: {};
-  Upload_Link: {};
+  Upload_Artwork: { postId: Post['_id'] };
+  Upload_SkillVideo: { postId: Post['_id'] };
+  Upload_Presentation: { postId: Post['_id'] };
+  Upload_Link: { postId: Post['_id'] };
   // post view
   Post_Artwork: PostViewScreenParam;
   Post_Skill: PostViewScreenParam;

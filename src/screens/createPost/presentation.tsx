@@ -6,9 +6,19 @@ import {
   Dimensions,
   Image
 } from 'react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import {
   ImageLibraryOptions,
   launchImageLibrary
@@ -20,7 +30,7 @@ import { Black, Blue, Green, Red } from '~/src/utils/colors';
 import { useFormik } from 'formik';
 import { postPresentation } from '~/src/utils/services/post/postPresentation';
 import { FileObject } from '~/src/utils/typings/file';
-import { object, string, array } from 'yup';
+import { object, string, array, lazy } from 'yup';
 import { Input } from '~/src/components/theme/Input';
 import { file } from '~/src/lib/yup-custom-schemas';
 import { PostCategoryModal } from '~/src/components/createPost/CategorySelectionModal';
@@ -29,14 +39,28 @@ import Bottomsheet, {
   DropdownOption
 } from '~/src/components/bottomsheet/Bottomsheet';
 import { UploadPostScreenProps } from '~/src/types/navigation/main';
+import { Post, PresentationPost } from '~/src/utils/typings/post';
+import { updatePresentation } from '~/src/utils/services/works_services/presentation/updatePresentation.service';
+import { PostPresentationRequest } from '~/src/utils/typings/works_interface/presentation/updatePresentation.interface';
+import Loading from '~/src/components/theme/Loading';
+import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPost.interface';
+import { getPost } from '~/src/utils/services/user-posts_service/getPost.service';
+import { staticFileSrc } from '~/src/utils/methods';
 
 interface UploadPresentationForm {
   title: string;
   tags: string;
   description: string;
-  featureImage: FileObject;
-  slides: FileObject[];
+  featureImage: FileObject | string;
+  slides: (FileObject | string)[];
 }
+
+type PostData = GetPostResponse<
+  Pick<
+    PresentationPost,
+    'title' | 'description' | 'tags' | 'featureImage' | 'slides' | '_id'
+  >
+>['post'];
 
 export default function Presentation() {
   const navigation = useNavigation<UploadPostScreenProps['navigation']>();
@@ -44,18 +68,35 @@ export default function Presentation() {
   const [modalVisible1, setModalVisible1] = useState(false);
   const scrollRef = React.useRef(null);
   const [currIndex, setCurrIndex] = useState(0);
-  // const [imagesarr, setImagesarr] = useState(images);
+  let postStatus = useRef<Post['postStatus']>('published').current;
+  const route = useRoute<UploadPostScreenProps['route']>();
+  const [loading, setLoading] = useState(false);
+
+  const isEdit = useMemo(() => !!route.params?.postId, [route.params?.postId]);
 
   async function submitPresentation(values: UploadPresentationForm) {
     const currentTimestamp = new Date().toString();
-    const result = await postPresentation({
+    const postData: PostPresentationRequest = {
       ...values,
+      featureImage:
+        typeof values.featureImage === 'string'
+          ? undefined
+          : values.featureImage,
       tags: values.tags.split(',').map(tag => tag.trim()),
       totalSlides: formik.values.slides.length,
       updatedOn: currentTimestamp,
       postedOn: currentTimestamp,
       postStatus: 'published'
-    });
+    };
+
+    const result = await (() => {
+      if (isEdit) {
+        return updatePresentation(postData, route.params.postId);
+      }
+
+      return postPresentation(postData);
+    })();
+
     if (result.data.success) {
       navigation.pop();
     }
@@ -74,26 +115,51 @@ export default function Presentation() {
       description: string()
         .trim()
         .max(120, 'Cannot have more than 120 characters'),
-      tags: string().trim().required('Tags is required'),
-      featureImage: file(
-        ['image/png', 'image/jpeg', 'image/jpg'],
-        'Only PNG, JPEG, JPG images are allowed'
-      ).required('Feature image is required'),
+      tags: string()
+        .trim()
+        .when([], {
+          is: () => postStatus === 'published',
+          then: schema => schema.required('Tags is required')
+        }),
+      featureImage: lazy(value =>
+        (() => {
+          if (typeof value === 'string') {
+            return string().trim();
+          } else {
+            return file(
+              ['image/png', 'image/jpeg', 'image/jpg'],
+              'Only PNG, JPEG, JPG images are allowed'
+            ).nullable();
+          }
+          // @ts-ignore
+        })().when([], {
+          is: () => postStatus === 'published',
+          then: schema => schema.required('Thumbnail is required')
+        })
+      ),
       slides: array(
-        file(
-          ['image/png', 'image/jpeg', 'image/jpg'],
-          'Only PNG, JPEG, JPG images are allowed'
-        ).required('Image is required')
-      )
-        .min(1, 'At least one slide is required')
-        .required('Slides is required')
+        lazy(value => {
+          if (typeof value === 'string') {
+            return string().trim();
+          } else {
+            return file(
+              ['image/png', 'image/jpeg', 'image/jpg'],
+              'Only PNG, JPEG, JPG images are allowed'
+            )
+              .nullable()
+              .required('Image is required');
+          }
+        })
+      ).when([], {
+        is: () => postStatus === 'published',
+        then: schema =>
+          schema
+            .min(1, 'At least one slide is required')
+            .required('Slides is required')
+      })
     }),
     onSubmit: submitPresentation
   });
-
-  useEffect(() => {
-    console.log(formik.errors);
-  }, [formik.errors]);
 
   const moreThanOneSlide = useMemo(
     () => formik.values.slides.length > 0,
@@ -107,6 +173,28 @@ export default function Presentation() {
         : -1,
     [formik.errors.slides]
   );
+
+  const fetchData = async () => {
+    setLoading(true);
+
+    const result = await getPost<PostData>({
+      postID: route.params.postId,
+      postType: 'presentation',
+      projection: 'title description tags featureImage slides'
+    });
+
+    if (result.data.success) {
+      formik.setValues({
+        description: result.data.post.description,
+        slides: result.data.post.slides.map(slide => slide.slideUrl),
+        tags: result.data.post.tags.join(', '),
+        title: result.data.post.title,
+        featureImage: result.data.post.featureImage
+      });
+    }
+
+    setLoading(false);
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -130,21 +218,43 @@ export default function Presentation() {
     }, [navigation])
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.postId) {
+        fetchData();
+      }
+    }, [])
+  );
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Button
-          size="sm"
-          processing={formik.isSubmitting}
-          disabled={formik.isSubmitting}
-          textStyle={{
-            color: Green.primary,
-            fontSize: 14,
-            letterSpacing: 0.2
-          }}
-          text="Publish"
-          onPress={formik.handleSubmit}
-        />
+        <>
+          <Button
+            size="sm"
+            processing={formik.isSubmitting && postStatus === 'draft'}
+            disabled={formik.isSubmitting}
+            btnStyle={{ marginRight: 10 }}
+            textStyle={{ letterSpacing: 0.2 }}
+            text="Save As Draft"
+            onPress={() => {
+              postStatus = 'draft';
+              formik.handleSubmit();
+            }}
+          />
+          <Button
+            size="sm"
+            type="filled"
+            processing={formik.isSubmitting && postStatus === 'published'}
+            disabled={formik.isSubmitting}
+            btnStyle={{ backgroundColor: Green.primary }}
+            text="Publish"
+            onPress={() => {
+              postStatus = 'published';
+              formik.handleSubmit();
+            }}
+          />
+        </>
       )
     });
   }, [formik.isSubmitting]);
@@ -203,8 +313,12 @@ export default function Presentation() {
     scrollRef.current?.scrollToIndex({ index: index });
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
-    <View style={styles.container}>
+    <>
       <PostCategoryModal
         show={modalVisible}
         onChange={newSelection =>
@@ -234,317 +348,296 @@ export default function Presentation() {
           }}
         />
       </Bottomsheet>
-
-      {/* <View style={styles.imageView}>
-        {formik.values.slides.length > 0 ? (
-          <View>
-            <SwiperFlatList
-              data={formik.values.slides}
-              renderItem={({ item }) => (
-                <Image
-                  source={{ uri: item.uri }}
-                  style={styles.imageComponent}
-                />
-              )}
-              onChangeIndex={({ index }) => {
-                setIndex1(index);
-              }}
-              ref={scrollRef}
-            />
-          </View>
-        ) : (
-          <View style={styles.noimageview}>
-            <TouchableWithoutFeedback onPress={() => chooseFile()}>
-              <Icon1 name="camera-outline" size={42} color="#BDBDBD" />
-            </TouchableWithoutFeedback>
-            <Text style={styles.selecttext}>Select Slide Image</Text>
-          </View>
-        )}
-      </View> */}
-
-      <ScrollView>
-        <Input
-          inputContainer={{
-            borderWidth: 0,
-            borderRadius: 0,
-            flexDirection: 'column'
-          }}
-          error={
-            formik.touched.slides &&
-            typeof formik.errors.slides === 'string' &&
-            formik.errors.slides
-          }
-        >
-          {() => (
-            <View>
-              <View
-                style={{
-                  width: Dimensions.get('window').width,
-                  height: Dimensions.get('window').width / (16 / 9)
-                }}
-              >
-                <SwiperFlatList
-                  data={formik.values.slides}
+      <View style={styles.container}>
+        <ScrollView>
+          <Input
+            inputContainer={{
+              borderWidth: 0,
+              borderRadius: 0,
+              flexDirection: 'column'
+            }}
+            error={
+              formik.touched.slides &&
+              typeof formik.errors.slides === 'string' &&
+              formik.errors.slides
+            }
+          >
+            {() => (
+              <View>
+                <View
                   style={{
-                    backgroundColor: Black[200]
+                    width: Dimensions.get('window').width,
+                    height: Dimensions.get('window').width / (16 / 9)
                   }}
-                  renderItem={({ item, index }) => (
-                    <View>
-                      <Image
-                        source={{ uri: item.uri }}
-                        style={styles.imageComponent}
-                      />
-                      {formik.touched.slides &&
-                        formik.errors.slides instanceof Array &&
-                        formik.errors.slides[index] && (
+                >
+                  <SwiperFlatList
+                    data={formik.values.slides}
+                    style={{
+                      backgroundColor: Black[200]
+                    }}
+                    renderItem={({ item, index }) => (
+                      <View>
+                        <Image
+                          source={{
+                            uri:
+                              typeof item === 'string'
+                                ? staticFileSrc(item)
+                                : item.uri
+                          }}
+                          style={styles.imageComponent}
+                        />
+                        {formik.touched.slides &&
+                          formik.errors.slides instanceof Array &&
+                          formik.errors.slides[index] && (
+                            <Text
+                              style={{
+                                padding: 8,
+                                position: 'absolute',
+                                bottom: 0,
+                                width: '100%',
+                                backgroundColor: Red.primary,
+                                color: 'white',
+                                fontFamily: 'Roboto-Medium'
+                              }}
+                            >
+                              {typeof formik.errors.slides[index] === 'string'
+                                ? formik.errors.slides[index]
+                                : // @ts-ignore : not getting correct type
+                                  formik.errors.slides[index]?.type}
+                            </Text>
+                          )}
+                      </View>
+                    )}
+                    onChangeIndex={({ index }) => {
+                      setCurrIndex(index);
+                    }}
+                    ref={scrollRef}
+                  />
+
+                  {!moreThanOneSlide && (
+                    <View
+                      style={[
+                        { position: 'absolute', width: '100%', height: '100%' }
+                      ]}
+                    >
+                      <Button
+                        type="filled"
+                        size="sm"
+                        btnStyle={StyleSheet.flatten({
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          alignSelf: 'auto',
+                          flexGrow: 1,
+                          borderRadius: 0,
+                          backgroundColor: Black[300],
+                          width: '100%',
+                          height: '100%'
+                        })}
+                        onPress={insertSlidesAtLast}
+                      >
+                        <View style={{ alignItems: 'center' }}>
+                          <MaterialCommunityIcons
+                            name="presentation"
+                            size={34}
+                            color={Black[500]}
+                          />
                           <Text
                             style={{
-                              padding: 8,
-                              position: 'absolute',
-                              bottom: 0,
-                              width: '100%',
-                              backgroundColor: Red.primary,
-                              color: 'white',
-                              fontFamily: 'Roboto-Medium'
+                              color: Black[500],
+                              fontFamily: 'Roboto-Medium',
+                              textTransform: 'uppercase'
                             }}
                           >
-                            {(formik.errors.slides[index] as FileObject)?.type}
+                            Add Slide
                           </Text>
-                        )}
+                        </View>
+                      </Button>
                     </View>
                   )}
-                  onChangeIndex={({ index }) => {
-                    setCurrIndex(index);
-                  }}
-                  ref={scrollRef}
-                />
-
-                {!moreThanOneSlide && (
+                </View>
+                {formik.values.slides.length > 0 && (
                   <View
                     style={[
-                      { position: 'absolute', width: '100%', height: '100%' }
+                      styles.pptControlsCt,
+                      formik.touched.slides &&
+                        formik.errors.slides && { backgroundColor: Red[100] }
                     ]}
                   >
                     <Button
-                      type="filled"
                       size="sm"
-                      btnStyle={StyleSheet.flatten({
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        alignSelf: 'auto',
-                        flexGrow: 1,
-                        borderRadius: 0,
-                        backgroundColor: Black[300],
-                        width: '100%',
-                        height: '100%'
-                      })}
-                      onPress={insertSlidesAtLast}
+                      onPress={() => {
+                        if (currIndex === 0) {
+                          goToIndex(formik.values.slides.length - 1);
+                        } else {
+                          goToIndex(currIndex - 1);
+                        }
+                      }}
                     >
-                      <View style={{ alignItems: 'center' }}>
-                        <MaterialCommunityIcons
-                          name="presentation"
-                          size={34}
-                          color={Black[500]}
-                        />
-                        <Text
-                          style={{
-                            color: Black[500],
-                            fontFamily: 'Roboto-Medium',
-                            textTransform: 'uppercase'
-                          }}
-                        >
-                          Add Slide
-                        </Text>
-                      </View>
+                      <Icon1 name="chevron-left" size={26} color={Black[500]} />
                     </Button>
-                  </View>
-                )}
-              </View>
-              {formik.values.slides.length > 0 && (
-                <View
-                  style={[
-                    styles.pptControlsCt,
-                    formik.touched.slides &&
-                      formik.errors.slides && { backgroundColor: Red[100] }
-                  ]}
-                >
-                  <Button
-                    size="sm"
-                    onPress={() => {
-                      if (currIndex === 0) {
-                        goToIndex(formik.values.slides.length - 1);
-                      } else {
-                        goToIndex(currIndex - 1);
-                      }
-                    }}
-                  >
-                    <Icon1 name="chevron-left" size={26} color={Black[500]} />
-                  </Button>
-                  {slideWithError !== -1 && (
+                    {slideWithError !== -1 && (
+                      <Button
+                        size="sm"
+                        onPress={() => goToIndex(slideWithError)}
+                        btnStyle={{ position: 'absolute', left: 50 }}
+                      >
+                        <MaterialCommunityIcons
+                          name="alert-outline"
+                          size={24}
+                          color={Red.primary}
+                        />
+                      </Button>
+                    )}
+                    <View style={styles.numview}>
+                      <Text style={styles.number}>
+                        {currIndex + 1} / {formik.values.slides.length}
+                      </Text>
+                      <Button
+                        size="sm"
+                        btnStyle={{ alignSelf: 'center' }}
+                        onPress={() => setModalVisible1(true)}
+                        text="Add Slide"
+                      />
+                      <Button
+                        size="sm"
+                        btnStyle={{ alignSelf: 'center' }}
+                        onPress={() =>
+                          formik.setFieldValue(
+                            'slides',
+                            produce(formik.values.slides, draft => {
+                              draft.splice(currIndex, 1);
+                            })
+                          )
+                        }
+                      >
+                        <Icon1
+                          name="delete-outline"
+                          size={16}
+                          color={Red[300]}
+                        />
+                      </Button>
+                    </View>
                     <Button
                       size="sm"
-                      onPress={() => goToIndex(slideWithError)}
-                      btnStyle={{ position: 'absolute', left: 50 }}
+                      onPress={() => {
+                        goToIndex(
+                          (currIndex + 1) % formik.values.slides.length
+                        );
+                      }}
                     >
-                      <MaterialCommunityIcons
-                        name="alert-outline"
-                        size={24}
-                        color={Red.primary}
+                      <Icon1
+                        name="chevron-right"
+                        size={26}
+                        color={Black[500]}
                       />
                     </Button>
-                  )}
-                  <View style={styles.numview}>
-                    <Text style={styles.number}>
-                      {currIndex + 1} / {formik.values.slides.length}
-                    </Text>
-                    <Button
-                      size="sm"
-                      btnStyle={{ alignSelf: 'center' }}
-                      onPress={() => setModalVisible1(true)}
-                      text="Add Slide"
-                    />
-                    <Button
-                      size="sm"
-                      btnStyle={{ alignSelf: 'center' }}
-                      onPress={() =>
-                        formik.setFieldValue(
-                          'slides',
-                          produce(formik.values.slides, draft => {
-                            draft.splice(currIndex, 1);
-                          })
-                        )
-                      }
-                    >
-                      <Icon1 name="delete-outline" size={16} color={Red[300]} />
-                    </Button>
                   </View>
-                  <Button
-                    size="sm"
-                    onPress={() => {
-                      goToIndex((currIndex + 1) % formik.values.slides.length);
-                    }}
-                  >
-                    <Icon1 name="chevron-right" size={26} color={Black[500]} />
-                  </Button>
-                </View>
-              )}
-            </View>
-          )}
-        </Input>
-        <View style={styles.details}>
-          <Input
-            inputProp={{
-              placeholder: 'Title for the link',
-              onChangeText: formik.handleChange('title'),
-              value: formik.values.title,
-              onBlur: formik.handleBlur('title')
-            }}
-            label="Title"
-            error={formik.touched.title && formik.errors.title}
-          />
-
-          <Input
-            label="Description"
-            inputProp={{
-              placeholder: 'Description of link',
-              onChangeText: formik.handleChange('description'),
-              value: formik.values.description,
-              onBlur: formik.handleBlur('description'),
-              style: { textAlignVertical: 'top' },
-              multiline: true,
-              numberOfLines: 5,
-              maxLength: 120
-            }}
-            style={styles.MT}
-            error={formik.touched.description && formik.errors.description}
-          />
-
-          <Input
-            label="Thumbnail"
-            style={styles.MT}
-            error={
-              formik.touched.featureImage &&
-              (formik.errors.featureImage?.type as string)
-            }
-          >
-            {({ style }) => (
-              <View
-                style={[style, { flexDirection: 'row', paddingHorizontal: 20 }]}
-              >
-                {formik.values.featureImage && (
-                  <Image
-                    style={{
-                      width: 170,
-                      height: 170 / (16 / 9),
-                      borderRadius: 8
-                    }}
-                    source={{ uri: formik.values.featureImage.uri }}
-                  />
                 )}
-                <Button
-                  btnStyle={{
-                    alignSelf: 'stretch',
-                    marginLeft: 20,
-                    flexGrow: 1,
-                    justifyContent: 'center'
-                  }}
-                  textStyle={{ color: Black[600] }}
-                  text={
-                    formik.values.featureImage ? 'Change Image' : 'Select Image'
-                  }
-                  onPress={async () => {
-                    const image = await chooseFile();
-                    formik.setFieldValue('featureImage', {
-                      name: image.assets[0].fileName,
-                      type: image.assets[0].type,
-                      uri: image.assets[0].uri
-                    });
-                  }}
-                />
               </View>
             )}
           </Input>
+          <View style={styles.details}>
+            <Input
+              inputProp={{
+                placeholder: 'Title for the link',
+                onChangeText: formik.handleChange('title'),
+                value: formik.values.title,
+                onBlur: formik.handleBlur('title')
+              }}
+              label="Title"
+              error={formik.touched.title && formik.errors.title}
+            />
 
-          {/* <TouchableWithoutFeedback
-            onPress={() => {
-              setModalVisible(true);
-            }}
-          >
-            <View>
-              <TextInputWithLabel
-                placeholder="Select Category"
-                label="Category"
-                inputStyle={styles.emailTB}
-                // onChangeText={formik.handleChange('email')}
-                // value={formik.values.email}
-                // errorTxt={formik.touched.email && formik.errors.email}
-                // onBlur={formik.handleBlur('email')}
-                editable={false}
-                right={
-                  <Ti.Icon
-                    color={'#BDBDBD'}
-                    name={'chevron-down'}
-                    style={styles.eye}
+            <Input
+              label="Description"
+              inputProp={{
+                placeholder: 'Description of link',
+                onChangeText: formik.handleChange('description'),
+                value: formik.values.description,
+                onBlur: formik.handleBlur('description'),
+                style: { textAlignVertical: 'top' },
+                multiline: true,
+                numberOfLines: 5,
+                maxLength: 120
+              }}
+              style={styles.MT}
+              error={formik.touched.description && formik.errors.description}
+            />
+
+            <Input
+              label="Thumbnail"
+              style={styles.MT}
+              error={
+                formik.touched.featureImage &&
+                typeof formik.errors.featureImage === 'string'
+                  ? formik.errors.featureImage
+                  : // @ts-ignore : not getting correct type
+                    formik.errors.featureImage?.type
+              }
+            >
+              {({ style }) => (
+                <View
+                  style={[
+                    style,
+                    { flexDirection: 'row', paddingHorizontal: 20 }
+                  ]}
+                >
+                  {formik.values.featureImage && (
+                    <Image
+                      style={{
+                        width: 170,
+                        height: 170 / (16 / 9),
+                        borderRadius: 8
+                      }}
+                      source={{
+                        uri:
+                          typeof formik.values.featureImage === 'string'
+                            ? staticFileSrc(formik.values.featureImage)
+                            : formik.values.featureImage.uri
+                      }}
+                    />
+                  )}
+                  <Button
+                    btnStyle={{
+                      alignSelf: 'stretch',
+                      marginLeft: 20,
+                      flexGrow: 1,
+                      justifyContent: 'center'
+                    }}
+                    textStyle={{ color: Black[600] }}
+                    text={
+                      formik.values.featureImage
+                        ? 'Change Image'
+                        : 'Select Image'
+                    }
+                    onPress={async () => {
+                      const image = await chooseFile();
+                      formik.setFieldValue('featureImage', {
+                        name: image.assets[0].fileName,
+                        type: image.assets[0].type,
+                        uri: image.assets[0].uri
+                      });
+                    }}
                   />
-                }
-              />
-            </View>
-          </TouchableWithoutFeedback> */}
+                </View>
+              )}
+            </Input>
 
-          <Input
-            label="Tags"
-            inputProp={{
-              placeholder: 'Comma (,) separated tags',
-              onChangeText: formik.handleChange('tags'),
-              value: formik.values.tags,
-              onBlur: formik.handleBlur('tags')
-            }}
-            style={styles.MT}
-            error={formik.touched.tags && formik.errors.tags}
-          />
-        </View>
-      </ScrollView>
-    </View>
+            <Input
+              label="Tags"
+              inputProp={{
+                placeholder: 'Comma (,) separated tags',
+                onChangeText: formik.handleChange('tags'),
+                value: formik.values.tags,
+                onBlur: formik.handleBlur('tags')
+              }}
+              style={styles.MT}
+              error={formik.touched.tags && formik.errors.tags}
+            />
+          </View>
+        </ScrollView>
+      </View>
+    </>
   );
 }
 

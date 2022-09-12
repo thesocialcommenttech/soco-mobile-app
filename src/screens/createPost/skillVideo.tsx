@@ -6,11 +6,21 @@ import {
   Image,
   Dimensions
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import { launchImageLibrary, MediaType } from 'react-native-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { array, object, string } from 'yup';
+import { array, lazy, object, string } from 'yup';
 import { useFormik } from 'formik';
 import { file } from '~/src/lib/yup-custom-schemas';
 import { Black, Green } from '~/src/utils/colors';
@@ -21,59 +31,125 @@ import { FileObject } from '~/src/utils/typings/file';
 import Video from '~/src/components/theme/Video';
 import { PostCategoryModal } from '~/src/components/createPost/CategorySelectionModal';
 import { UploadPostScreenProps } from '~/src/types/navigation/main';
+import { updateSkill } from '~/src/utils/services/works_services/skill_video/updateSkill.service';
+import { PostCreateSkillRequest } from '~/src/utils/typings/works_interface/skill_video/postSkill.interface';
+import { Post, SkillVideoPost } from '~/src/utils/typings/post';
+import { getPost } from '~/src/utils/services/user-posts_service/getPost.service';
+import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPost.interface';
+import Loading from '~/src/components/theme/Loading';
+import { staticFileSrc } from '~/src/utils/methods';
 
 interface UploadSkillForm {
   title: string;
   description: string;
   tags: string;
   category: string[];
-  video: FileObject;
-  featureImage: FileObject;
+  video: FileObject | string;
+  featureImage: FileObject | string;
 }
+
+type SkillPostData = GetPostResponse<
+  Pick<
+    SkillVideoPost,
+    | 'title'
+    | 'description'
+    | 'tags'
+    | 'featureImage'
+    | 'video'
+    | '_id'
+    | 'category'
+  >
+>['post'];
 
 export default function SkillVideo() {
   const navigation = useNavigation<UploadPostScreenProps['navigation']>();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const winDim = Dimensions.get('window');
+  const route = useRoute<UploadPostScreenProps['route']>();
+  let postStatus = useRef<Post['postStatus']>('published').current;
+  const isEdit = useMemo(() => !!route.params?.postId, [route.params?.postId]);
+  const [loading, setLoading] = useState(false);
 
   async function submitPresentation(values: UploadSkillForm) {
     const currentTimestamp = new Date().toString();
-    const result = await postSkill({
+    const postData: PostCreateSkillRequest = {
       ...values,
+      featureImage:
+        typeof values.featureImage === 'string'
+          ? undefined
+          : values.featureImage,
+      video: typeof values.video === 'string' ? undefined : values.video,
       tags: values.tags.split(',').map(tag => tag.trim()),
       updatedOn: currentTimestamp,
       postedOn: currentTimestamp,
-      postStatus: 'published'
-    });
+      postStatus
+    };
+
+    const result = await (() => {
+      if (isEdit) {
+        return updateSkill(postData, route.params.postId);
+      }
+      return postSkill(postData);
+    })();
+
     if (result.data.success) {
       navigation.pop();
     }
   }
 
-  const formik = useFormik({
+  const formik = useFormik<UploadSkillForm>({
     initialValues: {
-      description: 'Video Description',
+      description: '',
       featureImage: null,
-      tags: 'video, test',
-      title: 'Testing video of spongebob',
+      tags: '',
+      title: '',
       video: null,
       category: []
     },
     validationSchema: object({
       title: string().trim().required('Title is required'),
-      category: array(string().trim().required()).required(
-        'Category is required'
-      ),
+      category: array(string().trim().required()).when([], {
+        is: () => postStatus === 'published',
+        then: schema =>
+          schema.min(1, 'Category is required').required('Category is required')
+      }),
       description: string()
         .trim()
-        .max(120, 'Cannot have more than 120 characters'),
-      tags: string().trim().required('Tags is required'),
-      featureImage: file(
-        ['image/png', 'image/jpeg', 'image/jpg'],
-        'Only PNG, JPEG, JPG images are allowed'
-      ).required('Feature image is required'),
-      video: file(['video/mp4'], 'Only MP4 is allowed').required(
-        'Video is required'
+        .max(120, 'Cannot have more than 120 characters')
+        .when([], {
+          is: () => postStatus === 'published',
+          then: schema => schema.required('Description is required')
+        }),
+      tags: string()
+        .trim()
+        .when([], {
+          is: () => postStatus === 'published',
+          then: schema => schema.required('Tags is required')
+        }),
+      featureImage: lazy(value =>
+        (() => {
+          if (typeof value === 'string') {
+            return string().trim();
+          } else {
+            return file(
+              ['image/png', 'image/jpeg', 'image/jpg'],
+              'Only PNG, JPEG, JPG images are allowed'
+            ).nullable();
+          }
+          // @ts-ignore
+        })().when([], {
+          is: () => postStatus === 'published',
+          then: schema => schema.required('Feature image is required')
+        })
+      ),
+      video: lazy(value =>
+        (() => {
+          if (typeof value === 'string') {
+            return string().trim();
+          } else {
+            return file(['video/mp4'], 'Only MP4 is allowed').nullable();
+          }
+        })().required('Video is required')
       )
     }),
     onSubmit: submitPresentation
@@ -98,7 +174,38 @@ export default function SkillVideo() {
           );
         }
       });
-    }, [navigation])
+    }, [])
+  );
+
+  const fetchData = async () => {
+    setLoading(true);
+
+    const result = await getPost<SkillPostData>({
+      postID: route.params.postId,
+      postType: 'skill',
+      projection: 'title description tags featureImage video category'
+    });
+
+    if (result.data.success) {
+      formik.setValues({
+        category: result.data.post.category,
+        description: result.data.post.description,
+        featureImage: result.data.post.featureImage,
+        tags: result.data.post.tags.join(', '),
+        title: result.data.post.title,
+        video: result.data.post.video
+      });
+    }
+
+    setLoading(false);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.postId) {
+        fetchData();
+      }
+    }, [])
   );
 
   const selectImage = async () => {
@@ -139,21 +246,39 @@ export default function SkillVideo() {
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Button
-          size="sm"
-          processing={formik.isSubmitting}
-          disabled={formik.isSubmitting}
-          textStyle={{
-            color: Green.primary,
-            fontSize: 14,
-            letterSpacing: 0.2
-          }}
-          text="Publish"
-          onPress={formik.handleSubmit}
-        />
+        <>
+          <Button
+            size="sm"
+            processing={formik.isSubmitting && postStatus === 'draft'}
+            disabled={formik.isSubmitting}
+            btnStyle={{ marginRight: 10 }}
+            textStyle={{ letterSpacing: 0.2 }}
+            text="Save As Draft"
+            onPress={() => {
+              postStatus = 'draft';
+              formik.handleSubmit();
+            }}
+          />
+          <Button
+            size="sm"
+            processing={formik.isSubmitting && postStatus === 'published'}
+            disabled={formik.isSubmitting}
+            type="filled"
+            btnStyle={{ backgroundColor: Green.primary }}
+            text="Publish"
+            onPress={() => {
+              postStatus = 'published';
+              formik.handleSubmit();
+            }}
+          />
+        </>
       )
     });
   }, [formik.isSubmitting]);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -172,7 +297,12 @@ export default function SkillVideo() {
             borderRadius: 0,
             flexDirection: 'column'
           }}
-          error={formik.touched.video && (formik.errors.video?.type as string)}
+          error={
+            formik.touched.video && typeof formik.errors.video === 'string'
+              ? formik.errors.video
+              : // @ts-ignore
+                formik.errors.video?.type
+          }
         >
           {() => (
             <View
@@ -182,10 +312,15 @@ export default function SkillVideo() {
               ]}
             >
               <Video
-                source={{
-                  uri: formik.values.video?.uri,
-                  type: formik.values.video?.type
-                }}
+                {...(formik.values.video && {
+                  source:
+                    typeof formik.values.video === 'string'
+                      ? { uri: staticFileSrc(formik.values.video) }
+                      : {
+                          uri: formik.values.video?.uri,
+                          type: formik.values.video?.type
+                        }
+                })}
               />
 
               <View
@@ -274,7 +409,10 @@ export default function SkillVideo() {
             style={styles.MT}
             error={
               formik.touched.featureImage &&
-              (formik.errors.featureImage?.type as string)
+              typeof formik.errors.featureImage === 'string'
+                ? formik.errors.featureImage
+                : // @ts-ignore
+                  formik.errors.featureImage?.type
             }
           >
             {({ style }) => (
@@ -289,7 +427,12 @@ export default function SkillVideo() {
                       borderRadius: 8,
                       marginRight: 20
                     }}
-                    source={{ uri: formik.values.featureImage.uri }}
+                    source={{
+                      uri:
+                        typeof formik.values.featureImage === 'string'
+                          ? staticFileSrc(formik.values.featureImage)
+                          : formik.values.featureImage.uri
+                    }}
                   />
                 )}
                 <Button
@@ -325,6 +468,11 @@ export default function SkillVideo() {
               />
             }
             style={styles.MT}
+            error={
+              formik.touched.category &&
+              typeof formik.errors.category === 'string' &&
+              formik.errors.category
+            }
           />
 
           <Input

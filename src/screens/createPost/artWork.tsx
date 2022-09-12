@@ -1,38 +1,74 @@
 import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Black, Green } from '~/src/utils/colors';
 import Button from '~/src/components/theme/Button';
 import { useFormik } from 'formik';
-import { array, object, string } from 'yup';
+import { array, lazy, object, string } from 'yup';
 import { Input } from '~/src/components/theme/Input';
 import { postArtwork } from '~/src/utils/services/works_services/artwork/postArtwork.service';
 import { FileObject } from '~/src/utils/typings/file';
 import { file } from '~/src/lib/yup-custom-schemas';
 import { PostCategoryModal } from '~/src/components/createPost/CategorySelectionModal';
 import { UploadPostScreenProps } from '~/src/types/navigation/main';
+import { updateArtwork } from '~/src/utils/services/works_services/artwork/updateArtwork.service';
+import { ArtworkPost, Post } from '~/src/utils/typings/post';
+import { getPost } from '~/src/utils/services/user-posts_service/getPost.service';
+import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPost.interface';
+import { staticFileSrc } from '~/src/utils/methods';
+import Loading from '~/src/components/theme/Loading';
 
 interface UploadArtworkForm {
   title: string;
   description: string;
   tags: string;
   category: string[];
-  artwork: FileObject;
+  artwork: FileObject | string;
 }
+
+type PostData = GetPostResponse<
+  Pick<
+    ArtworkPost,
+    'title' | 'description' | 'tags' | 'featureImage' | '_id' | 'category'
+  >
+>['post'];
 
 export default function ArtWork() {
   const navigation = useNavigation<UploadPostScreenProps['navigation']>();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const route = useRoute<UploadPostScreenProps['route']>();
+  let postStatus = useRef<Post['postStatus']>('published').current;
+  const isEdit = useMemo(() => !!route.params?.postId, [route.params?.postId]);
+  const [loading, setLoading] = useState(false);
 
   async function submitArtwork(values: UploadArtworkForm) {
-    const result = await postArtwork({
+    const postData = {
       ...values,
-      tags: values.tags.split(',').map(tag => tag.trim()),
+      artwork: typeof values.artwork === 'string' ? undefined : values.artwork,
+      tags: values.tags.split(',').map(tag => tag),
       postedOn: new Date().toString(),
-      postStatus: 'published'
-    });
+      postStatus
+    };
+
+    const result = await (() => {
+      if (isEdit) {
+        return updateArtwork(postData, route.params.postId);
+      }
+      return postArtwork(postData);
+    })();
+
     if (result.data.success) {
       navigation.pop();
     }
@@ -50,18 +86,59 @@ export default function ArtWork() {
       title: string().trim().required('Title is required'),
       description: string()
         .trim()
-        .max(120, 'Cannot have more than 120 characters'),
-      tags: string().trim().required('Tags is required'),
-      category: array(string().trim().required()).required(
-        'Category is required'
-      ),
-      artwork: file(
-        ['image/png', 'image/jpeg', 'image/jpg'],
-        'Only PNG, JPEG, JPG images are allowed'
-      ).required('Artwork is required')
+        .max(120, 'Cannot have more than 120 characters')
+        .when([], {
+          is: () => postStatus === 'published',
+          then: schema => schema.required('Description is required')
+        }),
+      tags: string()
+        .trim()
+        .when([], {
+          is: () => postStatus === 'published',
+          then: schema => schema.required('Tags is required')
+        }),
+      category: array(string().trim().required()).when([], {
+        is: () => postStatus === 'published',
+        then: schema =>
+          schema.min(1, 'Category is required').required('Category is required')
+      }),
+      artwork: lazy(value =>
+        (() => {
+          if (typeof value === 'string') {
+            return string().trim();
+          } else {
+            return file(
+              ['image/png', 'image/jpeg', 'image/jpg'],
+              'Only PNG, JPEG, JPG images are allowed'
+            ).nullable();
+          }
+        })().required('Artwork is required')
+      )
     }),
     onSubmit: submitArtwork
   });
+
+  const fetchData = async () => {
+    setLoading(true);
+
+    const result = await getPost<PostData>({
+      postID: route.params.postId,
+      postType: 'artwork',
+      projection: 'title description tags featureImage category'
+    });
+
+    if (result.data.success) {
+      formik.setValues({
+        category: result.data.post.category,
+        description: result.data.post.description,
+        artwork: result.data.post.featureImage,
+        tags: result.data.post.tags.join(', '),
+        title: result.data.post.title
+      });
+    }
+
+    setLoading(false);
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -85,21 +162,43 @@ export default function ArtWork() {
     }, [navigation])
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.postId) {
+        fetchData();
+      }
+    }, [])
+  );
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Button
-          size="sm"
-          processing={formik.isSubmitting}
-          disabled={formik.isSubmitting}
-          textStyle={{
-            color: Green.primary,
-            fontSize: 14,
-            letterSpacing: 0.2
-          }}
-          text="Publish"
-          onPress={formik.handleSubmit}
-        />
+        <>
+          <Button
+            size="sm"
+            processing={formik.isSubmitting && postStatus === 'draft'}
+            disabled={formik.isSubmitting}
+            btnStyle={{ marginRight: 10 }}
+            textStyle={{ letterSpacing: 0.2 }}
+            text="Save As Draft"
+            onPress={() => {
+              postStatus = 'draft';
+              formik.handleSubmit();
+            }}
+          />
+          <Button
+            size="sm"
+            type="filled"
+            processing={formik.isSubmitting && postStatus === 'published'}
+            disabled={formik.isSubmitting}
+            btnStyle={{ backgroundColor: Green.primary }}
+            text="Publish"
+            onPress={() => {
+              postStatus = 'published';
+              formik.handleSubmit();
+            }}
+          />
+        </>
       )
     });
   }, [formik.isSubmitting]);
@@ -122,6 +221,10 @@ export default function ArtWork() {
     } catch (error) {}
   }
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <View style={styles.container}>
       <PostCategoryModal
@@ -140,7 +243,10 @@ export default function ArtWork() {
             flexDirection: 'column'
           }}
           error={
-            formik.touched.artwork && (formik.errors.artwork?.type as string)
+            formik.touched.artwork && typeof formik.errors.artwork === 'string'
+              ? formik.errors.artwork
+              : // @ts-ignore : not getting correct type
+                formik.errors.artwork?.type
           }
         >
           {() => (
@@ -157,7 +263,12 @@ export default function ArtWork() {
                   backgroundColor: Black[200]
                 }}
                 resizeMode="contain"
-                source={{ uri: formik.values.artwork?.uri }}
+                source={{
+                  uri:
+                    typeof formik.values.artwork === 'string'
+                      ? staticFileSrc(formik.values.artwork)
+                      : formik.values.artwork?.uri
+                }}
               />
 
               <View
@@ -256,6 +367,9 @@ export default function ArtWork() {
               />
             }
             style={styles.MT}
+            error={
+              formik.touched.category && (formik.errors.category as string)
+            }
           />
 
           <Input

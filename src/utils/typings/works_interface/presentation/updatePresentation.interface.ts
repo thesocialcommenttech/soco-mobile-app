@@ -6,7 +6,7 @@ export interface PostPresentationRequest {
   tags: PresentationPost['tags'];
   description: PresentationPost['description'];
   featureImage: FileObject;
-  slides: FileObject[];
+  slides: (FileObject | string)[];
   totalSlides: PresentationPost['totalSlides'];
   postedOn: PresentationPost['postedOn'];
   updatedOn: PresentationPost['updatedOn'];

@@ -1,14 +1,15 @@
-import { File } from '@babel/types';
+import { PostCreateArtworkRequest } from './postArtwork.interface';
 
-export interface UpdateArtworkRequest {
-  title?: string;
-  description?: string;
-  tags?: string[];
-  category?: string[];
-  artwork?: File;
-  postedOn?: string;
-  postStatus?: string;
-}
+export type UpdateArtworkRequest = Pick<
+  PostCreateArtworkRequest,
+  'title' | 'postStatus' | 'postedOn'
+> &
+  Partial<
+    Pick<
+      PostCreateArtworkRequest,
+      'description' | 'category' | 'tags' | 'artwork'
+    >
+  >;
 
 export interface UpdateArtworkResponse {
   success?: boolean;

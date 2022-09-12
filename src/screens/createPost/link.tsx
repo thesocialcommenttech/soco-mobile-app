@@ -1,10 +1,14 @@
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
-import React, { useEffect } from 'react';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useFormik } from 'formik';
 import { Input } from '~/src/components/theme/Input';
-import { object, string } from 'yup';
+import { lazy, object, string } from 'yup';
 import { FileObject } from '~/src/utils/typings/file';
 import Button from '~/src/components/theme/Button';
 import { Black, Green } from '~/src/utils/colors';
@@ -12,16 +16,33 @@ import { postLink } from '~/src/utils/services/user-portfolio_services/link/post
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { file } from '~/src/lib/yup-custom-schemas';
 import { UploadPostScreenProps } from '~/src/types/navigation/main';
+import { updateLink } from '~/src/utils/services/user-portfolio_services/link/updatelink.service';
+import { PostLinkRequest } from '~/src/utils/typings/user-portfolio_interface/link/postLink.interface';
+import { LinkPost } from '~/src/utils/typings/post';
+import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPost.interface';
+import { getPost } from '~/src/utils/services/user-posts_service/getPost.service';
+import Loading from '~/src/components/theme/Loading';
+import { staticFileSrc } from '~/src/utils/methods';
 interface LinkPostForm {
   title: string;
   description: string;
-  featureImage: FileObject;
+  featureImage: FileObject | string;
   tags: string;
   link: string;
 }
 
+type PostData = GetPostResponse<
+  Pick<
+    LinkPost,
+    'title' | 'description' | 'tags' | 'featureImage' | '_id' | 'link'
+  >
+>['post'];
+
 export default function UploadLink() {
   const navigation = useNavigation<UploadPostScreenProps['navigation']>();
+  const route = useRoute<UploadPostScreenProps['route']>();
+  const isEdit = useMemo(() => !!route.params?.postId, [route.params?.postId]);
+  const [loading, setLoading] = useState(false);
 
   async function chooseFile() {
     try {
@@ -42,12 +63,23 @@ export default function UploadLink() {
   }
 
   async function submitLink(values: LinkPostForm) {
-    const result = await postLink({
+    const postData: PostLinkRequest = {
       ...values,
+      featureImage:
+        typeof values.featureImage === 'string'
+          ? undefined
+          : values.featureImage,
       tags: values.tags.split(',').map(tag => tag.trim()),
       postedOn: new Date().toString(),
       postStatus: 'published'
-    });
+    };
+
+    const result = await (() => {
+      if (isEdit) {
+        return updateLink(postData, route.params.postId);
+      }
+      return postLink(postData);
+    })();
 
     if (result.data.success) {
       navigation.pop();
@@ -66,12 +98,19 @@ export default function UploadLink() {
       title: string().trim().required('Title is required'),
       description: string()
         .trim()
-        .max(120, 'Cannot have more than 120 characters')
-        .required('Description is required'),
-      featureImage: file(
-        ['image/png', 'image/jpeg', 'image/jpg'],
-        'Only PNG, JPEG, JPG images are allowed'
-      ).required('Thumbnail is required'),
+        .max(120, 'Cannot have more than 120 characters'),
+      featureImage: lazy(value =>
+        (() => {
+          if (typeof value === 'string') {
+            return string().trim();
+          } else {
+            return file(
+              ['image/png', 'image/jpeg', 'image/jpg'],
+              'Only PNG, JPEG, JPG images are allowed'
+            ).nullable();
+          }
+        })().required('Thumbnail is required')
+      ),
       tags: string()
         .matches(/^([a-zA-Z0-9, ]+)$/)
         .trim()
@@ -80,6 +119,36 @@ export default function UploadLink() {
     }),
     onSubmit: submitLink
   });
+
+  const fetchData = async () => {
+    setLoading(true);
+
+    const result = await getPost<PostData>({
+      postID: route.params.postId,
+      postType: 'artwork',
+      projection: 'title description tags featureImage link'
+    });
+
+    if (result.data.success) {
+      formik.setValues({
+        description: result.data.post.description,
+        featureImage: result.data.post.featureImage,
+        tags: result.data.post.tags.join(', '),
+        title: result.data.post.title,
+        link: result.data.post.link
+      });
+    }
+
+    setLoading(false);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.postId) {
+        fetchData();
+      }
+    }, [])
+  );
 
   useFocusEffect(
     React.useCallback(() => {
@@ -122,13 +191,20 @@ export default function UploadLink() {
     });
   }, [formik.isSubmitting]);
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Input
         label="Thumbnail"
         error={
           formik.touched.featureImage &&
-          (formik.errors.featureImage?.type as string)
+          typeof formik.errors.featureImage === 'string'
+            ? formik.errors.featureImage
+            : // @ts-ignore : not getting correct type
+              formik.errors.featureImage?.type
         }
       >
         {({ style }) => (
@@ -143,7 +219,12 @@ export default function UploadLink() {
                   marginRight: 20,
                   borderRadius: 8
                 }}
-                source={{ uri: formik.values.featureImage.uri }}
+                source={{
+                  uri:
+                    typeof formik.values.featureImage === 'string'
+                      ? staticFileSrc(formik.values.featureImage)
+                      : formik.values.featureImage?.uri
+                }}
               />
             )}
             <Button
