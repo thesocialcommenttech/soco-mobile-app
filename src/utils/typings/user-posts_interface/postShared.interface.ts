@@ -1,8 +1,8 @@
 export interface PostSharedRequest {
-  description?: string;
-  sharedPostID?: string;
-  sharedPostType?: string;
-  postedOn?: Date;
+  description: string;
+  sharedPostID: string;
+  sharedPostType: string;
+  postedOn: string;
 }
 
 interface Share {

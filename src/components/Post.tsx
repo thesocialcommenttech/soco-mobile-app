@@ -7,7 +7,6 @@ import {
   StyleProp,
   StyleSheet,
   Text,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
   ViewStyle
@@ -21,8 +20,10 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Button from './theme/Button';
 import Bottomsheet, { DropdownOption } from './bottomsheet/Bottomsheet';
 import { movePostToTrash } from '../utils/services/trash/movePostToTrash.service';
-import PostInteractions from './screens/post-view/PostInteractions';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import SharePostModal from './SharePostModal';
+import { removePostPermanently } from '../utils/services/delete-post_service/removePostPermanently.service';
+import AskBeforeDelete from './modals/AskBeforeDelete';
+import Toast from 'react-native-toast-message';
 
 const screenWidth = Dimensions.get('screen').width;
 
@@ -53,8 +54,6 @@ export function FeatureImage(props: {
         const imageWidth = screenWidth - 40;
         const scaleFactor = width / imageWidth;
         const imageHeight = height / scaleFactor;
-        console.log(imageHeight);
-
         setFeatureImageSize({ width: imageWidth, height: imageHeight });
       });
     }
@@ -69,13 +68,9 @@ export function FeatureImage(props: {
   );
 }
 
-function PostFooter({
-  postType,
-  viewsCount,
-  downVote,
-  upVote,
-  favourite,
-  postId
+function PostFooter(props: {
+  postType: IPost['postType'];
+  viewsCount: number;
 }) {
   return (
     <View style={styles.cardFooter2}>
@@ -83,54 +78,17 @@ function PostFooter({
         {dayjs(timestamp).format('DD MMM, YYYY')}
       </Text> */}
       <View style={styles.tag}>
-        <Text style={styles.tagText}>{postType}</Text>
+        <Text style={styles.tagText}>{props.postType}</Text>
       </View>
 
-      {/* <View
-        style={{
-          flexDirection: 'row',
-          position: 'absolute',
-          right: '12%'
-        }}
-      >
-        <Button size="sm" onPress={() => {}}>
-          <View style={{ flexDirection: 'row' }}>
-            <MaterialCommunityIcons
-              name={'thumb-up-outline'}
-              size={18}
-              color="black"
-            />
-            <Text>{upVote}</Text>
-          </View>
-        </Button>
-        <Button size="sm" onPress={() => {}}>
-          <View style={{ flexDirection: 'row' }}>
-            <MaterialCommunityIcons
-              name={'thumb-down-outline'}
-              size={18}
-              color={Black[600]}
-            />
-            <Text>{downVote}</Text>
-          </View>
-        </Button>
-        <Button size="sm" onPress={() => {}}>
-          <MaterialCommunityIcons
-            name={'heart-outline'}
-            size={18}
-            // style={isFavourite && styles.favourite}
-            color="black"
-          />
-        </Button>
-      </View> */}
-
-      {typeof viewsCount === 'number' && (
+      {typeof props.viewsCount === 'number' && (
         <View style={styles.viewCountCt}>
           <MaterialCommunityIcon
             name="eye-outline"
             size={16}
             color={Black[600]}
           />
-          <Text style={styles.viewNum}>{viewsCount}</Text>
+          <Text style={styles.viewNum}>{props.viewsCount}</Text>
         </View>
       )}
     </View>
@@ -140,13 +98,17 @@ function PostFooter({
 function PostHeader(props: {
   postId: IPost['_id'];
   postType: IPost['postType'];
+  postTitle: string;
   user: IPost['postedBy'];
   timestamp: IPost['postedOn'];
   navigation: NavigationProp<any>;
   editOption?: boolean;
   onTrash: () => void;
+  onPermanentDelete: () => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showDeleteAckModal, setShowDeleteAckModal] = useState(false);
 
   const onEdit = () => {
     setShowMenu(false);
@@ -173,6 +135,11 @@ function PostHeader(props: {
   const onTrash = () => {
     setShowMenu(false);
     props.onTrash?.();
+  };
+
+  const onPermanentDelete = () => {
+    setShowMenu(false);
+    props.onPermanentDelete?.();
   };
 
   return (
@@ -205,24 +172,45 @@ function PostHeader(props: {
             </View>
           </View>
         </TouchableWithoutFeedback>
-        <Button
-          size="xs"
-          onPress={() => setShowMenu(true)}
-          btnStyle={{ marginRight: -10 }}
-        >
-          <MaterialCommunityIcon
-            name="dots-vertical"
-            size={20}
-            color={Colors.Gray600}
-          />
-        </Button>
+        {(props.postType !== 'shared' || props.editOption) && (
+          <Button
+            size="xs"
+            onPress={() => setShowMenu(true)}
+            btnStyle={{ marginRight: -10 }}
+          >
+            <MaterialCommunityIcon
+              name="dots-vertical"
+              size={20}
+              color={Colors.Gray600}
+            />
+          </Button>
+        )}
       </View>
+      <AskBeforeDelete
+        show={showDeleteAckModal}
+        onClose={() => setShowDeleteAckModal(false)}
+        onDelete={onPermanentDelete}
+      />
+      <SharePostModal
+        showModal={showShareModal}
+        post={{
+          _id: props.postId,
+          title: props.postTitle,
+          type: props.postType
+        }}
+        onClose={() => setShowShareModal(false)}
+      />
       <Bottomsheet visible={showMenu} onClose={() => setShowMenu(false)}>
-        <DropdownOption
-          label="Share"
-          icon="share-variant-outline"
-          onOptionPress={() => {}}
-        />
+        {props.postType !== 'shared' && (
+          <DropdownOption
+            label="Share"
+            icon="share-variant-outline"
+            onOptionPress={() => {
+              setShowMenu(false);
+              setShowShareModal(true);
+            }}
+          />
+        )}
         {/* TODO: Add follow the author option
             From backend send the is following the author status
         */}
@@ -231,7 +219,17 @@ function PostHeader(props: {
           icon="account-plus-outline"
           onOptionPress={() => {}}
         /> */}
-        {props.editOption && (
+        {props.postType === 'shared' && (
+          <DropdownOption
+            label="Delete"
+            icon="trash-can-outline"
+            onOptionPress={() => {
+              setShowMenu(false);
+              setShowDeleteAckModal(true);
+            }}
+          />
+        )}
+        {props.editOption && props.postType !== 'shared' && (
           <>
             <DropdownOption
               label="Edit"
@@ -271,6 +269,20 @@ export default function Post({
     const result = await movePostToTrash(data._id, data.postType);
     if (result.data.success) {
       setCardState('deleted');
+      Toast.show({
+        text1: 'Post Trashed'
+      });
+    }
+  };
+
+  const deletePost = async () => {
+    setCardState('deleting');
+    const result = await removePostPermanently(data._id);
+    if (result.data.success) {
+      setCardState('deleted');
+      Toast.show({
+        text1: 'Post Deleted'
+      });
     }
   };
 
@@ -290,10 +302,12 @@ export default function Post({
         <PostHeader
           postId={data._id}
           postType={data.postType}
+          postTitle={data.postType !== 'shared' && data.title}
           user={data.postedBy}
           timestamp={data.postedOn}
           navigation={navigation}
           onTrash={trashPost}
+          onPermanentDelete={deletePost}
           editOption={updatable}
         />
         {data.postType === 'shared' ? (
@@ -378,14 +392,9 @@ export default function Post({
               )}
           </>
         )}
-        <PostFooter
-          postType={data.postType}
-          downVote={data.postType !== 'shared' && data.downvotes.length}
-          upVote={data.postType !== 'shared' && data.upvotes.length}
-          favourite={data.postType !== 'shared' && data.isFavorited}
-          postId={data._id}
-          viewsCount={data.postType !== 'shared' ? data.views : false}
-        />
+        {data.postType !== 'shared' && (
+          <PostFooter postType={data.postType} viewsCount={data.views} />
+        )}
       </View>
     </View>
   );

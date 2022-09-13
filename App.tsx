@@ -1,11 +1,12 @@
 import axios from 'axios';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import FlashMessage from 'react-native-flash-message';
+import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
 import Routes from './src/navigation/routes';
 //import { StyleSheet } from 'react-native';
 import store from './src/store';
+import SOCOToast from '~/src/components/theme/Toast';
 import './src/utils/ignoreWarnings';
 
 axios.defaults.baseURL = 'https://thesocialcomment-backend-test.herokuapp.com';
@@ -15,7 +16,13 @@ const App = () => {
     <Provider store={store}>
       <View style={styles.container}>
         <Routes />
-        <FlashMessage position="top" />
+        <Toast
+          position="bottom"
+          bottomOffset={70}
+          visibilityTime={6000}
+          type="info"
+          config={{ info: SOCOToast }}
+        />
       </View>
     </Provider>
   );
@@ -24,22 +31,6 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600'
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400'
-  },
-  highlight: {
-    fontWeight: '700'
   }
 });
 
