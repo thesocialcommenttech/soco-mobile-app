@@ -1,7 +1,11 @@
 import { StyleSheet } from 'react-native';
 import React from 'react';
 import { Black, Blue, Colors } from '../../utils/colors';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Connections from './Connections';
 import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
@@ -33,8 +37,18 @@ export default function ConnectionsStack() {
           }
         }}
       >
-        <ConnectionTabStack.Screen name="Followers" component={Connections} />
-        <ConnectionTabStack.Screen name="Followings" component={Connections} />
+        <ConnectionTabStack.Screen
+          name="Followers"
+          component={Connections}
+          getId={({ params }) => params.userId}
+          initialParams={route.params.params}
+        />
+        <ConnectionTabStack.Screen
+          name="Followings"
+          component={Connections}
+          getId={({ params }) => params.userId}
+          initialParams={route.params.params}
+        />
       </ConnectionTabStack.Navigator>
     </ScreenWithTopBar>
   );

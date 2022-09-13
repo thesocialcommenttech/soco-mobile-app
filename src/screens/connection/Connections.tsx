@@ -1,5 +1,5 @@
 import { FlatList, StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import UserConnection from './UserConnection';
 import { getUserFollowers } from '~/src/utils/services/follow-user_service/getUserFollowers.service';
 import { useSelector } from 'react-redux';
@@ -17,6 +17,11 @@ export default function Connections() {
   const route = useRoute<ConnectionScreenProps['route']>();
   const authUser = useSelector((root: IRootReducer) => root.auth.user);
 
+  const userID = useMemo(
+    () => route.params?.userId ?? authUser._id,
+    [route.params]
+  );
+
   const [users, setUsers] = useState<UserConnections>();
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +32,7 @@ export default function Connections() {
     if (route.name === 'Followers') {
       const result = await getUserFollowers<UserProjection>({
         proj: projection,
-        userID: authUser._id
+        userID
       });
       if (result.data.success) {
         setUsers(result.data.followers);
@@ -35,7 +40,7 @@ export default function Connections() {
     } else {
       const result = await getUserFollowings<UserProjection>({
         proj: projection,
-        userID: authUser._id
+        userID
       });
 
       if (result.data.success) {

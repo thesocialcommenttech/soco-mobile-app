@@ -25,7 +25,11 @@ function ProfileTab() {
       <Stack.Screen name="PortfolioStack" component={PortfolioStack} />
       <Stack.Screen name="Drafts" component={DraftsScreen} />
       <Stack.Screen name="Trash" component={TrashScreen} />
-      <Stack.Screen name="Connections" component={ConnectionsStack} />
+      <Stack.Screen
+        name="Connections"
+        getId={({ params }) => params.params.userId}
+        component={ConnectionsStack}
+      />
     </Stack.Navigator>
   );
 }

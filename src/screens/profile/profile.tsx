@@ -273,7 +273,10 @@ function ProfileScreen() {
               <Button
                 btnStyle={{ padding: 0 }}
                 onPress={() => {
-                  navigation.navigate('Connections');
+                  navigation.navigate('Connections', {
+                    screen: 'Followers',
+                    params: { userId: userProfile._id }
+                  });
                 }}
               >
                 <ProfileState
@@ -285,7 +288,8 @@ function ProfileScreen() {
                 btnStyle={{ padding: 0 }}
                 onPress={() => {
                   navigation.navigate('Connections', {
-                    screen: 'Followings'
+                    screen: 'Followings',
+                    params: { userId: userProfile._id }
                   });
                 }}
               >
