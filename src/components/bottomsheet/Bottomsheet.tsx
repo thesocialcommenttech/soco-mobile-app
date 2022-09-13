@@ -20,10 +20,10 @@ export function DropdownOption({
   label,
   icon
 }: {
-  optionKey: string;
+  optionKey?: string;
   label: string;
   icon?: string;
-  onOptionPress: (optionKey: string) => void;
+  onOptionPress: (optionKey?: string) => void;
 }) {
   return (
     <TouchableHighlight
@@ -36,7 +36,7 @@ export function DropdownOption({
           <MaterialCommunityIcons
             name={icon}
             style={styles.optionIcon}
-            size={16}
+            size={20}
           />
         )}
         <Text style={styles.optionLabel}>{label}</Text>
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto'
   },
   optionIcon: {
-    paddingRight: 10,
+    paddingRight: 15,
     color: 'black'
   },
   dropdown: {
@@ -105,7 +105,8 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     paddingHorizontal: 25,
-    paddingVertical: 10
+    paddingVertical: 10,
+    alignItems: 'center'
   },
   modalOverlay: {
     position: 'absolute',

@@ -15,9 +15,14 @@ import {
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { Avatar } from '@rneui/base';
-import { Colors } from '../utils/colors';
+import { Black, Colors } from '../utils/colors';
 import { Post as IPost } from '../utils/typings/post';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import Button from './theme/Button';
+import Bottomsheet, { DropdownOption } from './bottomsheet/Bottomsheet';
+import { movePostToTrash } from '../utils/services/trash/movePostToTrash.service';
+import PostInteractions from './screens/post-view/PostInteractions';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const screenWidth = Dimensions.get('screen').width;
 
@@ -64,21 +69,66 @@ export function FeatureImage(props: {
   );
 }
 
-function PostFooter({ timestamp, postType, viewsCount }) {
+function PostFooter({
+  postType,
+  viewsCount,
+  downVote,
+  upVote,
+  favourite,
+  postId
+}) {
   return (
     <View style={styles.cardFooter2}>
-      <Text style={styles.timestamp}>
+      {/* <Text style={styles.timestamp}>
         {dayjs(timestamp).format('DD MMM, YYYY')}
-      </Text>
+      </Text> */}
       <View style={styles.tag}>
         <Text style={styles.tagText}>{postType}</Text>
       </View>
+
+      {/* <View
+        style={{
+          flexDirection: 'row',
+          position: 'absolute',
+          right: '12%'
+        }}
+      >
+        <Button size="sm" onPress={() => {}}>
+          <View style={{ flexDirection: 'row' }}>
+            <MaterialCommunityIcons
+              name={'thumb-up-outline'}
+              size={18}
+              color="black"
+            />
+            <Text>{upVote}</Text>
+          </View>
+        </Button>
+        <Button size="sm" onPress={() => {}}>
+          <View style={{ flexDirection: 'row' }}>
+            <MaterialCommunityIcons
+              name={'thumb-down-outline'}
+              size={18}
+              color={Black[600]}
+            />
+            <Text>{downVote}</Text>
+          </View>
+        </Button>
+        <Button size="sm" onPress={() => {}}>
+          <MaterialCommunityIcons
+            name={'heart-outline'}
+            size={18}
+            // style={isFavourite && styles.favourite}
+            color="black"
+          />
+        </Button>
+      </View> */}
+
       {typeof viewsCount === 'number' && (
-        <View style={styles.eyeView}>
+        <View style={styles.viewCountCt}>
           <MaterialCommunityIcon
             name="eye-outline"
-            size={20}
-            color={Colors.Gray600}
+            size={16}
+            color={Black[600]}
           />
           <Text style={styles.viewNum}>{viewsCount}</Text>
         </View>
@@ -88,43 +138,110 @@ function PostFooter({ timestamp, postType, viewsCount }) {
 }
 
 function PostHeader(props: {
-  profileImage: string;
-  name: string;
-  username: string;
+  postId: IPost['_id'];
+  postType: IPost['postType'];
+  user: IPost['postedBy'];
+  timestamp: IPost['postedOn'];
   navigation: NavigationProp<any>;
+  onTrash: () => void;
 }) {
+  const [showMenu, setShowMenu] = useState(false);
+
+  const onEdit = () => {
+    setShowMenu(false);
+    switch (props.postType) {
+      case 'artwork':
+        props.navigation?.navigate('Upload_Artwork', { postId: props.postId });
+        break;
+      case 'skill':
+        props.navigation?.navigate('Upload_SkillVideo', {
+          postId: props.postId
+        });
+        break;
+      case 'presentation':
+        props.navigation?.navigate('Upload_Presentation', {
+          postId: props.postId
+        });
+        break;
+      case 'link':
+        props.navigation?.navigate('Upload_Link', { postId: props.postId });
+        break;
+    }
+  };
+
+  const onTrash = () => {
+    setShowMenu(false);
+    props.onTrash?.();
+  };
+
   return (
-    <View style={styles.cardTitle}>
-      <TouchableWithoutFeedback
-        onPress={() =>
-          props.navigation.navigate('ProfileStack', {
-            screen: 'Profile',
-            params: { username: props.username }
-          })
-        }
-      >
-        <View style={styles.profileinfo}>
-          <Avatar
-            size={36}
-            rounded
-            source={{
-              uri: staticFileSrc(props.profileImage)
-            }}
-            activeOpacity={0.7}
-            placeholderStyle={{ backgroundColor: Colors.Gray100 }}
-            containerStyle={styles.avatar2}
+    <>
+      <View style={styles.cardTitle}>
+        <TouchableWithoutFeedback
+          onPress={() =>
+            props.navigation.navigate('ProfileStack', {
+              screen: 'Profile',
+              params: { username: props.user.username }
+            })
+          }
+        >
+          <View style={styles.profileinfo}>
+            <Avatar
+              size={30}
+              rounded
+              source={{
+                uri: staticFileSrc(props.user.profileImage)
+              }}
+              activeOpacity={0.7}
+              placeholderStyle={{ backgroundColor: Colors.Gray100 }}
+              containerStyle={styles.avatar2}
+            />
+            <View style={{ marginLeft: 15 }}>
+              <Text style={styles.cardTitleText}>{props.user.name}</Text>
+              <Text style={styles.timestamp}>
+                {dayjs(props.timestamp).format('D MMM, YYYY')}
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+        <Button
+          size="xs"
+          onPress={() => setShowMenu(true)}
+          btnStyle={{ marginRight: -10 }}
+        >
+          <MaterialCommunityIcon
+            name="dots-vertical"
+            size={20}
+            color={Colors.Gray600}
           />
-          <Text style={styles.cardTitleText}>{props.name}</Text>
-        </View>
-      </TouchableWithoutFeedback>
-      <TouchableOpacity>
-        <MaterialCommunityIcon
-          name="share-variant-outline"
-          size={20}
-          color={Colors.Gray600}
+        </Button>
+      </View>
+      <Bottomsheet visible={showMenu} onClose={() => setShowMenu(false)}>
+        <DropdownOption
+          label="Share"
+          icon="share-variant-outline"
+          onOptionPress={() => {}}
         />
-      </TouchableOpacity>
-    </View>
+        {/* TODO: Add follow the author option
+            From backend send the is following the author status
+        */}
+        {/* <DropdownOption
+          label="Follow"
+          icon="account-plus-outline"
+          onOptionPress={() => {}}
+        /> */}
+        <DropdownOption
+          label="Edit"
+          icon="pencil-outline"
+          onOptionPress={onEdit}
+        />
+        <DropdownOption
+          label="Trash"
+          icon="trash-can-outline"
+          onOptionPress={onTrash}
+        />
+      </Bottomsheet>
+    </>
   );
 }
 
@@ -133,20 +250,45 @@ export default function Post({
   postWrapperStyle,
   updatable = false
 }: {
-  data: IPost;
+  data: IPost & {
+    upvotes?: any;
+    downvotes?: any;
+    favourites?: any;
+  };
   postWrapperStyle?: StyleProp<ViewStyle>;
   updatable?: boolean;
 }): ReactElement {
   const navigation = useNavigation();
+  const [cardState, setCardState] = useState<'deleting' | 'deleted'>();
+
+  const trashPost = async () => {
+    setCardState('deleting');
+    const result = await movePostToTrash(data._id, data.postType);
+    if (result.data.success) {
+      setCardState('deleted');
+    }
+  };
+
+  if (cardState === 'deleted') {
+    return null;
+  }
 
   return (
-    <View style={[styles.cardContainer, postWrapperStyle]}>
+    <View
+      style={[
+        styles.cardContainer,
+        cardState === 'deleting' && styles.deleting,
+        postWrapperStyle
+      ]}
+    >
       <View>
         <PostHeader
-          profileImage={data.postedBy.profileImage}
-          name={data.postedBy.name}
-          username={data.postedBy.username}
+          postId={data._id}
+          postType={data.postType}
+          user={data.postedBy}
+          timestamp={data.postedOn}
           navigation={navigation}
+          onTrash={trashPost}
         />
         {data.postType === 'shared' ? (
           <>
@@ -232,7 +374,10 @@ export default function Post({
         )}
         <PostFooter
           postType={data.postType}
-          timestamp={data.postedOn}
+          downVote={data.postType !== 'shared' && data.downvotes.length}
+          upVote={data.postType !== 'shared' && data.upvotes.length}
+          favourite={data.postType !== 'shared' && data.isFavorited}
+          postId={data._id}
           viewsCount={data.postType !== 'shared' ? data.views : false}
         />
       </View>
@@ -243,12 +388,10 @@ export default function Post({
 const styles = StyleSheet.create({
   cardContainer: {
     padding: 20
-    // width: '100%',
-    // marginLeft: '0%',
-    // marginTop: '0%',
-    // borderTopColor: 'white'
-    // borderTopWidth: 1,
-    // borderTopColor: Colors.GrayLine
+  },
+  deleting: {
+    opacity: 0.5,
+    backgroundColor: Black[500]
   },
   profileinfo: {
     flexDirection: 'row',
@@ -259,15 +402,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between'
   },
-  avatar2: {
-    // borderWidth: 1,
-    // borderColor: Colors.White,
-  },
+  avatar2: {},
   cardTitleText: {
-    fontSize: 16,
-    fontWeight: '700',
-    fontFamily: 'Roboto-Medium',
-    marginLeft: '10%',
+    // fontFamily: 'Roboto-Medium',
     color: 'black'
   },
   mainContent: {
@@ -276,7 +413,7 @@ const styles = StyleSheet.create({
   postPic: {
     width: '100%',
     height: 300,
-    backgroundColor: Colors.Gray100,
+    backgroundColor: Black[100],
     // minHeight: 300,
     borderRadius: 10
   },
@@ -291,50 +428,47 @@ const styles = StyleSheet.create({
   },
   postTitle: {
     fontSize: 16,
-    fontWeight: '700',
     fontFamily: 'Roboto-Medium',
-    color: Colors.Black
+    color: 'black'
   },
   cardFooter2: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 15
+    marginTop: 15,
+    justifyContent: 'space-between'
   },
   timestamp: {
     fontSize: 14,
-    fontWeight: '600',
-    fontFamily: 'Roboto-Medium',
+    // fontFamily: 'Roboto-Medium',
     color: Colors.Gray600
   },
   tag: {
     backgroundColor: Colors.Gray100,
     borderRadius: 5,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginLeft: '5%'
+    paddingHorizontal: 5,
+    paddingVertical: 3
+    // marginLeft: '5%'
   },
   tagText: {
-    fontSize: 14,
-    fontWeight: '700',
-    fontFamily: 'Roboto-Medium',
-    color: Colors.Black,
+    // fontFamily: 'Roboto-Medium',
+    fontSize: 13,
+    color: Black[600],
     textTransform: 'capitalize'
   },
-  eyeView: {
+  viewCountCt: {
     flexDirection: 'row',
-    marginLeft: 'auto',
+    // marginLeft: 'auto',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
   viewNum: {
     color: 'black',
-    fontSize: 16,
-    marginLeft: '2%',
-    fontWeight: '700',
-    fontFamily: 'Roboto-Medium'
+    // fontSize: 16,
+    marginLeft: 5
+    // fontFamily: 'Roboto-Medium'
   },
   postDescription: {
-    fontFamily: 'Roboto',
+    // fontFamily: 'Roboto',
     fontSize: 16,
     marginTop: 20,
     lineHeight: 20,

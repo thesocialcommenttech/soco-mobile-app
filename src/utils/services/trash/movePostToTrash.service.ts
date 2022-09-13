@@ -1,13 +1,15 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { Post } from '../../typings/post';
 import { MovePostToTrashResponse } from '../../typings/trash_interface/movePostToTrash.interface';
 
-export function movePostToTrash() {
+export function movePostToTrash(
+  postID: Post['_id'],
+  postType: Post['postType']
+) {
   const config: AxiosRequestConfig = {
     url: 'user/post/trash',
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    params: { postID, postType }
   };
 
   return axios.request<MovePostToTrashResponse>(config);
