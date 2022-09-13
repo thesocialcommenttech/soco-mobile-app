@@ -1,29 +1,40 @@
-import { FlatList, StyleSheet, View } from 'react-native';
-import React from 'react';
+import { FlatList, StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
 import Skill from '../../components/portfolio/Skill';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import Button from '~/src/components/theme/Button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
-import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
+import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
 
 export default function Skills() {
   const { portfolio } = usePortfolioData();
-  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
+  const navigation = useNavigation<PortfolioSubTab_ScreenProps['navigation']>();
+  const route = useRoute<PortfolioSubTab_ScreenProps['route']>();
+  const mine = useMemo(() => route.params?.mine, [route.params]);
 
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent().setOptions({
-        headerRight: () => (
-          <PortfolioUpdateBtn
-            buttonProps={{
-              onPress: () => {
-                navigation.navigate('Addskill');
-              }
-            }}
-          />
-        )
+        headerRight: () => {
+          if (mine) {
+            return (
+              <PortfolioUpdateBtn
+                buttonProps={{
+                  onPress: () => {
+                    navigation.navigate('Addskill');
+                  }
+                }}
+              />
+            );
+          }
+          return null;
+        }
       });
     }, [navigation])
   );
@@ -52,7 +63,9 @@ export default function Skills() {
       contentContainerStyle={styles.container}
       data={portfolio.skill}
       keyExtractor={item => item._id}
-      renderItem={({ item }) => <Skill data={item} style={styles.skillItem} />}
+      renderItem={({ item }) => (
+        <Skill data={item} style={styles.skillItem} editOptions={mine} />
+      )}
     />
   );
 }

@@ -5,14 +5,11 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
   View
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { staticFileSrc } from '~/src/utils/methods';
 import { Post, PresentationPost, SharedPost } from '~/src/utils/typings/post';
-import Modal1 from 'react-native-modal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Black } from '~/src/utils/colors';
 import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
@@ -22,9 +19,11 @@ import Bottomsheet, { DropdownOption } from '../../bottomsheet/Bottomsheet';
 import produce from 'immer';
 
 export default function WorkItem({
-  item
+  item,
+  editOptions
 }: {
   item: Exclude<Post, SharedPost>;
+  editOptions?: boolean;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
@@ -85,7 +84,7 @@ export default function WorkItem({
         />
       </Bottomsheet>
       <TouchableHighlight
-        onLongPress={() => setModalVisible(true)}
+        onLongPress={() => (editOptions ? setModalVisible(true) : undefined)}
         onPress={onClickPost}
         underlayColor={Black[100]}
         style={styles.item}

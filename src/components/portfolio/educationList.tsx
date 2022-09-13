@@ -15,6 +15,7 @@ import { produce } from 'immer';
 export default function Education(props: {
   data: IEducation;
   style?: StyleProp<ViewStyle>;
+  editOptions?: boolean;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
@@ -76,19 +77,21 @@ export default function Education(props: {
           </View>
           <Text style={styles.instituteName}>{props.data.institute}</Text>
         </View>
-        <Button
-          size="sm"
-          disabled={isRemoving}
-          processing={isRemoving}
-          onPress={() => setModalVisible(!modalVisible)}
-          btnStyle={styles.dropdownBtn}
-        >
-          <MaterialCommunityIcons
-            name="dots-vertical"
-            size={17}
-            color={Black[600]}
-          />
-        </Button>
+        {props.editOptions && (
+          <Button
+            size="sm"
+            disabled={isRemoving}
+            processing={isRemoving}
+            onPress={() => setModalVisible(!modalVisible)}
+            btnStyle={styles.dropdownBtn}
+          >
+            <MaterialCommunityIcons
+              name="dots-vertical"
+              size={17}
+              color={Black[600]}
+            />
+          </Button>
+        )}
       </View>
     </>
   );
@@ -108,7 +111,7 @@ const styles = StyleSheet.create({
   degree: {
     color: Blue.primary,
     // marginTop: 1,
-    fontSize: 16
+    // fontSize: 16
   },
   pursuingTag: {
     color: Yellow[700],

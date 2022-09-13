@@ -1,6 +1,10 @@
 import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useMemo, useState } from 'react';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import { Black } from '~/src/utils/colors';
 import WorkItem from '~/src/components/screens/portfolio/WorkItem';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
@@ -8,12 +12,14 @@ import Bottomsheet, {
   DropdownOption
 } from '~/src/components/bottomsheet/Bottomsheet';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
-import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
+import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
 
 export default function Works(props) {
   const { portfolio } = usePortfolioData();
-  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
+  const navigation = useNavigation<PortfolioSubTab_ScreenProps['navigation']>();
   const [showAddWorkBottomsheet, setshowAddWorkBottomsheet] = useState(false);
+  const route = useRoute<PortfolioSubTab_ScreenProps['route']>();
+  const mine = useMemo(() => route.params?.mine, [route.params]);
 
   const totalWorkItem = useMemo(() => {
     return Object.values(portfolio.work).reduce((p, c) => p + c.length, 0);
@@ -31,15 +37,20 @@ export default function Works(props) {
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent().setOptions({
-        headerRight: () => (
-          <PortfolioUpdateBtn
-            buttonProps={{
-              onPress: () => {
-                setshowAddWorkBottomsheet(true);
-              }
-            }}
-          />
-        )
+        headerRight: () => {
+          if (mine) {
+            return (
+              <PortfolioUpdateBtn
+                buttonProps={{
+                  onPress: () => {
+                    setshowAddWorkBottomsheet(true);
+                  }
+                }}
+              />
+            );
+          }
+          return null;
+        }
       });
     }, [navigation])
   );
@@ -52,7 +63,7 @@ export default function Works(props) {
       >
         {Object.entries(addWorkOptions).map(([key, label]) => (
           <DropdownOption
-            optionKey={key}
+            key={key}
             label={label}
             onOptionPress={() => {
               setshowAddWorkBottomsheet(false);
@@ -76,7 +87,9 @@ export default function Works(props) {
                 contentContainerStyle={styles.worksList}
                 data={portfolio.work.blog}
                 keyExtractor={item => item._id}
-                renderItem={({ item }) => <WorkItem item={item} />}
+                renderItem={({ item }) => (
+                  <WorkItem editOptions={mine} item={item} />
+                )}
               />
             </View>
           )}
@@ -88,7 +101,9 @@ export default function Works(props) {
                 contentContainerStyle={styles.worksList}
                 data={portfolio.work.artwork}
                 keyExtractor={item => item._id}
-                renderItem={({ item }) => <WorkItem item={item} />}
+                renderItem={({ item }) => (
+                  <WorkItem editOptions={mine} item={item} />
+                )}
               />
             </View>
           )}
@@ -100,7 +115,9 @@ export default function Works(props) {
                 contentContainerStyle={styles.worksList}
                 data={portfolio.work.skill}
                 keyExtractor={item => item._id}
-                renderItem={({ item }) => <WorkItem item={item} />}
+                renderItem={({ item }) => (
+                  <WorkItem editOptions={mine} item={item} />
+                )}
               />
             </View>
           )}
@@ -112,7 +129,9 @@ export default function Works(props) {
                 contentContainerStyle={styles.worksList}
                 data={portfolio.work.article}
                 keyExtractor={item => item._id}
-                renderItem={({ item }) => <WorkItem item={item} />}
+                renderItem={({ item }) => (
+                  <WorkItem editOptions={mine} item={item} />
+                )}
               />
             </View>
           )}
@@ -124,7 +143,9 @@ export default function Works(props) {
                 contentContainerStyle={styles.worksList}
                 data={portfolio.work.presentation}
                 keyExtractor={item => item._id}
-                renderItem={({ item }) => <WorkItem item={item} />}
+                renderItem={({ item }) => (
+                  <WorkItem editOptions={mine} item={item} />
+                )}
               />
             </View>
           )}
@@ -136,7 +157,9 @@ export default function Works(props) {
                 contentContainerStyle={styles.worksList}
                 data={portfolio.work.project}
                 keyExtractor={item => item._id}
-                renderItem={({ item }) => <WorkItem item={item} />}
+                renderItem={({ item }) => (
+                  <WorkItem editOptions={mine} item={item} />
+                )}
               />
             </View>
           )}

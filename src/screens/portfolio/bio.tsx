@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { staticFileSrc } from '~/src/utils/methods';
 import Button from '~/src/components/theme/Button';
@@ -8,10 +8,17 @@ import Video from '~/src/components/theme/Video';
 import Bottomsheet, {
   DropdownOption
 } from '~/src/components/bottomsheet/Bottomsheet';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute
+} from '@react-navigation/native';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
-import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
+import {
+  PortfolioSubTab_ScreenProps,
+  Portfolio_ScreenProps
+} from '~/src/types/navigation/portfolio';
 import PortfolioDropdown from '~/src/components/screens/portfolio/PortfolioDropdown';
 
 export default function Bio() {
@@ -19,33 +26,40 @@ export default function Bio() {
   const { profile, portfolio } = usePortfolioData();
   const [showThemesList, setShowThemesList] = useState(false);
 
-  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
+  const navigation = useNavigation<PortfolioSubTab_ScreenProps['navigation']>();
+  const route = useRoute<PortfolioSubTab_ScreenProps['route']>();
+  const mine = useMemo(() => route.params?.mine, [route.params]);
 
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent().setOptions({
-        headerRight: () => (
-          <>
-            <Button
-              onPress={() => setShowThemesList(true)}
-              size="xs"
-              btnStyle={{ marginRight: 10 }}
-            >
-              <MaterialCommunityIcons
-                name="layers-outline"
-                size={24}
-                color="black"
-              />
-            </Button>
-            <PortfolioUpdateBtn
-              buttonProps={{
-                onPress: () => {
-                  setModalVisible(true);
-                }
-              }}
-            />
-          </>
-        )
+        headerRight: () => {
+          if (mine) {
+            return (
+              <>
+                <Button
+                  onPress={() => setShowThemesList(true)}
+                  size="xs"
+                  btnStyle={{ marginRight: 10 }}
+                >
+                  <MaterialCommunityIcons
+                    name="layers-outline"
+                    size={24}
+                    color="black"
+                  />
+                </Button>
+                <PortfolioUpdateBtn
+                  buttonProps={{
+                    onPress: () => {
+                      setModalVisible(true);
+                    }
+                  }}
+                />
+              </>
+            );
+          }
+          return null;
+        }
       });
     }, [navigation])
   );
@@ -141,26 +155,17 @@ export default function Bio() {
               )}
             </View>
           </View>
-          <View style={styles.introVideo}>
-            <Video
-              source={{ uri: portfolio?.intro_video_url }}
-              style={styles.introVideo}
-              // disableBack={true}
-              // disableFullscreen={true}
-              // disableTimer={true}
-              // paused={true}
-            />
-          </View>
+          {portfolio?.intro_video_url && (
+            <View style={styles.introVideo}>
+              <Video
+                source={{ uri: portfolio?.intro_video_url }}
+                style={styles.introVideo}
+              />
+            </View>
+          )}
           <View style={styles.bioCt}>
             <View style={styles.sectionheader}>
               <Text style={styles.headTitle}>Biography</Text>
-              {/* <Button onPress={() => setModalVisible(true)} size="sm">
-                <MaterialCommunityIcons
-                  name="pencil-outline"
-                  size={16}
-                  color={Black[500]}
-                />
-              </Button> */}
             </View>
             <Text style={styles.bio}>{portfolio?.bio}</Text>
           </View>

@@ -130,6 +130,18 @@ function ProfileScreen() {
         <Loading />
       ) : (
         <>
+          <UpdateCaptionModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+          />
+          <UpdateProfileCoverImageModal
+            show={modalVisible2}
+            onClose={() => setModalVisible2(false)}
+          />
+          <UpdateBioModal
+            modalVisible1={modalVisible1}
+            setModalVisible1={setModalVisible1}
+          />
           <ScrollView
             style={styles.container}
             refreshControl={
@@ -166,38 +178,30 @@ function ProfileScreen() {
                   </Text>
                 </View>
               )}
-              <>
-                <UpdateCaptionModal
-                  modalVisible={modalVisible}
-                  setModalVisible={setModalVisible}
-                />
-                <TouchableOpacity
-                  style={styles.editCaption}
-                  onPress={() => setModalVisible(true)}
-                >
-                  <MaterialCommunityIcon
-                    name="pencil-outline"
-                    size={20}
-                    color={Colors.White}
-                  />
-                </TouchableOpacity>
-              </>
-              <>
-                <UpdateProfileCoverImageModal
-                  show={modalVisible2}
-                  onClose={() => setModalVisible2(false)}
-                />
-                <TouchableOpacity
-                  onPress={() => setModalVisible2(true)}
-                  style={styles.editCover}
-                >
-                  <MaterialCommunityIcon
-                    name="camera-outline"
-                    size={20}
-                    color={Colors.White}
-                  />
-                </TouchableOpacity>
-              </>
+              {mine && (
+                <>
+                  <TouchableOpacity
+                    style={styles.editCaption}
+                    onPress={() => setModalVisible(true)}
+                  >
+                    <MaterialCommunityIcon
+                      name="pencil-outline"
+                      size={20}
+                      color={Colors.White}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible2(true)}
+                    style={styles.editCover}
+                  >
+                    <MaterialCommunityIcon
+                      name="camera-outline"
+                      size={20}
+                      color={Colors.White}
+                    />
+                  </TouchableOpacity>
+                </>
+              )}
             </View>
             <View style={styles.info}>
               <Text style={styles.name}>{userProfile.name}</Text>
@@ -227,19 +231,17 @@ function ProfileScreen() {
                 ]}
               />
               {mine ? (
-                <>
-                  <Button
-                    type="filled"
-                    onPress={() => {}}
-                    btnStyle={styles.portfolioLock}
-                  >
-                    <MaterialCommunityIcon
-                      name={locked ? 'lock-outline' : 'lock-off-outline'}
-                      size={20}
-                      color={Colors.White}
-                    />
-                  </Button>
-                </>
+                <Button
+                  type="filled"
+                  onPress={() => {}}
+                  btnStyle={styles.portfolioLock}
+                >
+                  <MaterialCommunityIcon
+                    name={locked ? 'lock-outline' : 'lock-off-outline'}
+                    size={20}
+                    color={Colors.White}
+                  />
+                </Button>
               ) : (
                 <FollowToggleBtn />
               )}
@@ -249,25 +251,23 @@ function ProfileScreen() {
               <Text style={styles.bioText}>{userProfile.bio}</Text>
             </View>
 
-            <UpdateBioModal
-              modalVisible1={modalVisible1}
-              setModalVisible1={setModalVisible1}
-            />
-            <Button
-              type="text"
-              size="xs"
-              btnStyle={styles.updateBio}
-              onPress={() => setModalVisible1(!modalVisible1)}
-            >
-              <View style={styles.updateBioLink}>
-                <MaterialCommunityIcon
-                  name="pencil-outline"
-                  size={16}
-                  color={Blue.primary}
-                />
-                <Text style={styles.updateBioText}>Update Bio</Text>
-              </View>
-            </Button>
+            {mine && (
+              <Button
+                type="text"
+                size="xs"
+                btnStyle={styles.updateBio}
+                onPress={() => setModalVisible1(!modalVisible1)}
+              >
+                <View style={styles.updateBioLink}>
+                  <MaterialCommunityIcon
+                    name="pencil-outline"
+                    size={16}
+                    color={Blue.primary}
+                  />
+                  <Text style={styles.updateBioText}>Update Bio</Text>
+                </View>
+              </Button>
+            )}
 
             <ScrollView horizontal={true} style={styles.stats}>
               <Button
@@ -284,7 +284,9 @@ function ProfileScreen() {
               <Button
                 btnStyle={{ padding: 0 }}
                 onPress={() => {
-                  navigation.navigate('Connections', { screen: 'Followings' });
+                  navigation.navigate('Connections', {
+                    screen: 'Followings'
+                  });
                 }}
               >
                 <ProfileState
@@ -335,6 +337,7 @@ function ProfileScreen() {
             {posts.map(post => (
               <Post
                 key={post._id}
+                updatable={mine}
                 data={{
                   ...post,
                   postedBy: {
@@ -351,14 +354,9 @@ function ProfileScreen() {
               />
             ))}
           </ScrollView>
-          <CreatePostFAB />
+          {mine && <CreatePostFAB />}
         </>
       )}
-      {/* <View style={styles.stickyButton}>
-              <TouchableOpacity>
-                <Ionicon name="plus" size={25} color={Colors.Black} style={styles.plus} />
-              </TouchableOpacity>
-            </View> */}
     </ScreenWithTopBar>
   );
 }
@@ -374,7 +372,8 @@ const styles = StyleSheet.create({
     // position: 'absolute',
     width: '100%',
     height: '100%',
-    resizeMode: 'cover'
+    resizeMode: 'cover',
+    backgroundColor: Black[200]
   },
   avatarContainer: {
     position: 'absolute',
@@ -423,7 +422,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   info: {
-    marginTop: '4%',
+    marginTop: 15,
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center'

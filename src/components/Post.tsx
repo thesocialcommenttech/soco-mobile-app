@@ -143,6 +143,7 @@ function PostHeader(props: {
   user: IPost['postedBy'];
   timestamp: IPost['postedOn'];
   navigation: NavigationProp<any>;
+  editOption?: boolean;
   onTrash: () => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
@@ -181,7 +182,7 @@ function PostHeader(props: {
           onPress={() =>
             props.navigation.navigate('ProfileStack', {
               screen: 'Profile',
-              params: { username: props.user.username }
+              params: { username: props.user.username, user_id: props.user._id }
             })
           }
         >
@@ -230,16 +231,20 @@ function PostHeader(props: {
           icon="account-plus-outline"
           onOptionPress={() => {}}
         /> */}
-        <DropdownOption
-          label="Edit"
-          icon="pencil-outline"
-          onOptionPress={onEdit}
-        />
-        <DropdownOption
-          label="Trash"
-          icon="trash-can-outline"
-          onOptionPress={onTrash}
-        />
+        {props.editOption && (
+          <>
+            <DropdownOption
+              label="Edit"
+              icon="pencil-outline"
+              onOptionPress={onEdit}
+            />
+            <DropdownOption
+              label="Trash"
+              icon="trash-can-outline"
+              onOptionPress={onTrash}
+            />
+          </>
+        )}
       </Bottomsheet>
     </>
   );
@@ -289,6 +294,7 @@ export default function Post({
           timestamp={data.postedOn}
           navigation={navigation}
           onTrash={trashPost}
+          editOption={updatable}
         />
         {data.postType === 'shared' ? (
           <>

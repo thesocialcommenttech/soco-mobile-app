@@ -15,6 +15,7 @@ import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
 export default function Experience(props: {
   data: IExperience;
   style?: StyleProp<ViewStyle>;
+  editOptions?: boolean;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
@@ -66,19 +67,21 @@ export default function Experience(props: {
         style={[styles.container, props.style, isRemoving && styles.removingEd]}
       >
         <Text style={styles.title}>{props.data.title}</Text>
-        <Button
-          size="sm"
-          disabled={isRemoving}
-          processing={isRemoving}
-          onPress={() => setModalVisible(!modalVisible)}
-          btnStyle={styles.dropdownBtn}
-        >
-          <MaterialCommunityIcons
-            name="dots-vertical"
-            size={17}
-            color={Black[600]}
-          />
-        </Button>
+        {props.editOptions && (
+          <Button
+            size="sm"
+            disabled={isRemoving}
+            processing={isRemoving}
+            onPress={() => setModalVisible(!modalVisible)}
+            btnStyle={styles.dropdownBtn}
+          >
+            <MaterialCommunityIcons
+              name="dots-vertical"
+              size={17}
+              color={Black[600]}
+            />
+          </Button>
+        )}
         <Text style={styles.companyNduration}>
           {props.data.company && (
             <>
@@ -101,7 +104,7 @@ const styles = StyleSheet.create({
   title: {
     color: 'black',
     fontFamily: 'Roboto-Medium',
-    fontSize: 16,
+    fontSize: 15,
     marginRight: 45,
     textAlignVertical: 'bottom'
   },

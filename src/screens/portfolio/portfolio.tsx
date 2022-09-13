@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   useFocusEffect,
   useNavigation,
@@ -31,12 +31,22 @@ export default function Portfolio() {
   const { portfolio, profile, setPortfolio, setProfile } = usePortfolioData();
   const [loading, setLoading] = useState(true);
 
+  const initialParams = useMemo(
+    () => ({
+      username: authUser.username,
+      mine: authUser?.username === route.params?.username
+    }),
+    [authUser, route.params]
+  );
+
   async function fetchData() {
     setLoading(true);
     const [profileResult, portfolioResult] = await Promise.all([
       getPortforlioProfileData(route.params.username),
       getPortforlioWorkData(route.params.username)
     ]);
+
+    console.log(profileResult.data && portfolioResult.data);
 
     if (profileResult.data.success && portfolioResult.data.success) {
       setProfile(profileResult.data.data);
@@ -73,34 +83,30 @@ export default function Portfolio() {
           }
         }}
       >
-        <Tab.Screen
-          name="Bio"
-          initialParams={{ username: authUser.username }}
-          component={Bio}
-        />
+        <Tab.Screen name="Bio" initialParams={initialParams} component={Bio} />
         <Tab.Screen
           name="Experiences"
-          initialParams={{ username: authUser.username }}
+          initialParams={initialParams}
           component={Experiences}
         />
         <Tab.Screen
           name="Certifications"
-          initialParams={{ username: authUser.username }}
+          initialParams={initialParams}
           component={Certifications}
         />
         <Tab.Screen
           name="Educations"
-          initialParams={{ username: authUser.username }}
+          initialParams={initialParams}
           component={Educations}
         />
         <Tab.Screen
           name="Skills"
-          initialParams={{ username: authUser.username }}
+          initialParams={initialParams}
           component={Skills}
         />
         <Tab.Screen
           name="Works"
-          initialParams={{ username: authUser.username }}
+          initialParams={initialParams}
           component={Works}
         />
       </Tab.Navigator>

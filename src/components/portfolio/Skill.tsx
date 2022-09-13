@@ -24,6 +24,7 @@ import { removePortforlioSkill } from '~/src/utils/services/user-portfolio_servi
 export default function Skill(props: {
   data: ISkill;
   style?: StyleProp<ViewStyle>;
+  editOptions?: boolean;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
@@ -89,19 +90,21 @@ export default function Skill(props: {
           </View>
         </View>
 
-        <Button
-          size="sm"
-          disabled={isRemoving}
-          processing={isRemoving}
-          onPress={() => setModalVisible(!modalVisible)}
-          btnStyle={styles.dropdownBtn}
-        >
-          <MaterialCommunityIcons
-            name="dots-vertical"
-            size={17}
-            color={Black[600]}
-          />
-        </Button>
+        {props.editOptions && (
+          <Button
+            size="sm"
+            disabled={isRemoving}
+            processing={isRemoving}
+            onPress={() => setModalVisible(!modalVisible)}
+            btnStyle={styles.dropdownBtn}
+          >
+            <MaterialCommunityIcons
+              name="dots-vertical"
+              size={17}
+              color={Black[600]}
+            />
+          </Button>
+        )}
       </View>
     </>
   );
@@ -125,7 +128,7 @@ const styles = StyleSheet.create({
   skillInfo: { marginLeft: 20 },
   skill: {
     color: 'black',
-    fontSize: 16
+    // fontSize: 16
   },
   rating: {
     color: Black[600],

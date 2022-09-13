@@ -5,32 +5,43 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Certification from '../../components/portfolio/Certificaction';
 import Modal1 from 'react-native-modal';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import {
+  useNavigation,
+  useFocusEffect,
+  useRoute
+} from '@react-navigation/native';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
-import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
+import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
 
 export default function Certifications() {
   const [modalVisible, setModalVisible] = useState(false);
   const { portfolio } = usePortfolioData();
-  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
+  const navigation = useNavigation<PortfolioSubTab_ScreenProps['navigation']>();
+  const route = useRoute<PortfolioSubTab_ScreenProps['route']>();
+  const mine = useMemo(() => route.params?.mine, [route.params]);
 
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent().setOptions({
-        headerRight: () => (
-          <PortfolioUpdateBtn
-            buttonProps={{
-              onPress: () => {
-                navigation.navigate('Addcertificate');
-              }
-            }}
-          />
-        )
+        headerRight: () => {
+          if (mine) {
+            return (
+              <PortfolioUpdateBtn
+                buttonProps={{
+                  onPress: () => {
+                    navigation.navigate('Addcertificate');
+                  }
+                }}
+              />
+            );
+          }
+          return null;
+        }
       });
     }, [navigation])
   );
@@ -40,7 +51,7 @@ export default function Certifications() {
   };
 
   return (
-    <View>
+    <>
       <Modal1
         isVisible={modalVisible}
         backdropColor="black"
@@ -71,16 +82,22 @@ export default function Certifications() {
           </View>
         </>
       </Modal1>
-      <FlatList
-        style={{ overflow: 'visible' }}
-        contentContainerStyle={styles.container}
-        data={portfolio.certifications}
-        keyExtractor={item => item._id}
-        renderItem={({ item }) => (
-          <Certification data={item} style={styles.certificationItem} />
-        )}
-      />
-    </View>
+      <View>
+        <FlatList
+          style={{ overflow: 'visible' }}
+          contentContainerStyle={styles.container}
+          data={portfolio.certifications}
+          keyExtractor={item => item._id}
+          renderItem={({ item }) => (
+            <Certification
+              data={item}
+              style={styles.certificationItem}
+              editOptions={mine}
+            />
+          )}
+        />
+      </View>
+    </>
   );
 }
 

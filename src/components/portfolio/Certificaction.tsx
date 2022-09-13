@@ -24,6 +24,7 @@ import { removePortforlioCertificate } from '~/src/utils/services/user-portfolio
 export default function Certification(props: {
   data: ICertification;
   style?: StyleProp<ViewStyle>;
+  editOptions?: boolean;
 }) {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
@@ -95,19 +96,21 @@ export default function Certification(props: {
               />
             </View>
           </Button>
-          <Button
-            size="sm"
-            disabled={isRemoving}
-            processing={isRemoving}
-            onPress={() => setModalVisible(!modalVisible)}
-            btnStyle={styles.dropdownBtn}
-          >
-            <MaterialCommunityIcons
-              name="dots-vertical"
-              size={17}
-              color={Black[600]}
-            />
-          </Button>
+          {props.editOptions && (
+            <Button
+              size="sm"
+              disabled={isRemoving}
+              processing={isRemoving}
+              onPress={() => setModalVisible(!modalVisible)}
+              btnStyle={styles.dropdownBtn}
+            >
+              <MaterialCommunityIcons
+                name="dots-vertical"
+                size={17}
+                color={Black[600]}
+              />
+            </Button>
+          )}
           <Text style={styles.subText}>{props.data.issuer_organization}</Text>
           <Text style={styles.subText}>
             Issued on {dayjs(props.data.issue_date).format('MMM YYYY')}

@@ -5,40 +5,51 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Experience from '../../components/portfolio/experiencelist';
 import Modal1 from 'react-native-modal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import {
+  useNavigation,
+  useFocusEffect,
+  useRoute
+} from '@react-navigation/native';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
-import { Portfolio_ScreenProps } from '~/src/types/navigation/portfolio';
+import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
 
 export default function Experiences() {
   const [modalVisible, setModalVisible] = useState(false);
   const {
     portfolio: { experience }
   } = usePortfolioData();
-  const navigation = useNavigation<Portfolio_ScreenProps['navigation']>();
+  const navigation = useNavigation<PortfolioSubTab_ScreenProps['navigation']>();
+  const route = useRoute<PortfolioSubTab_ScreenProps['route']>();
+  const mine = useMemo(() => route.params?.mine, [route.params]);
 
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent().setOptions({
-        headerRight: () => (
-          <PortfolioUpdateBtn
-            buttonProps={{
-              onPress: () => {
-                navigation.navigate('Addexperience');
-              }
-            }}
-          />
-        )
+        headerRight: () => {
+          if (mine) {
+            return (
+              <PortfolioUpdateBtn
+                buttonProps={{
+                  onPress: () => {
+                    navigation.navigate('Addexperience');
+                  }
+                }}
+              />
+            );
+          }
+          return null;
+        }
       });
     }, [navigation])
   );
 
   return (
-    <View>
+    <>
       <Modal1
         isVisible={modalVisible}
         backdropColor="black"
@@ -73,15 +84,21 @@ export default function Experiences() {
           </View>
         </>
       </Modal1>
-      <FlatList
-        contentContainerStyle={styles.container}
-        data={experience}
-        keyExtractor={item => item._id}
-        renderItem={({ item }) => (
-          <Experience data={item} style={styles.experienceItem} />
-        )}
-      />
-    </View>
+      <View>
+        <FlatList
+          contentContainerStyle={styles.container}
+          data={experience}
+          keyExtractor={item => item._id}
+          renderItem={({ item }) => (
+            <Experience
+              data={item}
+              style={styles.experienceItem}
+              editOptions={mine}
+            />
+          )}
+        />
+      </View>
+    </>
   );
 }
 

@@ -34,16 +34,16 @@ export type PortfolioStackScreenProps = BottomTabScreenProps<
 >;
 
 export type PortfolioStack = {
-  Bio: PortfolioTabScreenParam;
-  Experiences: PortfolioTabScreenParam;
-  Certifications: PortfolioTabScreenParam;
-  Educations: PortfolioTabScreenParam;
-  Skills: PortfolioTabScreenParam;
-  Works: PortfolioTabScreenParam;
+  Bio: PortfolioTabScreenParam & { mine: boolean };
+  Experiences: PortfolioTabScreenParam & { mine: boolean };
+  Certifications: PortfolioTabScreenParam & { mine: boolean };
+  Educations: PortfolioTabScreenParam & { mine: boolean };
+  Skills: PortfolioTabScreenParam & { mine: boolean };
+  Works: PortfolioTabScreenParam & { mine: boolean };
 };
 
 export type Portfolio_ScreenProps = CompositeScreenProps<
-  MaterialTopTabScreenProps<IPortfolioTabStack, 'Portfolio'>,
+  NativeStackScreenProps<IPortfolioTabStack, 'Portfolio'>,
   PortfolioTab_ScreenProps
 >;
 
@@ -52,3 +52,8 @@ export type PortfolioSubScreen_ScreenProps<T extends keyof IPortfolioTabStack> =
     NativeStackScreenProps<IPortfolioTabStack, T>,
     PortfolioTab_ScreenProps
   >;
+
+export type PortfolioSubTab_ScreenProps = CompositeScreenProps<
+  MaterialTopTabScreenProps<PortfolioStack>,
+  Portfolio_ScreenProps
+>;
