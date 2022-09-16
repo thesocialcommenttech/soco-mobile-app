@@ -18,10 +18,10 @@ const App = () => {
         <Routes />
         <Toast
           position="bottom"
-          bottomOffset={70}
+          bottomOffset={10}
           visibilityTime={6000}
           type="info"
-          config={{ info: SOCOToast }}
+          config={{ info: props => <SOCOToast {...props} />, error: SOCOToast }}
         />
       </View>
     </Provider>
