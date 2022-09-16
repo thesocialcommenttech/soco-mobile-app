@@ -25,7 +25,7 @@ function MainStack() {
       <MyStack.Screen name="Search" component={SearchScreen} />
       <MyStack.Screen name="Notifications" component={NotificationsScreen} />
 
-      <MyStack.Screen name="Setting" component={SettingStack} />
+      <MyStack.Screen name="SettingStack" component={SettingStack} />
 
       {/* Post Screens */}
       <MyStack.Screen

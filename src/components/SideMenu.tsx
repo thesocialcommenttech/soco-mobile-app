@@ -218,7 +218,7 @@ function SideMenu() {
         isNew: false,
         navigateTo: () => {
           setOpen(false);
-          navigation.navigate('Setting', {
+          navigation.navigate('SettingStack', {
             screen: 'Referral'
           });
         }
@@ -233,8 +233,9 @@ function SideMenu() {
         isNew: false,
         navigateTo: () => {
           setOpen(false);
-          navigation.navigate('Setting', {
-            screen: 'WalletStack'
+          navigation.navigate('SettingStack', {
+            screen: 'WalletStack',
+            initial: false
           });
         }
       }
@@ -259,7 +260,7 @@ function SideMenu() {
         isNew: false,
         navigateTo: () => {
           setOpen(false);
-          navigation.navigate('Setting');
+          navigation.navigate('SettingStack');
         }
       }
     },

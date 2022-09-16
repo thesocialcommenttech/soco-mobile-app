@@ -15,7 +15,7 @@ export type IMainStack = {
   App: NavigatorScreenParams<BottomTabStack>;
   Search: {};
   Notifications: {};
-  Setting: NavigatorScreenParams<ISettingStack>;
+  SettingStack: NavigatorScreenParams<ISettingStack>;
   // upload post
   Upload_Artwork: { postId: Post['_id'] };
   Upload_SkillVideo: { postId: Post['_id'] };

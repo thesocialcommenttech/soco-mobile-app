@@ -1,6 +1,10 @@
-import { CompositeScreenProps } from '@react-navigation/native';
+import {
+  CompositeScreenProps,
+  NavigatorScreenParams
+} from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MainStackScreenProps } from './main';
+import { IWalletStack } from './wallet';
 
 export type ISettingStack = {
   Setting: undefined;
@@ -10,7 +14,7 @@ export type ISettingStack = {
   Subscription: undefined;
   Profile: undefined;
   Password: undefined;
-  WalletStack: undefined;
+  WalletStack: NavigatorScreenParams<IWalletStack>;
 };
 
 export type Setting_ScreenProps<T extends keyof ISettingStack> =

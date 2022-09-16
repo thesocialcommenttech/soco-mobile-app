@@ -12,9 +12,6 @@ import { Setting_ScreenProps } from '../types/navigation/setting';
 const Stack = createNativeStackNavigator<IWalletStack>();
 
 export default function WalletStack() {
-  const navigation =
-    useNavigation<Setting_ScreenProps<'WalletStack'>['navigation']>();
-
   return (
     <Stack.Navigator
       initialRouteName="Wallet"
