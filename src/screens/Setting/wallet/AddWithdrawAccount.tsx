@@ -4,7 +4,12 @@ import Upi from './upi';
 import Bank from './bank';
 import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
 import SectionHeader from '~/src/components/screens/settings/SectionHeader';
-import { InputError, SelectInput } from '~/src/components/theme/Input';
+import {
+  Input,
+  InputError,
+  RadioButton,
+  SelectInput
+} from '~/src/components/theme/Input';
 import Button from '~/src/components/theme/Button';
 import { useFormik } from 'formik';
 import { bool, object, string } from 'yup';
@@ -15,8 +20,17 @@ import {
   WithdrawDestinationData,
   WithdrawDestinationType
 } from '~/src/utils/typings/wallet_interfaces/addWithdrawAccount';
+import { useWallet } from '~/src/state/walletScreenState';
+import produce from 'immer';
+import { useNavigation } from '@react-navigation/native';
+import { Wallet_ScreenProps } from '~/src/types/navigation/wallet';
+import Toast from 'react-native-toast-message';
 
 export default function AddWithdrawAccount() {
+  const { setWallet, wallet } = useWallet();
+  const navigation =
+    useNavigation<Wallet_ScreenProps<'AddAccount'>['navigation']>();
+
   const [accountType, setAccountType] =
     useState<WithdrawDestinationType>('upi');
 
@@ -31,11 +45,26 @@ export default function AddWithdrawAccount() {
     type: 'upi' | 'bank',
     data: WithdrawDestinationData
   ) {
-    const result = await addWithdrawAccount(type, data);
-
-    if (result.data.success) {
+    try {
+      const result = await addWithdrawAccount(type, data);
+      if (result.data.success) {
+        setWallet(
+          produce(wallet, draft => {
+            const newAccount = result.data.destination_details;
+            draft.withdraw_destinations.push({
+              _id: newAccount._id,
+              default: false,
+              destination_type: newAccount.destination_type,
+              detail: newAccount.detail,
+              rzp_fund_account_id: newAccount.rzp_fund_account_id
+            });
+          })
+        );
+      }
+      navigation.pop();
+    } catch (error) {
+      Toast.show({ type: 'error', text1: 'Error occurred' });
     }
-    currentTypeFormik.setSubmitting(false);
   }
 
   const bankFormik = useFormik({
@@ -72,100 +101,113 @@ export default function AddWithdrawAccount() {
   );
 
   return (
-    <>
-      <SettingScreenHeader title="Add Account" />
-      <ScrollView>
-        <View style={styles.container}>
-          <SelectInput
-            label="Account Type"
-            optionListHeaderTitle="Select Account Type"
-            inputProp={{ value: accountType }}
-            onValueChange={type => setAccountType(type as any)}
-            selectOptions={{
-              upi: 'UPI',
-              bank: 'Bank'
-            }}
-          />
-          <SectionHeader label="Account Details" style={{ marginTop: 30 }} />
-          <View style={{ marginTop: 20 }}>
-            {accountType === 'upi' ? (
-              <Upi formContorler={upiFormik} />
-            ) : (
-              <Bank formContorler={bankFormik} />
-            )}
-          </View>
-
-          <View
-            style={[
-              styles.agreementCt,
-              currentTypeFormik.errors.agreement && styles.agreemenError
-            ]}
-          >
-            <Button
-              btnStyle={{
-                marginTop: -8,
-                marginLeft: -5,
-                paddingHorizontal: 10,
-                backgroundColor: Yellow[100]
-              }}
-              size="sm"
-              type="filled"
-              onPress={() =>
-                currentTypeFormik.setFieldValue(
-                  'agreement',
-                  !currentTypeFormik.values.agreement
-                )
-              }
+    <ScrollView>
+      <View style={styles.container}>
+        <Input label="Account Type">
+          {({ style }) => (
+            <View
+              style={[style, { flexDirection: 'row', paddingHorizontal: 20 }]}
             >
-              <MaterialCommunityIcons
-                name={
-                  currentTypeFormik.values.agreement
-                    ? 'checkbox-marked-outline'
-                    : 'checkbox-blank-outline'
-                }
-                color="black"
-                size={24}
+              <RadioButton
+                selected={accountType === 'upi'}
+                buttonProps={{
+                  fullWidth: true,
+                  text: 'UPI',
+                  btnStyle: { marginRight: 20 },
+                  onPress: () => setAccountType('upi')
+                }}
               />
-            </Button>
-            <Text
-              onPress={() =>
-                currentTypeFormik.setFieldValue(
-                  'agreement',
-                  !currentTypeFormik.values.agreement
-                )
-              }
-              style={styles.agreementText}
-            >
-              Check your bank Account/UPI details twice, carefully before adding
-              it. For any mistakes in giving the details of the account you are
-              solely responsible.
-            </Text>
-          </View>
-          {currentTypeFormik.errors.agreement && (
-            <InputError error={upiFormik.errors.agreement} />
+              <RadioButton
+                selected={accountType === 'bank'}
+                buttonProps={{
+                  fullWidth: true,
+                  text: 'Bank',
+                  btnStyle: { flexGrow: 1 },
+                  onPress: () => setAccountType('bank')
+                }}
+              />
+            </View>
           )}
-          <Button
-            type="filled"
-            fullWidth
-            btnStyle={{ marginTop: 20 }}
-            text="Add Account"
-            disabled={upiFormik.isSubmitting || bankFormik.isSubmitting}
-            processing={upiFormik.isSubmitting || bankFormik.isSubmitting}
-            onPress={() => {
-              currentTypeFormik.submitForm();
-            }}
-          />
+        </Input>
+
+        <SectionHeader label="Account Details" style={{ marginTop: 30 }} />
+        <View style={{ marginTop: 20 }}>
+          {accountType === 'upi' ? (
+            <Upi formContorler={upiFormik} />
+          ) : (
+            <Bank formContorler={bankFormik} />
+          )}
         </View>
-      </ScrollView>
-    </>
+
+        <View
+          style={[
+            styles.agreementCt,
+            currentTypeFormik.errors.agreement && styles.agreemenError
+          ]}
+        >
+          <Button
+            btnStyle={{
+              marginTop: -8,
+              marginLeft: -5,
+              paddingHorizontal: 10,
+              backgroundColor: Yellow[100]
+            }}
+            size="sm"
+            type="filled"
+            onPress={() =>
+              currentTypeFormik.setFieldValue(
+                'agreement',
+                !currentTypeFormik.values.agreement
+              )
+            }
+          >
+            <MaterialCommunityIcons
+              name={
+                currentTypeFormik.values.agreement
+                  ? 'checkbox-marked-outline'
+                  : 'checkbox-blank-outline'
+              }
+              color="black"
+              size={24}
+            />
+          </Button>
+          <Text
+            onPress={() =>
+              currentTypeFormik.setFieldValue(
+                'agreement',
+                !currentTypeFormik.values.agreement
+              )
+            }
+            style={styles.agreementText}
+          >
+            Check your bank Account/UPI details twice, carefully before adding
+            it. For any mistakes in giving the details of the account you are
+            solely responsible.
+          </Text>
+        </View>
+        {currentTypeFormik.errors.agreement && (
+          <InputError error={upiFormik.errors.agreement} />
+        )}
+        <Button
+          type="filled"
+          fullWidth
+          btnStyle={{ marginTop: 20 }}
+          text="Add Account"
+          disabled={upiFormik.isSubmitting || bankFormik.isSubmitting}
+          processing={upiFormik.isSubmitting || bankFormik.isSubmitting}
+          onPress={() => {
+            currentTypeFormik.submitForm();
+          }}
+        />
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    paddingTop: 0
+    padding: 20
   },
   agreementCt: {
     marginTop: 20,

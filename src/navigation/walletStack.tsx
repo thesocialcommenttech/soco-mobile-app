@@ -7,11 +7,13 @@ import TransactionDetail from '../screens/Setting/wallet/transactionDetail';
 import AddWithdrawAccount from '../screens/Setting/wallet/AddWithdrawAccount';
 import TopBar from '../components/topBar';
 import { IWalletStack, Wallet_ScreenProps } from '../types/navigation/wallet';
+import { Setting_ScreenProps } from '../types/navigation/setting';
 
 const Stack = createNativeStackNavigator<IWalletStack>();
 
 export default function WalletStack() {
-  const navigation = useNavigation<Wallet_ScreenProps['navigation']>();
+  const navigation =
+    useNavigation<Setting_ScreenProps<'WalletStack'>['navigation']>();
 
   return (
     <Stack.Navigator

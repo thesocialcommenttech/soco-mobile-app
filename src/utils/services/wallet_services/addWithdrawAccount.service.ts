@@ -10,7 +10,7 @@ export function addWithdrawAccount(
   data: WithdrawDestinationData
 ) {
   const config: AxiosRequestConfig = {
-    url: 'user/wallet/add_withdraw_destination',
+    url: '/user/wallet/add_withdraw_destination',
     method: 'POST',
     data: {
       destination_type: destinationType,

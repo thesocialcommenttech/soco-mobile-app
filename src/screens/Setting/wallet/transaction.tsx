@@ -1,55 +1,47 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
-import TransactionItem from '../../../components/settingsComponents/TransactionItem';
-import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
-
-const Data = [
-  {
-    id: 1,
-    type: 'debit',
-    amount: '100',
-    date: '1 Feb,2020'
-  },
-  {
-    id: 2,
-    type: 'credit',
-    amount: '100',
-    date: '1 Feb,2020'
-  },
-  {
-    id: 3,
-    type: 'debit',
-    amount: '100',
-    date: '1 Feb,2020'
-  }
-];
+import { FlatList, StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import TransactionItem from '~/src/components/settingsComponents/TransactionItem';
+import { getWalletTransactions } from '~/src/utils/services/wallet_services/getWallet.service';
+import { GetWalletTransactionsResponse } from '~/src/utils/typings/wallet_interfaces/getWallet.interface';
+import Loading from '~/src/components/theme/Loading';
 
 export default function Transaction() {
+  const [transactions, setTransactions] =
+    useState<GetWalletTransactionsResponse['transactions']>();
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    setLoading(true);
+    const result = await getWalletTransactions();
+    if (result.data.success) {
+      setTransactions(result.data.transactions);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <>
-      <SettingScreenHeader title="Wallet Transactions" />
-      <View style={styles.container}>
+    <View style={styles.container}>
+      {loading ? (
+        <Loading />
+      ) : (
         <FlatList
-          data={Data}
-          keyExtractor={item => item.id.toString()}
-          style={{ marginHorizontal: -20 }}
-          renderItem={({ item }) => (
-            <TransactionItem
-              type={item.type}
-              amount={item.amount}
-              date={item.date}
-            />
-          )}
+          data={transactions}
+          keyExtractor={item => item._id}
+          // ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+          renderItem={({ item }) => <TransactionItem transaction={item} />}
         />
-      </View>
-    </>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    paddingTop: 0
+    paddingBottom: 10
   }
 });

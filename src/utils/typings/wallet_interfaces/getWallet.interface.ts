@@ -9,16 +9,12 @@ interface Wallet {
   wallet_id?: string;
 }
 
-interface WithdrawDestination {
+export interface WithdrawDestination {
   _id: string;
   destination_type: WithdrawDestinationType;
   rzp_fund_account_id: string;
-  wallet_id: string;
   default: boolean;
-  user_id: User['_id'];
-  rzp_contact_id: User['wallet']['rzp_contact_id'];
   detail: WithdrawDestinationData;
-  timestamp: number;
 }
 
 export interface GetWalletResponse {
@@ -27,4 +23,48 @@ export interface GetWalletResponse {
   wallet?: Wallet;
   success?: boolean;
   kyc?: boolean;
+}
+
+export interface WalletTransaction {
+  amount: number;
+  closing_balance: number;
+  message: string;
+  status:
+    | 'processed'
+    | 'processing'
+    | 'rejected'
+    | 'reversed'
+    | 'cancelled'
+    | 'queued';
+  timestamp: string;
+  transaction_id: string;
+  transaction_type: 'credit' | 'debit';
+  user_id: User['_id'];
+  _id: string;
+}
+
+export interface GetWalletTransactionsResponse {
+  transactions: WalletTransaction[];
+  success: boolean;
+}
+
+export interface DeleteWithdrawAccountResponse {
+  deleted_destination: WithdrawDestination['_id'];
+  success: boolean;
+}
+
+export interface WithdrawWalletMoneyResponse {
+  success: boolean;
+  transaction_type: WalletTransaction['transaction_type'];
+  transaction_id: WalletTransaction['transaction_id'];
+  user_id: WalletTransaction['user_id'];
+  amount: WalletTransaction['amount'];
+  status: WalletTransaction['status'];
+  rzp_utr: string;
+  closing_balance: WalletTransaction['closing_balance'];
+}
+
+export interface UpdateWithdrawAccountResponse {
+  destination: WithdrawDestination['_id'];
+  success: boolean;
 }

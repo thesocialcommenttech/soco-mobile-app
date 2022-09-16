@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   boldtext: {
     fontFamily: 'Roboto-Medium',
     color: Black[500],
-    fontSize: 16
+    // fontSize: 16
   },
   refferals: {
     flexDirection: 'row',

@@ -324,15 +324,17 @@ export default function KycScreen() {
                 )}
               </Input>
             </View>
-            <Button
-              btnStyle={styles.button}
-              type="filled"
-              fullWidth
-              processing={formik.isSubmitting}
-              disabled={formik.isSubmitting}
-              onPress={formik.handleSubmit}
-              text="Upload KYC"
-            />
+            {!disableForm && (
+              <Button
+                btnStyle={styles.button}
+                type="filled"
+                fullWidth
+                processing={formik.isSubmitting}
+                disabled={formik.isSubmitting}
+                onPress={formik.handleSubmit}
+                text="Upload KYC"
+              />
+            )}
           </View>
         </ScrollView>
       )}

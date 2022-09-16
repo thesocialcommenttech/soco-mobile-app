@@ -9,43 +9,54 @@ import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import { Black, Green, Red } from '~/src/utils/colors';
+import { WalletTransaction } from '~/src/utils/typings/wallet_interfaces/getWallet.interface';
+import { Wallet_ScreenProps } from '~/src/types/navigation/wallet';
+import dayjs from 'dayjs';
 
-export default function TransactionItem(props) {
-  const navigation = useNavigation();
+export default function TransactionItem({
+  transaction
+}: {
+  transaction: WalletTransaction;
+}) {
+  const navigation =
+    useNavigation<Wallet_ScreenProps<'WalletTransactions'>['navigation']>();
   return (
     <TouchableHighlight
       underlayColor={Black[100]}
       style={styles.transactionCt}
       onPress={() => {
-        navigation.navigate(
-          'Transaction Details' as never,
-          { transactionType: props.type } as never
-        );
+        navigation.navigate('TransactionDetails', { transaction });
       }}
     >
       <View style={styles.container}>
         <View style={styles.maincontent}>
-          {props.type === 'credit' ? (
+          {transaction.transaction_type === 'credit' ? (
             <MaterialCommunityIcons
               name="arrow-bottom-left"
               size={24}
               color={Green.primary}
+              style={[styles.transTypeIcon, { backgroundColor: Green[100] }]}
             />
           ) : (
             <MaterialCommunityIcons
               name="arrow-top-right"
               size={24}
               color={Red.primary}
+              style={[styles.transTypeIcon, { backgroundColor: Red[100] }]}
             />
           )}
           <View style={styles.detail}>
             <Text style={styles.transactionType}>
-              {props.type === 'debit' ? 'Withdrawn' : 'Credit'}
+              {transaction.transaction_type === 'debit'
+                ? 'Withdrawn'
+                : 'Credit'}
             </Text>
-            <Text style={styles.datetext}>{props.date}</Text>
+            <Text style={styles.datetext}>
+              {dayjs(transaction.timestamp).format('DD MMM, YYYY')}
+            </Text>
           </View>
         </View>
-        <Text style={styles.amount}>₹ {props.amount}</Text>
+        <Text style={styles.amount}>₹ {transaction.amount}</Text>
       </View>
     </TouchableHighlight>
   );
@@ -53,7 +64,7 @@ export default function TransactionItem(props) {
 
 const styles = StyleSheet.create({
   transactionCt: {
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 20
   },
   container: {
@@ -61,21 +72,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center'
   },
+  transTypeIcon: {
+    padding: 6,
+    borderRadius: 8
+  },
   maincontent: {
     flexDirection: 'row',
     alignItems: 'center'
   },
-  detail: { marginLeft: 10 },
-  date: {
-    marginTop: 5
-  },
+  detail: { marginLeft: 15 },
   transactionType: {
-    color: 'black',
-    fontSize: 16,
-    fontFamily: 'Roboto-Medium'
+    color: 'black'
   },
-  amount: { color: 'black', fontSize: 16 },
+  amount: { color: 'black', fontFamily: 'Roboto-Medium' },
   datetext: {
-    color: Black[600]
+    color: Black[600],
+    fontSize: 13
   }
 });
