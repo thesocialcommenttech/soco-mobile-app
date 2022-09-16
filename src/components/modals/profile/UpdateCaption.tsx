@@ -11,7 +11,7 @@ import React, { useMemo, useState } from 'react';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '~/src/utils/colors';
 import { updateCaption } from '~/src/utils/services/user-profile_service/updateCaption.service';
-import { useProfileData } from '~/src/state/profileScreenState';
+import { useProfileSpliced } from '~/src/state/profileScreenState';
 
 export default function UpdateCaptionModal({
   modalVisible,
@@ -20,7 +20,7 @@ export default function UpdateCaptionModal({
   modalVisible: boolean;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [_updateCaption, _caption] = useProfileData(state => [
+  const [_updateCaption, _caption] = useProfileSpliced(state => [
     state.updateCaption,
     state.userProfile.caption
   ]);

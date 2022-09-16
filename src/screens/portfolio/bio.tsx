@@ -15,10 +15,7 @@ import {
 } from '@react-navigation/native';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
-import {
-  PortfolioSubTab_ScreenProps,
-  Portfolio_ScreenProps
-} from '~/src/types/navigation/portfolio';
+import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
 import PortfolioDropdown from '~/src/components/screens/portfolio/PortfolioDropdown';
 
 export default function Bio() {

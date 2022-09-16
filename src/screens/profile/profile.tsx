@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Avatar } from '@rneui/base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CreatePostFAB from '../../components/CreatePostFAB';
@@ -23,10 +23,11 @@ import { staticFileSrc } from '~/src/utils/methods';
 import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
 import { User } from '~/src/utils/typings/user-profile_interface/getUserData.interface';
 import { PostType } from '~/src/utils/typings/post';
-import UpdateCaptionModal from '~/src/components/modals/profile/UpdateCaption';
-import UpdateProfileCoverImageModal from '~/src/components/modals/profile/UpdateProfileCoverImage';
-import UpdateBioModal from '~/src/components/modals/profile/UpdateBio';
-import { useProfileData, UserProfile } from '~/src/state/profileScreenState';
+import {
+  ProfileDataProvider,
+  ProfileContext,
+  useProfile
+} from '~/src/state/profileScreenState';
 import Loading from '~/src/components/theme/Loading';
 import Button from '~/src/components/theme/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -35,6 +36,10 @@ import { FollowUserResponse } from '~/src/utils/typings/follow-user_interface/fo
 import { unfollowUser } from '~/src/utils/services/follow-user_service/unfollowUser.service';
 import { followUser } from '~/src/utils/services/follow-user_service/followUser.service';
 import { ProfileScreenProps } from '~/src/types/navigation/profile';
+import { useStore } from 'zustand';
+import UpdateBioModal from '~/src/components/modals/profile/UpdateBio';
+import UpdateProfileCoverImageModal from '~/src/components/modals/profile/UpdateProfileCoverImage';
+import UpdateCaptionModal from '~/src/components/modals/profile/UpdateCaption';
 
 function PostState({ title, count }: { title: string; count: number }) {
   return (
@@ -47,7 +52,7 @@ function PostState({ title, count }: { title: string; count: number }) {
   );
 }
 
-function ProfileScreen() {
+function _ProfileScreen_() {
   const navigation = useNavigation<ProfileScreenProps['navigation']>();
   const route = useRoute<ProfileScreenProps['route']>();
   const auth = useSelector((state: IRootReducer) => state.auth);
@@ -56,7 +61,7 @@ function ProfileScreen() {
     pageSize: 20
   });
 
-  const { setUserProfile, userProfile } = useProfileData();
+  const { setUserProfile, userProfile } = useProfile();
 
   const mine = useMemo(
     () => auth.user?.username === route.params?.username,
@@ -124,243 +129,251 @@ function ProfileScreen() {
   const [modalVisible1, setModalVisible1] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
 
+  if (profileLoading || postsLoading) {
+    return <Loading />;
+  }
+
+  return (
+    <>
+      <UpdateCaptionModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
+      <UpdateProfileCoverImageModal
+        show={modalVisible2}
+        onClose={() => setModalVisible2(false)}
+      />
+      <UpdateBioModal
+        modalVisible1={modalVisible1}
+        setModalVisible1={setModalVisible1}
+      />
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={profileLoading || postsLoading}
+            onRefresh={fetchScreenData}
+          />
+        }
+      >
+        <View style={styles.coverCt}>
+          <Image
+            source={{
+              uri: staticFileSrc(userProfile.coverImage)
+            }}
+            style={styles.bgImage}
+          />
+          <View style={styles.avatarContainer}>
+            <Avatar
+              size={100}
+              rounded
+              title={userProfile.name}
+              titleStyle={styles.avatarTitle}
+              source={{
+                uri: staticFileSrc(userProfile.profileImage)
+              }}
+              activeOpacity={0.7}
+              containerStyle={styles.avatar}
+            />
+          </View>
+          {userProfile.caption && (
+            <View style={styles.captionOnImg}>
+              <Text style={styles.captionOnImgTxt}>{userProfile.caption}</Text>
+            </View>
+          )}
+          {mine && (
+            <>
+              <TouchableOpacity
+                style={styles.editCaption}
+                onPress={() => setModalVisible(true)}
+              >
+                <MaterialCommunityIcon
+                  name="pencil-outline"
+                  size={20}
+                  color={Colors.White}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setModalVisible2(true)}
+                style={styles.editCover}
+              >
+                <MaterialCommunityIcon
+                  name="camera-outline"
+                  size={20}
+                  color={Colors.White}
+                />
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+        <View style={styles.info}>
+          <Text style={styles.name}>{userProfile.name}</Text>
+          <Text style={styles.userName}>{userProfile.username}</Text>
+        </View>
+
+        <View style={styles.portfolioContainer}>
+          <Button
+            text="Portfolio"
+            fullWidth
+            type="filled"
+            disabled={!userProfile.premium}
+            onPress={() => {
+              if (mine) {
+                navigation.navigate('PortfolioTab');
+              } else {
+                navigation.navigate('PortfolioStack', {
+                  username: userProfile.username
+                });
+              }
+            }}
+            textStyle={{ color: 'white' }}
+            btnStyle={[
+              styles.portfolio,
+              mine && styles.portfolio_Mine,
+              !userProfile.premium && styles.portfolioLocked
+            ]}
+          />
+          {mine ? (
+            <Button
+              type="filled"
+              onPress={() => {}}
+              btnStyle={styles.portfolioLock}
+            >
+              <MaterialCommunityIcon
+                name={locked ? 'lock-outline' : 'lock-off-outline'}
+                size={20}
+                color={Colors.White}
+              />
+            </Button>
+          ) : (
+            <FollowToggleBtn />
+          )}
+        </View>
+
+        <View style={styles.bio}>
+          <Text style={styles.bioText}>{userProfile.bio}</Text>
+        </View>
+
+        {mine && (
+          <Button
+            type="text"
+            size="xs"
+            btnStyle={styles.updateBio}
+            onPress={() => setModalVisible1(!modalVisible1)}
+          >
+            <View style={styles.updateBioLink}>
+              <MaterialCommunityIcon
+                name="pencil-outline"
+                size={16}
+                color={Blue.primary}
+              />
+              <Text style={styles.updateBioText}>Update Bio</Text>
+            </View>
+          </Button>
+        )}
+
+        <ScrollView horizontal={true} style={styles.stats}>
+          <Button
+            btnStyle={{ padding: 0 }}
+            onPress={() => {
+              navigation.navigate('Connections', {
+                screen: 'Followers',
+                params: { userId: userProfile._id }
+              });
+            }}
+          >
+            <ProfileState
+              title="Followers"
+              value={userProfile.followerUsersCount}
+            />
+          </Button>
+          <Button
+            btnStyle={{ padding: 0 }}
+            onPress={() => {
+              navigation.navigate('Connections', {
+                screen: 'Followings',
+                params: { userId: userProfile._id }
+              });
+            }}
+          >
+            <ProfileState
+              title="Following"
+              value={userProfile.followingUsersCount}
+            />
+          </Button>
+          <ProfileState
+            title="Favourites"
+            value={userProfile.favouritePostsCount}
+          />
+          <ProfileState title="Views" value={userProfile.totalViews} />
+          <ProfileState title="Posts" value={userProfile.totalPosts} />
+        </ScrollView>
+
+        <ScrollView horizontal={true} style={styles.activity}>
+          <PostState title="All" count={userProfile.totalPosts} />
+          <PostState
+            title="All"
+            count={userProfile.postTypes.blog?.totalPosts}
+          />
+          <PostState
+            title="Artworks"
+            count={userProfile.postTypes.artwork?.totalPosts}
+          />
+          <PostState
+            title="Videos"
+            count={userProfile.postTypes.skill?.totalPosts}
+          />
+          <PostState
+            title="Projects"
+            count={userProfile.postTypes.project?.totalPosts}
+          />
+          <PostState
+            title="Articles"
+            count={userProfile.postTypes.article?.totalPosts}
+          />
+          <PostState
+            title="Presentations"
+            count={userProfile.postTypes.presentation?.totalPosts}
+          />
+          <PostState
+            title="Links"
+            count={userProfile.postTypes.link?.totalPosts}
+          />
+        </ScrollView>
+
+        {posts?.map(post => (
+          <Post
+            key={post._id}
+            updatable={mine}
+            data={{
+              ...post,
+              postedBy: {
+                _id: userProfile._id,
+                name: userProfile.name,
+                profileImage: userProfile.profileImage,
+                username: userProfile.username
+              }
+            }}
+            postWrapperStyle={{
+              borderTopWidth: 1,
+              borderTopColor: Colors.GrayLine
+            }}
+          />
+        ))}
+      </ScrollView>
+      {mine && <CreatePostFAB />}
+    </>
+  );
+}
+
+function ProfileScreen() {
+  const navigation = useNavigation<ProfileScreenProps['navigation']>();
+
   return (
     <ScreenWithTopBar navigation={navigation}>
-      {profileLoading || postsLoading ? (
-        <Loading />
-      ) : (
-        <>
-          <UpdateCaptionModal
-            modalVisible={modalVisible}
-            setModalVisible={setModalVisible}
-          />
-          <UpdateProfileCoverImageModal
-            show={modalVisible2}
-            onClose={() => setModalVisible2(false)}
-          />
-          <UpdateBioModal
-            modalVisible1={modalVisible1}
-            setModalVisible1={setModalVisible1}
-          />
-          <ScrollView
-            style={styles.container}
-            refreshControl={
-              <RefreshControl
-                refreshing={profileLoading || postsLoading}
-                onRefresh={fetchScreenData}
-              />
-            }
-          >
-            <View style={styles.coverCt}>
-              <Image
-                source={{
-                  uri: staticFileSrc(userProfile?.coverImage)
-                }}
-                style={styles.bgImage}
-              />
-              <View style={styles.avatarContainer}>
-                <Avatar
-                  size={100}
-                  rounded
-                  title={userProfile.name}
-                  titleStyle={styles.avatarTitle}
-                  source={{
-                    uri: staticFileSrc(userProfile?.profileImage)
-                  }}
-                  activeOpacity={0.7}
-                  containerStyle={styles.avatar}
-                />
-              </View>
-              {userProfile.caption && (
-                <View style={styles.captionOnImg}>
-                  <Text style={styles.captionOnImgTxt}>
-                    {userProfile.caption}
-                  </Text>
-                </View>
-              )}
-              {mine && (
-                <>
-                  <TouchableOpacity
-                    style={styles.editCaption}
-                    onPress={() => setModalVisible(true)}
-                  >
-                    <MaterialCommunityIcon
-                      name="pencil-outline"
-                      size={20}
-                      color={Colors.White}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => setModalVisible2(true)}
-                    style={styles.editCover}
-                  >
-                    <MaterialCommunityIcon
-                      name="camera-outline"
-                      size={20}
-                      color={Colors.White}
-                    />
-                  </TouchableOpacity>
-                </>
-              )}
-            </View>
-            <View style={styles.info}>
-              <Text style={styles.name}>{userProfile.name}</Text>
-              <Text style={styles.userName}>{userProfile.username}</Text>
-            </View>
-
-            <View style={styles.portfolioContainer}>
-              <Button
-                text="Portfolio"
-                fullWidth
-                type="filled"
-                disabled={!userProfile.premium}
-                onPress={() => {
-                  if (mine) {
-                    navigation.navigate('PortfolioTab');
-                  } else {
-                    navigation.navigate('PortfolioStack', {
-                      username: userProfile.username
-                    });
-                  }
-                }}
-                textStyle={{ color: 'white' }}
-                btnStyle={[
-                  styles.portfolio,
-                  mine && styles.portfolio_Mine,
-                  !userProfile.premium && styles.portfolioLocked
-                ]}
-              />
-              {mine ? (
-                <Button
-                  type="filled"
-                  onPress={() => {}}
-                  btnStyle={styles.portfolioLock}
-                >
-                  <MaterialCommunityIcon
-                    name={locked ? 'lock-outline' : 'lock-off-outline'}
-                    size={20}
-                    color={Colors.White}
-                  />
-                </Button>
-              ) : (
-                <FollowToggleBtn />
-              )}
-            </View>
-
-            <View style={styles.bio}>
-              <Text style={styles.bioText}>{userProfile.bio}</Text>
-            </View>
-
-            {mine && (
-              <Button
-                type="text"
-                size="xs"
-                btnStyle={styles.updateBio}
-                onPress={() => setModalVisible1(!modalVisible1)}
-              >
-                <View style={styles.updateBioLink}>
-                  <MaterialCommunityIcon
-                    name="pencil-outline"
-                    size={16}
-                    color={Blue.primary}
-                  />
-                  <Text style={styles.updateBioText}>Update Bio</Text>
-                </View>
-              </Button>
-            )}
-
-            <ScrollView horizontal={true} style={styles.stats}>
-              <Button
-                btnStyle={{ padding: 0 }}
-                onPress={() => {
-                  navigation.navigate('Connections', {
-                    screen: 'Followers',
-                    params: { userId: userProfile._id }
-                  });
-                }}
-              >
-                <ProfileState
-                  title="Followers"
-                  value={userProfile.followerUsersCount}
-                />
-              </Button>
-              <Button
-                btnStyle={{ padding: 0 }}
-                onPress={() => {
-                  navigation.navigate('Connections', {
-                    screen: 'Followings',
-                    params: { userId: userProfile._id }
-                  });
-                }}
-              >
-                <ProfileState
-                  title="Following"
-                  value={userProfile.followingUsersCount}
-                />
-              </Button>
-              <ProfileState
-                title="Favourites"
-                value={userProfile.favouritePostsCount}
-              />
-              <ProfileState title="Views" value={userProfile.totalViews} />
-              <ProfileState title="Posts" value={userProfile.totalPosts} />
-            </ScrollView>
-
-            <ScrollView horizontal={true} style={styles.activity}>
-              <PostState title="All" count={userProfile.totalPosts} />
-              <PostState
-                title="All"
-                count={userProfile.postTypes.blog?.totalPosts}
-              />
-              <PostState
-                title="Artworks"
-                count={userProfile.postTypes.artwork?.totalPosts}
-              />
-              <PostState
-                title="Videos"
-                count={userProfile.postTypes.skill?.totalPosts}
-              />
-              <PostState
-                title="Projects"
-                count={userProfile.postTypes.project?.totalPosts}
-              />
-              <PostState
-                title="Articles"
-                count={userProfile.postTypes.article?.totalPosts}
-              />
-              <PostState
-                title="Presentations"
-                count={userProfile.postTypes.presentation?.totalPosts}
-              />
-              <PostState
-                title="Links"
-                count={userProfile.postTypes.link?.totalPosts}
-              />
-            </ScrollView>
-
-            {posts.map(post => (
-              <Post
-                key={post._id}
-                updatable={mine}
-                data={{
-                  ...post,
-                  postedBy: {
-                    _id: userProfile._id,
-                    name: userProfile.name,
-                    profileImage: userProfile.profileImage,
-                    username: userProfile.username
-                  }
-                }}
-                postWrapperStyle={{
-                  borderTopWidth: 1,
-                  borderTopColor: Colors.GrayLine
-                }}
-              />
-            ))}
-          </ScrollView>
-          {mine && <CreatePostFAB />}
-        </>
-      )}
+      <ProfileDataProvider>
+        <_ProfileScreen_ />
+      </ProfileDataProvider>
     </ScreenWithTopBar>
   );
 }
@@ -597,7 +610,9 @@ const styles = StyleSheet.create({
 });
 
 function FollowToggleBtn() {
-  const { setUserProfile, userProfile } = useProfileData();
+  // const { setUserProfile, userProfile } = useProfileData();
+  const store = useContext(ProfileContext);
+  const { setUserProfile, userProfile } = useStore(store);
   const [loading, setLoading] = useState(false);
 
   async function toggleFollow() {

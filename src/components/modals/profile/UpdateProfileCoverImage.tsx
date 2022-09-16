@@ -14,7 +14,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import { Colors } from '~/src/utils/colors';
 import { staticFileSrc } from '~/src/utils/methods';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { useProfileData } from '~/src/state/profileScreenState';
+import { useProfile } from '~/src/state/profileScreenState';
 import { updateDP } from '~/src/utils/services/user-profile_service/updateDP.service';
 import { UpdateDPRequest } from '~/src/utils/typings/user-profile_interface/updateDP.interface';
 import { useDispatch } from 'react-redux';
@@ -34,8 +34,7 @@ export default function UpdateProfileCoverImageModal({
   show: boolean;
   onClose: () => void;
 }) {
-  const { updateProfileImage, updateCoverImage, userProfile } =
-    useProfileData();
+  const { updateProfileImage, updateCoverImage, userProfile } = useProfile();
   const [updatingProfileImage, setUpdatingProfileImage] = useState(false);
   const [updatingCoverImage, setUpdatingCoverImage] = useState(false);
   const dispatch =

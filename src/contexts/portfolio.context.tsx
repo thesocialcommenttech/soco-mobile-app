@@ -2,8 +2,10 @@ import React, {
   createContext,
   ReactElement,
   useContext,
+  useRef,
   useState
 } from 'react';
+import { createStore, StoreApi, useStore } from 'zustand';
 import { UserPortfolioProfile } from '../utils/typings/user-portfolio_interface/getPortforlioProfileData.interface';
 import { PortfolioData } from '../utils/typings/user-portfolio_interface/getPortforlioWorkData.interface';
 
@@ -14,26 +16,29 @@ interface IPortfolioDataContext {
   setProfile: (data: UserPortfolioProfile) => void;
 }
 
-export const PortfolioContext = createContext<IPortfolioDataContext>({
-  portfolio: null,
-  profile: null,
-  setPortfolio: data => {},
-  setProfile: data => {}
-});
+export const PortfolioContext =
+  createContext<StoreApi<IPortfolioDataContext>>(null);
 
 export function PortfolioDataProvider(props: {
   children: ReactElement | ReactElement[];
 }) {
-  const [profile, setProfile] = useState<UserPortfolioProfile>();
-  const [portfolio, setPortfolio] = useState<PortfolioData>();
+  const store = useRef(
+    createStore<IPortfolioDataContext>(set => ({
+      portfolio: null,
+      profile: null,
+      setPortfolio: data => set({ portfolio: data }),
+      setProfile: data => set({ profile: data })
+    }))
+  );
 
   return (
-    <PortfolioContext.Provider
-      value={{ profile, setProfile, portfolio, setPortfolio }}
-    >
+    <PortfolioContext.Provider value={store.current}>
       {props.children}
     </PortfolioContext.Provider>
   );
 }
 
-export const usePortfolioData = () => useContext(PortfolioContext);
+export const usePortfolioData = () => {
+  const store = useContext(PortfolioContext);
+  return useStore(store);
+};

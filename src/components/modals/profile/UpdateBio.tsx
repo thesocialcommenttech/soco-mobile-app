@@ -11,7 +11,7 @@ import React, { useMemo, useState } from 'react';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '~/src/utils/colors';
 import { updateBio } from '~/src/utils/services/user-profile_service/updateBio.service';
-import { useProfileData } from '~/src/state/profileScreenState';
+import { useProfileSpliced } from '~/src/state/profileScreenState';
 
 export default function UpdateBioModal({
   modalVisible1,
@@ -20,7 +20,7 @@ export default function UpdateBioModal({
   modalVisible1: boolean;
   setModalVisible1: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [_updateBio, _bio] = useProfileData(state => [
+  const [_updateBio, _bio] = useProfileSpliced(state => [
     state.updateBio,
     state.userProfile.bio
   ]);

@@ -46,8 +46,6 @@ export default function Portfolio() {
       getPortforlioWorkData(route.params.username)
     ]);
 
-    console.log(profileResult.data && portfolioResult.data);
-
     if (profileResult.data.success && portfolioResult.data.success) {
       setProfile(profileResult.data.data);
       setPortfolio(portfolioResult.data.data);
