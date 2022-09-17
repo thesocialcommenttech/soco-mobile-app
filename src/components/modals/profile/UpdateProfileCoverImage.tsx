@@ -94,7 +94,7 @@ export default function UpdateProfileCoverImageModal({
         onClose?.();
       }}
     >
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ height: '100%' }}>
         <View style={styles.modalView}>
           <TouchableOpacity onPress={() => onClose?.()} style={styles.closeBtn}>
             <MaterialCommunityIcon
@@ -194,21 +194,6 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     padding: 20
-  },
-  modalHeader: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center'
   },
   closeBtn: {
     color: Colors.Gray400,
