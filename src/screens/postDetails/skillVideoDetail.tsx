@@ -15,6 +15,7 @@ import PostTitle from '~/src/components/screens/post-view/PostTitle';
 import Video from '~/src/components/theme/Video';
 import { PostViewScreenProps } from '~/src/types/navigation/main';
 import { useViewIncrementor } from '~/src/lib/view-incrementor';
+import { staticFileSrc } from '~/src/utils/methods';
 
 type SkillPostScreenData = GetPostResponse<
   Pick<
@@ -69,7 +70,7 @@ export default function SkillVideoDetail() {
   return (
     <ScreenWithTopBar navigation={navigation}>
       <ScrollView>
-        <Video source={{ uri: post?.video }} loading={loading} />
+        <Video source={{ uri: staticFileSrc(post?.video) }} loading={loading} />
         <View style={styles.container}>
           <PostTitle title={post?.title} loading={loading} />
           <PostAuthorNTimestamp

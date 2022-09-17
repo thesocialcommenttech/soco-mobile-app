@@ -155,7 +155,7 @@ export default function Bio() {
           {portfolio?.intro_video_url && (
             <View style={styles.introVideo}>
               <Video
-                source={{ uri: portfolio?.intro_video_url }}
+                source={{ uri: staticFileSrc(portfolio?.intro_video_url) }}
                 style={styles.introVideo}
               />
             </View>
