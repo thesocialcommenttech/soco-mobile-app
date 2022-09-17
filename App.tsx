@@ -10,8 +10,9 @@ import './src/utils/ignoreWarnings';
 import * as SecureStore from 'expo-secure-store';
 import { nanoid } from 'nanoid';
 import { useDeviceId } from './src/state/deviceIdState';
+import { BACKEND_URL } from '@env';
 
-axios.defaults.baseURL = 'https://thesocialcomment-backend-test.herokuapp.com';
+axios.defaults.baseURL = BACKEND_URL;
 
 const App = () => {
   const { setDeviceId } = useDeviceId();

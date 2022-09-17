@@ -1,5 +1,7 @@
+import { STATIC_FILE_URL } from '@env';
+
 export function staticFileSrc(path: string) {
-  return 'https://socotestcdn.s3.ap-south-1.amazonaws.com/' + path;
+  return `${STATIC_FILE_URL}/${path}`;
 }
 
 export function postTitleSlug(title: string) {

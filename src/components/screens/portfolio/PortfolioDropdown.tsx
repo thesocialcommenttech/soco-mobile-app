@@ -1,6 +1,7 @@
 import { StyleSheet, Text } from 'react-native';
 import React from 'react';
 import Bottomsheet, { DropdownOption } from '../../bottomsheet/Bottomsheet';
+import { PORTFOLIO_WEB_HOST } from '@env';
 
 export default function PortfolioDropdown(props: {
   visible: boolean;
@@ -13,7 +14,7 @@ export default function PortfolioDropdown(props: {
   const showTheme = theme => {
     props.onClose?.();
     props.navigation.navigate('PortfolioTheme', {
-      uri: `https://portfolio.soco.co.in/${props.username}/portfolio/${theme}`
+      uri: `${PORTFOLIO_WEB_HOST}/${props.username}/portfolio/${theme}`
     });
   };
 
