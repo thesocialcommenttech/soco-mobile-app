@@ -14,6 +14,7 @@ import PostTags from '~/src/components/screens/post-view/PostTags';
 import PostTitle from '~/src/components/screens/post-view/PostTitle';
 import Video from '~/src/components/theme/Video';
 import { PostViewScreenProps } from '~/src/types/navigation/main';
+import { useViewIncrementor } from '~/src/lib/view-incrementor';
 
 type SkillPostScreenData = GetPostResponse<
   Pick<
@@ -42,6 +43,7 @@ export default function SkillVideoDetail() {
 
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<SkillPostScreenData>();
+  useViewIncrementor(post?._id);
 
   async function fetchData() {
     setLoading(true);

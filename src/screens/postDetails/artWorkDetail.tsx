@@ -30,6 +30,7 @@ import Skeleton from '~/src/components/theme/Skeleton';
 import { ImageProps } from 'react-native';
 import { Black } from '~/src/utils/colors';
 import { PostViewScreenProps } from '~/src/types/navigation/main';
+import { useViewIncrementor } from '~/src/lib/view-incrementor';
 
 type ArtworkPostScreenData = GetPostResponse<
   Pick<
@@ -59,6 +60,7 @@ export function PostImage(props: {
 }) {
   const [height, setHeight] = useState<number>(300);
   const [width, setWidth] = useState<number>();
+
   const windowHeight = Dimensions.get('window').height;
 
   useEffect(() => {
@@ -105,6 +107,7 @@ export default function ArtWorkDetail() {
 
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<ArtworkPostScreenData>();
+  useViewIncrementor(post?._id);
 
   async function fetchData() {
     setLoading(true);

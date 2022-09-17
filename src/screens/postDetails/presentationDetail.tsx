@@ -26,6 +26,7 @@ import PostInteractions from '~/src/components/screens/post-view/PostInteraction
 import PostTags from '~/src/components/screens/post-view/PostTags';
 import PostDescription from '~/src/components/screens/post-view/PostDescription';
 import { PostViewScreenProps } from '~/src/types/navigation/main';
+import { useViewIncrementor } from '~/src/lib/view-incrementor';
 
 type PresentationPostScreenData = GetPostResponse<
   Pick<
@@ -157,6 +158,7 @@ export default function PresentationDetail() {
 
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<PresentationPostScreenData>();
+  useViewIncrementor(post?._id);
 
   async function fetchData() {
     setLoading(true);

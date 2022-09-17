@@ -1,15 +1,15 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
+import { useDeviceId } from '~/src/state/deviceIdState';
 import { IncrementPostViewsResponse } from '../../typings/increment-postviews_interface/incrementPostviews.interface';
+import { Post } from '../../typings/post';
 
-export function incrementPostviews(): Promise<
-  AxiosResponse<IncrementPostViewsResponse>
-> {
+export function incrementPostviews(postID: Post['_id']) {
+  const deviceID = useDeviceId.getState().deviceId;
+
   const config: AxiosRequestConfig = {
-    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/increment-view',
+    url: '/user/post/increment-view',
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    params: { postID, deviceID }
   };
 
   return axios.request<IncrementPostViewsResponse>(config);
