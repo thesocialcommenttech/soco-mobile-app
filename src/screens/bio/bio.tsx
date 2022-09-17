@@ -7,22 +7,23 @@ import {
   View
 } from 'react-native';
 import React, { useContext, useMemo, useState } from 'react';
-import { Colors } from '../../utils/colors';
+import { Black, Colors } from '../../utils/colors';
 import { updateBio } from '~/src/utils/services/user-profile_service/updateBio.service';
 import {
   OptionalFormStage,
   OptionalStackHeader
 } from '~/src/components/headers/OptionalStackHeader';
 import { RootRouteContext } from '~/src/contexts/root-route.context';
+import { Input } from '~/src/components/theme/Input';
+import { useFormik } from 'formik';
+import { object, string } from 'yup';
+import Button from '~/src/components/theme/Button';
 
 function BioScreen() {
-  const [bio, setBio] = useState<string>('');
-  const [loading, setLoading] = useState(false);
   const { showPostRegisterationFlow } = useContext(RootRouteContext);
 
-  async function submitUserBio() {
+  async function submitUserBio({ bio }) {
     try {
-      setLoading(true);
       const result = await updateBio({ bio });
       if (result.data.success) {
         showPostRegisterationFlow(false);
@@ -30,53 +31,53 @@ function BioScreen() {
     } catch (error) {
       console.error(error);
     }
-    setLoading(false);
   }
+
+  const formik = useFormik({
+    initialValues: { bio: '' },
+    validationSchema: object({
+      bio: string().trim().required('Bio is required')
+    }),
+    onSubmit: submitUserBio
+  });
 
   return (
     <>
       <OptionalStackHeader
-        onProceed={() => submitUserBio()}
+        onProceed={formik.handleSubmit}
         onSkip={() => showPostRegisterationFlow(false)}
         formStage={OptionalFormStage.ADD_BIO}
-        disableProceed={loading}
-        disableSkip={loading}
+        disableProceed={formik.isSubmitting}
+        disableSkip={formik.isSubmitting}
         proceedLabel="DONE"
       />
       <View style={styles.container}>
         <Text style={styles.titleTxt}>Add Your Bio</Text>
-        <TextInput
+        <Input
           style={styles.bioInput}
-          onChangeText={text => {
-            setBio(text);
+          inputProp={{
+            value: formik.values.bio,
+            style: { textAlignVertical: 'top' },
+            maxLength: 150,
+            multiline: true,
+            numberOfLines: 10,
+            placeholder: 'Write about yourself',
+            onChangeText: formik.handleChange('bio')
           }}
-          value={bio}
-          maxLength={150}
-          multiline={true}
-          placeholder={'Write about yourself'}
-          placeholderTextColor={'#99969F'}
-          spellCheck={false}
-          autoCorrect={false}
-          autoComplete="off"
-          autoCapitalize="none"
+          error={formik.touched.bio && (formik.errors.bio as string)}
         />
         <Text style={styles.maxChar1}>
-          Max Characters: {bio?.length ?? 0}/150
+          Max Characters: {formik.values.bio?.length ?? 0}/150
         </Text>
-        <TouchableOpacity
-          style={[styles.updateImgBtn, loading && styles.disableBtn]}
-          onPress={() => {
-            if (!loading) {
-              submitUserBio();
-            }
-          }}
-        >
-          {loading ? (
-            <ActivityIndicator color={Colors.Gray200} size={25} />
-          ) : (
-            <Text style={styles.updateImgTxt}>Add Bio</Text>
-          )}
-        </TouchableOpacity>
+        <Button
+          type="outlined"
+          fullWidth
+          btnStyle={styles.updateImgBtn}
+          processing={formik.isSubmitting}
+          disabled={formik.isSubmitting}
+          onPress={formik.handleSubmit}
+          text="Add Bio"
+        />
       </View>
     </>
   );
@@ -87,64 +88,31 @@ export default BioScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    paddingHorizontal: '6%'
+    // alignItems: 'center',
+    paddingHorizontal: 20
   },
   titleTxt: {
     fontSize: 18,
-    fontWeight: '600',
-    color: Colors.Black,
+    color: 'black',
     fontFamily: 'Roboto-Medium',
-    fontStyle: 'normal',
-    marginTop: '2%'
-  },
-  bgImage: {
-    width: '100%',
-    height: '30%',
-    marginTop: '8%',
-    resizeMode: 'cover'
-  },
-  selTxt: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.Gray600,
-    fontFamily: 'Roboto-Medium',
-    fontStyle: 'normal',
-    marginTop: '6%'
+    marginTop: 10,
+    textAlign: 'center'
   },
   bioInput: {
-    backgroundColor: 'white',
     marginTop: '8%',
-    borderColor: Colors.GrayBorder,
-    color: 'black',
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 20,
-    height: '22%',
-    width: '100%',
-    textAlignVertical: 'top',
-    fontFamily: 'Roboto-Medium',
-    lineHeight: 21
+    width: '100%'
   },
   maxChar1: {
-    marginTop: '5%',
-    color: Colors.Gray200,
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium',
+    marginTop: 10,
+    color: Black[500],
+    // fontFamily: 'Roboto-Medium',
     alignSelf: 'flex-start'
   },
   updateImgBtn: {
     position: 'absolute',
-    backgroundColor: 'white',
-    borderRadius: 8,
-    paddingVertical: 15,
-    width: '100%',
-    bottom: '4%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.Secondary
+    alignSelf: 'center',
+    bottom: 20,
+    width: '100%'
   },
   updateImgTxt: {
     color: Colors.Secondary,

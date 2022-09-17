@@ -7,11 +7,11 @@ import {
 
 export function register(
   data: RegisterRequest,
-  premium?: boolean = false,
+  premium: boolean = false,
   subscriptionPlan?: SubcriptionsPlan
-): Promise<AxiosResponse<RegisterResponse>> {
+) {
   const config: AxiosRequestConfig = {
-    url: 'user/register',
+    url: '/user/register',
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data,

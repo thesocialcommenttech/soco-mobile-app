@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import TextInputWithLabel from '../../../components/textInputWithLabel';
 import { useFormik } from 'formik';
 import { object, string } from 'yup';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -12,7 +11,7 @@ import { toNumber } from 'lodash';
 import { getUserData2 } from '~/src/utils/services/user-profile_service/getUserData2.service';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootReducer } from '~/src/store/reducers';
-import { SelectInput } from '~/src/components/theme/Input';
+import { Input, SelectInput } from '~/src/components/theme/Input';
 import Loading from '~/src/components/theme/Loading';
 import {
   checkAvailablity,
@@ -28,6 +27,12 @@ import SectionHeader from '~/src/components/screens/settings/SectionHeader';
 interface ProfileSettingData extends Omit<UpdateProfileRequest, 'phone'> {
   phone: string;
 }
+
+const academicsOptions = {
+  undergraduate: 'Undergraduate',
+  graduate: 'Graduate'
+};
+const genderOptions = { male: 'Male', female: 'Female' };
 
 export default function Profile() {
   const auth = useSelector((root: IRootReducer) => root.auth);
@@ -152,37 +157,46 @@ export default function Profile() {
           <View style={styles.headingview}>
             <View style={styles.header}>
               <SectionHeader label="General Information" />
-              <TextInputWithLabel
-                placeholder="Enter Your Name"
+              <Input
                 label="Name"
-                inputStyle={styles.emailTB}
-                onChangeText={formik.handleChange('name')}
-                value={formik.values.name}
-                errorTxt={formik.touched.name && (formik.errors.name as string)}
-                onBlur={formik.handleBlur('name')}
+                style={styles.emailTB}
+                inputProp={{
+                  placeholder: 'Enter Your Name',
+                  // style: styles.emailTB,
+                  onChangeText: formik.handleChange('name'),
+                  value: formik.values.name,
+                  onBlur: formik.handleBlur('name')
+                }}
+                error={formik.touched.name && (formik.errors.name as string)}
               />
-              <TextInputWithLabel
-                placeholder="Enter your Username"
+              <Input
                 label="Username"
-                inputStyle={styles.emailTB}
-                onChangeText={formik.handleChange('username')}
-                value={formik.values.username}
-                errorTxt={
+                style={styles.emailTB}
+                inputProp={{
+                  placeholder: 'Enter your Username',
+                  // style: styles.emailTB,
+                  onChangeText: formik.handleChange('username'),
+                  value: formik.values.username,
+                  onBlur: formik.handleBlur('username')
+                }}
+                error={
                   formik.touched.username && (formik.errors.username as string)
                 }
-                onBlur={formik.handleBlur('username')}
               />
-              <TextInputWithLabel
-                placeholder="Email"
+              <Input
                 label="Email"
-                inputStyle={isEditable ? styles.emailTB : styles.noteditable}
-                onChangeText={emailForm.handleChange('email')}
-                value={emailForm.values.email}
-                errorTxt={
+                style={styles.emailTB}
+                inputProp={{
+                  placeholder: 'Email',
+                  style: !isEditable && styles.noteditable,
+                  onChangeText: emailForm.handleChange('email'),
+                  value: emailForm.values.email,
+                  onBlur: emailForm.handleBlur('email'),
+                  editable: isEditable
+                }}
+                error={
                   emailForm.touched.email && (emailForm.errors.email as string)
                 }
-                onBlur={emailForm.handleBlur('email')}
-                editable={isEditable}
               />
               <View style={styles.instruction}>
                 <MaterialCommunityIcons
@@ -229,24 +243,25 @@ export default function Profile() {
               <SelectInput
                 label="Gender"
                 inputProp={{
-                  value: formik.values.gender,
+                  value: genderOptions[formik.values.gender],
                   placeholder: 'Select Gender'
                 }}
                 style={{ marginTop: 30 }}
                 onValueChange={key => formik.setFieldValue('gender', key)}
-                selectOptions={{ male: 'Male', female: 'Female' }}
+                selectOptions={genderOptions}
               />
-              <TextInputWithLabel
-                placeholder="Phone Number"
+              <Input
                 label="Phone"
-                inputStyle={styles.emailTB}
-                keyboardType="phone-pad"
-                onChangeText={formik.handleChange('phone')}
-                value={formik.values.phone}
-                errorTxt={
-                  formik.touched.phone && (formik.errors.phone as string)
-                }
-                onBlur={formik.handleBlur('phone')}
+                style={styles.emailTB}
+                inputProp={{
+                  placeholder: 'Phone Number',
+                  // style: styles.emailTB,
+                  keyboardType: 'phone-pad',
+                  onChangeText: formik.handleChange('phone'),
+                  value: formik.values.phone,
+                  onBlur: formik.handleBlur('phone')
+                }}
+                error={formik.touched.phone && (formik.errors.phone as string)}
               />
             </View>
             <View style={styles.headerEducation}>
@@ -254,15 +269,12 @@ export default function Profile() {
               <SelectInput
                 label="Academics"
                 inputProp={{
-                  value: formik.values.academics,
+                  value: academicsOptions[formik.values.academics],
                   placeholder: 'Select Academics'
                 }}
                 style={{ marginTop: 30 }}
                 onValueChange={key => formik.setFieldValue('academics', key)}
-                selectOptions={{
-                  undergraduate: 'Undergraduate',
-                  graduate: 'Graduate'
-                }}
+                selectOptions={academicsOptions}
               />
             </View>
             <Button
@@ -290,7 +302,7 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   emailTB: {
-    marginTop: '-5.5%'
+    marginTop: 29
   },
   instruction: {
     marginTop: 10,
@@ -327,9 +339,8 @@ const styles = StyleSheet.create({
   },
   updateBtn: { marginTop: 30 },
   noteditable: {
-    marginTop: '-6%',
-    backgroundColor: Black[200],
-    paddingLeft: 10
+    // marginTop: '-6%',
+    backgroundColor: Black[200]
   }
 });
 

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Colors } from '../../utils/colors';
+import { Black, Colors } from '../../utils/colors';
 import Categorybox from '../../components/categoryBox';
 import { getInterestCategories } from '~/src/utils/services/settings_services/interests_services/getInterestCategories.service';
 import { Interests } from '~/src/utils/typings/settings_interfaces/interests_interface/getInterestCategories.interface';
@@ -19,6 +19,7 @@ import {
   OptionalStackHeader
 } from '~/src/components/headers/OptionalStackHeader';
 import { useNavigation } from '@react-navigation/native';
+import { Input } from '~/src/components/theme/Input';
 
 export type SelectionCategory = Interests & { selected?: boolean };
 
@@ -77,30 +78,31 @@ function CategoriesScreen() {
         <Text style={styles.subTitleTxt}>
           Tell us categories, you are interested in
         </Text>
-        <Text style={styles.subsubTitleTxt}>Select minimum 5 categories</Text>
         {/* search bar */}
-        <View style={styles.searchInput}>
-          <TouchableOpacity style={styles.srchIcon}>
+        <Input
+          style={styles.searchInputWrapper}
+          inputContainer={styles.searchInputCt}
+          inputProp={{
+            onChangeText: text => {
+              setSearchText(text);
+            },
+            style: styles.searchInput,
+            value: searchText,
+            placeholder: 'Search',
+            spellCheck: false,
+            autoCorrect: false,
+            autoComplete: 'off',
+            autoCapitalize: 'none'
+          }}
+          prefix={
             <MaterialCommunityIcon
               name="magnify"
-              size={25}
+              size={20}
               color={Colors.Secondary}
             />
-          </TouchableOpacity>
-          <TextInput
-            style={styles.inputt}
-            onChangeText={text => {
-              setSearchText(text);
-            }}
-            value={searchText}
-            placeholder={'Search'}
-            placeholderTextColor={'gray'}
-            spellCheck={false}
-            autoCorrect={false}
-            autoComplete="off"
-            autoCapitalize="none"
-          />
-        </View>
+          }
+        />
+        <Text style={styles.subsubTitleTxt}>Select minimum 5 categories</Text>
         {loading ? (
           <View style={styles.loadingCt}>
             <ActivityIndicator color={Colors.Secondary} size={32} />
@@ -158,60 +160,35 @@ export default CategoriesScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    // alignItems: 'center',
-    // justifyContent: 'center',
     paddingHorizontal: 20
   },
   titleTxt: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.Black,
-    fontFamily: 'Roboto-Medium',
-    fontStyle: 'normal',
-    marginTop: '2%'
+    fontSize: 22,
+    color: 'black',
+    fontFamily: 'Roboto-Medium'
+    // marginTop: 10
   },
   subTitleTxt: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: Colors.Black,
-    fontFamily: 'Roboto-Medium',
-    fontStyle: 'normal',
-    marginTop: '1%'
+    color: 'black',
+    marginTop: 5
   },
   subsubTitleTxt: {
-    fontSize: 14,
-    fontWeight: 'normal',
-    color: Colors.Gray600,
-    fontFamily: 'Roboto-Medium',
-    fontStyle: 'normal',
-    marginTop: '5%'
+    color: Black[600],
+    marginTop: 5,
+    marginBottom: 5
   },
   searchInput: {
-    backgroundColor: 'white',
-    marginTop: '4%',
-    borderColor: Colors.GrayBorder,
-    color: 'black',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingLeft: '2%',
-    paddingRight: '2%',
-    fontFamily: 'Roboto-Medium',
-    height: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around'
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    paddingTop: 10
   },
-  inputt: {
-    width: '90%',
-    color: 'black'
+  searchInputWrapper: {
+    marginTop: 20,
   },
-  srchIcon: {
-    alignItems: 'center',
-    zIndex: 999,
-    justifyContent: 'center'
+  searchInputCt: {
+    paddingLeft: 15,
+    paddingRight: 15
   },
-
   selectedCategories: {
     // marginTop: '5%',
     paddingTop: 10,

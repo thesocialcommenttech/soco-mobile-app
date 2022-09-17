@@ -7,7 +7,7 @@ import {
   View
 } from 'react-native';
 import React, { useState } from 'react';
-import { Colors } from '../../utils/colors';
+import { Black, Colors } from '../../utils/colors';
 import { updateCover } from '../../utils/services/user-profile_service/updateCover.service';
 import * as ImagePicker from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +15,7 @@ import {
   OptionalFormStage,
   OptionalStackHeader
 } from '~/src/components/headers/OptionalStackHeader';
+import Button from '~/src/components/theme/Button';
 
 function CoverPictureScreen() {
   const navigation = useNavigation();
@@ -64,25 +65,26 @@ function CoverPictureScreen() {
       <View style={styles.container}>
         <Text style={styles.titleTxt}>Add Your Cover Picture</Text>
         <Image source={{ uri: image?.uri }} style={styles.bgImage} />
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={onImageSelect}>
-            <Text style={styles.selTxt}>SELECT IMAGE</Text>
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity
-          style={[styles.updateImgBtn, loading && styles.disableBtn]}
+        <Button
+          fullWidth
+          onPress={onImageSelect}
+          text="SELECT IMAGE"
+          btnStyle={styles.selectImageBtn}
+          textStyle={styles.selTxt}
+        />
+        <Button
+          type="outlined"
+          fullWidth
+          btnStyle={styles.updateImgBtn}
+          processing={loading}
+          disabled={loading}
           onPress={() => {
             if (!loading) {
               submitCoverImage();
             }
           }}
-        >
-          {loading ? (
-            <ActivityIndicator color={Colors.Gray200} size={25} />
-          ) : (
-            <Text style={styles.updateImgTxt}>Add Cover Picture</Text>
-          )}
-        </TouchableOpacity>
+          text="Add Cover Picture"
+        />
       </View>
     </>
   );
@@ -93,18 +95,14 @@ export default CoverPictureScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
-    // justifyContent: 'center',
-    paddingHorizontal: '6%'
+    paddingHorizontal: 20
   },
   titleTxt: {
     fontSize: 18,
-    fontWeight: '600',
-    color: Colors.Black,
+    color: 'black',
     fontFamily: 'Roboto-Medium',
-    fontStyle: 'normal',
-    marginTop: '2%'
+    marginTop: 10
   },
   bgImage: {
     width: '100%',
@@ -112,42 +110,25 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
     resizeMode: 'cover',
-    backgroundColor: Colors.Gray100,
-    borderRadius: 10
+    backgroundColor: Black[200],
+    borderRadius: 8
+  },
+  selectImageBtn: {
+    width: '100%'
   },
   selTxt: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.Gray600,
-    fontFamily: 'Roboto-Medium',
-    fontStyle: 'normal'
+    // alignSelf: 'stretch',
+    color: Black[600]
   },
   updateImgBtn: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    borderRadius: 8,
-    paddingVertical: 15,
     width: '100%',
-    bottom: '4%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.Secondary
-  },
-  updateImgTxt: {
-    color: Colors.Secondary,
-    fontWeight: '700',
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium'
+    position: 'absolute',
+    bottom: 20
   },
   buttonContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginVertical: 8,
     padding: 10
-  },
-  disableBtn: {
-    paddingVertical: 12,
-    borderColor: Colors.Gray200
   }
 });

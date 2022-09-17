@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import LoginScreen from '../screens/login/login';
+import { Black } from '../utils/colors';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,7 +28,9 @@ const AuthStack = () => {
           require('~/src/screens/register/registertwo').default
         }
         options={{
-          headerShown: false
+          headerShown: true,
+          headerShadowVisible: false,
+          title: null
         }}
       />
     </Stack.Navigator>

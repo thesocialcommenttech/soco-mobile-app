@@ -1,14 +1,7 @@
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import React, { useState } from 'react';
 import { Avatar } from '@rneui/base';
-import { Colors } from '../../utils/colors';
+import { Black } from '../../utils/colors';
 import * as ImagePicker from 'react-native-image-picker';
 import { updateDP } from '../../utils/services/user-profile_service/updateDP.service';
 import { useNavigation } from '@react-navigation/native';
@@ -16,6 +9,7 @@ import {
   OptionalFormStage,
   OptionalStackHeader
 } from '~/src/components/headers/OptionalStackHeader';
+import Button from '~/src/components/theme/Button';
 
 function ProfilePictureScreen() {
   const navigation = useNavigation();
@@ -68,34 +62,30 @@ function ProfilePictureScreen() {
           <Avatar
             size={200}
             rounded
-            titleStyle={styles.avatarTitle}
-            source={{
-              uri: image?.uri
-            }}
+            source={{ uri: image?.uri }}
             containerStyle={styles.avatar}
           />
         </View>
         <ScrollView>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={onImageSelect}>
-              <Text style={styles.selTxt}>SELECT IMAGE</Text>
-            </TouchableOpacity>
-          </View>
+          <Button
+            onPress={onImageSelect}
+            text="SELECT IMAGE"
+            textStyle={styles.selTxt}
+          />
         </ScrollView>
-        <TouchableOpacity
-          style={[styles.updateImgBtn, loading && styles.disableBtn]}
+        <Button
+          type="outlined"
+          fullWidth
+          btnStyle={styles.updateImgBtn}
+          processing={loading}
+          disabled={loading}
           onPress={() => {
             if (!loading) {
               updateProfileImage();
             }
           }}
-        >
-          {loading ? (
-            <ActivityIndicator color={Colors.Gray200} size={25} />
-          ) : (
-            <Text style={styles.updateImgTxt}>Add Profile Picture</Text>
-          )}
-        </TouchableOpacity>
+          text="Add Profile Picture"
+        />
       </View>
     </>
   );
@@ -106,18 +96,16 @@ export default ProfilePictureScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     // justifyContent: 'center',
-    paddingHorizontal: '6%'
+    paddingHorizontal: 20,
+    paddingBottom: 20
   },
   titleTxt: {
     fontSize: 18,
-    fontWeight: '600',
-    color: Colors.Black,
+    color: 'black',
     fontFamily: 'Roboto-Medium',
-    fontStyle: 'normal',
-    marginTop: '2%'
+    marginTop: 10
   },
   avatarContainer: {
     alignSelf: 'center',
@@ -127,50 +115,17 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   selTxt: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.Gray600,
-    fontFamily: 'Roboto-Medium',
-    fontStyle: 'normal'
+    color: Black[600]
   },
   avatar: {
     width: 200,
     height: 200,
-    backgroundColor: Colors.Gray100
+    backgroundColor: Black[200]
   },
   avatarTitle: {
     color: 'black'
   },
   updateImgBtn: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    borderRadius: 8,
-    paddingVertical: 15,
-    width: '100%',
-    bottom: '4%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.Secondary
-  },
-  updateImgTxt: {
-    color: Colors.Secondary,
-    fontWeight: '700',
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium'
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginVertical: 8,
-    padding: 10
-  },
-  disableBtn: {
-    paddingVertical: 12,
-    borderColor: Colors.Gray200
-  },
-  image: {
-    marginVertical: 24,
-    alignItems: 'center'
+    width: '100%'
   }
 });
