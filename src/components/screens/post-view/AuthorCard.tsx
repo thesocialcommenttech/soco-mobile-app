@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import Color from 'color';
 import React from 'react';
 import {
@@ -8,15 +9,21 @@ import {
   View,
   ViewStyle
 } from 'react-native';
+import { useSelector } from 'react-redux';
+import { IRootReducer } from '~/src/store/reducers';
 import { Black, Blue } from '~/src/utils/colors';
-import { staticFileSrc } from '~/src/utils/methods';
+import { navigateEditPostScreen, staticFileSrc } from '~/src/utils/methods';
 import { Post } from '~/src/utils/typings/post';
 import Button from '../../theme/Button';
 
 export default function AuthorCard(props: {
   style?: StyleProp<ViewStyle>;
   author: Post['postedBy'];
+  post: { _id: Post['_id']; type: Post['postType'] };
 }) {
+  const navigation = useNavigation();
+  const authUser = useSelector((root: IRootReducer) => root.auth.user);
+
   if (!props.author) {
     return null;
   }
@@ -36,12 +43,16 @@ export default function AuthorCard(props: {
       {props.author.bio && (
         <Text style={styles.authorBio}>{props.author.bio}</Text>
       )}
-      <Button
-        size="sm"
-        btnStyle={styles.editBtn}
-        text="Edit this post"
-        onPress={() => {}}
-      />
+      {authUser._id === props.author._id && (
+        <Button
+          size="sm"
+          btnStyle={styles.editBtn}
+          text="Edit this post"
+          onPress={() =>
+            navigateEditPostScreen(navigation, props.post._id, props.post.type)
+          }
+        />
+      )}
     </View>
   );
 }

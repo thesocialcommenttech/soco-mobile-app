@@ -165,7 +165,11 @@ export default function ArtWorkDetail() {
             loading={loading}
           />
           <PostTags tags={post?.tags} style={styles.MT} loading={loading} />
-          <AuthorCard style={styles.MT} author={post?.postedBy} />
+          <AuthorCard
+            style={styles.MT}
+            author={post?.postedBy}
+            post={{ _id: post?._id, type: 'artwork' }}
+          />
           <PostComments
             commentCount={post?.comments?.length}
             comments={post?.comments}

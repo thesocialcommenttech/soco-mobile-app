@@ -4,12 +4,14 @@ import {
   NavigatorScreenParams
 } from '@react-navigation/native';
 import { App_ScreenProps } from './app';
+import { DiscoverStack } from './discover';
+import { HomeTabStack } from './home';
 import { PortfolioTabScreenParam } from './portfolio';
 import { ProfileTabStack } from './profile';
 
 export type BottomTabStack = {
-  HomeTab: {};
-  DiscoverTab: {};
+  HomeTab: NavigatorScreenParams<HomeTabStack>;
+  DiscoverTab: NavigatorScreenParams<DiscoverStack>;
   PortfolioTab: PortfolioTabScreenParam;
   ProfileTab: NavigatorScreenParams<ProfileTabStack>;
 };

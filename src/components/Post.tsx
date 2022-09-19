@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
-import { staticFileSrc } from '../utils/methods';
+import { navigateEditPostScreen, staticFileSrc } from '../utils/methods';
 import {
   Dimensions,
   Image,
@@ -112,24 +112,7 @@ function PostHeader(props: {
 
   const onEdit = () => {
     setShowMenu(false);
-    switch (props.postType) {
-      case 'artwork':
-        props.navigation?.navigate('Upload_Artwork', { postId: props.postId });
-        break;
-      case 'skill':
-        props.navigation?.navigate('Upload_SkillVideo', {
-          postId: props.postId
-        });
-        break;
-      case 'presentation':
-        props.navigation?.navigate('Upload_Presentation', {
-          postId: props.postId
-        });
-        break;
-      case 'link':
-        props.navigation?.navigate('Upload_Link', { postId: props.postId });
-        break;
-    }
+    navigateEditPostScreen(props.navigation, props.postId, props.postType);
   };
 
   const onTrash = () => {
@@ -231,11 +214,15 @@ function PostHeader(props: {
         )}
         {props.editOption && props.postType !== 'shared' && (
           <>
-            <DropdownOption
-              label="Edit"
-              icon="pencil-outline"
-              onOptionPress={onEdit}
-            />
+            {['artwork', 'skill', 'presentation', 'link'].includes(
+              props.postType
+            ) && (
+              <DropdownOption
+                label="Edit"
+                icon="pencil-outline"
+                onOptionPress={onEdit}
+              />
+            )}
             <DropdownOption
               label="Trash"
               icon="trash-can-outline"
