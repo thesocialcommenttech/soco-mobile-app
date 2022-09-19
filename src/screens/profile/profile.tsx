@@ -41,6 +41,8 @@ import UpdateBioModal from '~/src/components/modals/profile/UpdateBio';
 import UpdateProfileCoverImageModal from '~/src/components/modals/profile/UpdateProfileCoverImage';
 import UpdateCaptionModal from '~/src/components/modals/profile/UpdateCaption';
 import Color from 'color';
+import { lockUserPortfolio } from '~/src/utils/services/user-portfolio_service/lockUserPortfolio.service';
+import produce from 'immer';
 
 function PostState({ title, count }: { title: string; count: number }) {
   return (
@@ -73,8 +75,6 @@ function _ProfileScreen_() {
 
   const [profileLoading, setProfileLoading] = useState(true);
   const [postsLoading, setPostsLoading] = useState(true);
-
-  const [locked, setLocked] = useState(true);
 
   async function fetchUserProfile() {
     setProfileLoading(true);
@@ -234,25 +234,7 @@ function _ProfileScreen_() {
               // !userProfile.premium && styles.portfolioLocked
             ]}
           />
-          {mine ? (
-            <Button
-              type="filled"
-              onPress={() => {}}
-              // disabled={!userProfile.premium}
-              btnStyle={[
-                styles.portfolioLock
-                // !userProfile.premium && styles.portfolioLockDisabled
-              ]}
-            >
-              <MaterialCommunityIcon
-                name={locked ? 'lock-outline' : 'lock-off-outline'}
-                size={20}
-                color={Colors.White}
-              />
-            </Button>
-          ) : (
-            <FollowToggleBtn />
-          )}
+          {mine ? <LockPortfolioBtn /> : <FollowToggleBtn />}
         </View>
 
         <View style={styles.bio}>
@@ -368,6 +350,52 @@ function _ProfileScreen_() {
       </ScrollView>
       {mine && <CreatePostFAB />}
     </>
+  );
+}
+
+function LockPortfolioBtn() {
+  const { setUserProfile, userProfile } = useProfile();
+  const [loading, setLoading] = useState(false);
+
+  const locked = useMemo(
+    () => userProfile?.portfolioLock === 'PRIVATE',
+    [userProfile?.portfolioLock]
+  );
+
+  const togglePortfolioState = async () => {
+    setLoading(true);
+    const portfolioState = locked ? 'PUBLIC' : 'PRIVATE';
+    const result = await lockUserPortfolio(portfolioState);
+
+    if (result.data.success) {
+      setUserProfile(
+        produce(userProfile, draft => {
+          draft.portfolioLock = portfolioState;
+        })
+      );
+    }
+    setLoading(false);
+  };
+
+  return (
+    <Button
+      type="filled"
+      onPress={togglePortfolioState}
+      disabled={loading}
+      processing={loading}
+      // disabled={!userProfile.premium}
+      btnStyle={[
+        styles.portfolioLock,
+        loading && { backgroundColor: Blue.primary }
+        // !userProfile.premium && styles.portfolioLockDisabled
+      ]}
+    >
+      <MaterialCommunityIcon
+        name={locked ? 'lock-outline' : 'lock-open-variant-outline'}
+        size={20}
+        color={Colors.White}
+      />
+    </Button>
   );
 }
 
