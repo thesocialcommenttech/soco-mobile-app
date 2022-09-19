@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { ImageBackground, StyleSheet, View } from 'react-native';
 import React, { useMemo, useState } from 'react';
 import {
   useFocusEffect,
@@ -18,9 +18,11 @@ import { IRootReducer } from '~/src/store/reducers';
 import Loading from '~/src/components/theme/Loading';
 import { getPortforlioWorkData } from '~/src/utils/services/user-portfolio_services/getPortforlioWorkData.service';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
-import { Black, Blue } from '~/src/utils/colors';
+import { Black, Blue, Yellow } from '~/src/utils/colors';
 import { PortfolioTab_ScreenProps } from '~/src/types/navigation/bottomBar';
 import { PortfolioStack } from '~/src/types/navigation/portfolio';
+import bluredPortfolioSS from '~/src/assets/images/blur-portfolio.jpg';
+import Button from '~/src/components/theme/Button';
 
 const Tab = createMaterialTopTabNavigator<PortfolioStack>();
 
@@ -63,6 +65,34 @@ export default function Portfolio() {
   if (loading) {
     return <Loading />;
   }
+
+  // if (!profile.premium) {
+  //   return (
+  //     <ImageBackground
+  //       source={bluredPortfolioSS}
+  //       style={{
+  //         flex: 1,
+  //         justifyContent: 'center',
+  //         alignItems: 'center'
+  //       }}
+  //       imageStyle={{ opacity: 0.5 }}
+  //       resizeMode="stretch"
+  //     >
+  //       <Button
+  //         onPress={() => {}}
+  //         text="Get Premium"
+  //         type="filled"
+  //         btnStyle={{
+  //           alignSelf: 'center',
+  //           elevation: 10,
+  //           minWidth: '50%',
+  //           backgroundColor: Yellow.primary
+  //         }}
+  //         textStyle={{ color: 'black' }}
+  //       />
+  //     </ImageBackground>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>

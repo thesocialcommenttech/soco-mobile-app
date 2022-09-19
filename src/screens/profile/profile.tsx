@@ -40,6 +40,7 @@ import { useStore } from 'zustand';
 import UpdateBioModal from '~/src/components/modals/profile/UpdateBio';
 import UpdateProfileCoverImageModal from '~/src/components/modals/profile/UpdateProfileCoverImage';
 import UpdateCaptionModal from '~/src/components/modals/profile/UpdateCaption';
+import Color from 'color';
 
 function PostState({ title, count }: { title: string; count: number }) {
   return (
@@ -216,7 +217,7 @@ function _ProfileScreen_() {
             text="Portfolio"
             fullWidth
             type="filled"
-            disabled={!userProfile.premium}
+            // disabled={!userProfile.premium}
             onPress={() => {
               if (mine) {
                 navigation.navigate('PortfolioTab');
@@ -226,18 +227,22 @@ function _ProfileScreen_() {
                 });
               }
             }}
-            textStyle={{ color: 'white' }}
+            textStyle={{ color: 'white', marginLeft: 20 }}
             btnStyle={[
               styles.portfolio,
-              mine && styles.portfolio_Mine,
-              !userProfile.premium && styles.portfolioLocked
+              mine && styles.portfolio_Mine
+              // !userProfile.premium && styles.portfolioLocked
             ]}
           />
           {mine ? (
             <Button
               type="filled"
               onPress={() => {}}
-              btnStyle={styles.portfolioLock}
+              // disabled={!userProfile.premium}
+              btnStyle={[
+                styles.portfolioLock
+                // !userProfile.premium && styles.portfolioLockDisabled
+              ]}
             >
               <MaterialCommunityIcon
                 name={locked ? 'lock-outline' : 'lock-off-outline'}
@@ -386,7 +391,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.White
   },
   bgImage: {
-    // position: 'absolute',
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
@@ -395,7 +399,6 @@ const styles = StyleSheet.create({
   avatarContainer: {
     position: 'absolute',
     alignSelf: 'center',
-    // marginTop: '42%',
     bottom: 0,
     transform: [{ translateY: 50 }],
     justifyContent: 'center',
@@ -446,14 +449,11 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 23,
-    // fontWeight: '700',
     fontFamily: 'Roboto-Medium',
     color: 'black'
   },
   userName: {
     fontSize: 16,
-    // fontWeight: '400',
-    fontFamily: 'Roboto-Regular',
     color: Black[600],
     marginTop: 5
   },
@@ -461,15 +461,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 20,
     marginHorizontal: 20
-    // width: '100%'
   },
   portfolio: {
-    // backgroundColor: Colors.Secondary,
-    // padding: 15,
-    // height: 46,
-    // justifyContent: 'center',
-    // marginLeft: '8%',
-    // width: '71%'
     flexGrow: 1,
     flexShrink: 0,
     marginRight: 20
@@ -491,25 +484,22 @@ const styles = StyleSheet.create({
   },
   unFollowBtn: { borderColor: Black[600] },
   unFollowBtnText: { color: Black[600] },
-  // verticleLine: {
-  //   height: '100%',
-  //   width: 1
-  // },
   portfolioLock: {
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
     borderLeftColor: Blue[400],
     borderLeftWidth: 1
   },
+  portfolioLockDisabled: {
+    backgroundColor: Blue[200],
+    borderLeftColor: Color(Blue[300]).lighten(0.08).rgb().toString()
+  },
   bio: {
     marginTop: 20,
     marginHorizontal: 20
-    // marginLeft: '8%',
-    // marginRight: '8%'
   },
   bioText: {
     fontSize: 14,
-    fontFamily: 'Roboto-Regular',
     lineHeight: 18.2,
     color: Black[600],
     textAlign: 'center'
@@ -524,16 +514,12 @@ const styles = StyleSheet.create({
   },
   updateBioText: {
     fontSize: 14,
-    // fontFamily: 'Roboto-Medium',
     color: Blue.primary,
     textAlign: 'center',
     marginLeft: 3
   },
   stats: {
     marginTop: 20
-    // flexDirection: 'row',
-    // alignItems: 'center',
-    // justifyContent: 'center'
   },
   statsItem: {
     flexDirection: 'column',
@@ -541,15 +527,12 @@ const styles = StyleSheet.create({
   },
   statsText: {
     fontSize: 16,
-    // fontWeight: '700',
     fontFamily: 'Roboto-Medium',
-    // lineHeight: 16.41,
     color: 'black',
     textAlign: 'center'
   },
   statsLabel: {
     fontSize: 14,
-    fontFamily: 'Roboto-Regular',
     color: Black[600],
     marginTop: 5,
     textAlign: 'center'
@@ -580,11 +563,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 5
-    // padding: 5
   },
   itemCount: {
     fontSize: 14,
-    fontWeight: '500',
     fontFamily: 'Roboto-Medium',
     color: Yellow[700],
     textAlign: 'center'
@@ -610,7 +591,6 @@ const styles = StyleSheet.create({
 });
 
 function FollowToggleBtn() {
-  // const { setUserProfile, userProfile } = useProfileData();
   const store = useContext(ProfileContext);
   const { setUserProfile, userProfile } = useStore(store);
   const [loading, setLoading] = useState(false);
