@@ -6,6 +6,7 @@ import { addPostToUserFav } from '~/src/utils/services/user-posts_service/addPos
 import { votePost } from '~/src/utils/services/user-posts_service/votePost.service';
 import { Post } from '~/src/utils/typings/post';
 import { VotePostRequest } from '~/src/utils/typings/user-posts_interface/votePost.interface';
+import SharePostModal from '../../SharePostModal';
 import Button from '../../theme/Button';
 import Skeleton from '../../theme/Skeleton';
 
@@ -16,6 +17,8 @@ export default function PostInteractions(props: {
   downVoted: boolean;
   favourite: boolean;
   postId: Post['_id'];
+  postType: Post['postType'];
+  postTitle: string;
   style?: StyleProp<ViewStyle>;
   loading?: boolean;
 }) {
@@ -25,6 +28,7 @@ export default function PostInteractions(props: {
   });
   const [vote, setVote] = useState<VotePostRequest['voteType']>();
   const [isFavourite, setIsFavourite] = useState(props.favourite);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   async function postVote(voteType: VotePostRequest['voteType']) {
     if (vote) {
@@ -59,76 +63,89 @@ export default function PostInteractions(props: {
   }, [props.downVoted, props.upVoted]);
 
   return (
-    <View style={[styles.likeNShareRow, props.style]}>
-      {props.loading ? (
-        <>
-          <Skeleton style={styles.actionBtn} width={55} height={35} />
-          <Skeleton style={styles.actionBtn} width={55} height={35} />
-          <Skeleton style={styles.actionBtn} width={55} height={35} />
-          <Skeleton width={55} height={35} />
-        </>
-      ) : (
-        <>
-          <Button
-            size="sm"
-            btnStyle={styles.actionBtn}
-            onPress={() => postVote('up')}
-          >
-            <View style={styles.actionBtnView}>
+    <>
+      <View style={[styles.likeNShareRow, props.style]}>
+        {props.loading ? (
+          <>
+            <Skeleton style={styles.actionBtn} width={55} height={35} />
+            <Skeleton style={styles.actionBtn} width={55} height={35} />
+            <Skeleton style={styles.actionBtn} width={55} height={35} />
+            <Skeleton width={55} height={35} />
+          </>
+        ) : (
+          <>
+            <Button
+              size="sm"
+              btnStyle={styles.actionBtn}
+              onPress={() => postVote('up')}
+            >
+              <View style={styles.actionBtnView}>
+                <MaterialCommunityIcons
+                  name={vote === 'up' ? 'thumb-up' : 'thumb-up-outline'}
+                  size={18}
+                  style={[styles.actionIcon, vote === 'up' && styles.voted]}
+                  color="black"
+                />
+                <Text style={[styles.voteCount, vote === 'up' && styles.voted]}>
+                  {voteCounts.up}
+                </Text>
+              </View>
+            </Button>
+            <Button
+              size="sm"
+              btnStyle={styles.actionBtn}
+              onPress={() => postVote('down')}
+            >
+              <View style={styles.actionBtnView}>
+                <MaterialCommunityIcons
+                  name={vote === 'down' ? 'thumb-down' : 'thumb-down-outline'}
+                  size={18}
+                  style={[styles.actionIcon, vote === 'down' && styles.voted]}
+                  color={Black[600]}
+                />
+                <Text
+                  style={[styles.voteCount, vote === 'down' && styles.voted]}
+                >
+                  {voteCounts.down}
+                </Text>
+              </View>
+            </Button>
+            <Button
+              size="sm"
+              btnStyle={styles.actionBtn}
+              onPress={() => postFav()}
+            >
               <MaterialCommunityIcons
-                name={vote === 'up' ? 'thumb-up' : 'thumb-up-outline'}
+                name={isFavourite ? 'heart' : 'heart-outline'}
                 size={18}
-                style={[styles.actionIcon, vote === 'up' && styles.voted]}
+                style={isFavourite && styles.favourite}
                 color="black"
               />
-              <Text style={[styles.voteCount, vote === 'up' && styles.voted]}>
-                {voteCounts.up}
-              </Text>
-            </View>
-          </Button>
-          <Button
-            size="sm"
-            btnStyle={styles.actionBtn}
-            onPress={() => postVote('down')}
-          >
-            <View style={styles.actionBtnView}>
-              <MaterialCommunityIcons
-                name={vote === 'down' ? 'thumb-down' : 'thumb-down-outline'}
-                size={18}
-                style={[styles.actionIcon, vote === 'down' && styles.voted]}
-                color={Black[600]}
-              />
-              <Text style={[styles.voteCount, vote === 'down' && styles.voted]}>
-                {voteCounts.down}
-              </Text>
-            </View>
-          </Button>
-          <Button
-            size="sm"
-            btnStyle={styles.actionBtn}
-            onPress={() => postFav()}
-          >
-            <MaterialCommunityIcons
-              name={isFavourite ? 'heart' : 'heart-outline'}
-              size={18}
-              style={isFavourite && styles.favourite}
-              color="black"
-            />
-          </Button>
-          <Button size="sm" onPress={() => {}}>
-            <View style={styles.actionBtnView}>
-              <MaterialCommunityIcons
-                name="share"
-                size={18}
-                style={styles.actionIcon}
-                color={Blue.primary}
-              />
-              <Text style={styles.shareTxt}>Share</Text>
-            </View>
-          </Button>
-        </>
-      )}
-    </View>
+            </Button>
+            <Button size="sm" onPress={() => setShowShareModal(true)}>
+              <View style={styles.actionBtnView}>
+                <MaterialCommunityIcons
+                  name="share"
+                  size={18}
+                  style={styles.actionIcon}
+                  color={Blue.primary}
+                />
+                <Text style={styles.shareTxt}>Share</Text>
+              </View>
+            </Button>
+          </>
+        )}
+      </View>
+      <SharePostModal
+        showModal={showShareModal}
+        post={{
+          _id: props.postId,
+          title: props.postTitle,
+          type: props.postType
+        }}
+        onClose={() => setShowShareModal(false)}
+      />
+    </>
   );
 }
 

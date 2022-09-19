@@ -148,6 +148,8 @@ export default function ArtWorkDetail() {
             downVoted={post?.voted === 'down'}
             upVoted={post?.voted === 'up'}
             postId={post?._id}
+            postTitle={post?.title}
+            postType="artwork"
             style={styles.MT}
             loading={loading}
           />

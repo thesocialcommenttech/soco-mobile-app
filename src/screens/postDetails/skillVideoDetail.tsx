@@ -86,6 +86,8 @@ export default function SkillVideoDetail() {
             downVoted={post?.voted === 'down'}
             upVoted={post?.voted === 'up'}
             postId={post?._id}
+            postTitle={post?.title}
+            postType="skill"
             style={styles.MT}
             loading={loading}
           />

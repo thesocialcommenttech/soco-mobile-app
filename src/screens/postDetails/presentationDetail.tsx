@@ -200,6 +200,8 @@ export default function PresentationDetail() {
             downVoted={post?.voted === 'down'}
             upVoted={post?.voted === 'up'}
             postId={post?._id}
+            postTitle={post?.title}
+            postType="presentation"
             style={styles.MT}
             loading={loading}
           />
