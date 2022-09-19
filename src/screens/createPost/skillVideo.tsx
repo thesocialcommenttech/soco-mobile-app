@@ -38,6 +38,8 @@ import { getPost } from '~/src/utils/services/user-posts_service/getPost.service
 import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPost.interface';
 import Loading from '~/src/components/theme/Loading';
 import { staticFileSrc } from '~/src/utils/methods';
+import { useSelector } from 'react-redux';
+import { IRootReducer } from '~/src/store/reducers';
 
 interface UploadSkillForm {
   title: string;
@@ -58,6 +60,7 @@ type SkillPostData = GetPostResponse<
     | 'video'
     | '_id'
     | 'category'
+    | 'postedBy'
   >
 >['post'];
 
@@ -69,6 +72,7 @@ export default function SkillVideo() {
   let postStatus = useRef<Post['postStatus']>('published').current;
   const isEdit = useMemo(() => !!route.params?.postId, [route.params?.postId]);
   const [loading, setLoading] = useState(false);
+  const authUser = useSelector((root: IRootReducer) => root.auth.user);
 
   async function submitPresentation(values: UploadSkillForm) {
     const currentTimestamp = new Date().toString();
@@ -187,6 +191,11 @@ export default function SkillVideo() {
     });
 
     if (result.data.success) {
+      if (result.data.post.postedBy._id !== authUser._id) {
+        navigation.pop();
+        return;
+      }
+
       formik.setValues({
         category: result.data.post.category,
         description: result.data.post.description,

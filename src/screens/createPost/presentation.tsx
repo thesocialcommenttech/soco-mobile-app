@@ -46,6 +46,8 @@ import Loading from '~/src/components/theme/Loading';
 import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPost.interface';
 import { getPost } from '~/src/utils/services/user-posts_service/getPost.service';
 import { staticFileSrc } from '~/src/utils/methods';
+import { useSelector } from 'react-redux';
+import { IRootReducer } from '~/src/store/reducers';
 
 interface UploadPresentationForm {
   title: string;
@@ -58,7 +60,13 @@ interface UploadPresentationForm {
 type PostData = GetPostResponse<
   Pick<
     PresentationPost,
-    'title' | 'description' | 'tags' | 'featureImage' | 'slides' | '_id'
+    | 'title'
+    | 'description'
+    | 'tags'
+    | 'featureImage'
+    | 'slides'
+    | '_id'
+    | 'postedBy'
   >
 >['post'];
 
@@ -71,6 +79,7 @@ export default function Presentation() {
   let postStatus = useRef<Post['postStatus']>('published').current;
   const route = useRoute<UploadPostScreenProps['route']>();
   const [loading, setLoading] = useState(false);
+  const authUser = useSelector((root: IRootReducer) => root.auth.user);
 
   const isEdit = useMemo(() => !!route.params?.postId, [route.params?.postId]);
 
@@ -184,6 +193,11 @@ export default function Presentation() {
     });
 
     if (result.data.success) {
+      if (result.data.post.postedBy._id !== authUser._id) {
+        navigation.pop();
+        return;
+      }
+
       formik.setValues({
         description: result.data.post.description,
         slides: result.data.post.slides.map(slide => slide.slideUrl),

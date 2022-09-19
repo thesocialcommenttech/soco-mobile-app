@@ -29,6 +29,8 @@ import { getPost } from '~/src/utils/services/user-posts_service/getPost.service
 import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPost.interface';
 import { staticFileSrc } from '~/src/utils/methods';
 import Loading from '~/src/components/theme/Loading';
+import { useSelector } from 'react-redux';
+import { IRootReducer } from '~/src/store/reducers';
 
 interface UploadArtworkForm {
   title: string;
@@ -41,11 +43,18 @@ interface UploadArtworkForm {
 type PostData = GetPostResponse<
   Pick<
     ArtworkPost,
-    'title' | 'description' | 'tags' | 'featureImage' | '_id' | 'category'
+    | 'title'
+    | 'description'
+    | 'tags'
+    | 'featureImage'
+    | '_id'
+    | 'category'
+    | 'postedBy'
   >
 >['post'];
 
 export default function ArtWork() {
+  const authUser = useSelector((root: IRootReducer) => root.auth.user);
   const navigation = useNavigation<UploadPostScreenProps['navigation']>();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const route = useRoute<UploadPostScreenProps['route']>();
@@ -128,6 +137,11 @@ export default function ArtWork() {
     });
 
     if (result.data.success) {
+      if (result.data.post.postedBy._id !== authUser._id) {
+        navigation.pop();
+        return;
+      }
+
       formik.setValues({
         category: result.data.post.category,
         description: result.data.post.description,

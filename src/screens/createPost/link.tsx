@@ -23,6 +23,8 @@ import { GetPostResponse } from '~/src/utils/typings/user-posts_interface/getPos
 import { getPost } from '~/src/utils/services/user-posts_service/getPost.service';
 import Loading from '~/src/components/theme/Loading';
 import { staticFileSrc } from '~/src/utils/methods';
+import { useSelector } from 'react-redux';
+import { IRootReducer } from '~/src/store/reducers';
 interface LinkPostForm {
   title: string;
   description: string;
@@ -34,7 +36,13 @@ interface LinkPostForm {
 type PostData = GetPostResponse<
   Pick<
     LinkPost,
-    'title' | 'description' | 'tags' | 'featureImage' | '_id' | 'link'
+    | 'title'
+    | 'description'
+    | 'tags'
+    | 'featureImage'
+    | '_id'
+    | 'link'
+    | 'postedBy'
   >
 >['post'];
 
@@ -43,6 +51,7 @@ export default function UploadLink() {
   const route = useRoute<UploadPostScreenProps['route']>();
   const isEdit = useMemo(() => !!route.params?.postId, [route.params?.postId]);
   const [loading, setLoading] = useState(false);
+  const authUser = useSelector((root: IRootReducer) => root.auth.user);
 
   async function chooseFile() {
     try {
@@ -130,6 +139,11 @@ export default function UploadLink() {
     });
 
     if (result.data.success) {
+      if (result.data.post.postedBy._id !== authUser._id) {
+        navigation.pop();
+        return;
+      }
+
       formik.setValues({
         description: result.data.post.description,
         featureImage: result.data.post.featureImage,
