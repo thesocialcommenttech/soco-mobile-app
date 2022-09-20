@@ -359,7 +359,7 @@ function SideMenu() {
             fullWidth
             btnStyle={{ borderRadius: 0 }}
             onPress={() => {
-              // setVisible(false);
+              setOpen(false);
               dispatch(setAuthToLogout());
             }}
           >
