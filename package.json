@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "release": "cd android && gradlew bundleRelease"
   },
   "dependencies": {
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
