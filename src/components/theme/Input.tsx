@@ -136,7 +136,7 @@ export type InputProps = {
     | ((props: {
         focused: boolean;
         setFocused: Dispatch<SetStateAction<boolean>>;
-        textInputDim: LayoutRectangle;
+        // textInputDim: LayoutRectangle;
         style: StyleProp<ViewStyle>;
       }) => ReactElement);
 };
@@ -209,7 +209,7 @@ export function Input({
                 children({
                   focused,
                   setFocused,
-                  textInputDim,
+                  // textInputDim,
                   style: styles.textView
                 })
               ) : (
@@ -230,13 +230,13 @@ export function Input({
                   styles.text,
                   styles.textView,
                   !label && { paddingTop: 16 },
-                  textInputDim && { width: textInputDim.width },
+                  // textInputDim && { width: textInputDim.width },
                   inputProp?.style
                 ]}
                 selectionColor={Blue[50]}
-                onLayout={e => {
-                  setTextInputDim(e.nativeEvent.layout);
-                }}
+                // onLayout={e => {
+                //   setTextInputDim(e.nativeEvent.layout);
+                // }}
               />
             )}
             {suffix}
