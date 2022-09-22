@@ -8,6 +8,7 @@ import store from './src/store';
 import SOCOToast from '~/src/components/theme/Toast';
 import './src/utils/ignoreWarnings';
 import * as SecureStore from 'expo-secure-store';
+import 'react-native-get-random-values';
 import { nanoid } from 'nanoid';
 import { useDeviceId } from './src/state/deviceIdState';
 import { BACKEND_URL } from '@env';
