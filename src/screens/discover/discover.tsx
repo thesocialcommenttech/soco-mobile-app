@@ -22,14 +22,17 @@ import { staticFileSrc } from '~/src/utils/methods';
 import Post from '~/src/components/Post';
 import { ActivityIndicator } from 'react-native-paper';
 import { debounce } from 'lodash';
+import Loading from '~/src/components/theme/Loading';
 
 const PostTypeFilterOption = ({
   label,
   isSelected,
+  disabled,
   onPress
 }: {
   label: string;
   isSelected: boolean;
+  disabled: boolean;
   onPress: () => void;
 }) => {
   const selected = useMemo(() => isSelected, [isSelected]);
@@ -37,6 +40,7 @@ const PostTypeFilterOption = ({
   return (
     <TouchableOpacity
       style={[styles.item, selected && styles.itemSelected]}
+      disabled={disabled}
       onPress={() => {
         onPress();
         // setSelected(!selected);
@@ -49,17 +53,19 @@ const PostTypeFilterOption = ({
   );
 };
 
+type PostTypeFilter = PostType | '';
 function DiscoverScreen({ navigation }) {
   const [searchText, setSearchText] = useState('');
   const [posts, setPosts] = useState<GetDiscoveredPostsResponse['posts']>([]);
   const [loading, setLoading] = useState(true);
-  const [postTypeFilter, setPostTypeFilter] = useState<PostType | ''>('');
+
+  const [postTypeFilter, setPostTypeFilter] = useState<PostTypeFilter>('');
   const [pageState, setPageState] = useState<{
     pageNo: number;
     pageSize: number;
   }>({
     pageNo: 0,
-    pageSize: 20
+    pageSize: 10
   });
 
   const debouncedOnSearch = useMemo(
@@ -67,17 +73,31 @@ function DiscoverScreen({ navigation }) {
     [setSearchText]
   );
 
-  async function fetchData() {
+  const fetchNextPage = () => {
+    if (loading) {
+      return;
+    }
+
+    fetchData(pageState.pageNo + 1, postTypeFilter);
+  };
+
+  async function fetchData(pageNo = 0, postType: PostTypeFilter = '') {
     setLoading(true);
     const result = await getDiscoveredPosts({
-      pageNo: pageState.pageNo,
+      pageNo,
+      type: postType,
       size: pageState.pageSize,
-      type: postTypeFilter,
       proj: 'shares views description postedOn postType featureImage title comments upvotes totalSlides'
     });
 
     if (result.data.success) {
-      setPosts([...posts, ...result.data.posts]);
+      setPosts(
+        postTypeFilter === postType
+          ? [...posts, ...result.data.posts]
+          : result.data.posts
+      );
+      setPageState({ ...pageState, pageNo });
+      setPostTypeFilter(postType);
     }
     //console.log(result);
     setLoading(false);
@@ -99,7 +119,7 @@ function DiscoverScreen({ navigation }) {
 
   useEffect(() => {
     fetchData();
-  }, [pageState, postTypeFilter]);
+  }, []);
 
   const postTypeFilterOptions: {
     value: PostType | '';
@@ -167,40 +187,32 @@ function DiscoverScreen({ navigation }) {
             <PostTypeFilterOption
               key={i + item.value}
               label={item.label}
+              disabled={loading}
               isSelected={postTypeFilter === item.value}
-              onPress={() => setPostTypeFilter(item.value)}
+              onPress={() => {
+                setPosts([]);
+                return fetchData(pageState.pageNo, item.value);
+              }}
             />
           ))}
           <View style={styles.padd} />
         </ScrollView>
-        {loading ? (
-          <View style={styles.loadingCt}>
-            <ActivityIndicator color={Blue.primary} size={32} />
-          </View>
-        ) : (
-          <>
-            <FlatList
-              data={posts}
-              keyExtractor={item => item._id}
-              onEndReachedThreshold={0.33}
-              onEndReached={() =>
-                setPageState({
-                  pageNo: pageState.pageNo + 1,
-                  pageSize: pageState.pageSize
-                })
-              }
-              renderItem={({ item }) => (
-                <Post
-                  data={item}
-                  postWrapperStyle={{
-                    borderTopWidth: 1,
-                    borderTopColor: Colors.GrayLine
-                  }}
-                />
-              )}
+        <FlatList
+          data={posts}
+          keyExtractor={item => item._id}
+          onEndReachedThreshold={0.33}
+          ListFooterComponent={loading && <Loading />}
+          onEndReached={fetchNextPage}
+          renderItem={({ item }) => (
+            <Post
+              data={item}
+              postWrapperStyle={{
+                borderTopWidth: 1,
+                borderTopColor: Colors.GrayLine
+              }}
             />
-          </>
-        )}
+          )}
+        />
       </>
     </ScreenWithTopBar>
   );

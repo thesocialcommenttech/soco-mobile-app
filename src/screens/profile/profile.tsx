@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Avatar } from '@rneui/base';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CreatePostFAB from '../../components/CreatePostFAB';
@@ -25,24 +25,17 @@ import { User } from '~/src/utils/typings/user-profile_interface/getUserData.int
 import { PostType } from '~/src/utils/typings/post';
 import {
   ProfileDataProvider,
-  ProfileContext,
   useProfile
 } from '~/src/state/profileScreenState';
 import Loading from '~/src/components/theme/Loading';
 import Button from '~/src/components/theme/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { AxiosResponse } from 'axios';
-import { FollowUserResponse } from '~/src/utils/typings/follow-user_interface/followUser.interface';
-import { unfollowUser } from '~/src/utils/services/follow-user_service/unfollowUser.service';
-import { followUser } from '~/src/utils/services/follow-user_service/followUser.service';
 import { ProfileScreenProps } from '~/src/types/navigation/profile';
-import { useStore } from 'zustand';
 import UpdateBioModal from '~/src/components/modals/profile/UpdateBio';
 import UpdateProfileCoverImageModal from '~/src/components/modals/profile/UpdateProfileCoverImage';
 import UpdateCaptionModal from '~/src/components/modals/profile/UpdateCaption';
-import Color from 'color';
-import { lockUserPortfolio } from '~/src/utils/services/user-portfolio_service/lockUserPortfolio.service';
-import produce from 'immer';
+import { FollowToggleBtn } from '~/src/components/screens/profile/FollowToggleBtn';
+import { LockPortfolioBtn } from '~/src/components/screens/profile/LockPortfolioBtn';
 
 function PostState({ title, count }: { title: string; count: number }) {
   return (
@@ -59,24 +52,25 @@ function _ProfileScreen_() {
   const navigation = useNavigation<ProfileScreenProps['navigation']>();
   const route = useRoute<ProfileScreenProps['route']>();
   const auth = useSelector((state: IRootReducer) => state.auth);
-  const [pageState, setPageState] = useState({
-    pageNo: 0,
-    pageSize: 20
-  });
-
   const { setUserProfile, userProfile } = useProfile();
+  const [pageState, setPageState] = useState({ pageNo: 0, pageSize: 20 });
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible1, setModalVisible1] = useState(false);
+  const [modalVisible2, setModalVisible2] = useState(false);
+
+  const [posts, setPosts] = useState<GetPostsResponse['posts']>([]);
+
+  const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [postsLoading, setPostsLoading] = useState(true);
 
   const mine = useMemo(
     () => auth.user?.username === route.params?.username,
     [auth.user, route.params]
   );
 
-  const [posts, setPosts] = useState<GetPostsResponse['posts']>(null);
-
-  const [profileLoading, setProfileLoading] = useState(true);
-  const [postsLoading, setPostsLoading] = useState(true);
-
-  async function fetchUserProfile() {
+  const fetchUserProfile = async () => {
     setProfileLoading(true);
     const profileProjection =
       'name email email_verified coverImage onboard isFollowing totalViews totalPosts postTypes.postType postTypes.totalPosts favouritePostsCount followerUsersCount followingUsersCount profileImage caption timelineTextureImage username bio portfolioLock premium';
@@ -97,40 +91,53 @@ function _ProfileScreen_() {
       });
     }
     setProfileLoading(false);
-  }
+  };
 
-  async function fetchPosts() {
+  const fetchPosts = async (pageNo = 0) => {
     setPostsLoading(true);
     const postProjection =
       'shares views postedOn link postedBy postType featureImage totalSlides description sharedPost title comments upvotes downvotes aim';
 
     const result = await getPosts(
       route.params?.user_id ?? auth.user._id,
-      pageState.pageNo,
+      pageNo,
       postProjection,
       pageState.pageSize
     );
 
     if (result.data.success) {
-      setPosts(result.data.posts);
+      setPosts([...posts, ...result.data.posts]);
+      setPageState({ ...pageState, pageNo });
     }
     setPostsLoading(false);
-  }
+  };
 
-  function fetchScreenData() {
-    fetchUserProfile();
-    fetchPosts();
-  }
+  const fetchScreenData = async () => {
+    setLoading(true);
+    setPosts([]);
+    await Promise.all([fetchUserProfile(), fetchPosts()]);
+    setLoading(false);
+  };
+
+  const onScroll = async ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize
+  }) => {
+    const isCloseToBottom =
+      parseInt(layoutMeasurement.height + contentOffset.y, 10) >=
+      parseInt(contentSize.height, 10);
+
+    if (isCloseToBottom && !postsLoading) {
+      await fetchPosts(pageState.pageNo + 1);
+    }
+  };
 
   useEffect(() => {
     fetchScreenData();
   }, []);
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalVisible1, setModalVisible1] = useState(false);
-  const [modalVisible2, setModalVisible2] = useState(false);
-
-  if (profileLoading || postsLoading) {
+  if (loading) {
     return <Loading />;
   }
 
@@ -150,11 +157,10 @@ function _ProfileScreen_() {
       />
       <ScrollView
         style={styles.container}
+        onScroll={({ nativeEvent }) => onScroll(nativeEvent)}
+        scrollEventThrottle={20}
         refreshControl={
-          <RefreshControl
-            refreshing={profileLoading || postsLoading}
-            onRefresh={fetchScreenData}
-          />
+          <RefreshControl refreshing={loading} onRefresh={fetchScreenData} />
         }
       >
         <View style={styles.coverCt}>
@@ -227,10 +233,12 @@ function _ProfileScreen_() {
                 });
               }
             }}
-            textStyle={{ color: 'white', marginLeft: 20 }}
+            textStyle={{ color: 'white', ...(mine && { marginLeft: 20 }) }}
             btnStyle={[
               styles.portfolio,
-              mine && styles.portfolio_Mine
+              mine
+                ? styles.portfolio_Mine
+                : { width: Dimensions.get('window').width / 2 - 30 }
               // !userProfile.premium && styles.portfolioLocked
             ]}
           />
@@ -347,55 +355,10 @@ function _ProfileScreen_() {
             }}
           />
         ))}
+        {postsLoading && <Loading />}
       </ScrollView>
       {mine && <CreatePostFAB />}
     </>
-  );
-}
-
-function LockPortfolioBtn() {
-  const { setUserProfile, userProfile } = useProfile();
-  const [loading, setLoading] = useState(false);
-
-  const locked = useMemo(
-    () => userProfile?.portfolioLock === 'PRIVATE',
-    [userProfile?.portfolioLock]
-  );
-
-  const togglePortfolioState = async () => {
-    setLoading(true);
-    const portfolioState = locked ? 'PUBLIC' : 'PRIVATE';
-    const result = await lockUserPortfolio(portfolioState);
-
-    if (result.data.success) {
-      setUserProfile(
-        produce(userProfile, draft => {
-          draft.portfolioLock = portfolioState;
-        })
-      );
-    }
-    setLoading(false);
-  };
-
-  return (
-    <Button
-      type="filled"
-      onPress={togglePortfolioState}
-      disabled={loading}
-      processing={loading}
-      // disabled={!userProfile.premium}
-      btnStyle={[
-        styles.portfolioLock,
-        loading && { backgroundColor: Blue.primary }
-        // !userProfile.premium && styles.portfolioLockDisabled
-      ]}
-    >
-      <MaterialCommunityIcon
-        name={locked ? 'lock-outline' : 'lock-open-variant-outline'}
-        size={20}
-        color={Colors.White}
-      />
-    </Button>
   );
 }
 
@@ -500,28 +463,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     marginRight: 0
   },
-  portfolioLocked: {
-    backgroundColor: Blue[200]
-  },
-  followBtn: {
-    flexGrow: 1,
-    flexShrink: 0
-  },
-  followBtnText: {
-    textTransform: 'capitalize'
-  },
-  unFollowBtn: { borderColor: Black[600] },
-  unFollowBtnText: { color: Black[600] },
-  portfolioLock: {
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
-    borderLeftColor: Blue[400],
-    borderLeftWidth: 1
-  },
-  portfolioLockDisabled: {
-    backgroundColor: Blue[200],
-    borderLeftColor: Color(Blue[300]).lighten(0.08).rgb().toString()
-  },
+  // portfolioLocked: {
+  //   backgroundColor: Blue[200]
+  // },
   bio: {
     marginTop: 20,
     marginHorizontal: 20
@@ -617,53 +561,6 @@ const styles = StyleSheet.create({
     padding: 4
   }
 });
-
-function FollowToggleBtn() {
-  const store = useContext(ProfileContext);
-  const { setUserProfile, userProfile } = useStore(store);
-  const [loading, setLoading] = useState(false);
-
-  async function toggleFollow() {
-    try {
-      setLoading(true);
-      let result: AxiosResponse<FollowUserResponse>;
-      if (userProfile.isFollowing) {
-        result = await unfollowUser(userProfile._id);
-      } else {
-        result = await followUser(userProfile._id);
-      }
-
-      if (result.data.success) {
-        setUserProfile({
-          ...userProfile,
-          isFollowing: !userProfile.isFollowing
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-  return (
-    <Button
-      text={userProfile.isFollowing ? 'Following' : 'Follow'}
-      fullWidth
-      type="outlined"
-      onPress={toggleFollow}
-      disabled={loading}
-      processing={loading}
-      btnStyle={[
-        styles.followBtn,
-        userProfile.isFollowing && styles.unFollowBtn
-      ]}
-      textStyle={[
-        styles.followBtnText,
-        userProfile.isFollowing && styles.unFollowBtnText
-      ]}
-    />
-  );
-}
 
 function ProfileState(props: { title: string; value: string | number }) {
   return (
