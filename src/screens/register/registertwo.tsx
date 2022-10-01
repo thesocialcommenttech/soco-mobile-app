@@ -6,249 +6,244 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
-import { useFormik } from 'formik';
-import { object, string } from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  selectUserDetails,
-  setUserDetails
-} from '../../store/reducers/register';
+import { FormikHelpers, useFormik } from 'formik';
+import { object, string, date } from 'yup';
+import { useDispatch } from 'react-redux';
 import CustomRadioButton from '../../components/customRadioButton';
 import { TextInput } from 'react-native-paper';
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import {
+  DateTimePickerAndroid,
+  DateTimePickerEvent
+} from '@react-native-community/datetimepicker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import { setAuth } from '../../store/reducers/info';
+import { Colors, Yellow } from '../../utils/colors';
+import { register } from '../../utils/services/register_service/register.service';
+import { AuthActionTypes, setAuthToLogin } from '../../store/actions/auth';
+import { ThunkDispatch } from 'redux-thunk';
+import { IRootReducer } from '~/src/store/reducers';
+import { useRegisterData } from '~/src/state/registerScreenState';
+import { RegisterPersonalData } from '~/src/utils/typings/register_interfaces/register.interfce';
+import dayjs from 'dayjs';
+import { RootRouteContext } from '~/src/contexts/root-route.context';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Input, RadioButton } from '~/src/components/theme/Input';
+import Button from '~/src/components/theme/Button';
 
-const RegisterTwoScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const state = useSelector(selectUserDetails);
+function RegisterTwoScreen({ route, navigation }) {
+  const {
+    accountDetails,
+    resetRegisterFormData,
+    personalDetails,
+    setPersonalDetails
+  } = useRegisterData();
 
-  const [date, setDate] = useState(new Date());
+  const { showPostRegisterationFlow } = useContext(RootRouteContext);
 
-  const onChange = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate;
-    setDate(currentDate);
-    dispatch(
-      setUserDetails({
-        ...state,
-        dob: currentDate.toLocaleDateString()
-      })
-    );
-  };
+  // const [date, setDate] = useState(new Date());
+  const dispatch =
+    useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
 
-  const showMode = currentMode => {
+  function openDatePicker(
+    currValue: Date,
+    onChange: (event: DateTimePickerEvent, date?: Date) => void
+  ) {
     DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode: currentMode,
-      is24Hour: true
+      value: currValue ?? new Date(),
+      mode: 'date',
+      is24Hour: true,
+      onChange
     });
+  }
+
+  const onRegister = async (
+    values: RegisterPersonalData,
+    formikActions: FormikHelpers<RegisterPersonalData>
+  ) => {
+    try {
+      const result = await register({ ...accountDetails, ...values });
+
+      if (result.data?.success) {
+        dispatch(
+          setAuthToLogin({
+            user: result.data.user,
+            token: result.data.token
+          })
+        );
+        formikActions.resetForm();
+        resetRegisterFormData();
+        // navigation.navigate('OptionalInfo', result.data);
+        showPostRegisterationFlow(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const onRegister = (values: any) => {
-    dispatch(
-      setUserDetails({
-        ...state,
-        gender: values.gender,
-        academics: values.academics
-      })
-    );
-    dispatch(setAuth(true));
-    navigation.navigate('RegisterTwo');
-  };
-
-  const RegisterSchema = object().shape({
-    gender: string().required('Gender is required'),
-    academics: string().required('Academics is required')
-  });
-
-  const formik = useFormik({
-    initialValues: state,
-    validationSchema: RegisterSchema,
+  const formik = useFormik<RegisterPersonalData>({
+    initialValues: {
+      academic: personalDetails?.academic,
+      dob: personalDetails?.dob,
+      gender: personalDetails?.gender
+    },
+    validationSchema: object().shape({
+      gender: string().required('Gender is required'),
+      academic: string().required('Academic is required'),
+      dob: date().required('Date of Birth is required').nullable()
+    }),
     onSubmit: onRegister
   });
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.outContainer}>
-        <AntIcon
-          name="left"
-          size={20}
-          color="black"
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-        />
-        <ScrollView>
-          <View style={styles.container}>
-            <Text style={styles.perDet}>Personal Details</Text>
-            <CustomRadioButton
-              label={'Gender'}
-              option1="Male"
-              option2="Female"
-              onPress={(option: string) => {
-                formik.setFieldValue('gender', option);
-              }}
-              onBlur={formik.handleBlur('gender')}
-              errorTxt={formik.touched.gender && formik.errors.gender}
-            />
-            <CustomRadioButton
-              label={'Academics'}
-              option1="Graduate"
-              option2="Undergraduate"
-              onPress={(option: string) => {
-                formik.setFieldValue('academics', option);
-              }}
-              onBlur={formik.handleBlur('academics')}
-              errorTxt={formik.touched.academics && formik.errors.academics}
-            />
-            <TextInputWithLabel
-              placeholder="dd/mm/yyyy"
-              label="Date of Birth"
-              inputStyle={styles.dobTB}
-              value={date.toLocaleDateString()}
-              errorTxt={formik.touched.dob && formik.errors.dob}
-              onBlur={formik.handleBlur('dob')}
-              right={
-                <TextInput.Icon
-                  color="#000"
-                  name={'calendar-blank'}
-                  style={styles.cal}
-                  onPress={showDatepicker}
-                />
+    <ScrollView>
+      <View style={styles.container}>
+        <Text style={styles.perDet}>Personal Details</Text>
+        <Input
+          label="Gender"
+          style={styles.MT}
+          error={formik.touched.gender && formik.errors.gender}
+        >
+          {({ style }) => (
+            <View
+              style={[style, { flexDirection: 'row', paddingHorizontal: 20 }]}
+            >
+              <RadioButton
+                selected={formik.values.gender === 'male'}
+                buttonProps={{
+                  fullWidth: true,
+                  text: 'Male',
+                  btnStyle: { marginRight: 20 },
+                  onPress: () => {
+                    formik.setFieldValue('gender', 'male');
+                  }
+                }}
+              />
+              <RadioButton
+                selected={formik.values.gender === 'female'}
+                buttonProps={{
+                  fullWidth: true,
+                  text: 'Female',
+                  btnStyle: { flexGrow: 1 },
+                  onPress: () => {
+                    formik.setFieldValue('gender', 'female');
+                  }
+                }}
+              />
+            </View>
+          )}
+        </Input>
+        <Input
+          label="Academic"
+          style={styles.MT}
+          error={formik.touched.academic && formik.errors.academic}
+        >
+          {({ style }) => (
+            <View
+              style={[style, { flexDirection: 'row', paddingHorizontal: 20 }]}
+            >
+              <RadioButton
+                selected={formik.values.academic === 'male'}
+                buttonProps={{
+                  fullWidth: true,
+                  text: 'Graduate',
+                  btnStyle: { marginRight: 20 },
+                  onPress: () => {
+                    formik.setFieldValue('academic', 'graduate');
+                  }
+                }}
+              />
+              <RadioButton
+                selected={formik.values.academic === 'undergraduate'}
+                buttonProps={{
+                  fullWidth: true,
+                  text: 'Undergraduate',
+                  btnStyle: { flexGrow: 1 },
+                  onPress: () => {
+                    formik.setFieldValue('academic', 'female');
+                  }
+                }}
+              />
+            </View>
+          )}
+        </Input>
+        <Input
+          label="Passout Year"
+          style={styles.MT}
+          onPress={() => {
+            openDatePicker(
+              formik.values.dob as Date,
+              async (event, selectedDate) => {
+                await formik.setFieldValue('dob', selectedDate);
+                formik.setFieldTouched('dob');
               }
-              editable={false}
-            />
-            <ButtonWithLoader
-              text="Register"
-              onPress={formik.handleSubmit}
-              btnStyle={styles.registerBtn}
-              submitting={formik.isSubmitting}
-            />
-          </View>
-        </ScrollView>
+            );
+          }}
+          inputProp={{
+            placeholder: 'dd/mm/yyyy',
+            value:
+              formik.values.dob &&
+              dayjs(formik.values.dob).format('DD/MM/YYYY'),
+            editable: false,
+            onChangeText: formik.handleChange('dob'),
+            onBlur: formik.handleBlur('dob')
+          }}
+          error={formik.touched.dob && (formik.errors.dob as string)}
+          suffix={
+            <Button
+              size="sm"
+              btnStyle={{ alignSelf: 'center', marginRight: -15 }}
+              onPress={() => {
+                formik.setFieldTouched('passYear');
+                openDatePicker(
+                  formik.values.dob as Date,
+                  async (event, selectedDate) => {
+                    await formik.setFieldValue('dob', selectedDate);
+                  }
+                );
+              }}
+            >
+              <MaterialCommunityIcons name="calendar" size={24} />
+            </Button>
+          }
+        />
+        <Button
+          text="Register"
+          fullWidth
+          type="filled"
+          onPress={formik.handleSubmit}
+          processing={formik.isSubmitting}
+          disabled={formik.isSubmitting}
+          textStyle={{ color: 'black' }}
+          btnStyle={styles.registerBtn}
+        />
       </View>
-    </TouchableWithoutFeedback>
+    </ScrollView>
   );
-};
+}
 
 export default RegisterTwoScreen;
 
 const styles = StyleSheet.create({
-  outContainer: {
-    flex: 1,
-    backgroundColor: '#fff'
-  },
   container: {
     flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20,
-    backgroundColor: '#fff'
-  },
-  backBtn: {
     padding: 20
   },
-  register: {
-    fontFamily: 'Roboto-Medium',
-    fontSize: 32,
-    fontWeight: '500',
-    marginBottom: 20,
-    color: '#000',
-    fontStyle: 'normal',
-    lineHeight: 32,
-    marginTop: '3%'
+  MT: {
+    marginTop: 29
   },
   perDet: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontSize: 16,
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 16,
-    color: '#BDBDBD',
+    color: Colors.Gray200,
     marginTop: '4%'
   },
-  forPass: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 16.41,
-    color: '#AFAFBD',
-    marginTop: '20%'
-  },
-  dontAcc: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 16.41,
-    color: '#AFAFBD',
-    marginTop: '3%'
-  },
-  crAcc: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 16.41,
-    color: '#0063FF'
-  },
-  dobTB: {
-    marginTop: '-6%'
-  },
-  cal: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
   registerBtn: {
-    backgroundColor: '#FFCA12',
-    height: 46,
-    borderRadius: 8,
-    marginTop: '12%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    bottom: '2%'
-  },
-  txtAcct: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  txtCr: { marginTop: '3%' },
-  checkbox: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 16.41,
-    color: '#AFAFBD'
-  },
-  checkboxContainer: {
-    marginTop: '3%'
-  },
-  titleProps: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 21,
-    color: 'black',
-    marginLeft: '5%'
-  },
-  error: {
-    fontSize: 12,
-    fontFamily: 'Roboto-Regular',
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 14,
-    color: '#EE0000',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: '3%'
+    backgroundColor: Yellow.primary,
+    marginTop: 20
   }
 });

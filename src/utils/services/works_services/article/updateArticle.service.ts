@@ -18,7 +18,7 @@ export function updateArticle(
   }: UpdateArticleRequest
 ): Promise<AxiosResponse<UpdateArticleResponse>> {
   const config: AxiosRequestConfig = {
-    url: `/user/post/update/article/${postID}`,
+    url: `https://thesocialcomment-backend-test.herokuapp.com/user/post/update/article/${postID}`,
     method: 'POST',
     data: {
       contentJSON,

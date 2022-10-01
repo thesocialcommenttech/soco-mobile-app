@@ -5,11 +5,8 @@ export function getNotifications(): Promise<
   AxiosResponse<GetNotificatiosnresponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/notifications',
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    url: 'user/notifications',
+    method: 'POST'
   };
 
   return axios.request<GetNotificatiosnresponse>(config);

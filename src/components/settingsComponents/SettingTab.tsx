@@ -1,56 +1,59 @@
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableHighlight } from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Black } from '~/src/utils/colors';
 
 export default function SettingTab({
-  name,
-  icon
+  label,
+  icon,
+  screenKey
 }: {
   icon: string;
-  name: string;
+  label: string;
+  screenKey: string;
 }) {
   const navigation = useNavigation();
 
   return (
-    <>
-      <View style={styles.container}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate({ name } as never, {} as never);
-          }}
-        >
-          <View style={styles.information}>
-            <View style={styles.more}>
-              <View style={styles.icon}>
-                {icon === 'wallet-outline'
+    <TouchableHighlight
+      underlayColor={Black[100]}
+      style={styles.container}
+      onPress={() => {
+        navigation.navigate({ name: screenKey } as never, {} as never);
+      }}
+    >
+      <View style={styles.information}>
+        <View style={styles.more}>
+          <View style={styles.icon}>
+            {/* {icon === 'wallet-outline'
                   ? [<Icon1 name={icon} size={23} color="black" />]
-                  : [<Icon name={icon} size={23} color="black" />]}
-              </View>
-              <View style={styles.name}>
-                <Text style={styles.nametext}>{name}</Text>
-              </View>
-            </View>
-            <View style={styles.rightIcon}>
-              <Icon name="chevron-right" size={21} />
-            </View>
+                  : [<Icon name={icon} size={23} color="black" />]} */}
+            <MaterialCommunityIcons name={icon} size={24} color={'black'} />
           </View>
-        </TouchableOpacity>
-        <View style={styles.bottomruler} />
+          <View style={styles.name}>
+            <Text style={styles.nametext}>{label}</Text>
+          </View>
+        </View>
+        {/* <View style={styles.rightIcon}>
+              <Icon name="chevron-right" size={21} />
+            </View> */}
       </View>
-    </>
+    </TouchableHighlight>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: '1%'
+    padding: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: Black[100]
   },
   information: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 6
+    justifyContent: 'space-between'
+    // padding: 6
   },
   more: {
     flexDirection: 'row',
@@ -61,17 +64,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start'
   },
   nametext: {
-    color: 'black'
+    color: 'black',
+    fontSize: 16
   },
   bottomruler: {
     borderBottomColor: '#F0F2F5',
     borderBottomWidth: 1.5
   },
   icon: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 9,
-    width: '35%'
+    marginRight: 15
   },
   rightIcon: {
     justifyContent: 'center'

@@ -1,5 +1,13 @@
 import React from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  RecursiveArray,
+  RegisteredStyle,
+  ViewStyle
+} from 'react-native';
+import { Colors } from '../utils/colors';
 
 /**
  * Function that calculates rotation of the semicircle for firstProgressLayer
@@ -131,7 +139,12 @@ const CircularProgress = ({
   if (!clockwise) {
     rotation += 180;
   }
-  let firstProgressLayerStyle;
+  let firstProgressLayerStyle:
+    | boolean
+    | ViewStyle
+    | RegisteredStyle<ViewStyle>
+    | RecursiveArray<false | ViewStyle | RegisteredStyle<ViewStyle>>
+    | readonly (false | ViewStyle | RegisteredStyle<ViewStyle>)[];
   /* when ther ring's border widths are different and percent is less than 50, then we need an offsetLayer
    * before the original offser layer to avoid ring color of the thick portion to be visible in the background.
    */
@@ -239,13 +252,13 @@ CircularProgress.defaultProps = {
   radius: 50,
   bgRingWidth: 12,
   progressRingWidth: 12,
-  ringColor: '#0063FF',
-  ringBgColor: 'white',
+  ringColor: Colors.Secondary,
+  ringBgColor: Colors.SideBarBackground,
   textFontSize: 40,
   textFontColor: 'black',
   textFontWeight: 'bold',
   clockwise: true,
-  bgColor: '#0063FF',
+  bgColor: Colors.Secondary,
   startDegrees: 0,
   title: 'Progress',
   uri: ''

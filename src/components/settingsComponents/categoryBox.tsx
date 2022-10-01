@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { Colors } from '../../utils/colors';
 
 export default function Categorybox({
   selectCategory,
@@ -36,7 +37,11 @@ export default function Categorybox({
                       selectClose('cancel ' + text);
                     }}
                   >
-                    <Icon name="close" size={15} color="#FFFF" />
+                    <FontAwesomeIcon
+                      name="close"
+                      size={15}
+                      color={Colors.White}
+                    />
                   </TouchableWithoutFeedback>
                 </View>
               ]
@@ -53,8 +58,9 @@ const styles = StyleSheet.create({
     marginBottom: '1.5%'
   },
   close: {
-    marginTop: '2%',
-    marginLeft: '1.5%',
-    marginRight: '1%'
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 2.5,
+    marginLeft: '2%'
   }
 });

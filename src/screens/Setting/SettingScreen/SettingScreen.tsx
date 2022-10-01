@@ -1,79 +1,77 @@
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import SettingTab from '../../../components/settingsComponents/SettingTab';
+import TopBar from '../../../components/topBar';
+import { useNavigation } from '@react-navigation/native';
+import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
 
-const Data = [
-  {
-    id: 1,
-    name: 'Profile',
-    icon: 'user-o'
-  },
-  {
-    id: 2,
-    name: 'Password',
-    icon: 'key'
-  },
-  {
-    id: 3,
-    name: 'Interests',
-    icon: 'heart-o'
-  },
-  {
-    id: 4,
-    name: 'Referral',
-    icon: 'gift'
-  },
-  {
-    id: 5,
-    name: 'Wallet',
-    icon: 'wallet-outline'
-  },
-  {
-    id: 6,
-    name: 'Subscription',
-    icon: 'rupee'
-  },
-  {
-    id: 7,
-    name: 'Notification',
-    icon: 'bell-o'
-  }
-];
+export default function MainSettingScreen() {
+  const navigation = useNavigation();
 
-export default function mainSettingScreen() {
   return (
-    <View style={styles.container}>
-      <View style={styles.heading}>
-        <Text style={styles.headingtext}>Settings</Text>
+    <>
+      {/* <TopBar navigation={navigation} /> */}
+      <View style={styles.container}>
+        {/* <SettingScreenHeader showBackBtn={false} title="Settings" /> */}
+        <View style={styles.mainList}>
+          <SettingTab
+            label="Profile"
+            screenKey="Profile"
+            icon="account-circle-outline"
+          />
+          <SettingTab
+            label="Password"
+            screenKey="Password"
+            icon="account-key-outline"
+          />
+          <SettingTab
+            label="Interests"
+            screenKey="Interests"
+            icon="heart-outline"
+          />
+          <SettingTab
+            label="Referral"
+            screenKey="Referral"
+            icon="wallet-giftcard"
+          />
+          <SettingTab
+            label="Wallet"
+            screenKey="WalletStack"
+            icon="wallet-outline"
+          />
+          <SettingTab
+            label="Subscription"
+            screenKey="Subscription"
+            icon="currency-inr"
+          />
+          <SettingTab
+            label="Notification"
+            screenKey="Notification"
+            icon="bell-outline"
+          />
+        </View>
       </View>
-      <View style={styles.mainList}>
-        <FlatList
-          data={Data}
-          keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => (
-            <SettingTab name={item.name} icon={item.icon} />
-          )}
-        />
-      </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: '1.5%'
+    // margin: '1.5%',
+    backgroundColor: 'white'
   },
   heading: {
-    marginTop: '2%',
-    marginLeft: '2.5%'
+    marginTop: '5.6%',
+    marginLeft: '6%'
   },
   headingtext: {
-    fontSize: 22,
-    fontFamily: 'Roboto-medium',
-    color: 'black'
+    fontSize: 20,
+    fontFamily: 'Roboto-Medium',
+    color: '#000000',
+    fontWeight: '600'
   },
   mainList: {
-    marginTop: '7%'
+    // marginTop: '7%'
   }
 });

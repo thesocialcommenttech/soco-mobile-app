@@ -1,21 +1,12 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import {
-  FollowUserRequest,
-  FollowUserResponse
-} from '../../typings/follow-user_interface/followUser.interface';
+import axios, { AxiosRequestConfig } from 'axios';
+import { FollowUserResponse } from '../../typings/follow-user_interface/followUser.interface';
+import { User } from '../../typings/user-profile_interface/getUserData.interface';
 
-export function followUser({
-  userID
-}: FollowUserRequest): Promise<AxiosResponse<FollowUserResponse>> {
+export function followUser(userID: User['_id']) {
   const config: AxiosRequestConfig = {
-    url: '/user/profile/unfollow',
+    url: 'user/profile/follow',
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    data: {
-      userID
-    }
+    data: { userID }
   };
 
   return axios.request<FollowUserResponse>(config);

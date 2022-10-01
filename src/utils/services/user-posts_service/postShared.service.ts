@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import {
   PostSharedRequest,
   PostSharedResponse
@@ -9,13 +9,10 @@ export function postShared({
   postedOn,
   sharedPostID,
   sharedPostType
-}: PostSharedRequest): Promise<AxiosResponse<PostSharedResponse>> {
+}: PostSharedRequest) {
   const config: AxiosRequestConfig = {
     url: '/user/post/create/shared',
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
     data: { description, postedOn, sharedPostID, sharedPostType }
   };
   return axios.request<PostSharedResponse>(config);

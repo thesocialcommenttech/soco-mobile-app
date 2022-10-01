@@ -1,15 +1,10 @@
-import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { GetUserReferredUsersResponse } from '../../typings/user-referral-data_interface/getUserReferredUsers.interface';
 
-export function getUserReferredUsers(): Promise<
-  AxiosResponse<GetUserReferredUsersResponse>
-> {
+export function getUserReferredUsers() {
   const config: AxiosRequestConfig = {
-    url: '/user/profile/referred-users',
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    url: 'user/profile/referred-users',
+    method: 'GET'
   };
   return axios.request<GetUserReferredUsersResponse>(config);
 }

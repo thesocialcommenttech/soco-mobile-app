@@ -1,165 +1,182 @@
 import {
-  Image,
-  Keyboard,
+  GestureResponderEvent,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
   View
 } from 'react-native';
 import React, { useState } from 'react';
-import TextInputWithLabel from '../../components/textInputWithLabel';
-import ButtonWithLoader from '../../components/buttonWithLoader';
-import { TextInput } from 'react-native-paper';
 import { useFormik } from 'formik';
 import { object, string, boolean } from 'yup';
-import { CheckBox } from '@rneui/base';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  selectUserDetails,
-  setUserDetails
-} from '../../store/reducers/register';
-var logo = require('../../assets/images/logos/Untitled.png');
+import { Black, Colors, Red, Yellow } from '../../utils/colors';
+import { RegisterAccountData } from '../../utils/typings/register_interfaces/register.interfce';
+import { useRegisterData } from '~/src/state/registerScreenState';
+import { Input, InputError, PasswordInput } from '~/src/components/theme/Input';
+import Button from '~/src/components/theme/Button';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const CustomCheckBox = (props: any) => {
+const CustomCheckBox = (props: {
+  onPress: () => void;
+  checked: boolean;
+  error: string;
+}) => {
   return (
     <>
-      <CheckBox
-        checked={props.checked}
-        onPress={props.onPress}
-        onBlur={props.onBlur}
-        title="By sign up you agree to the terms and condition and privacy policy"
-        titleProps={{
-          style: styles.titleProps
-        }}
-        containerStyle={styles.checkboxContainer}
-        size={18}
-        checkedColor="black"
-        uncheckedColor="black"
-      />
-      {props.errorTxt && <Text style={styles.error}>{props.errorTxt}</Text>}
+      <View style={[styles.agreementCt]}>
+        <Button
+          btnStyle={styles.agreementCheckbox}
+          size="sm"
+          onPress={props.onPress}
+        >
+          <MaterialCommunityIcons
+            name={
+              props.checked
+                ? 'checkbox-marked-outline'
+                : 'checkbox-blank-outline'
+            }
+            color={props.error ? Red.primary : 'black'}
+            size={24}
+          />
+        </Button>
+        <Text onPress={props.onPress} style={styles.agreementMsg}>
+          Check your bank Account/UPI details twice, carefully before adding it.
+          For any mistakes in giving the details of the account you are solely
+          responsible.
+        </Text>
+      </View>
+      {props.error && <InputError error={props.error} />}
     </>
   );
 };
 
 const RegisterOneScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const [isSecure, setIsSecure] = useState(true);
-  const state = useSelector(selectUserDetails);
+  const [isPasswordHidden, setIsPasswordHidden] = useState<boolean>(true);
 
-  const onNext = (values: any) => {
-    dispatch(setUserDetails(values));
+  const { setAccountDetails } = useRegisterData();
+
+  function onNext(values: RegisterAccountData) {
+    setAccountDetails(values);
     navigation.navigate('RegisterTwo');
-  };
+  }
 
-  const NextSchema = object().shape({
+  const NextSchema = object({
     email: string()
+      .trim()
       .email('Invalid email address')
       .required('Email is Required'),
-    password: string().required('Password is Required'),
-    name: string().required('Name is Required'),
-    userName: string().required('Username is Required'),
-    isChecked: boolean().oneOf(
+    password: string().trim().required('Password is Required'),
+    name: string().trim().required('Name is Required'),
+    username: string().trim().required('Username is Required'),
+    referal: string().trim(),
+    agreement: boolean().oneOf(
       [true],
       'You must agree to the terms and conditions and privacy policy'
     )
   });
 
-  const Eyelick = () => {
-    setIsSecure(!isSecure);
+  const Eyeclick = () => {
+    setIsPasswordHidden(!isPasswordHidden);
   };
 
-  const formik = useFormik({
-    initialValues: state,
+  const formik = useFormik<RegisterAccountData>({
+    initialValues: {
+      name: '',
+      username: '',
+      email: '',
+      password: '',
+      agreement: false,
+      referal: ''
+    },
     validationSchema: NextSchema,
     onSubmit: onNext
   });
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.outContainer}>
-        <ScrollView>
-          <View style={styles.container}>
-            <Image style={styles.logo} source={logo} />
-            <Text style={styles.register}>Register</Text>
-            <Text style={styles.accDet}>Account Details</Text>
-            <TextInputWithLabel
-              placeholder="Name"
-              label="Name"
-              inputStyle={styles.nameTB}
-              onChangeText={formik.handleChange('name')}
-              value={formik.values.name}
-              errorTxt={formik.touched.name && formik.errors.name}
-              onBlur={formik.handleBlur('name')}
-            />
-            <TextInputWithLabel
-              placeholder="Username"
-              label="Username"
-              inputStyle={styles.usernameTB}
-              onChangeText={formik.handleChange('userName')}
-              value={formik.values.userName}
-              errorTxt={formik.touched.userName && formik.errors.userName}
-              onBlur={formik.handleBlur('userName')}
-            />
-            <TextInputWithLabel
-              placeholder="Email"
-              label="Email"
-              inputStyle={styles.emailTB}
-              onChangeText={formik.handleChange('email')}
-              value={formik.values.email}
-              errorTxt={formik.touched.email && formik.errors.email}
-              onBlur={formik.handleBlur('email')}
-            />
+    <ScrollView keyboardShouldPersistTaps="always">
+      <View style={styles.container}>
+        {/* <Image style={styles.logo} source={logo} /> */}
+        <Text style={styles.register}>Create a new Account</Text>
+        <Text style={styles.accDet}>Account Details</Text>
+        <Input
+          label="Name"
+          inputProp={{
+            placeholder: 'Name',
+            onChangeText: formik.handleChange('name'),
+            value: formik.values.name,
+            onBlur: formik.handleBlur('name')
+          }}
+          error={formik.touched.name && formik.errors.name}
+        />
+        <Input
+          label="Username"
+          style={styles.MT}
+          inputProp={{
+            placeholder: 'Username',
+            onChangeText: formik.handleChange('username'),
+            value: formik.values.username,
+            onBlur: formik.handleBlur('username')
+          }}
+          error={formik.touched.username && formik.errors.username}
+        />
+        <Input
+          label="Email"
+          style={styles.MT}
+          inputProp={{
+            placeholder: 'Email',
+            onChangeText: formik.handleChange('email'),
+            keyboardType: 'email-address',
+            value: formik.values.email,
+            onBlur: formik.handleBlur('email')
+          }}
+          error={formik.touched.email && formik.errors.email}
+        />
 
-            <TextInputWithLabel
-              placeholder="Password"
-              label="Password"
-              isSecureTextEntry={isSecure}
-              inputStyle={styles.passTB}
-              right={
-                <TextInput.Icon
-                  color="#0063ff"
-                  name={isSecure ? 'eye-outline' : 'eye-off-outline'}
-                  onPress={Eyelick}
-                  style={styles.eye}
-                />
-              }
-              value={formik.values.password}
-              onChangeText={formik.handleChange('password')}
-              errorTxt={formik.touched.password && formik.errors.password}
-              onBlur={formik.handleBlur('password')}
-            />
-            <TextInputWithLabel
-              placeholder="Referral (Optional)"
-              label="Referral (Optional)"
-              inputStyle={styles.refTB}
-              onChangeText={formik.handleChange('referralCode')}
-              value={formik.values.referralCode}
-              errorTxt={
-                formik.touched.referralCode && formik.errors.referralCode
-              }
-              onBlur={formik.handleBlur('referralCode')}
-            />
-            <View>
-              <CustomCheckBox
-                checked={formik.values.isChecked}
-                onPress={() => {
-                  formik.setFieldValue('isChecked', !formik.values.isChecked);
-                }}
-                onBlur={formik.handleBlur('isChecked')}
-                errorTxt={formik.touched.isChecked && formik.errors.isChecked}
-              />
-            </View>
-            <ButtonWithLoader
-              text="Next"
-              onPress={formik.handleSubmit}
-              btnStyle={styles.nextBtn}
-              submitting={formik.isSubmitting}
-            />
-          </View>
-        </ScrollView>
+        <PasswordInput
+          label="Password"
+          style={styles.MT}
+          inputProp={{
+            placeholder: 'Password',
+            value: formik.values.password,
+            onChangeText: formik.handleChange('password'),
+            onBlur: formik.handleBlur('password')
+          }}
+          // right={
+          //   <TextInput.Icon
+          //     color={Colors.Secondary}
+          //     name={isPasswordHidden ? 'eye-outline' : 'eye-off-outline'}
+          //     onPress={() => setIsPasswordHidden(!isPasswordHidden)}
+          //     style={styles.eye}
+          //   />
+          // }
+          error={formik.touched.password && formik.errors.password}
+        />
+        <Input
+          label="Referral (Optional)"
+          style={styles.MT}
+          inputProp={{
+            placeholder: 'Referral (Optional)',
+            onChangeText: formik.handleChange('referal'),
+            value: formik.values.referal,
+            onBlur: formik.handleBlur('referal')
+          }}
+          error={formik.touched.referal && formik.errors.referal}
+        />
+        <CustomCheckBox
+          checked={formik.values.agreement}
+          onPress={() => {
+            formik.setFieldValue('agreement', !formik.values.agreement);
+          }}
+          error={formik.touched.agreement && formik.errors.agreement}
+        />
+        <Button
+          text="Next"
+          fullWidth
+          onPress={formik.handleSubmit}
+          textStyle={{ color: 'black' }}
+          btnStyle={styles.nextBtn}
+        />
       </View>
-    </TouchableWithoutFeedback>
+    </ScrollView>
   );
 };
 
@@ -168,127 +185,46 @@ export default RegisterOneScreen;
 const styles = StyleSheet.create({
   outContainer: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   container: {
     flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20,
-    backgroundColor: '#fff'
+    padding: 20
   },
   logo: {
-    marginTop: '5%',
-    width: '57%',
+    // marginTop: 25,
+    width: 180,
     resizeMode: 'contain'
   },
   register: {
     fontFamily: 'Roboto-Medium',
-    fontSize: 32,
-    fontWeight: '500',
-    marginBottom: 20,
-    color: '#000',
-    fontStyle: 'normal',
-    lineHeight: 32,
-    marginTop: '3%'
+    fontSize: 22,
+    marginBottom: 10,
+    marginTop: 30,
+    color: 'black'
   },
   accDet: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontSize: 16,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 16,
-    color: '#BDBDBD',
-    marginTop: '4%'
+    color: Black[500],
+    marginTop: 20,
+    marginBottom: 10
   },
-  forPass: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 16.41,
-    color: '#AFAFBD',
-    marginTop: '20%'
-  },
-  dontAcc: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 16.41,
-    color: '#AFAFBD',
-    marginTop: '3%'
-  },
-  crAcc: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 16.41,
-    color: '#0063FF'
-  },
-  nameTB: {
-    marginTop: '-6%'
-  },
-  usernameTB: {
-    marginTop: '-6%'
-  },
-  emailTB: {
-    marginTop: '-6%'
-  },
-  passTB: {
-    marginTop: '-6%'
-  },
-  refTB: {
-    marginTop: '-6%'
-  },
-  eye: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: '50%'
+  MT: {
+    marginTop: 29
   },
   nextBtn: {
-    backgroundColor: '#FFCA12',
-    height: 46,
-    borderRadius: 8,
-    marginTop: '6%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    bottom: '2%'
+    backgroundColor: Yellow.primary,
+    marginTop: 20
   },
-  txtAcct: {
+  agreementCt: {
     flexDirection: 'row',
-    alignItems: 'center'
+    marginTop: 20
   },
-  txtCr: { marginTop: '3%' },
-  checkbox: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 16.41,
-    color: '#AFAFBD'
+  agreementCheckbox: {
+    marginTop: -8,
+    marginLeft: -5,
+    paddingHorizontal: 10
   },
-  checkboxContainer: {
-    marginTop: '3%'
-  },
-  titleProps: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 21,
-    color: 'black',
-    marginLeft: '5%'
-  },
-  error: {
-    fontSize: 12,
-    fontFamily: 'Roboto-Regular',
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 14,
-    color: '#EE0000',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: '3%'
-  }
+  agreementMsg: { flexShrink: 1, lineHeight: 17, color: 'black' }
 });

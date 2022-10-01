@@ -12,46 +12,73 @@ import React, { useState } from 'react';
 import TextInputWithLabel from '../../components/textInputWithLabel';
 import ButtonWithLoader from '../../components/buttonWithLoader';
 import { TextInput } from 'react-native-paper';
-import { useFormik } from 'formik';
+import { FormikHelpers, useFormik } from 'formik';
 import { object, string } from 'yup';
+import { Black, Blue, Colors, Yellow } from '../../utils/colors';
+import { login } from '../../utils/services/login_service/login.service';
+import { AuthActionTypes, setAuthToLogin } from '../../store/actions/auth';
+import { LoginRequestData } from '../../utils/typings/login_interface/login.interface';
 import { useDispatch } from 'react-redux';
-import { setAuth } from '../../store/reducers/info';
-var logo = require('../../assets/images/logos/Untitled.png');
+import { ThunkDispatch } from 'redux-thunk';
+import { IRootReducer } from '../../store/reducers';
+import Button from '~/src/components/theme/Button';
+import { Input, PasswordInput } from '~/src/components/theme/Input';
+import axios from 'axios';
+import { Link } from '@react-navigation/native';
+import logo from '~/src/assets/images/logos/thesocialcomment-logo.png';
 
 const LoginScreen = ({ navigation }) => {
-  const dispatch = useDispatch();
   const [isSecure, setIsSecure] = useState(true);
-  const state: {
-    email: string;
-    password: string;
-  } = {
-    email: '',
-    password: ''
-  };
+  const dispatch =
+    useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
 
-  const onLogin = (
-    values: any,
-    formikActions: {
-      setSubmitting: (arg0: boolean) => void;
-      resetForm: () => void;
-    }
+  const onLogin = async (
+    values: LoginRequestData,
+    formikActions: FormikHelpers<LoginRequestData>
   ) => {
-    // Will be replaced with API call to backend to authenticate the given emailid and password
-    // dispatch(setUserDetails(values));
-    dispatch(setAuth(true));
+    try {
+      const response = await login({
+        email: values.email,
+        password: values.password
+      });
+
+      if (response.data?.success) {
+        dispatch(
+          setAuthToLogin({
+            user: response.data.user,
+            token: response.data.token
+          })
+        );
+        formikActions.resetForm();
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.message === 'INVALID_PASS') {
+          formikActions.setFieldError('password', 'Invalid password');
+        } else if (error.message === '"email" must be a valid email') {
+          formikActions.setFieldError('email', 'Invalid email');
+        } else if (error.message === 'USER_NOT_FOUND') {
+          formikActions.setFieldError('password', 'Incorrect email/Password');
+          formikActions.setFieldError('email', undefined);
+        }
+      }
+    }
+
     formikActions.setSubmitting(false);
   };
 
-  const LoginSchema = object().shape({
-    email: string()
-      .email('Invalid Email address')
-      .required('Email is Required'),
-    password: string().required('Password is Required')
-  });
-
-  const formik = useFormik({
-    initialValues: state,
-    validationSchema: LoginSchema,
+  const formik = useFormik<LoginRequestData>({
+    initialValues: {
+      email: '',
+      password: ''
+    },
+    validationSchema: object({
+      email: string()
+        .trim()
+        .email('Invalid Email address')
+        .required('Email is Required'),
+      password: string().trim().required('Password is Required')
+    }),
     onSubmit: onLogin
   });
 
@@ -68,58 +95,60 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <ScrollView keyboardShouldPersistTaps="always">
       <View style={styles.container}>
-        <ScrollView>
-          <Image style={styles.logo} source={logo} />
-          <Text style={styles.login}>Login</Text>
-          <TextInputWithLabel
-            placeholder="Email"
-            label="Email"
-            inputStyle={styles.emailTB}
-            onChangeText={formik.handleChange('email')}
-            value={formik.values.email}
-            errorTxt={formik.touched.email && formik.errors.email}
-            onBlur={formik.handleBlur('email')}
-          />
-
-          <TextInputWithLabel
-            placeholder="Password"
-            label="Password"
-            isSecureTextEntry={isSecure}
-            onBlur={formik.handleBlur('password')}
-            inputStyle={styles.passTB}
-            errorTxt={formik.touched.password && formik.errors.password}
-            right={
-              <TextInput.Icon
-                color="#0063ff"
-                name={isSecure ? 'eye-outline' : 'eye-off-outline'}
-                onPress={Eyelick}
-                style={styles.eye}
-              />
-            }
-            value={formik.values.password}
-            onChangeText={formik.handleChange('password')}
-          />
-          <ButtonWithLoader
-            text="Login"
-            onPress={formik.handleSubmit}
-            btnStyle={styles.loginBtn}
-            submitting={formik.isSubmitting}
-          />
-
-          <TouchableOpacity style={styles.fmp} onPress={onForgotPassword}>
-            <Text style={styles.forPass}>Forgot my password</Text>
-          </TouchableOpacity>
-          <View style={styles.txtAcct}>
-            <Text style={styles.dontAcc}>Don't have an account? </Text>
-            <TouchableOpacity style={styles.txtCr} onPress={goToRegister}>
-              <Text style={styles.crAcc}>Create Account</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+        <Image
+          style={styles.logo}
+          resizeMethod="resize"
+          resizeMode="contain"
+          source={logo}
+        />
+        <Text style={styles.login}>Welcome to thesocialcomment</Text>
+        <Input
+          label="Email"
+          inputProp={{
+            placeholder: 'Emaill',
+            onChangeText: formik.handleChange('email'),
+            value: formik.values.email,
+            onBlur: formik.handleBlur('email')
+          }}
+          error={formik.touched.email && formik.errors.email}
+        />
+        <PasswordInput
+          label="Password"
+          style={styles.MT}
+          inputProp={{
+            placeholder: 'Password',
+            onBlur: formik.handleBlur('password'),
+            value: formik.values.password,
+            onChangeText: formik.handleChange('password')
+          }}
+          error={formik.touched.password && formik.errors.password}
+        />
+        <Button
+          text="Login"
+          fullWidth
+          onPress={formik.handleSubmit}
+          btnStyle={styles.loginBtn}
+          textStyle={{ color: 'black' }}
+          disabled={formik.isSubmitting}
+          processing={formik.isSubmitting}
+        />
+        {/* <TouchableOpacity style={styles.fmp} onPress={onForgotPassword}>
+        </TouchableOpacity> */}
+        <View style={{ alignItems: 'center' }}>
+          <Link to={{ screen: 'ForgotPassword' }} style={styles.forPass}>
+            Forgot my password
+          </Link>
+          <Text style={styles.dontAcc}>
+            Don't have an account?{' '}
+            <Link to={{ screen: 'RegisterTwo' }} style={styles.crAcc}>
+              Register
+            </Link>
+          </Text>
+        </View>
       </View>
-    </TouchableWithoutFeedback>
+    </ScrollView>
   );
 };
 
@@ -128,72 +157,48 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20,
-    backgroundColor: '#fff'
+    padding: 20
   },
   logo: {
-    marginTop: '5%',
-    width: '57%',
-    resizeMode: 'contain'
+    marginTop: 20,
+    width: 40,
+    height: 40,
+    alignSelf: 'center'
   },
   login: {
-    fontFamily: 'Roboto-Medium',
-    fontSize: 32,
-    fontWeight: '500',
-    marginBottom: 20,
-    color: '#000',
-    fontStyle: 'normal',
-    lineHeight: 32,
-    marginTop: '10%'
+    // fontFamily: 'Roboto-Medium',
+    fontSize: 20,
+    marginBottom: 40,
+    color: 'black',
+    marginTop: 20,
+    textAlign: 'center'
+    // textTransform: 'uppercase'
   },
   fmp: {
     alignSelf: 'flex-start'
   },
   forPass: {
-    fontFamily: 'Roboto-Regular',
+    // fontFamily: 'Roboto-Medium',
     fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
     lineHeight: 16.41,
-    color: '#AFAFBD',
-    marginTop: '20%'
+    marginTop: 50,
+    color: Blue.primary
   },
   dontAcc: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 16.41,
-    color: '#AFAFBD',
-    marginTop: '3%'
+    // fontFamily: 'Roboto-Medium',
+    color: Black[600],
+    marginTop: 5
   },
   crAcc: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 14,
-    fontWeight: '400',
-    fontStyle: 'normal',
-    lineHeight: 16.41,
-    color: '#0063FF'
+    // fontFamily: 'Roboto-Medium',
+    color: Blue.primary
   },
-  emailTB: {
-    marginTop: '-6%'
-  },
-  passTB: {
-    marginTop: '-6%'
-  },
-  eye: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: '50%'
+  MT: {
+    marginTop: 27
   },
   loginBtn: {
-    backgroundColor: '#FFCA12',
-    height: 46,
-    borderRadius: 8,
-    marginTop: '8%',
-    alignItems: 'center',
-    justifyContent: 'center'
+    backgroundColor: Yellow.primary,
+    marginTop: 20
   },
   txtAcct: {
     flexDirection: 'row',

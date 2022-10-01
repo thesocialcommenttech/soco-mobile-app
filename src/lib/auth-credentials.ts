@@ -1,26 +1,49 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
-import isJSON from 'validator/lib/isJSON';
+import * as SecureStore from 'expo-secure-store';
+import { IUserData } from '../store/reducers/auth';
+import isJSON from 'is-json';
 
-export function deleteAuthCredentials() {
+export async function deleteAuthCredentials() {
+  await Promise.all([
+    SecureStore.deleteItemAsync('ut'),
+    SecureStore.deleteItemAsync('uid')
+  ]);
   delete axios.defaults.headers.common.Authorization;
 }
 
-export function setAuthCredentials({ token }: { token: string }) {
-  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+export async function setAuthCredentials({
+  token,
+  user
+}: {
+  token: string;
+  user: IUserData;
+}) {
+  await Promise.all([
+    SecureStore.setItemAsync('uid', user._id),
+    SecureStore.setItemAsync('u', JSON.stringify(user)),
+    SecureStore.setItemAsync('ut', token)
+  ]);
 }
 
-export function getAuthCredentials() {
-  const userDetailsStringified = Cookies.get('ud');
+export async function updateProfileImageInAuthCredentials(
+  profileImage: string
+) {
+  const user = JSON.parse(await SecureStore.getItemAsync('u')) as IUserData;
+  user.profileImage = profileImage;
 
-  if (!userDetailsStringified) {
-    return null;
-  }
+  await SecureStore.setItemAsync('u', JSON.stringify(user));
+}
+
+export async function getAuthCredentials() {
+  const [user_id, user, token] = await Promise.all([
+    SecureStore.getItemAsync('uid'),
+    SecureStore.getItemAsync('u'),
+    SecureStore.getItemAsync('ut')
+  ]);
 
   return {
-    token: Cookies.get('t'),
-    user: isJSON(userDetailsStringified)
-      ? JSON.parse(userDetailsStringified)
-      : null
+    user_id,
+    token,
+    user: isJSON(user) && JSON.parse(user)
   };
 }

@@ -1,7 +1,7 @@
-import { File } from '@babel/types';
+import { FileObject } from '../file';
 
 export interface UpdateDPRequest {
-  dp?: File;
+  profileImage: FileObject;
 }
 
 export interface UpdateDPResposne {

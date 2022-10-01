@@ -10,7 +10,7 @@ export function updateUserInterest({
   AxiosResponse<UpdateUserInterestResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/interest/update',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/interest/update',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

@@ -1,177 +1,110 @@
-import React, { FC, ReactElement, useRef, useState } from 'react';
+import Color from 'color';
+import React, { useState } from 'react';
 import {
-  Dimensions,
-  FlatList,
-  Modal,
   StyleSheet,
   Text,
+  TouchableHighlight,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { Colors } from '../utils/colors';
+import Bottomsheet from './bottomsheet/Bottomsheet';
 
-const DropdownDelete = props => {
+function DropdownDelete(props: { onDelete: () => void; postId: any }) {
   const [visible, setVisible] = useState(false);
-  const DropdownButton = useRef(null);
-  const [dropdownTop, setDropdownTop] = useState(0);
-  const [dropdownRight, setDropdownRight] = useState(0);
-  const [selected, setSelected] = useState('All');
-
-  const windowWidth = Dimensions.get('window').width;
-
-  const openDropdown = (): void => {
-    DropdownButton.current.measure((fx, fy, width, height, px, py) => {
-      setDropdownTop(height + py);
-      setDropdownRight(windowWidth - px - width);
-    });
-
-    setVisible(true);
-  };
 
   return (
     <>
-      <TouchableOpacity
-        onPress={() => {
-          visible ? setVisible(false) : openDropdown();
-        }}
-        ref={DropdownButton}
-      >
-        <Icon name="delete-outline" size={20} color="#BDBDBD" />
+      <TouchableOpacity onPress={() => setVisible(true)}>
+        <MaterialIcon
+          name="delete-outline"
+          style={styles.deleteBtn}
+          size={20}
+          color={Colors.Gray200}
+        />
       </TouchableOpacity>
-      <Modal visible={visible} transparent animationType="none">
-        <TouchableWithoutFeedback onPress={() => setVisible(false)}>
-          <View style={styles.modalOverlay} />
-        </TouchableWithoutFeedback>
-        <View style={[styles.dropdown]}>
-          <Text style={styles.headerText}>Delete Permanently</Text>
-          <Text style={styles.descText}>
-            You will not be able to reverse this action. Do you really want to
-            delete this post.
-          </Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                setVisible(false);
-                // delete from props.trash
-                props.onDelete(props.id);
-              }}
-            >
-              <Text style={styles.buttonText}>YES, DELETE</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button1}
-              onPress={() => {
-                setVisible(false);
-              }}
-            >
-              <Text style={styles.buttonText1}>NO</Text>
-            </TouchableOpacity>
-          </View>
+      <Bottomsheet
+        visible={visible}
+        onClose={() => setVisible(false)}
+        bodyStyle={styles.bottomsheetBody}
+      >
+        <Text style={styles.headerText}>Delete Permanently</Text>
+        <Text style={styles.descText}>
+          You will not be able to reverse this action. Do you really want to
+          delete this post.
+        </Text>
+        <View style={styles.buttonContainer}>
+          <TouchableHighlight
+            underlayColor={Colors.Gray100}
+            style={styles.actionBtn}
+            onPress={() => {
+              setVisible(false);
+              props.onDelete?.();
+            }}
+          >
+            <Text style={styles.buttonText}>YES, DELETE</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            underlayColor={Color(Colors.Secondary).darken(0.1).hex()}
+            style={[styles.actionBtn, styles.noBtn]}
+            onPress={() => setVisible(false)}
+          >
+            <Text style={[styles.buttonText, styles.noBtnText]}>NO</Text>
+          </TouchableHighlight>
         </View>
-      </Modal>
+      </Bottomsheet>
     </>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  dropdown: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    width: '100%',
-    borderRadius: 12,
-    zIndex: 999,
-    height: 'auto',
-    // paddingTop: '8%',
-    // paddingBottom: '8%',
-    bottom: 0,
-    padding: '8%',
-    paddingRight: '5%'
-  },
-  avatar: {
-    backgroundColor: 'white',
-    borderWidth: 1.5,
-    borderColor: 'white'
-  },
-  avatar2: {
-    backgroundColor: 'white',
-    borderColor: 'white'
-  },
-  avatarTitle: {
-    color: 'white'
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)'
-  },
-  pad: {
-    height: '5%'
-  },
-  newView: {
-    backgroundColor: '#0063FF',
-    borderRadius: 19,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    marginLeft: '5%'
-  },
-  newText: {
-    color: 'white',
-    fontSize: 11
-  },
   headerText: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: 'Roboto-Medium',
     fontWeight: '700',
-    color: '#000'
+    color: Colors.Black
   },
   descText: {
-    fontSize: 14,
-    fontFamily: 'Roboto-Regular',
+    fontSize: 16,
+    fontFamily: 'Roboto-Medium',
     fontWeight: '400',
     color: 'gray',
-    marginTop: '5%'
+    marginTop: 15
+  },
+  bottomsheetBody: {
+    paddingHorizontal: 25,
+    paddingVertical: 25
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: '8%'
+    marginTop: 25
   },
-  button: {
+  deleteBtn: {
+    padding: 5
+  },
+  actionBtn: {
     borderRadius: 6,
-    marginRight: '4%',
-    backgroundColor: '#FFF',
+    marginRight: 20,
+    backgroundColor: Colors.White,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: '6%',
-    paddingVertical: '3%',
-    width: '45%'
+    paddingHorizontal: 20,
+    paddingVertical: 10
   },
-  button1: {
-    borderRadius: 6,
-    backgroundColor: '#0063FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: '6%',
-    paddingVertical: '3%',
-    width: '30%'
+  noBtn: {
+    backgroundColor: Colors.Secondary,
+    width: 100
   },
   buttonText: {
-    color: '#7D7987',
-    fontSize: 13,
+    color: Colors.Gray600,
+    fontSize: 14,
     fontFamily: 'Roboto-Medium',
     fontWeight: '600'
   },
-  buttonText1: {
-    color: '#fff',
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium',
-    fontWeight: '500'
+  noBtnText: {
+    color: Colors.White
   }
 });
 

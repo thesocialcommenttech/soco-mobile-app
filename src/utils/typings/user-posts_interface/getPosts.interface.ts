@@ -1,19 +1,20 @@
-interface Posts {
-  aim?: string;
-  comments?: number;
-  downvotes?: number;
-  featureImage?: string;
-  postType?: string;
-  postedBy?: string;
-  postedOn?: string;
-  title?: string;
-  _id?: string;
-  shares?: number;
-  upvotes?: number;
-  views?: number;
-}
+import { Post, PostStatus, PostType, SharedPost } from '../post';
 
 export interface GetPostsResponse {
-  posts?: Posts[];
-  success?: boolean;
+  posts: Post[];
+  totalPosts?: number;
+  totalPages?: number;
+  pageNo?: number;
+  success: boolean;
+}
+
+export interface GetPostsOfTypeRequestData {
+  userID: string;
+  projection: string;
+  postType: PostType;
+  postStatus?: PostStatus;
+}
+export interface GetPostsOfTypeResponse {
+  posts: Exclude<Post, SharedPost>[];
+  success: boolean;
 }

@@ -1,7 +1,4 @@
-import {
-  deleteAuthCredentials,
-  setAuthCredentials
-} from '../../lib/auth-credentials';
+import axios from 'axios';
 import { AuthActionTypes, AuthAction } from '../actions/auth';
 
 export interface IUserData {
@@ -23,7 +20,7 @@ export interface IAuthState extends IAuthData {
 const initState: IAuthState = {
   user: null,
   authenticated: false,
-  token: 'hellowtoken'
+  token: null
 };
 
 export const authReducer = (
@@ -32,9 +29,8 @@ export const authReducer = (
 ): IAuthState => {
   switch (action.type) {
     case AuthAction.LOGIN:
-      setAuthCredentials({
-        token: action.payload.token
-      });
+      // setting bearer token
+      axios.defaults.headers.common.Authorization = `Bearer ${action.payload.token}`;
 
       return {
         ...state,
@@ -44,8 +40,12 @@ export const authReducer = (
       };
 
     case AuthAction.LOGOUT:
-      deleteAuthCredentials();
       return initState;
+
+    case AuthAction.UPDATE_PROFILE_IMAGE:
+      const newAuthUser = { ...state.user };
+      newAuthUser.profileImage = action.payload.profileImage;
+      return { ...state, user: newAuthUser };
 
     default:
       return state;

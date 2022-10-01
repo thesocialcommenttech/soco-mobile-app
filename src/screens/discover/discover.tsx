@@ -7,222 +7,223 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import TopBar from '../../components/topBar';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon2 from 'react-native-vector-icons/MaterialIcons';
-import Icon3 from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import { Avatar, Card } from '@rneui/base';
 import { TextInput } from 'react-native';
+import { Blue, Colors } from '../../utils/colors';
+import ScreenWithTopBar from '~/src/components/ScreenWithTopBar';
+import { getDiscoveredPosts } from '~/src/utils/services/getDiscoveredUsers_service/getDiscoveredUsers.service';
+import { PostType } from '~/src/utils/typings/post';
+import { GetDiscoveredPostsResponse } from '~/src/utils/typings/getDiscoveredUsers_interface/getDiscoveredUsers.interface';
+import { staticFileSrc } from '~/src/utils/methods';
+import Post from '~/src/components/Post';
+import { ActivityIndicator } from 'react-native-paper';
+import { debounce } from 'lodash';
+import Loading from '~/src/components/theme/Loading';
 
-const DiscoverScreen = () => {
-  const [profile] = useState(
-    'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIADoAPQMBIgACEQEDEQH/xAAbAAACAgMBAAAAAAAAAAAAAAAEBQMGAAECB//EADYQAAIBAwIDBQUFCQAAAAAAAAECAwAEEQUhBhIxIlFhcYETQaGxwRQyM0KRFlNiZJKTstHw/8QAGAEBAQEBAQAAAAAAAAAAAAAAAwIEAAH/xAAeEQACAgICAwAAAAAAAAAAAAAAAQIREiEDMQRRgf/aAAwDAQACEQMRAD8AsyLf8vbeYr/GOb4NmtETEfgxMT3wAf44psrSfvGrOaU/mX1Wi+ja9CS8Z0nKGGJuUKBh2Q9PHNDEpJ2XtZjn3IVk+fLTDXr6LT7GW9uoY5BEM4xgk9AKK4d1CK+0mO6tYUti4wzEdo/8a8bo5K+hGYLaMg4kt2O4LQuh/Vc11zy45YdR5u4PMrfB9651PWNQ08uuoWRuYT0uB2iPPurNLePVrMzryREMVMchBx6jNcpWVKFdmz9tTmZo4mAU9owlc+qnHwoQ3soODb/0Tj6imSaSoaRlSE5QgNG2N6GbSbv+Y/u5+tVYeJZGYIma3zYQ5rl8Fj3AVqdgFNcUIeJ7eTUbeGzjK4knQPnu3P0z6UYtxHpQjtY7cmEYUcmc/EYPoc0I06Nr9vE8iqscLPuepJAH1rvVOINNtpVikdnwe24QlF8z0oZy2auKKqxpcPAwMTSISy59mx3I8qQ8JaQdON1dCUGK6ctFGPypns59Kla1tdRP26N/aBm5FOduvd7j49RinLskNuW5cIi5wozsO4V3FvZ55GqRIyIw3UHI64odioOASAO41PG3YU4O4zQdw2H2x605lsJkmCyMNskdKhurgBT5UVHphOGlfl8F/wBmpjYW5ideTdhgsdyPGrxIzPH+J7w/tMze0+6gznp02+eaPHEC21rYxiBJWdsSSb55Sfceua3xfwvdi8mvYU50Z8OF6rtvSV3woMg5WRMqpHTyrNKma4OUemXbhO4S4u7tIEMcEb8/L3tuBt44J/SrcDsKpPA0NxDpclxLCyCVlPT8uBirULnmj2O9LCFICc8pbC+bs58KWzSdrc0WZcoCcDakl7K3tNqtIOTLvjIYVyuDseh2qUff9aiWrDB5LVZyeZmSTGOdPeO4g7Glc3DVnNIrXBSQA9BEAT4Z9O6nh/EPnWMB7Q0bhFuxVySSpMhjiVFCooVRsFUYAHdQt3piSAvB2H+BphWzVoNlUuJGiDpJ2XXYjxqu6pqsVrMFkYZI95qx8S7Xu3vRfma8l4sYnVmBJwEFUkTJn//Z'
-  );
-  const [name] = useState('John Doe');
-  const [isPremium] = useState(true);
-  const [percentProfile] = useState(75);
-  const [searchText, setSearchText] = useState('');
-  const cardContents = [
-    {
-      id: '1',
-      name: 'John Doe',
-      profilePic: profile,
-      postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
-      postTitle: 'Python - An Installation Guide',
-      subTitle: '',
-      postDate: '24 Feb, 2022',
-      postTag: 'Artwork',
-      views: 26
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      profilePic: profile,
-      postImage:
-        'https://www.ucl.ac.uk/students/sites/students/files/plants.png',
-      postTitle: 'Python - An Installation Guide',
-      subTitle:
-        "Trumpthechumps Mango Mussolini I'm with Her tangerine tornado The Clown Prince if Ivanka weren't my daughter...",
-      postDate: '24 Feb, 2022',
-      postTag: 'Blog',
-      views: 26
-    },
-    {
-      id: '3',
-      name: 'John Doe',
-      profilePic: profile,
-      postImage: 'https://miro.medium.com/max/700/0*3-Nb4RXyrsq-nnXE',
-      postTitle: 'Python - An Installation Guide',
-      subTitle: '',
-      postDate: '24 Feb, 2022',
-      postTag: 'Artwork',
-      views: 26
-    }
-  ];
-
-  const ITEMS = [
-    {
-      id: '1',
-      name: 'All'
-    },
-    {
-      id: '2',
-      name: 'Blogs'
-    },
-    {
-      id: '3',
-      name: 'Artworks'
-    },
-    {
-      id: '4',
-      name: 'Videos'
-    },
-    {
-      id: '5',
-      name: 'Projects'
-    },
-    {
-      id: '6',
-      name: 'Presentations'
-    },
-    {
-      id: '7',
-      name: 'Articles'
-    },
-    {
-      id: '8',
-      name: 'Links'
-    }
-  ];
-
-  const [selectedTags, setSelectedTags] = useState(new Set());
-  const ItemRender = ({ actName }) => {
-    const [selected, setSelected] = useState(false);
-    return (
-      <TouchableOpacity
-        style={selected ? styles.itemSelected : styles.item}
-        onPress={() => {
-          if (selected === false && !selectedTags.has(actName)) {
-            selectedTags.add(actName);
-          } else if (selected === true && selectedTags.has(actName)) {
-            selectedTags.delete(actName);
-          }
-          // console.log(selectedTags);
-          setSelected(!selected);
-        }}
-      >
-        <Text style={selected ? styles.itemTextSelected : styles.itemText}>
-          {actName}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
-
-  const seperator = () => <View style={styles.padd} />;
+const PostTypeFilterOption = ({
+  label,
+  isSelected,
+  disabled,
+  onPress
+}: {
+  label: string;
+  isSelected: boolean;
+  disabled: boolean;
+  onPress: () => void;
+}) => {
+  const selected = useMemo(() => isSelected, [isSelected]);
 
   return (
-    <View style={styles.outerContainer}>
-      <TopBar
-        uri={profile}
-        username={name}
-        premium={isPremium}
-        percentProfile={percentProfile}
-      />
-      <View style={styles.searchInput}>
-        <TextInput
-          style={styles.inputt}
-          onChangeText={text => {
-            setSearchText(text);
-          }}
-          value={searchText}
-          placeholder={'Search'}
-          placeholderTextColor={'gray'}
-          spellCheck={false}
-          autoCorrect={false}
-          autoComplete="off"
-          autoCapitalize="none"
-        />
-        <TouchableOpacity style={styles.filtIcon}>
-          <Icon name="filter-outline" size={25} color="#0063FF" />
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        data={ITEMS}
-        style={styles.activity}
-        renderItem={({ item }) => <ItemRender actName={item.name} />}
-        keyExtractor={item => {
-          return item.id.toString();
-        }}
-        horizontal={true}
-        ItemSeparatorComponent={seperator}
-      />
-      <ScrollView>
-        {cardContents.map((u, i) => {
-          return (
-            <Card key={i} containerStyle={styles.cardContainer}>
-              <View>
-                <View style={styles.cardTitle}>
-                  <View style={styles.profileinfo}>
-                    <Avatar
-                      size={36}
-                      rounded
-                      // title={name?.charAt(0)}
-                      // titleStyle={styles.avatarTitle}
-                      source={{
-                        uri: u.profilePic
-                      }}
-                      activeOpacity={0.7}
-                      containerStyle={styles.avatar2}
-                    />
-                    <Text style={styles.cardTitleText}>{u.name}</Text>
-                  </View>
-                  <TouchableOpacity>
-                    <Icon
-                      name="share-variant-outline"
-                      size={20}
-                      color="#7D7987"
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View key={i} style={styles.mainContent}>
-                  <Image
-                    style={styles.postPic}
-                    resizeMode="cover"
-                    source={{ uri: u.postImage }}
-                  />
-                </View>
-                <View style={styles.cardFooter}>
-                  <Text style={styles.cardFooterText}>{u.postTitle}</Text>
-                </View>
-                {u.subTitle !== '' && (
-                  <Text style={styles.subTitle}>{u.subTitle}</Text>
-                )}
-                <View style={styles.cardFooter2}>
-                  <Text style={styles.cardFooterText2}>{u.postDate}</Text>
-                  <View style={styles.tag}>
-                    <Text style={styles.tagText}>{u.postTag}</Text>
-                  </View>
-                  <View style={styles.eyeView}>
-                    <Icon3 name="eye-outline" size={19} color="#7D7987" />
-                    <Text style={styles.viewNum}>{u.views}</Text>
-                  </View>
-                </View>
-              </View>
-            </Card>
-          );
-        })}
-      </ScrollView>
-    </View>
+    <TouchableOpacity
+      style={[styles.item, selected && styles.itemSelected]}
+      disabled={disabled}
+      onPress={() => {
+        onPress();
+        // setSelected(!selected);
+      }}
+    >
+      <Text style={[styles.itemText, selected && styles.itemTextSelected]}>
+        {label}
+      </Text>
+    </TouchableOpacity>
   );
 };
+
+type PostTypeFilter = PostType | '';
+function DiscoverScreen({ navigation }) {
+  const [searchText, setSearchText] = useState('');
+  const [posts, setPosts] = useState<GetDiscoveredPostsResponse['posts']>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [postTypeFilter, setPostTypeFilter] = useState<PostTypeFilter>('');
+  const [pageState, setPageState] = useState<{
+    pageNo: number;
+    pageSize: number;
+  }>({
+    pageNo: 0,
+    pageSize: 10
+  });
+
+  const debouncedOnSearch = useMemo(
+    () => debounce(setSearchText, 300),
+    [setSearchText]
+  );
+
+  const fetchNextPage = () => {
+    if (loading) {
+      return;
+    }
+
+    fetchData(pageState.pageNo + 1, postTypeFilter);
+  };
+
+  async function fetchData(pageNo = 0, postType: PostTypeFilter = '') {
+    setLoading(true);
+    const result = await getDiscoveredPosts({
+      pageNo,
+      type: postType,
+      size: pageState.pageSize,
+      proj: 'shares views description postedOn postType featureImage title comments upvotes totalSlides'
+    });
+
+    if (result.data.success) {
+      setPosts(
+        postTypeFilter === postType
+          ? [...posts, ...result.data.posts]
+          : result.data.posts
+      );
+      setPageState({ ...pageState, pageNo });
+      setPostTypeFilter(postType);
+    }
+    //console.log(result);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    // canceling debouncing of onSearchTextChange events
+    // on this component unmont
+    return () => {
+      debouncedOnSearch.cancel();
+    };
+  }, []);
+
+  // listening to changes in searchText state
+  // useEffect(() => {
+  //   // fetch result for the input search query
+  //   fetchSearchedQuery(searchText);
+  // }, [searchText]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const postTypeFilterOptions: {
+    value: PostType | '';
+    label: string;
+  }[] = [
+    {
+      value: '',
+      label: 'All'
+    },
+    {
+      value: 'blog',
+      label: 'Blogs'
+    },
+    {
+      value: 'artwork',
+      label: 'Artworks'
+    },
+    {
+      value: 'skill',
+      label: 'Videos'
+    },
+    {
+      value: 'project',
+      label: 'Projects'
+    },
+    {
+      value: 'presentation',
+      label: 'Presentations'
+    },
+    {
+      value: 'article',
+      label: 'Articles'
+    },
+    {
+      value: 'link',
+      label: 'Links'
+    }
+  ];
+
+  return (
+    <ScreenWithTopBar navigation={navigation}>
+      <>
+        {/* <View style={styles.searchInput}>
+          <TextInput
+            style={styles.inputt}
+            onChangeText={debouncedOnSearch}
+            value={searchText}
+            placeholder={'Search'}
+            placeholderTextColor={'gray'}
+            spellCheck={false}
+            autoCorrect={false}
+            autoComplete="off"
+            autoCapitalize="none"
+          />
+          <TouchableOpacity style={styles.filtIcon}>
+            <MaterialCommunityIcon
+              name="filter-outline"
+              size={25}
+              color={Colors.Secondary}
+            />
+          </TouchableOpacity>
+        </View> */}
+        <ScrollView style={styles.activity} horizontal={true}>
+          {postTypeFilterOptions.map((item, i) => (
+            <PostTypeFilterOption
+              key={i + item.value}
+              label={item.label}
+              disabled={loading}
+              isSelected={postTypeFilter === item.value}
+              onPress={() => {
+                setPosts([]);
+                return fetchData(pageState.pageNo, item.value);
+              }}
+            />
+          ))}
+          <View style={styles.padd} />
+        </ScrollView>
+        <FlatList
+          data={posts}
+          keyExtractor={item => item._id}
+          onEndReachedThreshold={0.33}
+          ListFooterComponent={loading && <Loading />}
+          onEndReached={fetchNextPage}
+          renderItem={({ item }) => (
+            <Post
+              data={item}
+              postWrapperStyle={{
+                borderTopWidth: 1,
+                borderTopColor: Colors.GrayLine
+              }}
+            />
+          )}
+        />
+      </>
+    </ScreenWithTopBar>
+  );
+}
 
 export default DiscoverScreen;
 
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: Colors.White
   },
   cardContainer: {
     padding: 20,
@@ -234,23 +235,21 @@ const styles = StyleSheet.create({
   },
   profileinfo: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center'
   },
   cardTitle: {
-    // backgroundColor: 'gray',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
   },
   avatar2: {
     borderWidth: 1,
-    borderColor: '#fff'
+    borderColor: Colors.White
   },
   cardTitleText: {
     fontSize: 16,
     fontWeight: '700',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     marginLeft: '10%',
     color: 'black'
   },
@@ -270,9 +269,9 @@ const styles = StyleSheet.create({
   cardFooterText: {
     fontSize: 16,
     fontWeight: '700',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     lineHeight: 18.75,
-    color: '#000'
+    color: Colors.Black
   },
   cardFooter2: {
     flexDirection: 'row',
@@ -282,11 +281,11 @@ const styles = StyleSheet.create({
   cardFooterText2: {
     fontSize: 16,
     fontWeight: '600',
-    fontFamily: 'Roboto-Regular',
-    color: '#7D7987'
+    fontFamily: 'Roboto-Medium',
+    color: Colors.Gray600
   },
   tag: {
-    backgroundColor: '#F2F2F2',
+    backgroundColor: Colors.Gray100,
     borderRadius: 5,
     paddingHorizontal: 5,
     paddingVertical: 2,
@@ -295,8 +294,8 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 12,
     fontWeight: '700',
-    fontFamily: 'Roboto-Regular',
-    color: '#000'
+    fontFamily: 'Roboto-Medium',
+    color: Colors.Black
   },
   eyeView: {
     flexDirection: 'row',
@@ -309,75 +308,73 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: '2%',
     lineHeight: 18.75,
-    fontFamily: 'Roboto'
+    fontFamily: 'Roboto-Medium'
   },
   subTitle: {
     fontFamily: 'Inter',
     fontSize: 12,
     lineHeight: 14.52,
     color: 'black',
-    marginTop: '4%'
+    marginTop: 10
   },
   searchInput: {
-    backgroundColor: 'white',
-    marginTop: '4%',
-    marginHorizontal: '4%',
-    borderColor: '#DCDCDC',
+    marginTop: 10,
+    marginHorizontal: 10,
+    borderColor: Colors.GrayBorder,
     color: 'black',
     borderWidth: 1,
     borderRadius: 5,
-    paddingLeft: 20,
-    paddingRight: 12,
-    fontFamily: 'Roboto',
-    height: 50,
+    // paddingLeft: 20,
+    // paddingRight: 12,
+    fontFamily: 'Roboto-Medium',
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around'
+    alignItems: 'center'
   },
   inputt: {
-    width: '90%',
+    paddingHorizontal: 15,
+    flexGrow: 1,
     color: 'black'
   },
   filtIcon: {
     alignItems: 'center',
     zIndex: 999,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    flexShrink: 0,
+    padding: 10
   },
   activity: {
+    flexShrink: 0,
     flexGrow: 0,
-    marginTop: '4%',
-    marginBottom: '4%',
-    marginHorizontal: '4%',
-    height: 45
+    marginVertical: 10
+    // marginHorizontal: 15,
+    // height: 45
   },
   item: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginLeft: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: '#DCDCDC',
-    borderWidth: 1,
-    borderRadius: 30
+    borderRadius: 30,
+    backgroundColor: Colors.Gray100
   },
   itemSelected: {
-    paddingHorizontal: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: '#DCDCDC',
-    borderWidth: 1,
-    borderRadius: 30,
-    backgroundColor: '#0063FF'
+    backgroundColor: Colors.Secondary
   },
   itemText: {
     fontSize: 14,
-    color: '#7D7987',
+    color: Colors.Gray600,
     textAlign: 'center'
   },
   itemTextSelected: {
-    fontSize: 14,
-    color: '#FFF',
-    textAlign: 'center'
+    color: Colors.White
   },
   padd: {
     padding: 5
+  },
+  loadingCt: {
+    display: 'flex',
+    justifyContent: 'center',
+    padding: 20
   }
 });

@@ -1,4 +1,4 @@
-interface Interests {
+export interface Interests {
   category?: string;
   _id?: string;
   index?: number;

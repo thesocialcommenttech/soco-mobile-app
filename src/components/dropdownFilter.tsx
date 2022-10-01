@@ -1,239 +1,95 @@
-import React, { FC, ReactElement, useRef, useState } from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native';
-import Icon3 from 'react-native-vector-icons/Octicons';
+import React, { useMemo, useRef, useState } from 'react';
+import { StyleSheet, Text, TouchableHighlight } from 'react-native';
+import { Colors } from '../utils/colors';
+import { PostType } from '../utils/typings/post';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Color from 'color';
+import Bottomsheet, { DropdownOption } from './bottomsheet/Bottomsheet';
 
-interface Props {
-  label: any;
-  setLabel: any;
-  // data: Array<{ label: string; value: string }>;
-  // onSelect: (item: { label: string; value: string }) => void;
-}
+export type OptionKey = Exclude<PostType, 'link' | 'shared'>;
 
-const DropdownFilter: FC<Props> = props => {
+type DropdownOptionItem = Record<OptionKey, string>;
+
+export const optionsList: DropdownOptionItem = {
+  blog: 'Blogs',
+  artwork: 'Artworks',
+  skill: 'Skill Videos',
+  project: 'Projects',
+  article: 'Articles',
+  presentation: 'Presentations'
+};
+
+function DropdownFilter(props: {
+  optionKey: OptionKey;
+  onOptionChange?: (optionKey: OptionKey) => void;
+}) {
   const [visible, setVisible] = useState(false);
   const DropdownButton = useRef(null);
-  const [dropdownTop, setDropdownTop] = useState(0);
-  const [dropdownLeft, setDropdownLeft] = useState(0);
-  const [selected, setSelected] = useState('All');
-  const data = [
-    {
-      label: 'All',
-      isNew: false,
-      value: '1'
-    },
-    {
-      label: 'Blogs',
-      isNew: false,
-      value: '2'
-    },
-    {
-      label: 'Artworks',
-      isNew: false,
-      value: '3'
-    },
-    {
-      label: 'Skill Videos',
-      isNew: false,
-      value: '4'
-    },
-    {
-      label: 'Projects',
-      isNew: false,
-      value: '5'
-    },
-    {
-      label: 'Articles',
-      isNew: false,
-      value: '6'
-    },
-    {
-      label: 'Presentations',
-      isNew: false,
-      value: '7'
-    }
-  ];
+  const [selectedOption, setSelectedOption] = useState(props.optionKey);
 
-  // const windowWidth = Dimensions.get('window').width;
-
-  const openDropdown = (): void => {
-    DropdownButton.current.measure((fx, fy, width, height, px, py) => {
-      // console.log('Component width is: ' + width);
-      // console.log('Component height is: ' + height);
-      // console.log('X offset to frame: ' + fx);
-      // console.log('Y offset to frame: ' + fy);
-      // console.log('X offset to page: ' + px);
-      // console.log('Y offset to page: ' + py);
-      setDropdownTop(height + py);
-      setDropdownLeft(px);
-    });
-
-    setVisible(true);
-  };
-
-  const onSelect = (item: { label: string; value: string }) => {
-    setSelected(item.label);
-    props.setLabel(item.label);
-    // console.log('Selected', item);
-  };
-
-  const renderItem = ({ item }): ReactElement<any, any> => {
-    return (
-      <View>
-        {item.value === '1' && (
-          <TouchableOpacity
-            style={styles.item3}
-            onPress={() => onItemPress(item)}
-          >
-            <Text style={styles.buttonText1}>{item.label}</Text>
-            {item.isNew && (
-              <View style={styles.newView}>
-                <Text style={styles.newText}>New</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        )}
-        {item.value !== '1' ? (
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => onItemPress(item)}
-          >
-            <Text style={styles.buttonText1}>{item.label}</Text>
-            {item.isNew && (
-              <View style={styles.newView}>
-                <Text style={styles.newText}>New</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        ) : (
-          <></>
-        )}
-      </View>
-    );
-  };
-  const onItemPress = (item): void => {
-    // setSelected(item);
-    onSelect(item);
-    setVisible(false);
-  };
+  const selectedOptionLabel = useMemo(
+    () => optionsList[selectedOption],
+    [selectedOption]
+  );
 
   return (
     <>
-      <TouchableOpacity
-        onPress={() => {
-          visible ? setVisible(false) : openDropdown();
-        }}
+      {/* Toggle Button */}
+      <TouchableHighlight
+        underlayColor={Colors.Gray100}
+        onPress={() => setVisible(true)}
         ref={DropdownButton}
         style={styles.button}
       >
-        <Text style={styles.buttonText}>{selected}</Text>
-        <Icon3 name="chevron-down" size={20} color="#7D7987" />
-      </TouchableOpacity>
-      <Modal visible={visible} transparent animationType="fade">
-        <TouchableWithoutFeedback onPress={() => setVisible(false)}>
-          <View style={styles.modalOverlay} />
-        </TouchableWithoutFeedback>
-        <View style={[styles.dropdown]}>
-          {data.map(item => renderItem({ item }))}
-        </View>
-      </Modal>
+        <>
+          <Text style={styles.buttonText}>{selectedOptionLabel}</Text>
+          <MaterialCommunityIcons
+            name="chevron-down"
+            size={16}
+            color={Colors.Gray200}
+          />
+        </>
+      </TouchableHighlight>
+
+      {/* BottomSheet */}
+      <Bottomsheet visible={visible} onClose={() => setVisible(false)}>
+        {Object.keys(optionsList).map((optionKey, i) => (
+          <DropdownOption
+            key={i + optionKey}
+            optionKey={optionKey as OptionKey}
+            label={optionsList[optionKey]}
+            onOptionPress={(option: OptionKey) => {
+              setSelectedOption(option);
+              setVisible(false);
+              props.onOptionChange?.(option);
+            }}
+          />
+        ))}
+      </Bottomsheet>
     </>
   );
-};
+}
 
 const styles = StyleSheet.create({
   buttonText: {
-    color: '#7D7987',
+    color: Colors.Gray600,
     fontSize: 14,
     fontFamily: 'Roboto-Medium',
     fontWeight: '600',
     marginRight: '2%'
   },
-  buttonText1: {
-    color: '#000',
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium',
-    fontWeight: '500',
-    marginRight: '2%'
-  },
-  dropdown: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    width: '100%',
-    borderRadius: 12,
-    zIndex: 999,
-    height: 'auto',
-    // paddingTop: '8%',
-    // paddingBottom: '8%',
-    bottom: 0,
-    paddingLeft: '8%'
-  },
-  item: {
-    // paddingHorizontal: '1%'
-    flexDirection: 'row',
-    paddingBottom: '10%',
-    paddingLeft: '2%'
-  },
-  item3: {
-    // paddingHorizontal: '1%'
-    flexDirection: 'row',
-    paddingTop: '10%',
-    paddingBottom: '10%',
-    paddingLeft: '2%'
-  },
-  avatar: {
-    backgroundColor: 'white',
-    borderWidth: 1.5,
-    borderColor: 'white'
-  },
-  avatar2: {
-    backgroundColor: 'white',
-    borderColor: 'white'
-  },
-  avatarTitle: {
-    color: 'white'
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)'
-  },
   button: {
-    paddingVertical: '3%',
-    paddingHorizontal: '3%',
-    backgroundColor: '#FFF',
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    paddingLeft: 13,
+    // backgroundColor: Colors.White,
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-    width: '45%',
-    borderRadius: 10,
+    // width: '45%',
+    borderRadius: 5,
     borderWidth: 1,
-    borderColor: '#7D7987'
-  },
-  pad: {
-    height: '5%'
-  },
-  newView: {
-    backgroundColor: '#0063FF',
-    borderRadius: 19,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    marginLeft: '5%'
-  },
-  newText: {
-    color: 'white',
-    fontSize: 11
+    borderColor: Color(Colors.Gray200).lighten(0.2).hex()
   }
 });
 

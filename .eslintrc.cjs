@@ -5,13 +5,19 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   overrides: [
     {
-      files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
+      files: ['*.ts', '*.tsx', '*.d.ts', '*.js', '*.jsx'],
       rules: {
-        '@typescript-eslint/no-shadow': 'off',
-        '@typescript-eslint/no-unused-vars': 'off',
-        'no-undef': 'off',
-        'comma-dangle': 'off',
+        'no-shadow': 'off',
+        '@typescript-eslint/no-shadow': 'error',
+        '@typescript-eslint/no-unused-vars': 'off'
       }
     }
-  ]
+  ],
+  rules: {
+    'no-undef': 'off',
+    'comma-dangle': 'off',
+    'prettier/prettier': 'off',
+    'react-hooks/exhaustive-deps': 'off',
+    'react-native/no-inline-styles': 'off'
+  }
 };

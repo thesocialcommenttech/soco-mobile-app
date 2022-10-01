@@ -1,16 +1,6 @@
-import { File } from '@babel/types';
+import { PostCreateSkillRequest } from './postSkill.interface';
 
-export interface UpdateSkillRequest {
-  title?: string;
-  description?: string;
-  tags?: string[];
-  category?: string;
-  video?: File;
-  featureImage?: File;
-  postedOn?: string;
-  postStatus?: string;
-  updatedOn?: string;
-}
+export type UpdateSkillRequest = PostCreateSkillRequest;
 
 export interface UpdateSkillResponse {
   success?: boolean;

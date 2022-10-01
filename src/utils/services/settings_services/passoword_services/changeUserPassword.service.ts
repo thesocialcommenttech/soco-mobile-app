@@ -11,11 +11,8 @@ export function changeUserPassword({
   AxiosResponse<ChangeUserPasswordResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/settings/password',
+    url: 'user/settings/password',
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
     data: {
       oldPassword,
       newPassword

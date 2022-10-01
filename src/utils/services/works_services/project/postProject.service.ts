@@ -20,7 +20,7 @@ export function postProject({
   AxiosResponse<PostCreateProjectResponse>
 > {
   const config: AxiosRequestConfig = {
-    url: '/user/post/create/project',
+    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/post/create/project',
     method: 'POST',
     data: {
       title,

@@ -1,3 +1,5 @@
+import { PostType } from '../post';
+
 interface Work {
   blog?: string[];
   artwork?: string[];
@@ -16,37 +18,48 @@ interface Portfolio {
   certifications?: string[];
 }
 
-interface Posts {
+interface NotificationAchievementPosts {
   views?: boolean;
   likes?: boolean;
   published?: boolean;
 }
 interface NotificationAchievement {
-  posts?: Posts;
+  posts?: NotificationAchievementPosts;
   followers?: boolean;
 }
 interface Notification {
   achievement?: NotificationAchievement;
+  newsletter?: boolean;
 }
 
 interface Wallet {
   current_financial_year_balance?: number;
   balance?: number;
   wallet_id?: string;
+  rzp_contact_id?: string;
 }
 
-interface User {
-  address?: {};
+export interface PostTypeState {
+  postType: PostType;
+  totalPosts: number;
+}
+
+export type PortfolioLock = 'PUBLIC' | 'PRIVATE';
+
+export interface User {
+  address?: Record<string, any>;
   portfolio?: Portfolio;
   notification?: Notification;
-  achievements?: {};
+  achievements?: Record<string, any>;
   wallet?: Wallet;
   profileImage?: string;
   coverImage?: string;
   followers?: number;
   following?: number;
-  portfolioLock?: string;
+  portfolioLock?: PortfolioLock;
   posts?: string[];
+  bio?: string;
+  caption?: string;
   onboard?: boolean;
   vdOnBoard?: boolean;
   favourites?: number;
@@ -54,9 +67,11 @@ interface User {
   kyc?: boolean;
   premium?: boolean;
   email_verified?: boolean;
+  premium_validity_timestamp?: Date | string;
   interested_categories?: string[];
   _id?: string;
   name?: string;
+  phone?: number;
   password?: string;
   username?: string;
   email?: string;
@@ -67,8 +82,13 @@ interface User {
   referalCode?: string;
   __v?: number;
   online?: boolean;
+  isFollowing?: boolean;
   totalPosts?: number;
   totalViews?: number;
+  favouritePostsCount?: number;
+  followerUsersCount?: number;
+  followingUsersCount?: number;
+  postTypes?: PostTypeState[];
 }
 
 export interface GetUserDataResponse {

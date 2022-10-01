@@ -1,176 +1,208 @@
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
   View,
   FlatList,
   TouchableOpacity,
-  ToastAndroid
+  ToastAndroid,
+  ScrollView
 } from 'react-native';
-import React, { useState } from 'react';
-import ReferalList from '../../../components/settingsComponents/referalsList';
+import ReferredUser, {
+  ReferredUserSkeleton
+} from '../../../components/settingsComponents/ReferredUser';
 import Clipboard from '@react-native-clipboard/clipboard';
-
-const Data = [
-  {
-    id: 101,
-    title: 'Hello',
-    userId: 'HelloWorld',
-    image: 'https://reactnative.dev/img/tiny_logo.png',
-    prime: false
-  },
-  {
-    id: 102,
-    title: 'Jay',
-    userId: 'Jaymistry',
-    image: 'https://reactnative.dev/img/tiny_logo.png',
-    prime: true
-  },
-  {
-    id: 103,
-    title: 'Nishith',
-    userId: 'Nishith119',
-    image: 'https://reactnative.dev/img/tiny_logo.png',
-    prime: true
-  },
-  {
-    id: 104,
-    title: 'Ramu',
-    userId: 'ramchandra',
-    image: 'https://reactnative.dev/img/tiny_logo.png',
-    prime: false
-  }
-];
+import { Black, Blue, Colors } from '../../../utils/colors';
+import { getUserReferralData } from '~/src/utils/services/user-referral-data_service/getUserReferralData.service';
+import { GetUserReferralDataResponse } from '~/src/utils/typings/user-referral-data_interface/getUserReferralData.interface';
+import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
+import SectionHeader from '~/src/components/screens/settings/SectionHeader';
+import { getUserReferredUsers } from '~/src/utils/services/user-referral-data_service/getUserReferredUsers.service';
+import { GetUserReferredUsersResponse } from '~/src/utils/typings/user-referral-data_interface/getUserReferredUsers.interface';
+import Skeleton from '~/src/components/theme/Skeleton';
 
 export default function Referals() {
   const [code] = useState('5UYRCH');
+  const [data, setData] =
+    useState<Pick<GetUserReferralDataResponse, 'referal' | 'referalCode'>>();
+  const [referredUsers, setReferredUsers] =
+    useState<GetUserReferredUsersResponse['referred_users']>();
+  const [loading, setLoading] = useState(true);
+  const [referredUserLoading, setReferredUserLoading] = useState(true);
 
-  const copyToClipboard = text => {
+  function copyToClipboard(text) {
     Clipboard.setString(text);
-  };
+  }
 
   const showToast = () => {
     ToastAndroid.show('Code copied to Clipboard', ToastAndroid.SHORT);
   };
 
+  async function fetchReferredUsers() {
+    setReferredUserLoading(true);
+    const result = await getUserReferredUsers();
+
+    if (result.data.success) {
+      setReferredUsers(
+        result.data.referred_users.filter(reference => reference.user)
+      );
+    }
+    setReferredUserLoading(false);
+  }
+
+  async function getData() {
+    setLoading(true);
+    const result = await getUserReferralData();
+
+    if (result.data.success) {
+      setData({
+        referal: result.data.referal,
+        referalCode: result.data.referalCode
+      });
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    getData();
+    fetchReferredUsers();
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.box}>
-        <View style={styles.label}>
-          <Text style={styles.heading}>Your Refferal Code</Text>
-        </View>
-        <View style={styles.codebox}>
-          <TouchableOpacity
-            onPress={() => {
-              copyToClipboard(code);
-              showToast();
-            }}
-          >
-            <Text style={styles.code}>{code}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.incentiveview}>
-        <Text style={styles.share}>
-          Share this code with your Friends.If anybody uses this code at the
-          time of registration to socialcomment you will receive exciting
-          incentives.
-        </Text>
-      </View>
-      <View style={styles.codeused}>
-        <Text style={styles.instruction}>Refferal Code used </Text>
-        <Text style={styles.Code}>6YUOED</Text>
-      </View>
-      <View style={styles.refferals}>
-        <Text style={styles.boldtext}>Your Refferals</Text>
-      </View>
-      <View style={styles.bottomruler} />
-      <View>
-        <FlatList
-          data={Data}
-          keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => (
-            <ReferalList
-              title={item.title}
-              userId={item.userId}
-              image={item.image}
-              prime={item.prime}
+    <>
+      {/* <SettingScreenHeader title="Refferals" /> */}
+      <ScrollView>
+        <View style={styles.container}>
+          {loading ? (
+            <Skeleton height={85} />
+          ) : (
+            <>
+              <View style={styles.box}>
+                <Text style={styles.heading}>Your Refferal Code</Text>
+                <TouchableOpacity
+                  style={styles.codebox}
+                  onPress={() => {
+                    copyToClipboard(code);
+                    showToast();
+                  }}
+                >
+                  <Text style={styles.code}>{data?.referalCode}</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+          <Text style={styles.share}>
+            Share this code with your Friends.If anybody uses this code at the
+            time of registration to socialcomment you will receive exciting
+            incentives.
+          </Text>
+          {loading ? (
+            <Skeleton
+              height={16}
+              style={{ marginTop: styles.codeused.marginTop }}
+            />
+          ) : (
+            data?.referal && (
+              <View style={styles.codeused}>
+                <Text style={styles.instruction}>Refferal Code used </Text>
+                <Text style={styles.Code}>{data?.referal}</Text>
+              </View>
+            )
+          )}
+
+          <SectionHeader
+            label="Your Refferals"
+            style={{ marginTop: 30, marginBottom: 10 }}
+          />
+          {loading ? (
+            <>
+              <ReferredUserSkeleton />
+              <ReferredUserSkeleton style={{ marginTop: 10 }} />
+            </>
+          ) : (
+            <FlatList
+              data={referredUsers}
+              keyExtractor={item => item._id}
+              renderItem={({ item }) => (
+                <ReferredUser
+                  style={{ marginHorizontal: -20, paddingHorizontal: 20 }}
+                  user={item.user}
+                />
+              )}
             />
           )}
-        />
-      </View>
-    </View>
+        </View>
+      </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: '2%'
+    padding: 20,
+    paddingTop: 10
   },
   box: {
     borderWidth: 1,
-    borderColor: '#1563E2',
-    margin: '2.5%',
-    borderRadius: 10
-  },
-  label: {
-    marginTop: '-5%',
-    marginLeft: '2.5%',
-    marginRight: '1%',
-    zIndex: 999,
-    backgroundColor: 'white',
-    alignSelf: 'center',
-    padding: 9,
-    paddingBottom: 3
+    borderColor: Blue.primary,
+    borderRadius: 10,
+    marginTop: 6
   },
   heading: {
     color: 'black',
-    fontSize: 15
-  },
-  code: {
+    fontSize: 14,
+    top: -11,
+    position: 'absolute',
+    zIndex: 999,
+    backgroundColor: 'white',
     alignSelf: 'center',
-    color: 'black',
-    fontWeight: 'bold',
-    fontSize: 26,
-    letterSpacing: 3
+    paddingHorizontal: 10
   },
   codebox: {
-    marginTop: '0%',
-    marginBottom: '3%',
-    padding: '1%'
+    padding: 20
   },
-  incentiveview: {
-    margin: '2.7%'
+  code: {
+    color: 'black',
+    fontFamily: 'Roboto-Medium',
+    fontSize: 30,
+    letterSpacing: 3,
+    textAlign: 'center'
   },
   share: {
-    color: 'black',
-    lineHeight: 19
+    marginTop: 20,
+    color: Black[600],
+    fontSize: 16,
+    lineHeight: 20
   },
   codeused: {
-    marginLeft: '2.5%',
+    marginTop: 10,
     flexDirection: 'row'
   },
   boldtext: {
     fontFamily: 'Roboto-Medium',
-    fontWeight: '900',
-    color: 'black',
-    fontSize: 17
+    fontWeight: '600',
+    fontSize: 17,
+    marginTop: '2%',
+    marginBottom: '2%',
+    color: '#7D7987'
   },
   refferals: {
-    marginTop: '3%',
+    marginTop: '7%',
     marginLeft: '2.5%'
   },
   bottomruler: {
-    borderBottomColor: '#F0F2F5',
+    borderBottomColor: Colors.BottomRulerColor,
     borderBottomWidth: 1,
     marginTop: '2%',
     marginLeft: '2.5%',
     marginRight: '2.5%'
   },
-  Code: {
-    color: '#1563E2'
-  },
   instruction: {
-    color: 'black'
+    color: Black[600],
+    fontSize: 16
+  },
+  Code: {
+    color: Blue.primary
   }
 });

@@ -1,47 +1,58 @@
-import React from 'react';
-//import { StyleSheet } from 'react-native';
-import Stack from './src/navigation/settingStack';
+import axios from 'axios';
+import React, { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+import { Provider } from 'react-redux';
+import Routes from './src/navigation/routes';
+import store from './src/store';
+import SOCOToast from '~/src/components/theme/Toast';
+import './src/utils/ignoreWarnings';
+import * as SecureStore from 'expo-secure-store';
+import 'react-native-get-random-values';
+import { nanoid } from 'nanoid';
+import { useDeviceId } from './src/state/deviceIdState';
+import { BACKEND_URL } from '@env';
+
+axios.defaults.baseURL = BACKEND_URL;
 
 const App = () => {
-  // const isDarkMode = useColorScheme() === 'dark';
+  const { setDeviceId } = useDeviceId();
 
-  // const backgroundStyle = {
-  //   backgroundColor: isDarkMode ? Colors.darker : Colors.lighter
-  // };
+  const checkDeviceId = async () => {
+    let deviceId = await SecureStore.getItemAsync('deviceId');
+    if (!deviceId) {
+      // created new deviceId
+      deviceId = 'mobile-' + nanoid(10);
+      await SecureStore.setItemAsync('deviceId', deviceId);
+    }
+    // setting deviceId as global state variable
+    setDeviceId(deviceId);
+  };
+
+  useEffect(() => {
+    checkDeviceId();
+  }, []);
 
   return (
-    // <Provider store={store}>
-    //   <View style={styles.container}>
-    //     <Routes />
-    //     <FlashMessage position="top" />
-    //   </View>
-    // </Provider>
-    <>
-      <Stack />
-    </>
+    <Provider store={store}>
+      <View style={styles.container}>
+        <Routes />
+        <Toast
+          position="bottom"
+          bottomOffset={10}
+          visibilityTime={6000}
+          type="info"
+          config={{ info: props => <SOCOToast {...props} />, error: SOCOToast }}
+        />
+      </View>
+    </Provider>
   );
 };
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1
-//   },
-//   sectionContainer: {
-//     marginTop: 32,
-//     paddingHorizontal: 24
-//   },
-//   sectionTitle: {
-//     fontSize: 24,
-//     fontWeight: '600'
-//   },
-//   sectionDescription: {
-//     marginTop: 8,
-//     fontSize: 18,
-//     fontWeight: '400'
-//   },
-//   highlight: {
-//     fontWeight: '700'
-//   }
-// });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  }
+});
 
 export default App;

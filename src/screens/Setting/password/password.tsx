@@ -1,127 +1,114 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
-import TextInputWithLabel from '../../../components/textInputWithLabel';
-import ButtonWithoutLoader from '../../../components/buttonWithoutLoader';
-import { useFormik } from 'formik';
+import { StyleSheet, View } from 'react-native';
+import React from 'react';
+import { FormikHelpers, useFormik } from 'formik';
 import { object, string } from 'yup';
-import { TextInput } from 'react-native-paper';
+import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
+import SectionHeader from '~/src/components/screens/settings/SectionHeader';
+import Button from '~/src/components/theme/Button';
+import { PasswordInput } from '~/src/components/theme/Input';
+import { changeUserPassword } from '~/src/utils/services/settings_services/passoword_services/changeUserPassword.service';
+import { AuthActionTypes, setAuthToLogout } from '~/src/store/actions/auth';
+import { ThunkDispatch } from 'redux-thunk';
+import { useDispatch } from 'react-redux';
+import { IRootReducer } from '~/src/store/reducers';
+
+interface ChangePasswordForm {
+  password: string;
+  newPassword: string;
+  confirmPassword: string;
+}
 
 export default function Password() {
-  const [isSecure, setIsSecure] = useState(true);
-  const [isSecure1, setIsSecure1] = useState(true);
-  const [isSecure2, setIsSecure2] = useState(true);
+  const dispatch =
+    useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
 
-  const state: {
-    password: string;
-    newPassword: string;
-    confirmPassword: string;
-  } = {
-    password: '',
-    newPassword: '',
-    confirmPassword: ''
-  };
+  async function submitPassword(
+    values: ChangePasswordForm,
+    formikActions: FormikHelpers<ChangePasswordForm>
+  ) {
+    try {
+      const result = await changeUserPassword({
+        oldPassword: values.password,
+        newPassword: values.newPassword
+      });
+      console.log(result.data);
 
-  const onLogin = (
-    values: any,
-    formikActions: {
-      setSubmitting: (arg0: boolean) => void;
-      resetForm: () => void;
+      if (result.data.success) {
+        dispatch(setAuthToLogout());
+      }
+    } catch (error) {
+      if (error.response.data.message === 'INVALID_PASS') {
+        formik.setFieldError('password', 'Password is incorrect');
+      }
+      console.error(error);
     }
-  ) => {
-    // Will be replaced with API call to backend to authenticate the given emailid and password
-    // dispatch(setUserDetails(values));
     formikActions.setSubmitting(false);
-  };
+  }
 
-  const LoginSchema = object().shape({
-    password: string().required('Password is Required'),
-    newPassword: string().required('New Password cannot be empty'),
-    confirmPassword: string().required('Confirm password cannot be empty')
+  const formik = useFormik<ChangePasswordForm>({
+    initialValues: { password: '', newPassword: '', confirmPassword: '' },
+    validationSchema: object({
+      password: string().trim().required('Password is required'),
+      newPassword: string().trim().required('New password is required'),
+      confirmPassword: string()
+        .trim()
+        .required('Confirm password is required')
+        .test({
+          message: 'Confirm password and New password is not same',
+          test: (value, ctx) => ctx.parent.newPassword === value
+        })
+    }),
+    onSubmit: submitPassword
   });
-
-  const formik = useFormik({
-    initialValues: state,
-    validationSchema: LoginSchema,
-    onSubmit: onLogin
-  });
-
-  const Eyelick = () => {
-    setIsSecure(!isSecure);
-  };
-
-  const Eyelick1 = () => {
-    setIsSecure1(!isSecure1);
-  };
-
-  const Eyelick2 = () => {
-    setIsSecure2(!isSecure2);
-  };
 
   return (
     <View style={styles.container}>
+      {/* <SettingScreenHeader title="Password" /> */}
       <View style={styles.headingview}>
-        <View style={styles.header}>
-          <Text style={styles.heading}>Change Password</Text>
-        </View>
-        <TextInputWithLabel
-          placeholder="Enter your current password"
+        <SectionHeader label="Change Password" />
+        <PasswordInput
           label="Current Password"
-          isSecureTextEntry={isSecure}
-          onBlur={formik.handleBlur('password')}
-          inputStyle={styles.passTB}
-          errorTxt={formik.touched.password && formik.errors.password}
-          right={
-            <TextInput.Icon
-              color="#0063ff"
-              name={isSecure ? 'eye-outline' : 'eye-off-outline'}
-              onPress={Eyelick}
-              style={styles.eye}
-            />
-          }
-          value={formik.values.password}
-          onChangeText={formik.handleChange('password')}
+          style={styles.passTB}
+          inputProp={{
+            placeholder: 'Enter current password',
+            value: formik.values.password,
+            onChangeText: formik.handleChange('password'),
+            onBlur: formik.handleBlur('password')
+          }}
+          error={formik.touched.password && formik.errors.password}
         />
-        <TextInputWithLabel
-          placeholder="Enter new your new password"
+        <PasswordInput
           label="New Password"
-          isSecureTextEntry={isSecure1}
-          onBlur={formik.handleBlur('newPassword')}
-          inputStyle={styles.passTB}
-          errorTxt={formik.touched.password && formik.errors.newPassword}
-          right={
-            <TextInput.Icon
-              color="#0063ff"
-              name={isSecure1 ? 'eye-outline' : 'eye-off-outline'}
-              onPress={Eyelick1}
-              style={styles.eye}
-            />
-          }
-          value={formik.values.newPassword}
-          onChangeText={formik.handleChange('newPassword')}
+          style={styles.passTB}
+          inputProp={{
+            placeholder: 'Enter new password',
+            value: formik.values.newPassword,
+            onChange: formik.handleChange('newPassword'),
+            onBlur: formik.handleBlur('newPassword')
+          }}
+          error={formik.touched.newPassword && formik.errors.newPassword}
         />
-        <TextInputWithLabel
-          placeholder="Confirm your new password"
+        <PasswordInput
           label="Confirm Password"
-          isSecureTextEntry={isSecure2}
-          onBlur={formik.handleBlur('confirmPassword')}
-          inputStyle={styles.passTB}
-          errorTxt={formik.touched.password && formik.errors.confirmPassword}
-          right={
-            <TextInput.Icon
-              color="#0063ff"
-              name={isSecure2 ? 'eye-outline' : 'eye-off-outline'}
-              onPress={Eyelick2}
-              style={styles.eye}
-            />
+          style={styles.passTB}
+          inputProp={{
+            placeholder: 'Re-Enter new password',
+            value: formik.values.confirmPassword,
+            onChange: formik.handleChange('confirmPassword'),
+            onBlur: formik.handleBlur('confirmPassword')
+          }}
+          error={
+            formik.touched.confirmPassword && formik.errors.confirmPassword
           }
-          value={formik.values.confirmPassword}
-          onChangeText={formik.handleChange('confirmPassword')}
         />
-        <ButtonWithoutLoader
+        <Button
           text="Change Password"
+          btnStyle={styles.updateBtn}
+          type="filled"
+          fullWidth={true}
+          disabled={formik.isSubmitting}
+          processing={formik.isSubmitting}
           onPress={formik.handleSubmit}
-          btnStyle={styles.loginBtn}
-          submitting={formik.isSubmitting}
         />
       </View>
     </View>
@@ -130,37 +117,14 @@ export default function Password() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    margin: '2%'
-  },
-  heading: {
-    fontFamily: 'Roboto-Medium',
-    fontSize: 18
+    flex: 1
   },
   headingview: {
-    marginTop: '4.5%',
-    marginLeft: '2%',
-    marginRight: '2%'
+    padding: 20,
+    paddingTop: 10
   },
   passTB: {
-    marginTop: '-6%'
+    marginTop: 30 + 7
   },
-  eye: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: '50%'
-  },
-  header: {
-    marginTop: '0%',
-    marginBottom: '-2%',
-    marginLeft: '1.5%'
-  },
-  loginBtn: {
-    backgroundColor: '#0063FF',
-    height: 50,
-    borderRadius: 8,
-    marginTop: '8%',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
+  updateBtn: { marginTop: 30 }
 });

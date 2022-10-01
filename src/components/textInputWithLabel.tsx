@@ -1,36 +1,94 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import {
+  ColorValue,
+  KeyboardTypeOptions,
+  NativeSyntheticEvent,
+  NativeTouchEvent,
+  RecursiveArray,
+  RegisteredStyle,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextInputFocusEventData,
+  TextStyle,
+  View
+} from 'react-native';
+import React, { ReactNode, useState } from 'react';
 import { TextInput } from 'react-native-paper';
+import { Colors } from '../utils/colors';
 
-const TextInputWithLabel = ({ ...props }) => {
+const TextInputWithLabel = (
+  props: Partial<{
+    maxLength: number;
+    label: string;
+    inputStyle: StyleProp<TextStyle>;
+    placeholder: string;
+    onChangeText: (value: string) => void;
+    isSecureTextEntry: boolean;
+    placeholderTextColor: ColorValue;
+    errorTxt: string;
+    right: ReactNode;
+    left: ReactNode;
+    onBlur: ((e: NativeSyntheticEvent<TextInputFocusEventData>) => void) &
+      ((args: any) => void);
+    keyboardType: KeyboardTypeOptions;
+    value: string;
+    editable: boolean;
+    multiline: boolean;
+    numberOfLines: number;
+    onAccessibilityTap: () => void;
+  }>
+) => {
+  const [textLength, setTextLength] = useState(0);
+  const checktextLength = () => {
+    if (textLength > props.maxLength) {
+      setTextLength(props.maxLength);
+    }
+  };
   return (
     <View>
-      <View style={styles.labelBox}>
-        <Text style={styles.label}>{props.label}</Text>
+      <View style={styles.mainLabelBox}>
+        <View style={styles.labelBox}>
+          <Text style={styles.label}>{props.label}</Text>
+        </View>
+        {props.label === 'Description'
+          ? [
+              <View style={styles.countbox}>
+                <Text style={styles.countText}>
+                  {textLength}/{props.maxLength}
+                </Text>
+              </View>
+            ]
+          : []}
       </View>
       <TextInput
         style={[styles.input, props.inputStyle]}
         placeholder={props.placeholder}
         mode="outlined"
-        onChangeText={props.onChangeText}
+        onChangeText={value => {
+          props.onChangeText(value);
+          setTextLength(value.length);
+          checktextLength();
+        }}
         secureTextEntry={props.isSecureTextEntry}
-        placeholderTextColor="grey"
+        placeholderTextColor={
+          props.placeholderTextColor ? props.placeholderTextColor : '#99969F'
+        }
         underlineColorAndroid={'transparent'}
-        outlineColor={props.errorTxt ? '#EE0000' : '#DCDCDC'}
-        activeOutlineColor={props.errorTxt ? '#EE0000' : 'blue'}
+        outlineColor={props.errorTxt ? Colors.Red : Colors.GrayBorder}
+        activeOutlineColor={props.errorTxt ? Colors.Red : Colors.Secondary}
         selectionColor={'black'}
         right={props.right}
+        onPressOut={props.onAccessibilityTap}
+        left={props.left}
         onBlur={props.onBlur}
+        keyboardType={props.keyboardType}
         value={props.value}
         editable={props.editable}
+        multiline={props.multiline}
+        numberOfLines={props.numberOfLines}
+        maxLength={props.maxLength}
       />
       {props.errorTxt && <Text style={styles.error}>{props.errorTxt}</Text>}
-      {/* <TextInput
-        label={<Text style={{ ...styles.label }}>{props.label}</Text>}
-        style={[styles.input, props.inputStyle]}
-        // underlineColor='transparent'
-      />
-      {props.errorTxt && <Text style={styles.error}>{props.errorTxt}</Text>} */}
     </View>
   );
 };
@@ -38,44 +96,58 @@ const TextInputWithLabel = ({ ...props }) => {
 const styles = StyleSheet.create({
   label: {
     fontSize: 14,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Roboto-Medium',
     fontWeight: '800',
     lineHeight: 14,
     fontStyle: 'normal',
-    color: '#000',
+    color: Colors.Black,
     padding: '2%',
     marginBottom: '-1%',
     textTransform: 'uppercase'
   },
   labelBox: {
     backgroundColor: 'white',
-    // flexDirection: 'row'
+    flexDirection: 'row',
     alignSelf: 'flex-start',
-    marginLeft: '7%',
+    marginLeft: '10%',
     zIndex: 999,
-    marginTop: '8%'
+    marginTop: '6%',
+    paddingLeft: 4,
+    paddingRight: 4
   },
   input: {
     width: '100%',
-    // height: 51,
-    color: '#000',
+    color: Colors.Black,
     paddingHorizontal: 16,
-    fontFamily: 'Roboto-Regular',
-    backgroundColor: '#fff',
+    fontFamily: 'Roboto-Medium',
+    backgroundColor: Colors.White,
     justifyContent: 'center',
     alignContent: 'center'
-    // borderWidth: 1,
-    // borderColor: '#DCDCDC',
-    // borderRadius: 5
   },
   error: {
     fontSize: 12,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Roboto-Medium',
     fontWeight: '400',
     fontStyle: 'normal',
     lineHeight: 14,
-    color: '#EE0000',
+    color: Colors.Red,
     marginTop: '2%'
+  },
+  mainLabelBox: {
+    flexDirection: 'row',
+    zIndex: 999
+  },
+  countbox: {
+    alignSelf: 'flex-start',
+    marginLeft: '30%',
+    zIndex: 999,
+    marginTop: '6%',
+    paddingLeft: 4,
+    paddingRight: 4,
+    backgroundColor: 'white'
+  },
+  countText: {
+    color: '#7D7987'
   }
 });
 
