@@ -142,7 +142,7 @@ const LoginScreen = ({ navigation }) => {
           </Link>
           <Text style={styles.dontAcc}>
             Don't have an account?{' '}
-            <Link to={{ screen: 'RegisterTwo' }} style={styles.crAcc}>
+            <Link to={{ screen: 'RegisterOne' }} style={styles.crAcc}>
               Register
             </Link>
           </Text>
