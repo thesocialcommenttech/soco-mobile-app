@@ -30,3 +30,28 @@ export const navigateEditPostScreen = (
       break;
   }
 };
+
+export const navigatePostScreen = (
+  navigation: NavigationProp<any>,
+  postId: Post['_id'],
+  postType: Post['postType']
+) => {
+  let postScreenKey: string;
+  switch (postType) {
+    case 'artwork':
+      postScreenKey = 'Post_Artwork';
+      break;
+    case 'presentation':
+      postScreenKey = 'Post_Presentation';
+      break;
+    case 'skill':
+      postScreenKey = 'Post_Skill';
+      break;
+    case 'link':
+      postScreenKey = 'Post_Link';
+      break;
+    default:
+      return;
+  }
+  navigation.navigate(postScreenKey, { post_id: postId });
+};

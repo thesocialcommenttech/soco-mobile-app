@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 import { Avatar } from '@rneui/base';
 import {
   StyleSheet,
@@ -7,10 +7,10 @@ import {
   ScrollView,
   TouchableHighlight
 } from 'react-native';
-import { staticFileSrc } from '~/src/utils/methods';
+import { navigatePostScreen, staticFileSrc } from '~/src/utils/methods';
 import { SearchedPost } from '~/src/utils/typings/search_interface/searchPost.interface';
 import { SearchedUser } from '~/src/utils/typings/search_interface/searchUsername.interface';
-import { Black, Colors } from '../../utils/colors';
+import { Black } from '../../utils/colors';
 import { useNavigation } from '@react-navigation/native';
 import { PostType } from '~/src/utils/typings/post';
 import { MainStackScreenProps } from '~/src/types/navigation/main';
@@ -60,24 +60,11 @@ function PostItem({
 }) {
   const navigation = useNavigation<MainStackScreenProps['navigation']>();
 
-  const postScreen = useMemo(() => {
-    switch (postType) {
-      case 'artwork':
-        return 'Post_Artwork';
-      case 'skill':
-        return 'Post_Skill';
-      case 'presentation':
-        return 'Post_Presentation';
-    }
-  }, [postType]);
-
   return (
     <TouchableHighlight
       underlayColor={Black[100]}
       onPress={() => {
-        if (postScreen) {
-          navigation.navigate(postScreen, { post_id });
-        }
+        navigatePostScreen(navigation, post_id, postType);
       }}
       style={styles.postItem}
     >

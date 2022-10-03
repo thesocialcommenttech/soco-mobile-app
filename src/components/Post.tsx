@@ -1,6 +1,10 @@
 import dayjs from 'dayjs';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
-import { navigateEditPostScreen, staticFileSrc } from '../utils/methods';
+import {
+  navigateEditPostScreen,
+  navigatePostScreen,
+  staticFileSrc
+} from '../utils/methods';
 import {
   Dimensions,
   Image,
@@ -316,27 +320,7 @@ export default function Post({
           <>
             <TouchableWithoutFeedback
               onPress={() => {
-                let postScreenKey: string;
-                switch (data.postType) {
-                  case 'artwork':
-                    postScreenKey = 'Post_Artwork';
-                    break;
-                  case 'presentation':
-                    postScreenKey = 'Post_Presentation';
-                    break;
-                  case 'skill':
-                    postScreenKey = 'Post_Skill';
-                    break;
-
-                  default:
-                    return;
-                }
-                navigation.navigate(
-                  postScreenKey as never,
-                  {
-                    post_id: data._id
-                  } as never
-                );
+                navigatePostScreen(navigation, data._id, data.postType);
               }}
             >
               <View style={styles.mainContent}>
