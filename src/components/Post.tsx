@@ -85,7 +85,7 @@ function PostFooter(props: {
         <Text style={styles.tagText}>{props.postType}</Text>
       </View>
 
-      {typeof props.viewsCount === 'number' && (
+      {typeof props.viewsCount === 'number' && props.postType !== 'link' && (
         <View style={styles.viewCountCt}>
           <MaterialCommunityIcon
             name="eye-outline"
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
   },
   postDescription: {
     // fontFamily: 'Roboto',
-    fontSize: 16,
+    // fontSize: 16,
     marginTop: 20,
     lineHeight: 20,
     color: 'black'
