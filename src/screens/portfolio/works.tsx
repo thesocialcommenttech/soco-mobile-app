@@ -13,6 +13,7 @@ import Bottomsheet, {
 } from '~/src/components/bottomsheet/Bottomsheet';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
+import EmptyPortfolioSection from '~/src/components/screens/portfolio/EmptyPortfolioSection';
 
 export default function Works(props) {
   const { portfolio } = usePortfolioData();
@@ -34,19 +35,16 @@ export default function Works(props) {
     presentation: 'Presentation'
   };
 
+  const openAddWorkModal = () => {
+    setshowAddWorkBottomsheet(true);
+  };
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent().setOptions({
         headerRight: () => {
           if (mine) {
             return (
-              <PortfolioUpdateBtn
-                buttonProps={{
-                  onPress: () => {
-                    setshowAddWorkBottomsheet(true);
-                  }
-                }}
-              />
+              <PortfolioUpdateBtn buttonProps={{ onPress: openAddWorkModal }} />
             );
           }
           return null;
@@ -77,7 +75,13 @@ export default function Works(props) {
       <ScrollView>
         <View style={styles.container}>
           {totalWorkItem === 0 && (
-            <Text style={{ textAlign: 'center' }}>No work added</Text>
+            <EmptyPortfolioSection
+              mine={mine}
+              onAddBtnPress={openAddWorkModal}
+              addBtnText="Add Work"
+              message="You have no work yet"
+              messageForMe="User has no work yet"
+            />
           )}
           {portfolio.work?.blog?.length > 0 && (
             <View style={styles.section}>

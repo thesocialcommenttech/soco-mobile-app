@@ -17,6 +17,7 @@ import {
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
+import EmptyPortfolioSection from '~/src/components/screens/portfolio/EmptyPortfolioSection';
 
 export default function Certifications() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -25,6 +26,10 @@ export default function Certifications() {
   const route = useRoute<PortfolioSubTab_ScreenProps['route']>();
   const mine = useMemo(() => route.params?.mine, [route.params]);
 
+  const addNewCertification = () => {
+    navigation.navigate('Addcertificate');
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent().setOptions({
@@ -32,11 +37,7 @@ export default function Certifications() {
           if (mine) {
             return (
               <PortfolioUpdateBtn
-                buttonProps={{
-                  onPress: () => {
-                    navigation.navigate('Addcertificate');
-                  }
-                }}
+                buttonProps={{ onPress: addNewCertification }}
               />
             );
           }
@@ -82,20 +83,29 @@ export default function Certifications() {
           </View>
         </>
       </Modal1>
-      <View>
-        <FlatList
-          style={{ overflow: 'visible' }}
-          contentContainerStyle={styles.container}
-          data={portfolio.certifications}
-          keyExtractor={item => item._id}
-          renderItem={({ item }) => (
-            <Certification
-              data={item}
-              style={styles.certificationItem}
-              editOptions={mine}
-            />
-          )}
-        />
+      <View style={styles.container}>
+        {portfolio.certifications?.length === 0 ? (
+          <EmptyPortfolioSection
+            mine={mine}
+            onAddBtnPress={addNewCertification}
+            addBtnText="Add Certification"
+            message="You have no certification yet"
+            messageForMe="User has no certification yet"
+          />
+        ) : (
+          <FlatList
+            style={{ overflow: 'visible' }}
+            data={portfolio.certifications}
+            keyExtractor={item => item._id}
+            renderItem={({ item }) => (
+              <Certification
+                data={item}
+                style={styles.certificationItem}
+                editOptions={mine}
+              />
+            )}
+          />
+        )}
       </View>
     </>
   );

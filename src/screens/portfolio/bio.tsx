@@ -17,6 +17,7 @@ import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
 import PortfolioDropdown from '~/src/components/screens/portfolio/PortfolioDropdown';
+import EmptyPortfolioSection from '~/src/components/screens/portfolio/EmptyPortfolioSection';
 
 export default function Bio() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,6 +27,18 @@ export default function Bio() {
   const navigation = useNavigation<PortfolioSubTab_ScreenProps['navigation']>();
   const route = useRoute<PortfolioSubTab_ScreenProps['route']>();
   const mine = useMemo(() => route.params?.mine, [route.params]);
+
+  const hasSocialAccounts = useMemo(
+    () =>
+      Object.values(portfolio.social_accounts ?? {}).reduce(
+        (p, c) => p || !!c,
+        false
+      ),
+    [portfolio?.social_accounts]
+  );
+
+  const updateBio = () => navigation.navigate('Updatebio');
+  const updateSocialAcc = () => navigation.navigate('AddSocialAccounts');
 
   useFocusEffect(
     React.useCallback(() => {
@@ -46,11 +59,7 @@ export default function Bio() {
                   />
                 </Button>
                 <PortfolioUpdateBtn
-                  buttonProps={{
-                    onPress: () => {
-                      setModalVisible(true);
-                    }
-                  }}
+                  buttonProps={{ onPress: () => setModalVisible(true) }}
                 />
               </>
             );
@@ -78,7 +87,7 @@ export default function Bio() {
           label="Update Social Accounts"
           onOptionPress={option => {
             setModalVisible(false);
-            navigation.navigate('AddSocialAccounts');
+            updateSocialAcc();
           }}
         />
         <DropdownOption
@@ -86,7 +95,7 @@ export default function Bio() {
           label="Update Bio"
           onOptionPress={option => {
             setModalVisible(false);
-            navigation.navigate('Updatebio');
+            updateBio();
           }}
         />
       </Bottomsheet>
@@ -100,55 +109,67 @@ export default function Bio() {
             <Text style={styles.userName}>{profile?.name}</Text>
             <Text style={styles.userEmail}>{profile?.email}</Text>
             <View style={styles.socialAccountCt}>
-              {portfolio?.social_accounts?.facebook && (
-                <Button onPress={() => {}} size="sm">
-                  <MaterialCommunityIcons
-                    name="facebook"
-                    size={28}
-                    color="#1877F2"
-                    style={styles.socialIconBtn}
-                  />
-                </Button>
-              )}
-              {portfolio?.social_accounts?.instagram && (
-                <Button onPress={() => {}} size="sm">
-                  <MaterialCommunityIcons
-                    name="instagram"
-                    size={28}
-                    color="#C13584"
-                    style={styles.socialIconBtn}
-                  />
-                </Button>
-              )}
-              {portfolio?.social_accounts?.twitter && (
-                <Button onPress={() => {}} size="sm">
-                  <MaterialCommunityIcons
-                    name="twitter"
-                    size={28}
-                    color="#1DA1F2"
-                    style={styles.socialIconBtn}
-                  />
-                </Button>
-              )}
-              {portfolio?.social_accounts?.github && (
-                <Button onPress={() => {}} size="sm">
-                  <MaterialCommunityIcons
-                    name="github"
-                    size={28}
-                    color="#333333"
-                    style={styles.socialIconBtn}
-                  />
-                </Button>
-              )}
-              {portfolio?.social_accounts?.linkedin && (
-                <Button onPress={() => {}} size="sm">
-                  <MaterialCommunityIcons
-                    name="linkedin"
-                    size={28}
-                    color="#0077B5"
-                    style={styles.socialIconBtn}
-                  />
-                </Button>
+              {mine && !hasSocialAccounts ? (
+                <Button
+                  type="outlined"
+                  size="xs"
+                  onPress={updateSocialAcc}
+                  text="Add Social Account"
+                  btnStyle={{ borderStyle: 'dashed' }}
+                />
+              ) : (
+                <>
+                  {portfolio?.social_accounts?.facebook && (
+                    <Button onPress={() => {}} size="sm">
+                      <MaterialCommunityIcons
+                        name="facebook"
+                        size={28}
+                        color="#1877F2"
+                        style={styles.socialIconBtn}
+                      />
+                    </Button>
+                  )}
+                  {portfolio?.social_accounts?.instagram && (
+                    <Button onPress={() => {}} size="sm">
+                      <MaterialCommunityIcons
+                        name="instagram"
+                        size={28}
+                        color="#C13584"
+                        style={styles.socialIconBtn}
+                      />
+                    </Button>
+                  )}
+                  {portfolio?.social_accounts?.twitter && (
+                    <Button onPress={() => {}} size="sm">
+                      <MaterialCommunityIcons
+                        name="twitter"
+                        size={28}
+                        color="#1DA1F2"
+                        style={styles.socialIconBtn}
+                      />
+                    </Button>
+                  )}
+                  {portfolio?.social_accounts?.github && (
+                    <Button onPress={() => {}} size="sm">
+                      <MaterialCommunityIcons
+                        name="github"
+                        size={28}
+                        color="#333333"
+                        style={styles.socialIconBtn}
+                      />
+                    </Button>
+                  )}
+                  {portfolio?.social_accounts?.linkedin && (
+                    <Button onPress={() => {}} size="sm">
+                      <MaterialCommunityIcons
+                        name="linkedin"
+                        size={28}
+                        color="#0077B5"
+                        style={styles.socialIconBtn}
+                      />
+                    </Button>
+                  )}
+                </>
               )}
             </View>
           </View>
@@ -164,7 +185,17 @@ export default function Bio() {
             <View style={styles.sectionheader}>
               <Text style={styles.headTitle}>Biography</Text>
             </View>
-            <Text style={styles.bio}>{portfolio?.bio}</Text>
+            {portfolio?.bio ? (
+              <Text style={styles.bio}>{portfolio?.bio}</Text>
+            ) : (
+              <EmptyPortfolioSection
+                mine={mine}
+                onAddBtnPress={updateBio}
+                addBtnText="Add Bio"
+                message="You have no bio yet"
+                messageForMe="User has no bio yet"
+              />
+            )}
           </View>
         </View>
       </ScrollView>
@@ -216,7 +247,8 @@ const styles = StyleSheet.create({
   sectionheader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    marginBottom: 10
   },
   headTitle: {
     color: 'black',
@@ -226,7 +258,6 @@ const styles = StyleSheet.create({
   bio: {
     color: Black[600],
     fontSize: 14,
-    marginTop: 10,
     lineHeight: 21
   },
   modal1: {

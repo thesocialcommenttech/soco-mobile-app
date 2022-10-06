@@ -17,6 +17,7 @@ import {
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
+import EmptyPortfolioSection from '~/src/components/screens/portfolio/EmptyPortfolioSection';
 
 export default function Experiences() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -27,19 +28,17 @@ export default function Experiences() {
   const route = useRoute<PortfolioSubTab_ScreenProps['route']>();
   const mine = useMemo(() => route.params?.mine, [route.params]);
 
+  const addNewExperience = () => {
+    navigation.navigate('Addexperience');
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent().setOptions({
         headerRight: () => {
           if (mine) {
             return (
-              <PortfolioUpdateBtn
-                buttonProps={{
-                  onPress: () => {
-                    navigation.navigate('Addexperience');
-                  }
-                }}
-              />
+              <PortfolioUpdateBtn buttonProps={{ onPress: addNewExperience }} />
             );
           }
           return null;
@@ -84,19 +83,28 @@ export default function Experiences() {
           </View>
         </>
       </Modal1>
-      <View>
-        <FlatList
-          contentContainerStyle={styles.container}
-          data={experience}
-          keyExtractor={item => item._id}
-          renderItem={({ item }) => (
-            <Experience
-              data={item}
-              style={styles.experienceItem}
-              editOptions={mine}
-            />
-          )}
-        />
+      <View style={styles.container}>
+        {experience?.length === 0 ? (
+          <EmptyPortfolioSection
+            mine={mine}
+            onAddBtnPress={addNewExperience}
+            addBtnText="Add Experience"
+            message="You have no experience yet"
+            messageForMe="User has no experience yet"
+          />
+        ) : (
+          <FlatList
+            data={experience}
+            keyExtractor={item => item._id}
+            renderItem={({ item }) => (
+              <Experience
+                data={item}
+                style={styles.experienceItem}
+                editOptions={mine}
+              />
+            )}
+          />
+        )}
       </View>
     </>
   );
