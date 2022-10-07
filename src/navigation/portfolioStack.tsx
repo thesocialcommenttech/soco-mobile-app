@@ -21,6 +21,7 @@ import {
   PortfolioStackScreenProps
 } from '../types/navigation/portfolio';
 import PortfolioThemeView from '../screens/PortfolioThemeView';
+import UpdateIntroVideo from '../screens/portfolio/updatePortfolio/updateIntroVideo';
 
 const Stack = createNativeStackNavigator<IPortfolioTabStack>();
 
@@ -118,7 +119,10 @@ function PortfolioStack() {
           <Stack.Screen
             name="AddSocialAccounts"
             component={AddSocialAccounts}
-            options={{ title: 'Update Social Accounts' }}
+          <Stack.Screen
+            name="AddIntroVideo"
+            component={UpdateIntroVideo}
+            options={{ title: 'Add Intro Video' }}
           />
         </Stack.Group>
       </Stack.Navigator>

@@ -1,9 +1,16 @@
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
-import React, { useMemo, useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  Dimensions
+} from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { staticFileSrc } from '~/src/utils/methods';
-import Button from '~/src/components/theme/Button';
-import { Black } from '~/src/utils/colors';
+import Button, { ButtonProps } from '~/src/components/theme/Button';
+import { Black, Blue } from '~/src/utils/colors';
 import Video from '~/src/components/theme/Video';
 import Bottomsheet, {
   DropdownOption
@@ -18,6 +25,40 @@ import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/Portfolio
 import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
 import PortfolioDropdown from '~/src/components/screens/portfolio/PortfolioDropdown';
 import EmptyPortfolioSection from '~/src/components/screens/portfolio/EmptyPortfolioSection';
+
+function AddIntroVideoBtn(props: ButtonProps) {
+  const windowDim = Dimensions.get('window');
+
+  return (
+    <Button
+      type="outlined"
+      fullWidth
+      {...props}
+      btnStyle={[
+        { height: (windowDim.width - 40) / (16 / 9) },
+        styles.addIntroVideoBtn,
+        props.btnStyle
+      ]}
+    >
+      <View style={{ alignItems: 'center' }}>
+        <MaterialCommunityIcons
+          name="video-outline"
+          size={34}
+          color={Blue[400]}
+        />
+        <Text
+          style={{
+            color: Blue[400],
+            fontFamily: 'Roboto-Medium',
+            textTransform: 'uppercase'
+          }}
+        >
+          ADD INTRO VIDEO
+        </Text>
+      </View>
+    </Button>
+  );
+}
 
 export default function Bio() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -37,11 +78,12 @@ export default function Bio() {
     [portfolio?.social_accounts]
   );
 
-  const updateBio = () => navigation.navigate('Updatebio');
-  const updateSocialAcc = () => navigation.navigate('AddSocialAccounts');
+  const openBioForm = () => navigation.navigate('Updatebio');
+  const openSocialAccForm = () => navigation.navigate('AddSocialAccounts');
+  const openIntroVideoForm = () => navigation.navigate('AddIntroVideo');
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       navigation.getParent().setOptions({
         headerRight: () => {
           if (mine) {
@@ -84,18 +126,31 @@ export default function Bio() {
       >
         <DropdownOption
           optionKey="update_social_account"
-          label="Update Social Accounts"
-          onOptionPress={option => {
+          icon="facebook"
+          label={`${hasSocialAccounts ? 'Update' : 'Add'} Social Accounts`}
+          onOptionPress={() => {
             setModalVisible(false);
-            updateSocialAcc();
+            openSocialAccForm();
           }}
         />
         <DropdownOption
           optionKey="update_bio"
-          label="Update Bio"
-          onOptionPress={option => {
+          icon="pen"
+          label={`${portfolio?.bio ? 'Update' : 'Add'} Bio`}
+          onOptionPress={() => {
             setModalVisible(false);
-            updateBio();
+            openBioForm();
+          }}
+        />
+        <DropdownOption
+          optionKey="update_intro_video"
+          icon="video-outline"
+          label={`${
+            portfolio?.intro_video_url ? 'Update/Remove' : 'Add'
+          } Intro Video`}
+          onOptionPress={() => {
+            setModalVisible(false);
+            openIntroVideoForm();
           }}
         />
       </Bottomsheet>
@@ -113,10 +168,15 @@ export default function Bio() {
                 <Button
                   type="outlined"
                   size="xs"
-                  onPress={updateSocialAcc}
-                  text="Add Social Account"
-                  btnStyle={{ borderStyle: 'dashed' }}
-                />
+                  onPress={openSocialAccForm}
+                  btnStyle={{ borderStyle: 'dashed', borderRadius: 20 }}
+                >
+                  <MaterialCommunityIcons
+                    name="plus"
+                    size={16}
+                    color={Blue.primary}
+                  />
+                </Button>
               ) : (
                 <>
                   {portfolio?.social_accounts?.facebook && (
@@ -173,13 +233,18 @@ export default function Bio() {
               )}
             </View>
           </View>
-          {portfolio?.intro_video_url && (
-            <View style={styles.introVideo}>
-              <Video
-                source={{ uri: staticFileSrc(portfolio?.intro_video_url) }}
-                style={styles.introVideo}
+          {portfolio?.intro_video_url ? (
+            <Video
+              source={{ uri: staticFileSrc(portfolio?.intro_video_url) }}
+              style={styles.introVideo}
+            />
+          ) : (
+            mine && (
+              <AddIntroVideoBtn
+                onPress={openIntroVideoForm}
+                btnStyle={styles.introVideo}
               />
-            </View>
+            )
           )}
           <View style={styles.bioCt}>
             <View style={styles.sectionheader}>
@@ -190,7 +255,7 @@ export default function Bio() {
             ) : (
               <EmptyPortfolioSection
                 mine={mine}
-                onAddBtnPress={updateBio}
+                onAddBtnPress={openBioForm}
                 addBtnText="Add Bio"
                 message="You have no bio yet"
                 messageForMe="User has no bio yet"
@@ -239,7 +304,7 @@ const styles = StyleSheet.create({
     // fontSize: 16
     // marginBottom: '7%'
   },
-  introVideo: { marginTop: 10 },
+  introVideo: { marginTop: 20 },
   bioCt: {
     padding: 20,
     paddingTop: 15
@@ -289,5 +354,10 @@ const styles = StyleSheet.create({
   optiontext: {
     color: 'black',
     marginLeft: '6.2%'
+  },
+  addIntroVideoBtn: {
+    marginHorizontal: 20,
+    borderStyle: 'dashed',
+    justifyContent: 'center'
   }
 });

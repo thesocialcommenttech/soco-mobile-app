@@ -1,15 +1,10 @@
-import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { RemovePortfolioIntroVideoResponse } from '../../typings/user-portfolio_interface/removePortfolioIntroVideo.interface ';
 
-export function removePortfolioIntroVideo(): Promise<
-  AxiosResponse<RemovePortfolioIntroVideoResponse>
-> {
+export function removePortfolioIntroVideo() {
   const config: AxiosRequestConfig = {
     url: '/user/portfolio/remove/intro-video',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    method: 'POST'
   };
 
   return axios.request<RemovePortfolioIntroVideoResponse>(config);

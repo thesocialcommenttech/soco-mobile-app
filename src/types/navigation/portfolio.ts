@@ -24,6 +24,7 @@ export type IPortfolioTabStack = {
   Addskill: { data: ISkill };
   Addeducation: { data: IEducation };
   AddSocialAccounts: undefined;
+  AddIntroVideo: undefined;
   Addblog: { postType: Exclude<Post, SharedPost>['postType'] };
   PortfolioTheme: { uri: string };
 };
