@@ -174,6 +174,7 @@ export default function AddCertificate() {
           issuer_organization: certifciate.issuer_organization,
           title: certifciate.title
         });
+        navigation.setOptions({ title: 'Update Certifcate' });
       }
     }, [route.params?.data])
   );

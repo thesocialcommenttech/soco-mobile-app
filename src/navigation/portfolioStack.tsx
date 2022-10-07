@@ -89,7 +89,7 @@ function PortfolioStack() {
           <Stack.Screen
             name="Updatebio"
             component={UpdateBio}
-            options={{ title: 'Update Bio' }}
+            options={{ title: 'Add Bio' }}
           />
           <Stack.Screen
             name="Addexperience"
@@ -109,7 +109,7 @@ function PortfolioStack() {
           <Stack.Screen
             name="Addeducation"
             component={AddEducation}
-            options={{ title: 'Update Education' }}
+            options={{ title: 'Add Education' }}
           />
           <Stack.Screen
             name="Addblog"
@@ -119,6 +119,8 @@ function PortfolioStack() {
           <Stack.Screen
             name="AddSocialAccounts"
             component={AddSocialAccounts}
+            options={{ title: 'Add Social Accounts' }}
+          />
           <Stack.Screen
             name="AddIntroVideo"
             component={UpdateIntroVideo}

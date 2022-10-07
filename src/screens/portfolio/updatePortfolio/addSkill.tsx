@@ -92,6 +92,7 @@ export default function AddSkill() {
           level: skill.level,
           skill: skill.skill
         });
+        navigation.setOptions({ title: 'Update Skill' });
       }
     }, [route.params?.data])
   );

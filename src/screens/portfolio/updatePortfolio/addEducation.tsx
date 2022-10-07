@@ -121,6 +121,7 @@ export default function AddEducation() {
           passYear: education.passYear,
           status: education.status
         });
+        navigation.setOptions({ title: 'Update Education' });
       }
     }, [route.params?.data])
   );

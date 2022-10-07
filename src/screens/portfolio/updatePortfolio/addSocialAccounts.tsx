@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
-import React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useMemo } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   DateTimePickerAndroid,
   DateTimePickerEvent
@@ -27,6 +27,15 @@ interface AddSocialAccountForm {
 export default function AddSocialAccounts() {
   const navigation = useNavigation();
   const { portfolio, setPortfolio } = usePortfolioData();
+
+  const hasSocialAccounts = useMemo(
+    () =>
+      Object.values(portfolio.social_accounts ?? {}).reduce(
+        (p, c) => p || !!c,
+        false
+      ),
+    [portfolio?.social_accounts]
+  );
 
   async function sumbitSocialAccounts(values: AddSocialAccountForm) {
     const result = await addPortforlioSocialAccounts(values);
@@ -57,6 +66,16 @@ export default function AddSocialAccounts() {
     }),
     onSubmit: sumbitSocialAccounts
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      if (hasSocialAccounts) {
+        navigation.setOptions({
+          title: 'Update Social Accounts'
+        });
+      }
+    }, [])
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.formCt}>
