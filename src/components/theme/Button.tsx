@@ -32,6 +32,7 @@ export type ButtonProps = {
   fullWidth?: boolean;
   processing?: boolean;
   rounded?: boolean;
+  highlightColor?: string;
 };
 
 function Button(props: ButtonProps) {
@@ -75,6 +76,10 @@ function Button(props: ButtonProps) {
   }, [props.size]);
 
   const btnHighlight = useMemo<string>(() => {
+    if (props.highlightColor) {
+      return props.highlightColor;
+    }
+
     switch (props.type) {
       case 'outlined':
         return Color(Blue.primary).lighten(0.95).hex();

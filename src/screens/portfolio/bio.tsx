@@ -1,9 +1,16 @@
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
-import React, { useMemo, useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  Dimensions
+} from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { staticFileSrc } from '~/src/utils/methods';
-import Button from '~/src/components/theme/Button';
-import { Black } from '~/src/utils/colors';
+import Button, { ButtonProps } from '~/src/components/theme/Button';
+import { Black, Blue } from '~/src/utils/colors';
 import Video from '~/src/components/theme/Video';
 import Bottomsheet, {
   DropdownOption
@@ -17,6 +24,41 @@ import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
 import PortfolioDropdown from '~/src/components/screens/portfolio/PortfolioDropdown';
+import EmptyPortfolioSection from '~/src/components/screens/portfolio/EmptyPortfolioSection';
+
+function AddIntroVideoBtn(props: ButtonProps) {
+  const windowDim = Dimensions.get('window');
+
+  return (
+    <Button
+      type="outlined"
+      fullWidth
+      {...props}
+      btnStyle={[
+        { height: (windowDim.width - 40) / (16 / 9) },
+        styles.addIntroVideoBtn,
+        props.btnStyle
+      ]}
+    >
+      <View style={{ alignItems: 'center' }}>
+        <MaterialCommunityIcons
+          name="video-outline"
+          size={34}
+          color={Blue[400]}
+        />
+        <Text
+          style={{
+            color: Blue[400],
+            fontFamily: 'Roboto-Medium',
+            textTransform: 'uppercase'
+          }}
+        >
+          ADD INTRO VIDEO
+        </Text>
+      </View>
+    </Button>
+  );
+}
 
 export default function Bio() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -27,8 +69,21 @@ export default function Bio() {
   const route = useRoute<PortfolioSubTab_ScreenProps['route']>();
   const mine = useMemo(() => route.params?.mine, [route.params]);
 
+  const hasSocialAccounts = useMemo(
+    () =>
+      Object.values(portfolio.social_accounts ?? {}).reduce(
+        (p, c) => p || !!c,
+        false
+      ),
+    [portfolio?.social_accounts]
+  );
+
+  const openBioForm = () => navigation.navigate('Updatebio');
+  const openSocialAccForm = () => navigation.navigate('AddSocialAccounts');
+  const openIntroVideoForm = () => navigation.navigate('AddIntroVideo');
+
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       navigation.getParent().setOptions({
         headerRight: () => {
           if (mine) {
@@ -46,11 +101,7 @@ export default function Bio() {
                   />
                 </Button>
                 <PortfolioUpdateBtn
-                  buttonProps={{
-                    onPress: () => {
-                      setModalVisible(true);
-                    }
-                  }}
+                  buttonProps={{ onPress: () => setModalVisible(true) }}
                 />
               </>
             );
@@ -75,18 +126,31 @@ export default function Bio() {
       >
         <DropdownOption
           optionKey="update_social_account"
-          label="Update Social Accounts"
-          onOptionPress={option => {
+          icon="facebook"
+          label={`${hasSocialAccounts ? 'Update' : 'Add'} Social Accounts`}
+          onOptionPress={() => {
             setModalVisible(false);
-            navigation.navigate('AddSocialAccounts');
+            openSocialAccForm();
           }}
         />
         <DropdownOption
           optionKey="update_bio"
-          label="Update Bio"
-          onOptionPress={option => {
+          icon="pen"
+          label={`${portfolio?.bio ? 'Update' : 'Add'} Bio`}
+          onOptionPress={() => {
             setModalVisible(false);
-            navigation.navigate('Updatebio');
+            openBioForm();
+          }}
+        />
+        <DropdownOption
+          optionKey="update_intro_video"
+          icon="video-outline"
+          label={`${
+            portfolio?.intro_video_url ? 'Update/Remove' : 'Add'
+          } Intro Video`}
+          onOptionPress={() => {
+            setModalVisible(false);
+            openIntroVideoForm();
           }}
         />
       </Bottomsheet>
@@ -100,71 +164,103 @@ export default function Bio() {
             <Text style={styles.userName}>{profile?.name}</Text>
             <Text style={styles.userEmail}>{profile?.email}</Text>
             <View style={styles.socialAccountCt}>
-              {portfolio?.social_accounts?.facebook && (
-                <Button onPress={() => {}} size="sm">
+              {mine && !hasSocialAccounts ? (
+                <Button
+                  type="outlined"
+                  size="xs"
+                  onPress={openSocialAccForm}
+                  btnStyle={{ borderStyle: 'dashed', borderRadius: 20 }}
+                >
                   <MaterialCommunityIcons
-                    name="facebook"
-                    size={28}
-                    color="#1877F2"
-                    style={styles.socialIconBtn}
+                    name="plus"
+                    size={16}
+                    color={Blue.primary}
                   />
                 </Button>
-              )}
-              {portfolio?.social_accounts?.instagram && (
-                <Button onPress={() => {}} size="sm">
-                  <MaterialCommunityIcons
-                    name="instagram"
-                    size={28}
-                    color="#C13584"
-                    style={styles.socialIconBtn}
-                  />
-                </Button>
-              )}
-              {portfolio?.social_accounts?.twitter && (
-                <Button onPress={() => {}} size="sm">
-                  <MaterialCommunityIcons
-                    name="twitter"
-                    size={28}
-                    color="#1DA1F2"
-                    style={styles.socialIconBtn}
-                  />
-                </Button>
-              )}
-              {portfolio?.social_accounts?.github && (
-                <Button onPress={() => {}} size="sm">
-                  <MaterialCommunityIcons
-                    name="github"
-                    size={28}
-                    color="#333333"
-                    style={styles.socialIconBtn}
-                  />
-                </Button>
-              )}
-              {portfolio?.social_accounts?.linkedin && (
-                <Button onPress={() => {}} size="sm">
-                  <MaterialCommunityIcons
-                    name="linkedin"
-                    size={28}
-                    color="#0077B5"
-                    style={styles.socialIconBtn}
-                  />
-                </Button>
+              ) : (
+                <>
+                  {portfolio?.social_accounts?.facebook && (
+                    <Button onPress={() => {}} size="sm">
+                      <MaterialCommunityIcons
+                        name="facebook"
+                        size={28}
+                        color="#1877F2"
+                        style={styles.socialIconBtn}
+                      />
+                    </Button>
+                  )}
+                  {portfolio?.social_accounts?.instagram && (
+                    <Button onPress={() => {}} size="sm">
+                      <MaterialCommunityIcons
+                        name="instagram"
+                        size={28}
+                        color="#C13584"
+                        style={styles.socialIconBtn}
+                      />
+                    </Button>
+                  )}
+                  {portfolio?.social_accounts?.twitter && (
+                    <Button onPress={() => {}} size="sm">
+                      <MaterialCommunityIcons
+                        name="twitter"
+                        size={28}
+                        color="#1DA1F2"
+                        style={styles.socialIconBtn}
+                      />
+                    </Button>
+                  )}
+                  {portfolio?.social_accounts?.github && (
+                    <Button onPress={() => {}} size="sm">
+                      <MaterialCommunityIcons
+                        name="github"
+                        size={28}
+                        color="#333333"
+                        style={styles.socialIconBtn}
+                      />
+                    </Button>
+                  )}
+                  {portfolio?.social_accounts?.linkedin && (
+                    <Button onPress={() => {}} size="sm">
+                      <MaterialCommunityIcons
+                        name="linkedin"
+                        size={28}
+                        color="#0077B5"
+                        style={styles.socialIconBtn}
+                      />
+                    </Button>
+                  )}
+                </>
               )}
             </View>
           </View>
-          {portfolio?.intro_video_url && (
-            <View style={styles.introVideo}>
-              <Video
-                source={{ uri: staticFileSrc(portfolio?.intro_video_url) }}
-                style={styles.introVideo}
+          {portfolio?.intro_video_url ? (
+            <Video
+              source={{ uri: staticFileSrc(portfolio?.intro_video_url) }}
+              style={styles.introVideo}
+            />
+          ) : (
+            mine && (
+              <AddIntroVideoBtn
+                onPress={openIntroVideoForm}
+                btnStyle={styles.introVideo}
               />
-            </View>
+            )
           )}
           <View style={styles.bioCt}>
             <View style={styles.sectionheader}>
               <Text style={styles.headTitle}>Biography</Text>
             </View>
-            <Text style={styles.bio}>{portfolio?.bio}</Text>
+            {portfolio?.bio ? (
+              <Text style={styles.bio}>{portfolio?.bio}</Text>
+            ) : (
+              <EmptyPortfolioSection
+                mine={mine}
+                onAddBtnPress={openBioForm}
+                addBtnText="Add Bio"
+                message="You have no bio yet"
+                messageForMe="User has no bio yet"
+              />
+            )}
           </View>
         </View>
       </ScrollView>
@@ -208,7 +304,7 @@ const styles = StyleSheet.create({
     // fontSize: 16
     // marginBottom: '7%'
   },
-  introVideo: { marginTop: 10 },
+  introVideo: { marginTop: 20 },
   bioCt: {
     padding: 20,
     paddingTop: 15
@@ -216,7 +312,8 @@ const styles = StyleSheet.create({
   sectionheader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    marginBottom: 10
   },
   headTitle: {
     color: 'black',
@@ -226,7 +323,6 @@ const styles = StyleSheet.create({
   bio: {
     color: Black[600],
     fontSize: 14,
-    marginTop: 10,
     lineHeight: 21
   },
   modal1: {
@@ -258,5 +354,10 @@ const styles = StyleSheet.create({
   optiontext: {
     color: 'black',
     marginLeft: '6.2%'
+  },
+  addIntroVideoBtn: {
+    marginHorizontal: 20,
+    borderStyle: 'dashed',
+    justifyContent: 'center'
   }
 });

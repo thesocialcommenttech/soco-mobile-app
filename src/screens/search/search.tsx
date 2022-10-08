@@ -14,6 +14,7 @@ import { AxiosResponse } from 'axios';
 import { ActivityIndicator } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { App_ScreenProps } from '~/src/types/navigation/app';
+import Button from '~/src/components/theme/Button';
 
 const SearchScreen = ({
   navigation
@@ -67,18 +68,16 @@ const SearchScreen = ({
       headerShadowVisible: false,
       header: props => (
         <View style={styles.header}>
-          <MaterialCommunityIcon
-            name="arrow-left"
-            size={24}
-            color="black"
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={styles.backIcon}
-          />
+          <Button
+            size="sm"
+            onPress={() => navigation.goBack()}
+            btnStyle={styles.backIcon}
+          >
+            <MaterialCommunityIcon name="arrow-left" size={24} color="black" />
+          </Button>
           <SearchBar
             onSearchPhraseClear={() => {
-              debouncedOnSearch(null);
+              // debouncedOnSearch(null);
             }}
             onSearchPhraseChange={debouncedOnSearch}
           />
@@ -172,12 +171,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    padding: 15,
+    padding: 10,
+    paddingHorizontal: 5,
     paddingBottom: 0
   },
-  backIcon: {},
+  backIcon: { alignSelf: 'center' },
   util: {
-    // marginTop: '5%',
     flexDirection: 'row',
     justifyContent: 'space-between'
   },

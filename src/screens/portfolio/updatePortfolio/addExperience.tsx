@@ -137,6 +137,8 @@ export default function AddExperience() {
           title: experience.title,
           to: experience.to
         });
+
+        navigation.setOptions({ title: 'Update Experience' });
       }
     }, [route.params?.data])
   );

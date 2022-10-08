@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import React, { useMemo } from 'react';
 import Skill from '../../components/portfolio/Skill';
 import {
@@ -6,11 +6,10 @@ import {
   useNavigation,
   useRoute
 } from '@react-navigation/native';
-import Button from '~/src/components/theme/Button';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/PortfolioItemUpdateBtn';
 import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
+import EmptyPortfolioSection from '~/src/components/screens/portfolio/EmptyPortfolioSection';
 
 export default function Skills() {
   const { portfolio } = usePortfolioData();
@@ -18,19 +17,17 @@ export default function Skills() {
   const route = useRoute<PortfolioSubTab_ScreenProps['route']>();
   const mine = useMemo(() => route.params?.mine, [route.params]);
 
+  const addNewSkill = () => {
+    navigation.navigate('Addskill');
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       navigation.getParent().setOptions({
         headerRight: () => {
           if (mine) {
             return (
-              <PortfolioUpdateBtn
-                buttonProps={{
-                  onPress: () => {
-                    navigation.navigate('Addskill');
-                  }
-                }}
-              />
+              <PortfolioUpdateBtn buttonProps={{ onPress: addNewSkill }} />
             );
           }
           return null;
@@ -39,24 +36,19 @@ export default function Skills() {
     }, [navigation])
   );
 
-  useFocusEffect(() => {
-    navigation.getParent().setOptions({
-      headerRight: () => (
-        <Button
-          onPress={() => {
-            navigation.navigate('Addskill');
-          }}
-          size="sm"
-        >
-          <MaterialCommunityIcons
-            name="plus-circle-outline"
-            size={24}
-            color="black"
-          />
-        </Button>
-      )
-    });
-  });
+  if (!portfolio.skill || portfolio.skill?.length === 0) {
+    return (
+      <View style={styles.container}>
+        <EmptyPortfolioSection
+          mine={mine}
+          onAddBtnPress={addNewSkill}
+          addBtnText="Add Skill"
+          message="You have no skill yet"
+          messageForMe="User has no skill yet"
+        />
+      </View>
+    );
+  }
 
   return (
     <FlatList

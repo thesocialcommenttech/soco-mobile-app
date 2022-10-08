@@ -1,23 +1,14 @@
-import {
-  Image,
-  Keyboard,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native';
-import React, { useState } from 'react';
-import TextInputWithLabel from '../../components/textInputWithLabel';
-import ButtonWithLoader from '../../components/buttonWithLoader';
-import { TextInput } from 'react-native-paper';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
 import { FormikHelpers, useFormik } from 'formik';
 import { object, string } from 'yup';
-import { Black, Blue, Colors, Yellow } from '../../utils/colors';
+import { Black, Blue, Yellow } from '../../utils/colors';
 import { login } from '../../utils/services/login_service/login.service';
 import { AuthActionTypes, setAuthToLogin } from '../../store/actions/auth';
-import { LoginRequestData } from '../../utils/typings/login_interface/login.interface';
+import {
+  LoginErrorResponse,
+  LoginRequestData
+} from '../../utils/typings/login_interface/login.interface';
 import { useDispatch } from 'react-redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { IRootReducer } from '../../store/reducers';
@@ -27,8 +18,7 @@ import axios from 'axios';
 import { Link } from '@react-navigation/native';
 import logo from '~/src/assets/images/logos/thesocialcomment-logo.png';
 
-const LoginScreen = ({ navigation }) => {
-  const [isSecure, setIsSecure] = useState(true);
+function LoginScreen() {
   const dispatch =
     useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
 
@@ -53,11 +43,12 @@ const LoginScreen = ({ navigation }) => {
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.message === 'INVALID_PASS') {
+        const errRes = error.response.data as LoginErrorResponse;
+        if (errRes.message === 'INVALID_PASS') {
           formikActions.setFieldError('password', 'Invalid password');
-        } else if (error.message === '"email" must be a valid email') {
+        } else if (errRes.message === '"email" must be a valid email') {
           formikActions.setFieldError('email', 'Invalid email');
-        } else if (error.message === 'USER_NOT_FOUND') {
+        } else if (errRes.message === 'USER_NOT_FOUND') {
           formikActions.setFieldError('password', 'Incorrect email/Password');
           formikActions.setFieldError('email', undefined);
         }
@@ -81,18 +72,6 @@ const LoginScreen = ({ navigation }) => {
     }),
     onSubmit: onLogin
   });
-
-  const onForgotPassword = () => {
-    navigation.navigate('ForgotPassword');
-  };
-
-  const goToRegister = () => {
-    navigation.navigate('RegisterOne');
-  };
-
-  const Eyelick = () => {
-    setIsSecure(!isSecure);
-  };
 
   return (
     <ScrollView keyboardShouldPersistTaps="always">
@@ -135,14 +114,14 @@ const LoginScreen = ({ navigation }) => {
           processing={formik.isSubmitting}
         />
         {/* <TouchableOpacity style={styles.fmp} onPress={onForgotPassword}>
-        </TouchableOpacity> */}
+            </TouchableOpacity> */}
         <View style={{ alignItems: 'center' }}>
           <Link to={{ screen: 'ForgotPassword' }} style={styles.forPass}>
             Forgot my password
           </Link>
           <Text style={styles.dontAcc}>
             Don't have an account?{' '}
-            <Link to={{ screen: 'RegisterTwo' }} style={styles.crAcc}>
+            <Link to={{ screen: 'RegisterOne' }} style={styles.crAcc}>
               Register
             </Link>
           </Text>
@@ -150,7 +129,7 @@ const LoginScreen = ({ navigation }) => {
       </View>
     </ScrollView>
   );
-};
+}
 
 export default LoginScreen;
 
@@ -174,9 +153,6 @@ const styles = StyleSheet.create({
     textAlign: 'center'
     // textTransform: 'uppercase'
   },
-  fmp: {
-    alignSelf: 'flex-start'
-  },
   forPass: {
     // fontFamily: 'Roboto-Medium',
     fontSize: 14,
@@ -199,10 +175,5 @@ const styles = StyleSheet.create({
   loginBtn: {
     backgroundColor: Yellow.primary,
     marginTop: 20
-  },
-  txtAcct: {
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  txtCr: { marginTop: '3%' }
+  }
 });

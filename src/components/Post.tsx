@@ -1,6 +1,10 @@
 import dayjs from 'dayjs';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
-import { navigateEditPostScreen, staticFileSrc } from '../utils/methods';
+import {
+  navigateEditPostScreen,
+  navigatePostScreen,
+  staticFileSrc
+} from '../utils/methods';
 import {
   Dimensions,
   Image,
@@ -81,7 +85,7 @@ function PostFooter(props: {
         <Text style={styles.tagText}>{props.postType}</Text>
       </View>
 
-      {typeof props.viewsCount === 'number' && (
+      {typeof props.viewsCount === 'number' && props.postType !== 'link' && (
         <View style={styles.viewCountCt}>
           <MaterialCommunityIcon
             name="eye-outline"
@@ -316,27 +320,7 @@ export default function Post({
           <>
             <TouchableWithoutFeedback
               onPress={() => {
-                let postScreenKey: string;
-                switch (data.postType) {
-                  case 'artwork':
-                    postScreenKey = 'Post_Artwork';
-                    break;
-                  case 'presentation':
-                    postScreenKey = 'Post_Presentation';
-                    break;
-                  case 'skill':
-                    postScreenKey = 'Post_Skill';
-                    break;
-
-                  default:
-                    return;
-                }
-                navigation.navigate(
-                  postScreenKey as never,
-                  {
-                    post_id: data._id
-                  } as never
-                );
+                navigatePostScreen(navigation, data._id, data.postType);
               }}
             >
               <View style={styles.mainContent}>
@@ -471,7 +455,7 @@ const styles = StyleSheet.create({
   },
   postDescription: {
     // fontFamily: 'Roboto',
-    fontSize: 16,
+    // fontSize: 16,
     marginTop: 20,
     lineHeight: 20,
     color: 'black'

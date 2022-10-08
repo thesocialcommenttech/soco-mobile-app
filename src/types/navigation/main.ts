@@ -25,6 +25,7 @@ export type IMainStack = {
   Post_Artwork: PostViewScreenParam;
   Post_Skill: PostViewScreenParam;
   Post_Presentation: PostViewScreenParam;
+  Post_Link: PostViewScreenParam;
 };
 
 export type MainStackScreenProps = NativeStackScreenProps<IMainStack>;
@@ -32,7 +33,7 @@ export type MainStackScreenProps = NativeStackScreenProps<IMainStack>;
 export type PostViewScreenProps = CompositeScreenProps<
   NativeStackScreenProps<
     IMainStack,
-    'Post_Presentation' | 'Post_Artwork' | 'Post_Skill'
+    'Post_Presentation' | 'Post_Artwork' | 'Post_Skill' | 'Post_Link'
   >,
   MainStackScreenProps
 >;

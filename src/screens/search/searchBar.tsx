@@ -1,76 +1,76 @@
 // SearchBar.js
 import React, { useMemo, useState } from 'react';
-import { StyleSheet, TextInput, View, Keyboard } from 'react-native';
+import { StyleSheet, View, Keyboard, LayoutRectangle } from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import { Colors } from '../../utils/colors';
+import { Black, Colors } from '../../utils/colors';
+import { Input } from '~/src/components/theme/Input';
+import Button from '~/src/components/theme/Button';
 
-function SearchBar({
-  onSearchPhraseChange
-}: {
+function SearchBar(props: {
   onSearchPhraseChange: (searchPhrase: string) => void;
   onSearchPhraseClear: () => void;
 }) {
   const [searchPhrase, setSearchPhrase] = useState(null);
   const inputIsDirty = useMemo(() => searchPhrase?.length > 0, [searchPhrase]);
+  const [textInputDim, setTextInputDim] = useState<LayoutRectangle>();
 
   return (
-    <View
-      style={[
-        styles.searchBar,
-        inputIsDirty ? styles.searchBar__clicked : styles.searchBar__unclicked
-      ]}
-    >
-      <Ionicon name="search" size={20} color={Colors.Gray600} />
-      <TextInput
-        style={styles.input}
-        placeholder="Search"
-        placeholderTextColor={'#99969F'}
-        value={searchPhrase}
-        onChangeText={value => {
+    <Input
+      style={styles.searchbar}
+      inputContainer={{
+        paddingLeft: 15,
+        ...(inputIsDirty && { paddingRight: 5 })
+      }}
+      inputProp={{
+        placeholder: 'Search',
+        value: searchPhrase,
+        style: [
+          styles.input,
+          {
+            ...(inputIsDirty &&
+              textInputDim && { maxWidth: textInputDim.width })
+          }
+        ],
+        onChangeText: value => {
           setSearchPhrase(value);
-          onSearchPhraseChange(value);
-        }}
-      />
-      {inputIsDirty && (
-        <MaterialCommunityIcon
-          name="close"
-          style={styles.searchBarClearBtn}
-          size={20}
-          color={Colors.Gray600}
-          onPress={() => {
-            onSearchPhraseChange('');
-            Keyboard.dismiss();
-          }}
-        />
-      )}
-    </View>
+          props.onSearchPhraseChange(value);
+        },
+        onLayout: e => {
+          setTextInputDim(e.nativeEvent.layout);
+        }
+      }}
+      prefix={<Ionicon name="search" size={20} color={Black[600]} />}
+      suffix={
+        inputIsDirty && (
+          <Button
+            size="sm"
+            btnStyle={styles.searchBarClearBtn}
+            onPress={() => {
+              setSearchPhrase(null);
+            }}
+          >
+            <MaterialCommunityIcon
+              name="close"
+              style={styles.searchBarClearBtn}
+              size={20}
+              color={Black[600]}
+            />
+          </Button>
+        )
+      }
+    />
   );
 }
 export default SearchBar;
 
 // styles
 const styles = StyleSheet.create({
-  searchBar: {
-    display: 'flex',
-    marginLeft: 15,
-    paddingHorizontal: '4%',
-    flexDirection: 'row',
-    flexGrow: 1,
-    borderRadius: 5,
-    borderColor: Colors.GrayBorder,
-    borderWidth: 1,
-    alignItems: 'center',
-    height: 45,
-    position: 'relative'
-  },
-  searchBar__unclicked: {},
-  searchBar__clicked: {},
-  searchBarClearBtn: {},
+  searchBarClearBtn: { alignSelf: 'center' },
+  searchbar: { marginLeft: 5, flexGrow: 1 },
   input: {
-    fontSize: 14,
-    marginLeft: 10,
-    flexGrow: 1,
-    color: 'black'
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    paddingTop: 10
   }
 });
