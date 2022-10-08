@@ -6,7 +6,7 @@ import { getAuthCredentials } from '../lib/auth-credentials';
 import { loginAction } from '../store/actions/auth';
 import { IRootReducer } from '../store/reducers';
 import Logo from '~/src/assets/images/logos/thesocialcomment-logo.png';
-import TextLogo from '~/src/assets/images/logos/image.png';
+// import TextLogo from '~/src/assets/images/logos/image.png';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootRouteContext } from '../contexts/root-route.context';
@@ -58,8 +58,12 @@ export default function Routes() {
   if (loading) {
     return (
       <View style={styles.splashScreenCt}>
-        <Image source={Logo} style={{ width: 50, height: 50 }} />
-        <Image source={TextLogo} style={{ width: 200 }} resizeMode="contain" />
+        <Image source={Logo} style={{ width: 100, height: 100 }} />
+        {/* <Image
+          source={TextLogo}
+          style={{ height: 15, position: 'absolute', bottom: 30, opacity: 0.25 }}
+          resizeMode="contain"
+        /> */}
       </View>
     );
   } else {
