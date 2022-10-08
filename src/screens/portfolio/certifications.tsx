@@ -40,7 +40,7 @@ export default function Certifications() {
 
   return (
     <View style={styles.container}>
-      {portfolio.certifications?.length === 0 ? (
+      {!portfolio.certifications || portfolio.certifications?.length === 0 ? (
         <EmptyPortfolioSection
           mine={mine}
           onAddBtnPress={addNewCertification}

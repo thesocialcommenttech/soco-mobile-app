@@ -35,7 +35,7 @@ export default function Educations() {
     }, [navigation])
   );
 
-  if (portfolio.education?.length === 0) {
+  if (!portfolio.education || portfolio.education?.length === 0) {
     return (
       <View style={styles.container}>
         <EmptyPortfolioSection

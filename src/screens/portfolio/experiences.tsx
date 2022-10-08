@@ -40,7 +40,7 @@ export default function Experiences() {
 
   return (
     <View style={styles.container}>
-      {experience?.length === 0 ? (
+      {!experience || experience?.length === 0 ? (
         <EmptyPortfolioSection
           mine={mine}
           onAddBtnPress={addNewExperience}
