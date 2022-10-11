@@ -78,6 +78,15 @@ export default function Bio() {
     [portfolio?.social_accounts]
   );
 
+  const haveAllSocialAccounts = useMemo(
+    () =>
+      Object.values(portfolio.social_accounts ?? {}).reduce(
+        (p, c) => p && !!c,
+        true
+      ),
+    [portfolio?.social_accounts]
+  );
+
   const openBioForm = () => navigation.navigate('Updatebio');
   const openSocialAccForm = () => navigation.navigate('AddSocialAccounts');
   const openIntroVideoForm = () => navigation.navigate('AddIntroVideo');
@@ -164,12 +173,64 @@ export default function Bio() {
             <Text style={styles.userName}>{profile?.name}</Text>
             <Text style={styles.userEmail}>{profile?.email}</Text>
             <View style={styles.socialAccountCt}>
-              {mine && !hasSocialAccounts ? (
+              {portfolio?.social_accounts?.facebook && (
+                <Button onPress={() => {}} size="sm">
+                  <MaterialCommunityIcons
+                    name="facebook"
+                    color="#1877F2"
+                    style={styles.socialIconBtn}
+                  />
+                </Button>
+              )}
+              {portfolio?.social_accounts?.instagram && (
+                <Button onPress={() => {}} size="sm">
+                  <MaterialCommunityIcons
+                    name="instagram"
+                    color="#C13584"
+                    style={styles.socialIconBtn}
+                  />
+                </Button>
+              )}
+              {portfolio?.social_accounts?.twitter && (
+                <Button onPress={() => {}} size="sm">
+                  <MaterialCommunityIcons
+                    name="twitter"
+                    color="#1DA1F2"
+                    style={styles.socialIconBtn}
+                  />
+                </Button>
+              )}
+              {portfolio?.social_accounts?.github && (
+                <Button onPress={() => {}} size="sm">
+                  <MaterialCommunityIcons
+                    name="github"
+                    color="#333333"
+                    style={styles.socialIconBtn}
+                  />
+                </Button>
+              )}
+              {portfolio?.social_accounts?.linkedin && (
+                <Button onPress={() => {}} size="sm">
+                  <MaterialCommunityIcons
+                    name="linkedin"
+                    size={30}
+                    color="#0077B5"
+                    style={styles.socialIconBtn}
+                  />
+                </Button>
+              )}
+              {mine && !haveAllSocialAccounts && (
                 <Button
                   type="outlined"
                   size="xs"
                   onPress={openSocialAccForm}
-                  btnStyle={{ borderStyle: 'dashed', borderRadius: 20 }}
+                  btnStyle={{
+                    borderStyle: 'dashed',
+                    borderRadius: 20,
+                    alignSelf: 'center',
+                    padding: 3,
+                    marginLeft: 10
+                  }}
                 >
                   <MaterialCommunityIcons
                     name="plus"
@@ -177,59 +238,6 @@ export default function Bio() {
                     color={Blue.primary}
                   />
                 </Button>
-              ) : (
-                <>
-                  {portfolio?.social_accounts?.facebook && (
-                    <Button onPress={() => {}} size="sm">
-                      <MaterialCommunityIcons
-                        name="facebook"
-                        size={28}
-                        color="#1877F2"
-                        style={styles.socialIconBtn}
-                      />
-                    </Button>
-                  )}
-                  {portfolio?.social_accounts?.instagram && (
-                    <Button onPress={() => {}} size="sm">
-                      <MaterialCommunityIcons
-                        name="instagram"
-                        size={28}
-                        color="#C13584"
-                        style={styles.socialIconBtn}
-                      />
-                    </Button>
-                  )}
-                  {portfolio?.social_accounts?.twitter && (
-                    <Button onPress={() => {}} size="sm">
-                      <MaterialCommunityIcons
-                        name="twitter"
-                        size={28}
-                        color="#1DA1F2"
-                        style={styles.socialIconBtn}
-                      />
-                    </Button>
-                  )}
-                  {portfolio?.social_accounts?.github && (
-                    <Button onPress={() => {}} size="sm">
-                      <MaterialCommunityIcons
-                        name="github"
-                        size={28}
-                        color="#333333"
-                        style={styles.socialIconBtn}
-                      />
-                    </Button>
-                  )}
-                  {portfolio?.social_accounts?.linkedin && (
-                    <Button onPress={() => {}} size="sm">
-                      <MaterialCommunityIcons
-                        name="linkedin"
-                        size={28}
-                        color="#0077B5"
-                        style={styles.socialIconBtn}
-                      />
-                    </Button>
-                  )}
-                </>
               )}
             </View>
           </View>
@@ -291,7 +299,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: 'row'
   },
-  socialIconBtn: {},
+  socialIconBtn: {
+    fontSize: 28
+  },
   userName: {
     color: 'black',
     fontFamily: 'Roboto-Medium',
