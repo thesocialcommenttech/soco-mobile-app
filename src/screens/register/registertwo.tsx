@@ -1,24 +1,12 @@
-import {
-  Keyboard,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
-import TextInputWithLabel from '../../components/textInputWithLabel';
-import ButtonWithLoader from '../../components/buttonWithLoader';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useContext } from 'react';
 import { FormikHelpers, useFormik } from 'formik';
 import { object, string, date } from 'yup';
 import { useDispatch } from 'react-redux';
-import CustomRadioButton from '../../components/customRadioButton';
-import { TextInput } from 'react-native-paper';
 import {
   DateTimePickerAndroid,
   DateTimePickerEvent
 } from '@react-native-community/datetimepicker';
-import AntIcon from 'react-native-vector-icons/AntDesign';
 import { Colors, Yellow } from '../../utils/colors';
 import { register } from '../../utils/services/register_service/register.service';
 import { AuthActionTypes, setAuthToLogin } from '../../store/actions/auth';
@@ -144,7 +132,7 @@ function RegisterTwoScreen({ route, navigation }) {
               style={[style, { flexDirection: 'row', paddingHorizontal: 20 }]}
             >
               <RadioButton
-                selected={formik.values.academic === 'male'}
+                selected={formik.values.academic === 'graduate'}
                 buttonProps={{
                   fullWidth: true,
                   text: 'Graduate',
@@ -161,7 +149,7 @@ function RegisterTwoScreen({ route, navigation }) {
                   text: 'Undergraduate',
                   btnStyle: { flexGrow: 1 },
                   onPress: () => {
-                    formik.setFieldValue('academic', 'female');
+                    formik.setFieldValue('academic', 'undergraduate');
                   }
                 }}
               />
@@ -169,7 +157,7 @@ function RegisterTwoScreen({ route, navigation }) {
           )}
         </Input>
         <Input
-          label="Passout Year"
+          label="Date of Birth"
           style={styles.MT}
           onPress={() => {
             openDatePicker(
