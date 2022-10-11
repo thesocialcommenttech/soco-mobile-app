@@ -39,9 +39,7 @@ const CustomCheckBox = (props: {
           />
         </Button>
         <Text onPress={props.onPress} style={styles.agreementMsg}>
-          Check your bank Account/UPI details twice, carefully before adding it.
-          For any mistakes in giving the details of the account you are solely
-          responsible.
+          By sign up you agree to the terms and condition and privacy policy of thesocialcomment
         </Text>
       </View>
       {props.error && <InputError error={props.error} />}
