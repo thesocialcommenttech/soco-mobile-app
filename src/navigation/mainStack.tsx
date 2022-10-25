@@ -12,7 +12,9 @@ import UploadLink from '../screens/createPost/link';
 import Presentation from '../screens/createPost/presentation';
 import SkillVideo from '../screens/createPost/skillVideo';
 import { IMainStack, PostViewScreenParam } from '../types/navigation/main';
+import BlogDetail from '../screens/postDetails/BlogDetail';
 import LinkView from '../screens/postDetails/LinkView';
+import ArticleView from '../screens/postDetails/ArticleView';
 
 const MyStack = createNativeStackNavigator<IMainStack>();
 
@@ -42,6 +44,16 @@ function MainStack() {
       <MyStack.Screen
         name="Post_Presentation"
         component={PresentationDetail}
+        getId={getPostScreenId}
+      />
+      <MyStack.Screen
+        name="Post_Blog"
+        component={BlogDetail}
+        getId={getPostScreenId}
+      />
+      <MyStack.Screen
+        name="Post_Article"
+        component={ArticleView}
         getId={getPostScreenId}
       />
       <MyStack.Screen

@@ -1,5 +1,6 @@
 import { STATIC_FILE_URL } from '@env';
 import { NavigationProp } from '@react-navigation/native';
+import { IMainStack } from '../types/navigation/main';
 import { Post } from './typings/post';
 
 export function staticFileSrc(path: string) {
@@ -36,7 +37,7 @@ export const navigatePostScreen = (
   postId: Post['_id'],
   postType: Post['postType']
 ) => {
-  let postScreenKey: string;
+  let postScreenKey: keyof IMainStack;
   switch (postType) {
     case 'artwork':
       postScreenKey = 'Post_Artwork';
@@ -46,6 +47,12 @@ export const navigatePostScreen = (
       break;
     case 'skill':
       postScreenKey = 'Post_Skill';
+      break;
+    case 'blog':
+      postScreenKey = 'Post_Blog';
+      break;
+    case 'article':
+      postScreenKey = 'Post_Article';
       break;
     case 'link':
       postScreenKey = 'Post_Link';

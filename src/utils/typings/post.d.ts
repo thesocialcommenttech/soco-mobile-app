@@ -47,7 +47,7 @@ interface CommonPostData {
 
 export interface BlogPost extends CommonPostData {
   postType: 'blog';
-  contentJSON: Record<string, any>;
+  contentJSON: Record<string, any>[];
   contentText: string;
   description: string;
   category: string[];
