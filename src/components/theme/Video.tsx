@@ -1,5 +1,5 @@
 import { Dimensions, StyleProp, ViewStyle } from 'react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { staticFileSrc } from '~/src/utils/methods';
 import Skeleton from './Skeleton';
 import VideoPlayer from 'react-native-video-controls';
@@ -32,17 +32,27 @@ interface VideoPlayerProps extends VideoProperties {
 type VideoProps = {
   videoUrl?: string;
   loading?: boolean;
+  calculateWidth?: (winWidth: number) => number;
+  aspectRatio?: number;
 } & VideoPlayerProps;
 
 function Video(props: VideoProps) {
   const windowDim = Dimensions.get('window');
 
+  const width = useMemo(
+    () =>
+      'calculateWidth' in props
+        ? props.calculateWidth(windowDim.width)
+        : windowDim.width,
+    [props?.calculateWidth, windowDim.width]
+  );
+
   if (props.loading) {
     return (
       <Skeleton
         style={ratio16_9Size({
-          winW: windowDim.width,
-          winH: windowDim.height
+          winW: width,
+          winH: width / (props?.aspectRatio ?? 16 / 9)
         })}
       />
     );
@@ -57,10 +67,7 @@ function Video(props: VideoProps) {
       source={{ uri: staticFileSrc(props.videoUrl) }}
       {...props}
       style={[
-        {
-          width: windowDim.width,
-          height: windowDim.width / (16 / 9)
-        },
+        { width, height: width / (props?.aspectRatio ?? 16 / 9) },
         props.style
       ]}
     />
