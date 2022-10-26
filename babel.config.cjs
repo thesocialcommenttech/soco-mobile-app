@@ -27,7 +27,6 @@ module.exports = {
         ]
       }
     ],
-    'transform-inline-environment-variables',
-    'react-native-reanimated/plugin'
+    'transform-inline-environment-variables'
   ]
 };
