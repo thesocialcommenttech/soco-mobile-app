@@ -19,4 +19,5 @@ declare module '@env' {
   export const BACKEND_URL: string;
   export const STATIC_FILE_URL: string;
   export const PORTFOLIO_WEB_HOST: string;
+  export const SENTRY_DSN: string;
 }
