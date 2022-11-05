@@ -7,8 +7,8 @@ export default {
     fontSize: 23,
     fontFamily: 'Roboto-Medium',
     marginTop: 16,
-    marginBottom: 10
-    // lineHeight: 30,
+    marginBottom: 10,
+    lineHeight: 30,
   },
   heading2: {
     color: 'black',

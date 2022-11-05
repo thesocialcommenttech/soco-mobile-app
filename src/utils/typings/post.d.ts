@@ -1,5 +1,4 @@
 import { User } from './user-profile_interface/getUserData.interface';
-
 export type PostType =
   | 'blog'
   | 'artwork'
@@ -74,12 +73,47 @@ export interface PresentationPost extends CommonPostData {
   totalSlides: number;
 }
 
+interface ProjectTextBlock {
+  _id: string;
+  type: 'text';
+  data: { content: { ops: any[] } };
+}
+
+interface ProjectHeadingBlock {
+  _id: string;
+  type: 'heading';
+  data: { heading: string };
+}
+
+interface ProjectVideoBlock {
+  _id: string;
+  type: 'video';
+  data: { video: string };
+}
+
+interface ProjectCodeBlock {
+  _id: string;
+  type: 'code';
+  data: { code: string };
+}
+interface ProjectPdfBlock {
+  _id: string;
+  type: 'pdf';
+  data: { pdf: string; description?: string };
+}
+
 export interface ProjectPost extends CommonPostData {
   introduction: string;
   postType: 'project';
   team: string[];
   aim: string;
-  content: any[];
+  content: (
+    | ProjectTextBlock
+    | ProjectHeadingBlock
+    | ProjectVideoBlock
+    | ProjectCodeBlock
+    | ProjectPdfBlock
+  )[];
 }
 export interface SharedPost {
   _id?: string;

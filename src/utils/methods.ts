@@ -57,6 +57,9 @@ export const navigatePostScreen = (
     case 'link':
       postScreenKey = 'Post_Link';
       break;
+    case 'project':
+      postScreenKey = 'Post_Project';
+      break;
     default:
       return;
   }

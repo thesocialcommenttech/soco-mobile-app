@@ -27,6 +27,7 @@ export type IMainStack = {
   Post_Presentation: PostViewScreenParam;
   Post_Blog: PostViewScreenParam;
   Post_Article: PostViewScreenParam;
+  Post_Project: PostViewScreenParam;
   Post_Link: PostViewScreenParam;
 };
 

@@ -1,25 +1,21 @@
 import {
-  Dimensions,
-  Image,
-  ImageStyle,
-  StyleProp,
   StyleSheet,
   View,
   ViewStyle
 } from 'react-native';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import Markdown, {
   MarkdownIt,
-  stringToTokens,
-  tokensToAST
+  // stringToTokens,
+  // tokensToAST
 } from 'react-native-markdown-display';
-import { Black } from '~/src/utils/colors';
 import defaultConverters from 'quill-delta-to-markdown/src/fromDelta.converters';
 import MDIns from 'markdown-it-ins';
 import MDSub from 'markdown-it-sub';
 import MDSup from 'markdown-it-sup';
 import { html5Media } from 'markdown-it-html5-media';
-import { cleanupTokens } from 'react-native-markdown-display/src/lib/util/cleanupTokens';
+// import { cleanupTokens } from 'react-native-markdown-display/src/lib/util/cleanupTokens';
+// import groupTextTokens from 'react-native-markdown-display/src/lib/util/groupTextTokens';
 import Node from 'quill-delta-to-markdown/src/utils/Node';
 import { encodeLink } from 'quill-delta-to-markdown/src/utils/URL';
 import { deltaToMarkdown } from 'quill-delta-to-markdown';
@@ -86,6 +82,7 @@ const EditorView = (props: EditorViewProps) => {
       // tokens = cleanupTokens(tokens);
       // tokens = groupTextTokens(tokens);
       // const astTree = tokensToAST(tokens);
+      // console.log(astTree);
 
       return props?.value && mkd;
     }

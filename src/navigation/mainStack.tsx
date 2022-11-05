@@ -15,6 +15,7 @@ import { IMainStack, PostViewScreenParam } from '../types/navigation/main';
 import BlogDetail from '../screens/postDetails/BlogDetail';
 import LinkView from '../screens/postDetails/LinkView';
 import ArticleView from '../screens/postDetails/ArticleView';
+import ProjectView from '../screens/postDetails/ProjectView';
 
 const MyStack = createNativeStackNavigator<IMainStack>();
 
@@ -54,6 +55,11 @@ function MainStack() {
       <MyStack.Screen
         name="Post_Article"
         component={ArticleView}
+        getId={getPostScreenId}
+      />
+      <MyStack.Screen
+        name="Post_Project"
+        component={ProjectView}
         getId={getPostScreenId}
       />
       <MyStack.Screen
