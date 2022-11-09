@@ -80,10 +80,8 @@ export default function Bio() {
 
   const haveAllSocialAccounts = useMemo(
     () =>
-      Object.values(portfolio.social_accounts ?? {}).reduce(
-        (p, c) => p && !!c,
-        true
-      ),
+      typeof portfolio.social_accounts === 'object' &&
+      Object.values(portfolio.social_accounts).reduce((p, c) => p && !!c, true),
     [portfolio?.social_accounts]
   );
 
