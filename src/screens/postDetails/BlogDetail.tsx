@@ -108,7 +108,7 @@ export default function BlogDetail() {
           loading={loading}
         />
         <PostTags tags={post?.tags} style={styles.MT} loading={loading} />
-        {loading && (
+        {!loading && (
           <>
             <AuthorCard
               style={styles.MT}
