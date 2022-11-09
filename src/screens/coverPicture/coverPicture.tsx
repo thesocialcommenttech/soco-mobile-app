@@ -16,11 +16,20 @@ import {
   OptionalStackHeader
 } from '~/src/components/headers/OptionalStackHeader';
 import Button from '~/src/components/theme/Button';
+import { useDispatch } from 'react-redux';
+import { ThunkDispatch } from 'redux-thunk';
+import {
+  AuthActionTypes,
+  updateUserProfileImageGlobalState
+} from '~/src/store/actions/auth';
+import { IRootReducer } from '~/src/store/reducers';
 
 function CoverPictureScreen() {
   const navigation = useNavigation();
   const [image, setImage] = useState<ImagePicker.Asset>();
   const [loading, setLoading] = useState(false);
+  const dispatch =
+    useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
 
   async function onImageSelect() {
     try {
@@ -44,6 +53,7 @@ function CoverPictureScreen() {
       });
 
       if (result.data.success) {
+        dispatch(updateUserProfileImageGlobalState(result.data.DPImageURL));
         navigation.navigate('BioScreen');
       }
 
