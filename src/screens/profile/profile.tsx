@@ -245,7 +245,7 @@ function _ProfileScreen_() {
           {mine ? <LockPortfolioBtn /> : <FollowToggleBtn />}
         </View>
 
-        <View style={styles.bio}>
+        <View style={[styles.bio, !userProfile.bio && { marginTop: 0 }]}>
           <Text style={styles.bioText}>{userProfile.bio}</Text>
         </View>
 

@@ -286,7 +286,8 @@ const styles = StyleSheet.create({
   userProfileImage: {
     width: 100,
     height: 100,
-    borderRadius: 60
+    borderRadius: 60,
+    backgroundColor: Black[200]
   },
   imageview: {
     justifyContent: 'center',
