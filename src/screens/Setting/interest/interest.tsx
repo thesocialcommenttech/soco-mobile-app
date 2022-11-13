@@ -2,31 +2,28 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   Animated,
   ActivityIndicator
 } from 'react-native';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { Black } from '../../../utils/colors';
-import SettingScreenHeader from '~/src/components/screens/settings/SettingScreenHeader';
 import SectionHeader from '~/src/components/screens/settings/SectionHeader';
-import { Input } from '~/src/components/theme/Input';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getUserInterests } from '~/src/utils/services/settings_services/interests_services/getUserInterests.service';
-import { GetUserInterestsResponse } from '~/src/utils/typings/settings_interfaces/interests_interface/getUserInterests.interface';
 import Categorybox from '~/src/components/categoryBox';
 import Button from '~/src/components/theme/Button';
 import Loading from '~/src/components/theme/Loading';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '~/src/store/reducers';
-import { getInterestCategories } from '~/src/utils/services/settings_services/interests_services/getInterestCategories.service';
 import { Interests } from '~/src/utils/typings/settings_interfaces/interests_interface/getInterestCategories.interface';
 import { isNumber } from 'lodash';
 import { removeUserInterest } from '~/src/utils/services/user-profile_service/removeUseInterests.service';
-import { addUserInterests } from '~/src/utils/services/user-profile_service/userInterests.service';
-import { SelectionCategory } from '../../categories/categories';
+import {
+  InterestSelectorDataProvider,
+  useInterestData
+} from '~/src/state/InterestSelectorState';
+import UpdateInterestModal from '~/src/components/modals/UpdateInterestModal';
 
-function UserInterestCategory(props: {
+export const UserInterestCategory = memo(function (props: {
   onRemove: () => void;
   interest: Interests;
 }) {
@@ -117,19 +114,47 @@ function UserInterestCategory(props: {
       </Animated.View>
     </View>
   );
-}
+});
 
-export default function Interest() {
-  const [userInterests, setUserInterests] =
-    useState<GetUserInterestsResponse['interested_categories']>();
-  const [loading, setLoading] = useState(true);
+const AddInterestButton = memo(function () {
+  const [showModal, setShowModal] = useState(false);
+  const [_, { clearSelectedCategories }] = useInterestData(data => null);
+
+  return (
+    <>
+      <UpdateInterestModal
+        showModal={showModal}
+        onClose={() => {
+          clearSelectedCategories();
+          setShowModal(false);
+        }}
+      />
+      <Button
+        type="outlined"
+        size="md"
+        fullWidth
+        text="Add More Interests"
+        btnStyle={{
+          marginTop: 20,
+          borderStyle: 'dashed'
+        }}
+        onPress={() => setShowModal(true)}
+      />
+    </>
+  );
+});
+
+function UserInterests() {
   const auth = useSelector((root: IRootReducer) => root.auth);
+  const [loading, setLoading] = useState(true);
+  const [userInterests, { setUserInterestList, removeUserInterestList }] =
+    useInterestData(data => data.userInterestList);
 
   async function fetchUserInterests() {
     setLoading(true);
     const result = await getUserInterests(auth.user._id);
     if (result.data.success) {
-      setUserInterests(result.data.interested_categories);
+      setUserInterestList(result.data.interested_categories);
     }
     setLoading(false);
   }
@@ -138,53 +163,60 @@ export default function Interest() {
     fetchUserInterests();
   }, []);
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
-    <>
-      {/* <SettingScreenHeader title="Interests" /> */}
-
-      <View style={styles.container}>
-        <SectionHeader label="My Interests" style={styles.fCont}>
-          {isNumber(userInterests?.length) && (
-            <Text style={styles.heading_subText}>
-              Total {userInterests?.length} Interests
-            </Text>
-          )}
-        </SectionHeader>
-
-        {loading ? (
-          <Loading />
-        ) : (
-          <View style={styles.selectedCategories}>
-            {userInterests?.length > 0 ? (
-              userInterests?.map((interest, i) => (
-                <UserInterestCategory
-                  key={interest._id}
-                  interest={interest}
-                  onRemove={() => {
-                    userInterests.splice(i, 1);
-                    setUserInterests([...userInterests]);
-                  }}
-                />
-              ))
-            ) : (
-              <Text style={{ color: Black[500] }}>
-                We don't know any of your interests
-              </Text>
-            )}
-          </View>
+    <View style={styles.container}>
+      <SectionHeader label="My Interests" style={styles.fCont}>
+        {isNumber(userInterests?.length) && (
+          <Text style={styles.heading_subText}>
+            Total {userInterests?.length} Interests
+          </Text>
         )}
-
-        <AddInterestCategories selectedInterestsCount={userInterests?.length} />
+      </SectionHeader>
+      <View style={styles.selectedCategories}>
+        {userInterests?.length > 0 ? (
+          userInterests?.map((interest, i) => (
+            <UserInterestCategory
+              key={interest._id}
+              interest={interest}
+              onRemove={() => removeUserInterestList(i)}
+            />
+          ))
+        ) : (
+          <Text style={{ color: Black[500] }}>
+            We don't know any of your interests
+          </Text>
+        )}
       </View>
-    </>
+
+      <Text style={{ marginTop: 30, fontSize: 14, color: Black[600] }}>
+        You can select {10 - userInterests?.length ?? 0} more interest(s)
+      </Text>
+
+      <AddInterestButton />
+    </View>
+  );
+}
+
+export default function Interest() {
+  return (
+    <InterestSelectorDataProvider>
+      <UserInterests />
+    </InterestSelectorDataProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: 'white'
+    padding: 20
+  },
+  selectedCategories: {
+    marginTop: 20,
+    flexDirection: 'row',
+    flexWrap: 'wrap'
   },
   fCont: {
     flexDirection: 'row',
@@ -195,145 +227,5 @@ const styles = StyleSheet.create({
     // fontFamily: 'Roboto-Medium',
     color: Black[500],
     fontSize: 13
-  },
-  selectedCategories: {
-    marginTop: '6%',
-    flexDirection: 'row',
-    flexWrap: 'wrap'
-  },
-  addcategories: {
-    marginTop: '8%'
-  },
-  searchbox: {
-    marginTop: '7%'
-  },
-  allcategory: {
-    marginTop: 10,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start'
-  },
-  updatebtn: {
-    marginTop: 20
   }
 });
-
-function AddInterestCategories(props: {
-  selectedInterestsCount: number;
-  onInterestAdded?: (interests: Interests[]) => void;
-}) {
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState<SelectionCategory[]>([]);
-  const [submittingInterests, setSubmittingInterests] = useState(false);
-
-  const unselectedCategories = useMemo(
-    () => categories.filter(item => !item.selected),
-    [categories]
-  );
-
-  const selectedCategories = useMemo(
-    () => categories.filter(item => item.selected),
-    [categories]
-  );
-
-  async function submitUserInterests() {
-    setSubmittingInterests(true);
-    const result = await addUserInterests(selectedCategories);
-
-    if (result.data.success) {
-      props.onInterestAdded?.(selectedCategories);
-    }
-    setSubmittingInterests(false);
-  }
-
-  function toggleCategorySelection(itemIndex: number, select: boolean) {
-    categories[itemIndex].selected = select;
-    setCategories([...categories]);
-  }
-
-  async function fetchData() {
-    setLoading(true);
-    const result = await getInterestCategories();
-
-    if (result.data.success) {
-      setCategories(result.data.interest_categories);
-    }
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  return (
-    <>
-      <View style={styles.addcategories}>
-        <SectionHeader label="Add Interests" style={styles.fCont}>
-          {isNumber(props.selectedInterestsCount) && (
-            <Text style={styles.heading_subText}>
-              {10 - props.selectedInterestsCount - selectedCategories?.length}{' '}
-              selection Left
-            </Text>
-          )}
-        </SectionHeader>
-
-        <Input
-          style={styles.searchbox}
-          inputContainer={{ paddingLeft: 15 }}
-          inputProp={{
-            placeholder: 'Search',
-            style: {
-              paddingHorizontal: 15,
-              paddingVertical: 10,
-              paddingTop: 10,
-              paddingLeft: 15
-            },
-            onChangeText: text => {}
-          }}
-          prefix={<MaterialCommunityIcons name="magnify" size={20} />}
-        />
-      </View>
-      {loading ? (
-        <Loading />
-      ) : (
-        <>
-          {selectedCategories?.length > 0 && (
-            <View style={styles.selectedCategories}>
-              {selectedCategories.map((category, i) => (
-                <Categorybox
-                  key={category._id}
-                  text={category.category}
-                  cancelable={true}
-                  selected={true}
-                  onCancel={() => {
-                    toggleCategorySelection(category.index, false);
-                  }}
-                />
-              ))}
-            </View>
-          )}
-          <ScrollView contentContainerStyle={styles.allcategory}>
-            {unselectedCategories?.map(category => (
-              <Categorybox
-                key={category._id}
-                text={category.category}
-                onPress={() => {
-                  toggleCategorySelection(category.index, true);
-                }}
-              />
-            ))}
-          </ScrollView>
-          <Button
-            text="Save"
-            btnStyle={styles.updatebtn}
-            type="filled"
-            fullWidth={true}
-            disabled={submittingInterests}
-            processing={submittingInterests}
-            onPress={submitUserInterests}
-          />
-        </>
-      )}
-    </>
-  );
-}
