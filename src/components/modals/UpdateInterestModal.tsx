@@ -104,7 +104,10 @@ const UpdateInterestModal = (props: {
       onBackButtonPress={props.onClose}
       onSwipeComplete={() => props.onClose?.()}
       onModalShow={() => setShowList(true)}
-      onModalHide={() => setShowList(false)}
+      onModalHide={() => {
+        setShowList(false);
+        setSearchQuery('');
+      }}
       swipeDirection="down"
       propagateSwipe
       useNativeDriverForBackdrop
