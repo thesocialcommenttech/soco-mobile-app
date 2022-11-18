@@ -51,11 +51,11 @@ export default function AddSocialAccounts() {
 
   const formik = useFormik<AddSocialAccountForm>({
     initialValues: {
-      facebook: portfolio.social_accounts.facebook,
-      twitter: portfolio.social_accounts.twitter,
-      linkedin: portfolio.social_accounts.linkedin,
-      github: portfolio.social_accounts.github,
-      instagram: portfolio.social_accounts.instagram
+      facebook: portfolio.social_accounts?.facebook,
+      twitter: portfolio.social_accounts?.twitter,
+      linkedin: portfolio.social_accounts?.linkedin,
+      github: portfolio.social_accounts?.github,
+      instagram: portfolio.social_accounts?.instagram
     },
     validationSchema: object({
       facebook: string().url().trim().nullable(),

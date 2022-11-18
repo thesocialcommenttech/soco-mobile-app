@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { createRef, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Image, StyleSheet, View } from 'react-native';
 
@@ -10,6 +10,7 @@ import Logo from '~/src/assets/images/logos/thesocialcomment-logo.png';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootRouteContext } from '../contexts/root-route.context';
+import { routingInstrumentation } from '../utils/monitoring/sentry';
 
 const RootStack = createNativeStackNavigator();
 
@@ -19,6 +20,7 @@ export default function Routes() {
   const [loading, setLoading] = useState(true);
   const [showPostRegisterationFlow, setShowPostRegisterationFlow] =
     useState(false);
+  const navigationContainerRef = useRef();
 
   const RootRouteContextValue = useMemo<RootRouteContext>(
     () => ({
@@ -70,6 +72,13 @@ export default function Routes() {
     return (
       <RootRouteContext.Provider value={RootRouteContextValue}>
         <NavigationContainer
+          ref={navigationContainerRef}
+          onReady={() => {
+            // Register the navigation container with the instrumentation
+            routingInstrumentation.registerNavigationContainer(
+              navigationContainerRef
+            );
+          }}
           theme={{
             ...DefaultTheme,
             colors: {

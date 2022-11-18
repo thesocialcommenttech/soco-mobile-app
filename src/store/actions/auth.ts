@@ -6,6 +6,7 @@ import {
   updateProfileImageInAuthCredentials
 } from '../../lib/auth-credentials';
 import { IRootReducer } from '../reducers';
+import { setUser as Sentry_setUser } from '@sentry/react-native';
 
 export enum AuthAction {
   LOGIN = 'LOGIN',
@@ -31,10 +32,19 @@ interface IUpdateUserProfileImageAction {
   payload: { profileImage: string };
 }
 
-export const loginAction = (authData: IAuthData): ILoginAction => ({
-  type: AuthAction.LOGIN,
-  payload: authData
-});
+export const loginAction = (authData: IAuthData): ILoginAction => {
+  // setting user data in sentry
+  Sentry_setUser({
+    id: authData.user._id,
+    username: authData.user.username,
+    email: authData.user.email
+  });
+
+  return {
+    type: AuthAction.LOGIN,
+    payload: authData
+  };
+};
 
 export type ISetAuthToLogin = ThunkAction<any, IRootReducer, any, ILoginAction>;
 

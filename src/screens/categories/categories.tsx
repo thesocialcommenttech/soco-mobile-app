@@ -1,18 +1,7 @@
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Black, Colors } from '../../utils/colors';
-import Categorybox from '../../components/categoryBox';
-import { getInterestCategories } from '~/src/utils/services/settings_services/interests_services/getInterestCategories.service';
-import { Interests } from '~/src/utils/typings/settings_interfaces/interests_interface/getInterestCategories.interface';
 import { addUserInterests } from '~/src/utils/services/user-profile_service/userInterests.service';
 import {
   OptionalFormStage,
@@ -20,138 +9,118 @@ import {
 } from '~/src/components/headers/OptionalStackHeader';
 import { useNavigation } from '@react-navigation/native';
 import { Input } from '~/src/components/theme/Input';
+import { AvailableInterestList } from '~/src/components/Interests/AvialableInterests';
+import {
+  InterestSelectorDataProvider,
+  useInterestData
+} from '~/src/state/InterestSelectorState';
+import { SelectedInterests } from '~/src/components/Interests/SelectedInterests';
+import { debounce } from 'lodash';
 
-export type SelectionCategory = Interests & { selected?: boolean };
-
-function CategoriesScreen() {
-  const navigation = useNavigation();
-  const [searchText, setSearchText] = useState('');
-
+function Header(props: { onInterestsAdded: () => void }) {
   const [submittingInterests, setSubmittingInterests] = useState(false);
-  const [data, setData] = useState<SelectionCategory[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const unselectedCategories = useMemo(
-    () => data.filter(item => !item.selected),
-    [data]
+  const [selectedCategories, { events }] = useInterestData(
+    data => data.selectedCategories
   );
-
-  const selectedCategories = useMemo(
-    () => data.filter(item => item.selected),
-    [data]
-  );
-
-  async function fetchCategories() {
-    setLoading(true);
-    const result = await getInterestCategories();
-
-    if (result.data.success) {
-      setData(result.data.interest_categories);
-    }
-    setLoading(false);
-  }
+  const previousSelectionCount = useRef(-1);
 
   async function submitUserInterests() {
     setSubmittingInterests(true);
     const result = await addUserInterests(selectedCategories);
 
     if (result.data.success) {
-      navigation.navigate('ProfilePicture');
+      props.onInterestsAdded?.();
     }
-    setSubmittingInterests(true);
+    setSubmittingInterests(false);
   }
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    // disable selection if selected interest reached limit of 5
+    if (
+      previousSelectionCount.current === 4 &&
+      selectedCategories.length === 5
+    ) {
+      events.emit('interest-selection-toggle', false);
+    }
+
+    // enable selection if selected interest comes below limit of 5
+    if (
+      previousSelectionCount.current === 5 &&
+      selectedCategories.length === 4
+    ) {
+      events.emit('interest-selection-toggle', true);
+    }
+    previousSelectionCount.current = selectedCategories.length;
+  }, [selectedCategories]);
 
   return (
-    <>
-      <OptionalStackHeader
-        skipable={false}
-        onProceed={() => submitUserInterests()}
-        disableProceed={submittingInterests || selectedCategories.length < 5}
-        formStage={OptionalFormStage.INTERESTS_SELECTION}
-      />
+    <OptionalStackHeader
+      skipable={false}
+      onProceed={() => submitUserInterests()}
+      disableProceed={submittingInterests || selectedCategories.length < 5}
+      formStage={OptionalFormStage.INTERESTS_SELECTION}
+    />
+  );
+}
+
+function SearchInput() {
+  const [_, { setSearchQuery }] = useInterestData(data => null);
+
+  return (
+    <Input
+      style={styles.searchInputWrapper}
+      inputContainer={styles.searchInputCt}
+      inputProp={{
+        onChangeText: debounce(setSearchQuery, 300),
+        style: styles.searchInput,
+        // value: searchQuery,
+        placeholder: 'Search',
+        spellCheck: false,
+        autoCorrect: false,
+        autoComplete: 'off',
+        autoCapitalize: 'none'
+      }}
+      prefix={
+        <MaterialCommunityIcon
+          name="magnify"
+          size={20}
+          color={Colors.Secondary}
+        />
+      }
+    />
+  );
+}
+
+function CategoriesScreen() {
+  const navigation = useNavigation();
+
+  return (
+    <InterestSelectorDataProvider>
+      <Header onInterestsAdded={() => navigation.navigate('ProfilePicture')} />
       <View style={styles.container}>
         <Text style={styles.titleTxt}>Select Categories of your interest</Text>
         <Text style={styles.subTitleTxt}>
           Tell us categories, you are interested in
         </Text>
         {/* search bar */}
-        <Input
-          style={styles.searchInputWrapper}
-          inputContainer={styles.searchInputCt}
-          inputProp={{
-            onChangeText: text => {
-              setSearchText(text);
-            },
-            style: styles.searchInput,
-            value: searchText,
-            placeholder: 'Search',
-            spellCheck: false,
-            autoCorrect: false,
-            autoComplete: 'off',
-            autoCapitalize: 'none'
-          }}
-          prefix={
-            <MaterialCommunityIcon
-              name="magnify"
-              size={20}
-              color={Colors.Secondary}
-            />
-          }
-        />
-        <Text style={styles.subsubTitleTxt}>Select minimum 5 categories</Text>
-        {loading ? (
-          <View style={styles.loadingCt}>
-            <ActivityIndicator color={Colors.Secondary} size={32} />
-          </View>
-        ) : (
-          <>
-            {/* <ScrollView> */}
-            {selectedCategories?.length > 0 && (
-              <View style={styles.selectedCategories}>
-                {selectedCategories.map((item, i) => (
-                  <Categorybox
-                    key={item._id}
-                    text={item.category}
-                    cancelable={true}
-                    selected={true}
-                    onCancel={() => {
-                      data[item.index].selected = false;
-                      setData([...data]);
-                    }}
-                  />
-                ))}
-              </View>
-            )}
-            {/* </ScrollView> */}
-            {/* <View> */}
-            <ScrollView
-              contentContainerStyle={[
-                styles.allcategory,
-                selectedCategories?.length === 0 && { paddingTop: 10 }
-              ]}
-            >
-              {unselectedCategories.map(item => (
-                <Categorybox
-                  key={item._id}
-                  text={item.category}
-                  selected={false}
-                  onPress={() => {
-                    data[item.index].selected = true;
-                    // selectedCategories.push(item[0]);
-                    setData([...data]);
-                  }}
-                />
-              ))}
-            </ScrollView>
-            {/* </View> */}
-          </>
-        )}
+        <SearchInput />
+        <Text style={styles.subsubTitleTxt}>
+          Select 5 categories of interest
+        </Text>
+        <View style={{ marginTop: 10, flex: 1 }}>
+          <ScrollView
+            contentContainerStyle={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              paddingBottom: 10
+            }}
+          >
+            <SelectedInterests />
+            <AvailableInterestList />
+          </ScrollView>
+        </View>
       </View>
-    </>
+    </InterestSelectorDataProvider>
   );
 }
 
@@ -183,29 +152,10 @@ const styles = StyleSheet.create({
     paddingTop: 10
   },
   searchInputWrapper: {
-    marginTop: 20,
+    marginTop: 20
   },
   searchInputCt: {
     paddingLeft: 15,
     paddingRight: 15
-  },
-  selectedCategories: {
-    // marginTop: '5%',
-    paddingTop: 10,
-    paddingBottom: 5,
-    flexDirection: 'row',
-    flexWrap: 'wrap'
-  },
-  allcategory: {
-    // marginTop: '2%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    paddingBottom: 10
-  },
-  loadingCt: {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: 20
   }
 });

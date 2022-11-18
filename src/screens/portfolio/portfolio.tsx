@@ -17,6 +17,7 @@ import { usePortfolioData } from '~/src/contexts/portfolio.context';
 import { Black, Blue } from '~/src/utils/colors';
 import { PortfolioTab_ScreenProps } from '~/src/types/navigation/bottomBar';
 import { PortfolioStack } from '~/src/types/navigation/portfolio';
+import { produce } from 'immer';
 
 const Tab = createMaterialTopTabNavigator<PortfolioStack>();
 
@@ -65,6 +66,12 @@ export default function Portfolio() {
   useFocusEffect(() => {
     if (!profile && !portfolio) {
       fetchData();
+    } else if (mine && profile.profileImage !== authUser.profileImage) {
+      setProfile(
+        produce(profile, draft => {
+          draft.profileImage = authUser.profileImage;
+        })
+      );
     }
   });
 

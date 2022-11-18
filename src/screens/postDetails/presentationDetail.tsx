@@ -211,17 +211,21 @@ export default function PresentationDetail() {
             loading={loading}
           />
           <PostTags tags={post?.tags} style={styles.MT} loading={loading} />
-          <AuthorCard
-            style={styles.MT}
-            author={post?.postedBy}
-            post={{ _id: post?._id, type: 'presentation' }}
-          />
-          <PostComments
-            commentCount={post?.comments?.length}
-            comments={post?.comments}
-            postId={post?._id}
-            style={styles.MT}
-          />
+          {!loading && (
+            <>
+              <AuthorCard
+                style={styles.MT}
+                author={post?.postedBy}
+                post={{ _id: post?._id, type: 'presentation' }}
+              />
+              <PostComments
+                commentCount={post?.comments?.length}
+                comments={post?.comments}
+                postId={post?._id}
+                style={styles.MT}
+              />
+            </>
+          )}
         </View>
       </ScrollView>
     </ScreenWithTopBar>

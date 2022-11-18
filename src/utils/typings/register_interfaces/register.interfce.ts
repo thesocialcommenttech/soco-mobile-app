@@ -1,4 +1,4 @@
-import { User } from '../login_interface/login.interface';
+import { User } from '../user-profile_interface/getUserData.interface';
 
 export interface RegisterAccountData {
   name: string;
@@ -27,6 +27,8 @@ export enum SubcriptionsPlan {
 
 export interface RegisterResponse {
   success?: boolean;
-  user?: User;
+  user?: Required<
+    Pick<User, '_id' | 'name' | 'email' | 'username' | 'profileImage'>
+  >;
   token?: string;
 }

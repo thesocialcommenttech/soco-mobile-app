@@ -12,6 +12,10 @@ import 'react-native-get-random-values';
 import { nanoid } from 'nanoid';
 import { useDeviceId } from './src/state/deviceIdState';
 import { BACKEND_URL } from '@env';
+import * as Sentry from '@sentry/react-native';
+
+// initializing sentry
+import '~/src/utils/monitoring/sentry';
 
 axios.defaults.baseURL = BACKEND_URL;
 
@@ -55,4 +59,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default App;
+export default Sentry.wrap(App);
