@@ -38,7 +38,7 @@ export type PortfolioStack = {
   Bio: PortfolioTabScreenParam & { mine: boolean };
   Experiences: PortfolioTabScreenParam & { mine: boolean };
   Certifications: PortfolioTabScreenParam & { mine: boolean };
-  Educations: PortfolioTabScreenParam & { mine: boolean };
+  Education: PortfolioTabScreenParam & { mine: boolean };
   Skills: PortfolioTabScreenParam & { mine: boolean };
   Works: PortfolioTabScreenParam & { mine: boolean };
 };
