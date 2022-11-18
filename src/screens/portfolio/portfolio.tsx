@@ -138,7 +138,7 @@ export default function Portfolio() {
           />
         )}
         <Tab.Screen
-          name="Educations"
+          name="Education"
           initialParams={initialParams}
           component={Educations}
         />
