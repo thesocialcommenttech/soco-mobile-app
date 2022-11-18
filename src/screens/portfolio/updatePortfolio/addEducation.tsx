@@ -173,7 +173,7 @@ export default function AddEducation() {
               buttonProps={{
                 fullWidth: true,
                 btnStyle: { marginTop: 10 },
-                text: 'Graducation',
+                text: 'Graduation',
                 onPress: () => {
                   formik.setFieldValue('level', 'graduation');
                 }
@@ -218,7 +218,7 @@ export default function AddEducation() {
               selected={formik.values.status === 'pursuing'}
               buttonProps={{
                 fullWidth: true,
-                text: 'Graducation',
+                text: 'Graduation',
                 btnStyle: { flexGrow: 1 },
                 onPress: () => {
                   formik.setFieldValue('status', 'pursuing');
