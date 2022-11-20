@@ -8,7 +8,7 @@ import {
   View
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { staticFileSrc } from '~/src/utils/methods';
+import { navigatePostScreen, staticFileSrc } from '~/src/utils/methods';
 import { Post, PresentationPost, SharedPost } from '~/src/utils/typings/post';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Black } from '~/src/utils/colors';
@@ -49,25 +49,6 @@ export default function WorkItem({
     }
   };
 
-  function onClickPost() {
-    let postScreenKey;
-    switch (item.postType) {
-      case 'artwork':
-        postScreenKey = 'Post_Artwork';
-        break;
-      case 'presentation':
-        postScreenKey = 'Post_Presentation';
-        break;
-      case 'skill':
-        postScreenKey = 'Post_Skill';
-        break;
-
-      default:
-        return;
-    }
-    navigation.navigate(postScreenKey, { post_id: item._id });
-  }
-
   return (
     <>
       <Bottomsheet
@@ -85,7 +66,7 @@ export default function WorkItem({
       </Bottomsheet>
       <TouchableHighlight
         onLongPress={() => (editOptions ? setModalVisible(true) : undefined)}
-        onPress={onClickPost}
+        onPress={() => navigatePostScreen(navigation, item._id, item.postType)}
         underlayColor={Black[100]}
         style={styles.item}
       >
