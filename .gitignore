@@ -63,3 +63,6 @@ buck-out/
 # environemnt files
 .env
 .env.*
+
+# Firebase files
+google-services.json
