@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
+import OnboardModal from '../components/modals/OnboardModal';
 import SideMenu from '../components/SideMenu';
 import { IRootReducer } from '../store/reducers';
 import { BottomTabStack } from '../types/navigation/bottomBar';
@@ -111,6 +112,7 @@ export default function BottomTabBar() {
         />
       </BottomTabs.Navigator>
       <SideMenu />
+      <OnboardModal />
     </>
   );
 }
