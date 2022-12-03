@@ -13,11 +13,14 @@ import { nanoid } from 'nanoid';
 import { useDeviceId } from './src/state/deviceIdState';
 import { BACKEND_URL } from '@env';
 import * as Sentry from '@sentry/react-native';
+import { firebase } from '@react-native-firebase/analytics';
 
 // initializing sentry
 import '~/src/utils/monitoring/sentry';
 
 axios.defaults.baseURL = BACKEND_URL;
+
+firebase.analytics().setAnalyticsCollectionEnabled(process.env.NODE_ENV === 'production');
 
 const App = () => {
   const { setDeviceId } = useDeviceId();
