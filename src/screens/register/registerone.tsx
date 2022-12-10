@@ -1,19 +1,21 @@
 import {
-  GestureResponderEvent,
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
   View
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik';
 import { object, string, boolean } from 'yup';
-import { Black, Colors, Red, Yellow } from '../../utils/colors';
+import { Black, Blue, Colors, Red, Yellow } from '../../utils/colors';
 import { RegisterAccountData } from '../../utils/typings/register_interfaces/register.interfce';
 import { useRegisterData } from '~/src/state/registerScreenState';
 import { Input, InputError, PasswordInput } from '~/src/components/theme/Input';
 import Button from '~/src/components/theme/Button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { checkAvailablity } from '~/src/utils/services/user-profile_service/updateUserEmail.service';
+import { debounce } from 'lodash';
 
 const CustomCheckBox = (props: {
   onPress: () => void;
@@ -39,7 +41,8 @@ const CustomCheckBox = (props: {
           />
         </Button>
         <Text onPress={props.onPress} style={styles.agreementMsg}>
-          By sign up you agree to the terms and condition and privacy policy of thesocialcomment
+          By sign up you agree to the terms and condition and privacy policy of
+          thesocialcomment
         </Text>
       </View>
       {props.error && <InputError error={props.error} />}
@@ -48,9 +51,11 @@ const CustomCheckBox = (props: {
 };
 
 const RegisterOneScreen = ({ navigation }) => {
-  const [isPasswordHidden, setIsPasswordHidden] = useState<boolean>(true);
-
   const { setAccountDetails } = useRegisterData();
+  const emailAvialable = useRef(null);
+  const usernameAvialable = useRef(null);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [checkingUsername, setCheckingUsername] = useState(false);
 
   function onNext(values: RegisterAccountData) {
     setAccountDetails(values);
@@ -61,10 +66,18 @@ const RegisterOneScreen = ({ navigation }) => {
     email: string()
       .trim()
       .email('Invalid email address')
+      .test('availability', 'Email already exist', () => emailAvialable.current)
       .required('Email is Required'),
     password: string().trim().required('Password is Required'),
     name: string().trim().required('Name is Required'),
-    username: string().trim().required('Username is Required'),
+    username: string()
+      .trim()
+      .test(
+        'availability',
+        'Username already exist',
+        () => usernameAvialable.current
+      )
+      .required('Username is Required'),
     referal: string().trim(),
     agreement: boolean().oneOf(
       [true],
@@ -72,9 +85,31 @@ const RegisterOneScreen = ({ navigation }) => {
     )
   });
 
-  const Eyeclick = () => {
-    setIsPasswordHidden(!isPasswordHidden);
-  };
+  const isEmailAvailable = debounce(async () => {
+    setCheckingEmail(true);
+    const result = await checkAvailablity({
+      property: 'email',
+      value: formik.values.email
+    });
+
+    if (result.data.success) {
+      emailAvialable.current = result.data.availablity;
+    }
+    setCheckingEmail(false);
+  });
+
+  const isUsernameAvailable = debounce(async () => {
+    setCheckingUsername(true);
+    const result = await checkAvailablity({
+      property: 'username',
+      value: formik.values.username
+    });
+
+    if (result.data.success) {
+      usernameAvialable.current = result.data.availablity;
+    }
+    setCheckingUsername(false);
+  }, 300);
 
   const formik = useFormik<RegisterAccountData>({
     initialValues: {
@@ -88,6 +123,20 @@ const RegisterOneScreen = ({ navigation }) => {
     validationSchema: NextSchema,
     onSubmit: onNext
   });
+
+  useEffect(() => {
+    if (formik.values.email) {
+      isEmailAvailable.cancel();
+      isEmailAvailable();
+    }
+  }, [formik.values.email]);
+
+  useEffect(() => {
+    if (formik.values.username) {
+      isUsernameAvailable.cancel();
+      isUsernameAvailable();
+    }
+  }, [formik.values.username]);
 
   return (
     <ScrollView keyboardShouldPersistTaps="always">
@@ -114,6 +163,11 @@ const RegisterOneScreen = ({ navigation }) => {
             value: formik.values.username,
             onBlur: formik.handleBlur('username')
           }}
+          suffix={
+            checkingUsername && (
+              <ActivityIndicator color={Blue.primary} size={16} />
+            )
+          }
           error={formik.touched.username && formik.errors.username}
         />
         <Input
@@ -126,6 +180,11 @@ const RegisterOneScreen = ({ navigation }) => {
             value: formik.values.email,
             onBlur: formik.handleBlur('email')
           }}
+          suffix={
+            checkingEmail && (
+              <ActivityIndicator color={Blue.primary} size={16} />
+            )
+          }
           error={formik.touched.email && formik.errors.email}
         />
 
@@ -138,14 +197,6 @@ const RegisterOneScreen = ({ navigation }) => {
             onChangeText: formik.handleChange('password'),
             onBlur: formik.handleBlur('password')
           }}
-          // right={
-          //   <TextInput.Icon
-          //     color={Colors.Secondary}
-          //     name={isPasswordHidden ? 'eye-outline' : 'eye-off-outline'}
-          //     onPress={() => setIsPasswordHidden(!isPasswordHidden)}
-          //     style={styles.eye}
-          //   />
-          // }
           error={formik.touched.password && formik.errors.password}
         />
         <Input
@@ -169,6 +220,7 @@ const RegisterOneScreen = ({ navigation }) => {
         <Button
           text="Next"
           fullWidth
+          disabled={checkingEmail || checkingUsername}
           onPress={formik.handleSubmit}
           textStyle={{ color: 'black' }}
           btnStyle={styles.nextBtn}
