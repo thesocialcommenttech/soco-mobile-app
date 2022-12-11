@@ -5,7 +5,7 @@ import {
   Text,
   View
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik';
 import { object, string, boolean } from 'yup';
 import { Black, Blue, Colors, Red, Yellow } from '../../utils/colors';
@@ -16,6 +16,7 @@ import Button from '~/src/components/theme/Button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { checkAvailablity } from '~/src/utils/services/user-profile_service/updateUserEmail.service';
 import { debounce } from 'lodash';
+import axios, { CancelTokenSource } from 'axios';
 
 const CustomCheckBox = (props: {
   onPress: () => void;
@@ -52,10 +53,13 @@ const CustomCheckBox = (props: {
 
 const RegisterOneScreen = ({ navigation }) => {
   const { setAccountDetails } = useRegisterData();
-  const emailAvialable = useRef(null);
-  const usernameAvialable = useRef(null);
+  const [emailAvialable, setEmailAvialable] = useState(undefined);
+  const [usernameAvialable, setUsernameAvialable] = useState(undefined);
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [checkingUsername, setCheckingUsername] = useState(false);
+
+  const emailApiReqController = useRef<CancelTokenSource>();
+  const usernameApiReqController = useRef<CancelTokenSource>();
 
   function onNext(values: RegisterAccountData) {
     setAccountDetails(values);
@@ -66,50 +70,39 @@ const RegisterOneScreen = ({ navigation }) => {
     email: string()
       .trim()
       .email('Invalid email address')
-      .test('availability', 'Email already exist', () => emailAvialable.current)
+      .test('availability', 'Email already exist', value => {
+        if (typeof emailAvialable === 'boolean' && value) {
+          return emailAvialable;
+        }
+        return true;
+      })
       .required('Email is Required'),
     password: string().trim().required('Password is Required'),
     name: string().trim().required('Name is Required'),
     username: string()
       .trim()
-      .test(
-        'availability',
-        'Username already exist',
-        () => usernameAvialable.current
-      )
+      .matches(/^[0-9a-zA-Z_]+$/, {
+        name: 'validUsername',
+        message: 'Only lower/upper case letters, numbers and _ is allowed.'
+      })
+      .test('availability', 'Username already exist', value => {
+        if (typeof usernameAvialable === 'boolean' && value) {
+          return usernameAvialable;
+        }
+        return true;
+      })
       .required('Username is Required'),
-    referal: string().trim(),
+    referal: string()
+      .matches(/^[A-Z0-9]{6}$/, {
+        message:
+          'Invalid code! Should be 6 letters code, Combination of capital letter and numbers'
+      })
+      .trim(),
     agreement: boolean().oneOf(
       [true],
       'You must agree to the terms and conditions and privacy policy'
     )
   });
-
-  const isEmailAvailable = debounce(async () => {
-    setCheckingEmail(true);
-    const result = await checkAvailablity({
-      property: 'email',
-      value: formik.values.email
-    });
-
-    if (result.data.success) {
-      emailAvialable.current = result.data.availablity;
-    }
-    setCheckingEmail(false);
-  });
-
-  const isUsernameAvailable = debounce(async () => {
-    setCheckingUsername(true);
-    const result = await checkAvailablity({
-      property: 'username',
-      value: formik.values.username
-    });
-
-    if (result.data.success) {
-      usernameAvialable.current = result.data.availablity;
-    }
-    setCheckingUsername(false);
-  }, 300);
 
   const formik = useFormik<RegisterAccountData>({
     initialValues: {
@@ -124,9 +117,63 @@ const RegisterOneScreen = ({ navigation }) => {
     onSubmit: onNext
   });
 
+  const isEmailAvailable = useCallback(
+    debounce(async () => {
+      setCheckingEmail(true);
+      if (formik.values.email) {
+        emailApiReqController.current = axios.CancelToken.source();
+        try {
+          const result = await checkAvailablity({
+            property: 'email',
+            value: formik.values.email,
+            controller: emailApiReqController.current
+          });
+
+          if (result.data.success) {
+            setEmailAvialable(result.data.availablity);
+            await formik.setFieldTouched('email', true);
+          }
+        } catch (error) {}
+      } else {
+        setEmailAvialable(undefined);
+      }
+      setCheckingEmail(false);
+    }),
+    [setEmailAvialable, formik]
+  );
+
+  const isUsernameAvailable = useCallback(
+    debounce(async () => {
+      setCheckingUsername(true);
+      if (formik.values.username) {
+        usernameApiReqController.current = axios.CancelToken.source();
+
+        try {
+          const result = await checkAvailablity({
+            property: 'username',
+            value: formik.values.username,
+            controller: usernameApiReqController.current
+          });
+
+          if (result.data.success) {
+            setUsernameAvialable(result.data.availablity);
+            await formik.setFieldTouched('username', true);
+          }
+        } catch (error) {}
+      } else {
+        setUsernameAvialable(undefined);
+      }
+      setCheckingUsername(false);
+    }, 300),
+    [setUsernameAvialable, formik]
+  );
+
   useEffect(() => {
     if (formik.values.email) {
       isEmailAvailable.cancel();
+      if (emailApiReqController.current) {
+        emailApiReqController.current.cancel();
+      }
       isEmailAvailable();
     }
   }, [formik.values.email]);
@@ -134,6 +181,9 @@ const RegisterOneScreen = ({ navigation }) => {
   useEffect(() => {
     if (formik.values.username) {
       isUsernameAvailable.cancel();
+      if (usernameApiReqController.current) {
+        usernameApiReqController.current.cancel();
+      }
       isUsernameAvailable();
     }
   }, [formik.values.username]);
