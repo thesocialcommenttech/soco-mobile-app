@@ -144,6 +144,24 @@ const AddInterestButton = memo(function () {
   );
 });
 
+function AddInterestsCTA() {
+  const [availableSelection] = useInterestData(data => data.availableSelection);
+
+  if (availableSelection <= 0) {
+    return null;
+  }
+
+  return (
+    <>
+      <Text style={{ marginTop: 30, fontSize: 14, color: Black[600] }}>
+        You can select {availableSelection} more interest(s)
+      </Text>
+
+      <AddInterestButton />
+    </>
+  );
+}
+
 function UserInterests() {
   const auth = useSelector((root: IRootReducer) => root.auth);
   const [loading, setLoading] = useState(true);
@@ -191,19 +209,14 @@ function UserInterests() {
           </Text>
         )}
       </View>
-
-      <Text style={{ marginTop: 30, fontSize: 14, color: Black[600] }}>
-        You can select {10 - userInterests?.length ?? 0} more interest(s)
-      </Text>
-
-      <AddInterestButton />
+      <AddInterestsCTA />
     </View>
   );
 }
 
 export default function Interest() {
   return (
-    <InterestSelectorDataProvider>
+    <InterestSelectorDataProvider maxAllowedSelection={10}>
       <UserInterests />
     </InterestSelectorDataProvider>
   );

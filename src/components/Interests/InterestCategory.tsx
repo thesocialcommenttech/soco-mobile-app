@@ -1,18 +1,18 @@
 import EventEmitter from 'eventemitter3';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { useInterestData } from '~/src/state/InterestSelectorState';
 import { CategoryChipProps } from '../categoryBox';
 import CategoryBox from '../categoryBox';
 
-export const InterestCategory = React.memo(function (props: {
+export const InterestCategory = memo(function (props: {
   hide?: boolean;
   _id: string;
   CategoryChipProps: CategoryChipProps;
 }) {
   const [hide, setHide] = useState(props.hide ?? false);
-  const [_, { events, getStore }] = useInterestData(data => null);
+  const [_, { events, getStore }] = useInterestData(() => null);
   const unselectListner = useRef<() => EventEmitter>();
-  const selectionActive = useRef(getStore().selectedCategories.length < 4);
+  const selectionActive = useRef(getStore().availableSelection > 0);
 
   const interestUnselected = () => {
     setHide(false);

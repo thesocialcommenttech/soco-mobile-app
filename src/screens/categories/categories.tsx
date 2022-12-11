@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Black, Colors } from '../../utils/colors';
 import { addUserInterests } from '~/src/utils/services/user-profile_service/userInterests.service';
 import {
@@ -19,14 +19,13 @@ import { debounce } from 'lodash';
 
 function Header(props: { onInterestsAdded: () => void }) {
   const [submittingInterests, setSubmittingInterests] = useState(false);
-  const [selectedCategories, { events }] = useInterestData(
-    data => data.selectedCategories
+  const [availableSelection, { events, getStore }] = useInterestData(
+    data => data.availableSelection
   );
-  const previousSelectionCount = useRef(-1);
 
   async function submitUserInterests() {
     setSubmittingInterests(true);
-    const result = await addUserInterests(selectedCategories);
+    const result = await addUserInterests(getStore().selectedCategories);
 
     if (result.data.success) {
       props.onInterestsAdded?.();
@@ -35,43 +34,38 @@ function Header(props: { onInterestsAdded: () => void }) {
   }
 
   useEffect(() => {
-    // disable selection if selected interest reached limit of 5
-    if (
-      previousSelectionCount.current === 4 &&
-      selectedCategories.length === 5
-    ) {
+    // disable selection if available selection is = 0
+    if (availableSelection <= 0) {
       events.emit('interest-selection-toggle', false);
-    }
-
-    // enable selection if selected interest comes below limit of 5
-    if (
-      previousSelectionCount.current === 5 &&
-      selectedCategories.length === 4
-    ) {
+    } else {
+      // enable selection if available selection is > 0
       events.emit('interest-selection-toggle', true);
     }
-    previousSelectionCount.current = selectedCategories.length;
-  }, [selectedCategories]);
+  }, [availableSelection]);
 
   return (
     <OptionalStackHeader
       skipable={false}
       onProceed={() => submitUserInterests()}
-      disableProceed={submittingInterests || selectedCategories.length < 5}
+      disableProceed={submittingInterests || availableSelection > 0}
       formStage={OptionalFormStage.INTERESTS_SELECTION}
     />
   );
 }
 
 function SearchInput() {
-  const [_, { setSearchQuery }] = useInterestData(data => null);
+  const [_, { setSearchQuery }] = useInterestData(() => null);
+
+  const debouncedSearch = useCallback(debounce(setSearchQuery, 300), [
+    setSearchQuery
+  ]);
 
   return (
     <Input
       style={styles.searchInputWrapper}
       inputContainer={styles.searchInputCt}
       inputProp={{
-        onChangeText: debounce(setSearchQuery, 300),
+        onChangeText: debouncedSearch,
         style: styles.searchInput,
         // value: searchQuery,
         placeholder: 'Search',
@@ -95,7 +89,7 @@ function CategoriesScreen() {
   const navigation = useNavigation();
 
   return (
-    <InterestSelectorDataProvider>
+    <InterestSelectorDataProvider maxAllowedSelection={5}>
       <Header onInterestsAdded={() => navigation.navigate('ProfilePicture')} />
       <View style={styles.container}>
         <Text style={styles.titleTxt}>Select Categories of your interest</Text>

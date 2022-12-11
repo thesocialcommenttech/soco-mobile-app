@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import ReactNativeModal from 'react-native-modal';
 import Button from '../theme/Button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -53,36 +53,26 @@ function UpdateInterestButton(props: { onInterestAdded: () => any }) {
 }
 
 const ModalHeader = memo(() => {
-  const [userInterestList] = useInterestData(data => data.userInterestList);
-  const [selectedCategories, { events }] = useInterestData(
-    data => data.selectedCategories
-  );
-  const previousAvailableCount = useRef(-1);
-
-  const availableSelections = useMemo(
-    () =>
-      10 - (selectedCategories.length ?? 0) - (userInterestList.length ?? 0),
-    [selectedCategories, userInterestList]
+  const [availableSelection, { events }] = useInterestData(
+    data => data.availableSelection
   );
 
   useEffect(() => {
     // disable selection if available selection is = 0
-    if (previousAvailableCount.current === 1 && availableSelections === 0) {
+    if (availableSelection <= 0) {
       events.emit('interest-selection-toggle', false);
-    }
-
-    // enable selection if available selection is > 0
-    if (previousAvailableCount.current === 0 && availableSelections === 1) {
+    } else {
+      // enable selection if available selection is > 0
       events.emit('interest-selection-toggle', true);
     }
-    previousAvailableCount.current = availableSelections;
-  }, [availableSelections]);
+    // previousAvailableCount.current = availableSelections;
+  }, [availableSelection]);
 
   return (
     <View style={styles.modal_headerCt}>
       <Text style={styles.modal_headerText}>Add Interests</Text>
       <Text style={styles.heading_subText}>
-        {availableSelections} selection Left
+        {availableSelection} selection Left
       </Text>
     </View>
   );
@@ -92,9 +82,13 @@ const UpdateInterestModal = (props: {
   showModal: boolean;
   onClose: () => void;
 }) => {
-  const [_, { setSearchQuery }] = useInterestData(data => null);
-
+  const [_, { setSearchQuery }] = useInterestData(() => null);
   const [showList, setShowList] = useState(false);
+
+  const debouncedSearch = useCallback(
+    () => debounce(setSearchQuery, 300),
+    [setSearchQuery]
+  );
 
   return (
     <ReactNativeModal
@@ -126,7 +120,7 @@ const UpdateInterestModal = (props: {
               paddingTop: 10,
               paddingLeft: 15
             },
-            onChangeText: debounce(setSearchQuery, 300)
+            onChangeText: debouncedSearch
           }}
           prefix={<MaterialCommunityIcons name="magnify" size={20} />}
         />

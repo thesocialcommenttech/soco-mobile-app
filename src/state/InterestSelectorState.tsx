@@ -4,7 +4,6 @@ import React, {
   createContext,
   useContext,
   useCallback,
-  useSyncExternalStore,
   useState,
   useEffect
 } from 'react';
@@ -16,24 +15,35 @@ interface InterestSelectorDataStore {
   userInterestList: Interests[];
   selectedCategories: Interests[];
   searchQuery: string;
+  maxAllowedSelection: number;
+  availableSelection: number;
 }
 
 const initialState: InterestSelectorDataStore = {
   categoriesList: [],
   userInterestList: [],
   selectedCategories: [],
-  searchQuery: null
+  searchQuery: null,
+  maxAllowedSelection: 4,
+  availableSelection: 4
 };
 
 export const interestEvents = new EventEmitter();
 
-function useInterestSelectData(): {
+function useInterestSelectData(maxAllowedSelection: number): {
   get: () => InterestSelectorDataStore;
   set: (value: Partial<InterestSelectorDataStore>) => void;
   subscribe: (callback: () => void) => () => void;
   eventEmitter: EventEmitter;
 } {
-  const store = useRef(initialState);
+  const store = useRef(
+    produce(initialState, draft => {
+      if (typeof maxAllowedSelection === 'number') {
+        draft.maxAllowedSelection = maxAllowedSelection;
+        draft.availableSelection = maxAllowedSelection;
+      }
+    })
+  );
   const eventEmitter = useRef(interestEvents);
 
   const get = useCallback(() => store.current, []);
@@ -63,12 +73,14 @@ type UseStoreDataReturnType = ReturnType<typeof useInterestSelectData>;
 const StoreContext = createContext<UseStoreDataReturnType | null>(null);
 
 export function InterestSelectorDataProvider({
-  children
+  children,
+  maxAllowedSelection
 }: {
+  maxAllowedSelection: number;
   children: React.ReactNode;
 }) {
   return (
-    <StoreContext.Provider value={useInterestSelectData()}>
+    <StoreContext.Provider value={useInterestSelectData(maxAllowedSelection)}>
       {children}
     </StoreContext.Provider>
   );
@@ -124,6 +136,7 @@ export function useInterestData<SelectorOutput>(
     store.set(
       produce(store.get(), draft => {
         draft.selectedCategories.push(interest);
+        draft.availableSelection--;
       })
     );
   };
@@ -143,6 +156,7 @@ export function useInterestData<SelectorOutput>(
           draft.selectedCategories.findIndex(cat => cat._id === interestId),
           1
         );
+        draft.availableSelection++;
       })
     );
     store.eventEmitter.emit(`unselect:${interestId}`);
@@ -164,6 +178,8 @@ export function useInterestData<SelectorOutput>(
     store.set(
       produce(store.get(), draft => {
         draft.userInterestList.push(...userInterests);
+        draft.availableSelection =
+          draft.maxAllowedSelection - draft.userInterestList.length;
       })
     );
   };
@@ -171,13 +187,8 @@ export function useInterestData<SelectorOutput>(
   const removeUserInterest = (interestIndex: number) => {
     store.set(
       produce(store.get(), draft => {
-        const removedInterest = draft.userInterestList.splice(
-          interestIndex,
-          1
-        )[0];
-        draft.categoriesList.findIndex(
-          category => category._id === removedInterest._id
-        );
+        draft.userInterestList.splice(interestIndex, 1);
+        draft.availableSelection++;
       })
     );
   };
