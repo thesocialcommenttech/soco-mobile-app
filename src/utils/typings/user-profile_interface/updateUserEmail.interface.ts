@@ -1,3 +1,5 @@
+import { CancelTokenSource } from 'axios';
+
 interface Result {
   email?: string;
   email_verified?: boolean;
@@ -16,6 +18,7 @@ export interface UpdateUserEmailResponse {
 export interface CheckAvailabilityRequest {
   property: 'email' | 'username';
   value: string;
+  controller?: CancelTokenSource;
 }
 
 export interface CheckAvailabilityResponse {

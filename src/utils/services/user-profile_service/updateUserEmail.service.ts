@@ -22,12 +22,14 @@ export function updateUserEmail({
 
 export function checkAvailablity({
   property,
-  value
+  value,
+  controller
 }: CheckAvailabilityRequest) {
   const config: AxiosRequestConfig = {
     url: 'user/availability',
     method: 'GET',
-    params: { property, value }
+    params: { property, value },
+    ...(controller && { cancelToken: controller.token })
   };
 
   return axios.request<CheckAvailabilityResponse>(config);
