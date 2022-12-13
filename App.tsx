@@ -49,7 +49,11 @@ const App = () => {
           bottomOffset={10}
           visibilityTime={6000}
           type="info"
-          config={{ info: props => <SOCOToast {...props} />, error: SOCOToast }}
+          config={{
+            info: props => <SOCOToast {...props} />,
+            error: SOCOToast,
+            success: SOCOToast
+          }}
         />
       </View>
     </Provider>
