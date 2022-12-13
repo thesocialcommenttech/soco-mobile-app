@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React, { ReactElement, ReactNode } from 'react';
 import { ToastConfigParams } from 'react-native-toast-message';
-import { Black, Blue, Red } from '~/src/utils/colors';
+import { Black, Blue, Green, Red } from '~/src/utils/colors';
 import Button from './Button';
 
 export default function Toast(
@@ -9,8 +9,17 @@ export default function Toast(
     actionRight?: { onPress: () => void; text: string };
   }>
 ) {
+  const getTypeStyle = (type: string) => {
+    switch (type) {
+      case 'error':
+        return styles.error;
+      case 'success':
+        return styles.success;
+    }
+  };
+
   return (
-    <View style={[styles.container, props.type === 'error' && styles.error]}>
+    <View style={[styles.container, getTypeStyle(props.type)]}>
       <Text
         style={styles.text}
         lineBreakMode="clip"
@@ -54,6 +63,7 @@ const styles = StyleSheet.create({
     flex: 1
     // flexWrap: 'wrap'
   },
-  error: { backgroundColor: Red.primary },
+  error: { backgroundColor: Red[700] },
+  success: { backgroundColor: Green[600] },
   text: { color: 'white', flexWrap: 'wrap', flexShrink: 1, lineHeight: 20 }
 });
