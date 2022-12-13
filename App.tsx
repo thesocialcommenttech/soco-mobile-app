@@ -20,7 +20,9 @@ import '~/src/utils/monitoring/sentry';
 
 axios.defaults.baseURL = BACKEND_URL;
 
-firebase.analytics().setAnalyticsCollectionEnabled(process.env.NODE_ENV === 'production');
+firebase
+  .analytics()
+  .setAnalyticsCollectionEnabled(process.env.NODE_ENV === 'production');
 
 const App = () => {
   const { setDeviceId } = useDeviceId();
