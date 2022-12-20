@@ -17,9 +17,13 @@ import {
   updateUserProfileImageGlobalState
 } from '~/src/store/actions/auth';
 import { IRootReducer } from '~/src/store/reducers';
+import { IPostRegisterPageScreenProps } from '~/src/types/navigation/post-register';
 
 function ProfilePictureScreen() {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<
+      IPostRegisterPageScreenProps<'ProfilePicture'>['navigation']
+    >();
   const [image, setImage] = useState<ImagePicker.Asset>();
   const [loading, setLoading] = useState(false);
   const dispatch =
