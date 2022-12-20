@@ -35,7 +35,7 @@ function LoginScreen() {
       });
 
       if (response.data?.success) {
-        dispatch(
+        await dispatch(
           setAuthToLogin({
             user: response.data.user,
             token: response.data.token
@@ -56,8 +56,6 @@ function LoginScreen() {
         }
       }
     }
-
-    formikActions.setSubmitting(false);
   };
 
   const formik = useFormik<LoginRequestData>({

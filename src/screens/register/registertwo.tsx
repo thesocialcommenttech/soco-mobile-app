@@ -57,7 +57,7 @@ function RegisterTwoScreen() {
       const result = await register({ ...accountDetails, ...values });
 
       if (result.data?.success) {
-        dispatch(
+        await dispatch(
           setAuthToLogin({
             user: result.data.user,
             token: result.data.token
@@ -65,7 +65,6 @@ function RegisterTwoScreen() {
         );
         formikActions.resetForm();
         resetRegisterFormData();
-        // showPostRegisterationFlow(true);
         navigation.navigate('PostRegister', { screen: 'Categories' });
       }
     } catch (error) {

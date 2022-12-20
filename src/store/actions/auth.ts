@@ -55,7 +55,7 @@ export function setAuthToLogin(authData: IAuthData): ISetAuthToLogin {
       token: authData.token
     });
 
-    dispatch(loginAction(authData));
+    return dispatch(loginAction(authData));
   };
 }
 
