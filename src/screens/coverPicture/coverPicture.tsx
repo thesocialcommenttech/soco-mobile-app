@@ -23,9 +23,11 @@ import {
   updateUserProfileImageGlobalState
 } from '~/src/store/actions/auth';
 import { IRootReducer } from '~/src/store/reducers';
+import { IPostRegisterPageScreenProps } from '~/src/types/navigation/post-register';
 
 function CoverPictureScreen() {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<IPostRegisterPageScreenProps<'CoverPicture'>['navigation']>();
   const [image, setImage] = useState<ImagePicker.Asset>();
   const [loading, setLoading] = useState(false);
   const dispatch =

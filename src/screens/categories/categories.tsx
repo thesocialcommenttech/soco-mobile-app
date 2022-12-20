@@ -16,6 +16,7 @@ import {
 } from '~/src/state/InterestSelectorState';
 import { SelectedInterests } from '~/src/components/Interests/SelectedInterests';
 import { debounce } from 'lodash';
+import { IPostRegisterPageScreenProps } from '~/src/types/navigation/post-register';
 
 function Header(props: { onInterestsAdded: () => void }) {
   const [submittingInterests, setSubmittingInterests] = useState(false);
@@ -86,7 +87,8 @@ function SearchInput() {
 }
 
 function CategoriesScreen() {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<IPostRegisterPageScreenProps<'Categories'>['navigation']>();
 
   return (
     <InterestSelectorDataProvider maxAllowedSelection={5}>
