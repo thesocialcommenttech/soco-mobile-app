@@ -55,7 +55,7 @@ function CoverPictureScreen() {
       });
 
       if (result.data.success) {
-        dispatch(updateUserProfileImageGlobalState(result.data.DPImageURL));
+        dispatch(updateUserProfileImageGlobalState(result.data.coverImageURL));
         navigation.navigate('BioScreen');
       }
 
