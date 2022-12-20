@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Image, StyleSheet, View } from 'react-native';
 
@@ -11,6 +11,7 @@ import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootRouteContext } from '../contexts/root-route.context';
 import { routingInstrumentation } from '../utils/monitoring/sentry';
+import { IRootStack } from '../types/navigation/root';
 
 const RootStack = createNativeStackNavigator();
 
@@ -29,6 +30,16 @@ export default function Routes() {
     []
   );
 
+  const initialRouteName = useMemo(() => {
+    if (!auth.authenticated) {
+      return 'auth';
+    } else if (auth.authenticated && showPostRegisterationFlow) {
+      return 'post_registeration_flow';
+    } else {
+      return 'main';
+    }
+  }, [auth, showPostRegisterationFlow]);
+
   async function getCredentials() {
     try {
       const authCredentials = await getAuthCredentials();
@@ -46,7 +57,7 @@ export default function Routes() {
         );
       }
     } catch (err) {
-      console.log('routes.tsx', err);
+      console.error('routes.tsx', err);
     }
   }
 
@@ -71,7 +82,21 @@ export default function Routes() {
   } else {
     return (
       <RootRouteContext.Provider value={RootRouteContextValue}>
-        <NavigationContainer
+        <NavigationContainer<IRootStack>
+          linking={{
+            prefixes: ['https://soco.co.in', 'soco://'],
+            config: {
+              screens: {
+                auth: {
+                  screens: {
+                    ResetPassword: {
+                      path: 'reset-password/:hash'
+                    }
+                  }
+                }
+              }
+            }
+          }}
           ref={navigationContainerRef}
           onReady={() => {
             // Register the navigation container with the instrumentation
@@ -87,31 +112,22 @@ export default function Routes() {
             }
           }}
         >
-          <RootStack.Navigator screenOptions={{ headerShown: false }}>
-            {(() => {
-              if (!auth.authenticated) {
-                return (
-                  <RootStack.Screen
-                    name="auth"
-                    getComponent={() => require('./authStack').default}
-                  />
-                );
-              } else if (auth.authenticated && showPostRegisterationFlow) {
-                return (
-                  <RootStack.Screen
-                    name="post_registeration_flow"
-                    getComponent={() => require('./optionalStack').default}
-                  />
-                );
-              } else {
-                return (
-                  <RootStack.Screen
-                    name="main"
-                    getComponent={() => require('./mainStack').default}
-                  />
-                );
-              }
-            })()}
+          <RootStack.Navigator
+            screenOptions={{ headerShown: false }}
+            initialRouteName={initialRouteName}
+          >
+            <RootStack.Screen
+              name="auth"
+              getComponent={() => require('./authStack').default}
+            />
+            {/* <RootStack.Screen
+              name="post_registeration_flow"
+              getComponent={() => require('./optionalStack').default}
+            /> */}
+            <RootStack.Screen
+              name="main"
+              getComponent={() => require('./mainStack').default}
+            />
           </RootStack.Navigator>
         </NavigationContainer>
       </RootRouteContext.Provider>

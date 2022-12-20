@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">thesocialcomment</string>
+    <string name="intent_reset_password">Soco</string>
 </resources>

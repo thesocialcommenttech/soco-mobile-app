@@ -1,32 +1,26 @@
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import React, { useContext, useMemo, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
 import { Black, Colors } from '../../utils/colors';
 import { updateBio } from '~/src/utils/services/user-profile_service/updateBio.service';
 import {
   OptionalFormStage,
   OptionalStackHeader
 } from '~/src/components/headers/OptionalStackHeader';
-import { RootRouteContext } from '~/src/contexts/root-route.context';
 import { Input } from '~/src/components/theme/Input';
 import { useFormik } from 'formik';
 import { object, string } from 'yup';
 import Button from '~/src/components/theme/Button';
+import { useNavigation } from '@react-navigation/native';
+import { IRoot_ScreenProps } from '~/src/types/navigation/root';
 
 function BioScreen() {
-  const { showPostRegisterationFlow } = useContext(RootRouteContext);
+  const navigation = useNavigation<IRoot_ScreenProps['navigation']>();
 
   async function submitUserBio({ bio }) {
     try {
       const result = await updateBio({ bio });
       if (result.data.success) {
-        showPostRegisterationFlow(false);
+        navigation.replace('main');
       }
     } catch (error) {
       console.error(error);
@@ -45,7 +39,7 @@ function BioScreen() {
     <>
       <OptionalStackHeader
         onProceed={formik.handleSubmit}
-        onSkip={() => showPostRegisterationFlow(false)}
+        onSkip={() => navigation.replace('main')}
         formStage={OptionalFormStage.ADD_BIO}
         disableProceed={formik.isSubmitting}
         disableSkip={formik.isSubmitting}

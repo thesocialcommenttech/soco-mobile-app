@@ -19,8 +19,11 @@ import { RootRouteContext } from '~/src/contexts/root-route.context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Input, RadioButton } from '~/src/components/theme/Input';
 import Button from '~/src/components/theme/Button';
+import { useNavigation } from '@react-navigation/native';
+import { IAuthStackScreenProps } from '~/src/types/navigation/auth';
 
-function RegisterTwoScreen({ route, navigation }) {
+function RegisterTwoScreen() {
+  const navigation = useNavigation<IAuthStackScreenProps['navigation']>();
   const {
     accountDetails,
     resetRegisterFormData,
@@ -62,8 +65,8 @@ function RegisterTwoScreen({ route, navigation }) {
         );
         formikActions.resetForm();
         resetRegisterFormData();
-        // navigation.navigate('OptionalInfo', result.data);
-        showPostRegisterationFlow(true);
+        // showPostRegisterationFlow(true);
+        navigation.navigate('PostRegister', { screen: 'Categories' });
       }
     } catch (error) {
       console.error(error);

@@ -361,6 +361,7 @@ function SideMenu() {
             onPress={() => {
               setOpen(false);
               dispatch(setAuthToLogout());
+              navigation.replace('auth');
             }}
           >
             {() => (

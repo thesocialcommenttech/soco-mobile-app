@@ -1,23 +1,11 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import {
-  RequestResetUserPasswordRequest,
-  RequestResetUserPasswordResponse
-} from '../../typings/password_interface/requestResetUserPassword.interface';
+import { RequestResetUserPasswordResponse } from '../../typings/password_interface/requestResetUserPassword.interface';
 
-export function requestResetUserPassword({
-  email
-}: RequestResetUserPasswordRequest): Promise<
-  AxiosResponse<RequestResetUserPasswordResponse>
-> {
+export function requestResetUserPassword(email: string) {
   const config: AxiosRequestConfig = {
-    url: 'https://thesocialcomment-backend-test.herokuapp.com/user/reset-password/request',
+    url: 'user/reset-password/request',
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    data: {
-      email
-    }
+    data: { email }
   };
 
   return axios.request<RequestResetUserPasswordResponse>(config);

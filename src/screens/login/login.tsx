@@ -15,10 +15,12 @@ import { IRootReducer } from '../../store/reducers';
 import Button from '~/src/components/theme/Button';
 import { Input, PasswordInput } from '~/src/components/theme/Input';
 import axios from 'axios';
-import { Link } from '@react-navigation/native';
+import { Link, useNavigation } from '@react-navigation/native';
 import logo from '~/src/assets/images/logos/thesocialcomment-logo.png';
+import { IRoot_ScreenProps } from '~/src/types/navigation/root';
 
 function LoginScreen() {
+  const navigation = useNavigation<IRoot_ScreenProps['navigation']>();
   const dispatch =
     useDispatch<ThunkDispatch<IRootReducer, any, AuthActionTypes>>();
 
@@ -39,7 +41,7 @@ function LoginScreen() {
             token: response.data.token
           })
         );
-        formikActions.resetForm();
+        navigation.replace('main');
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
