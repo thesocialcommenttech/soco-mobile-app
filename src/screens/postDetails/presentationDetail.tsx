@@ -54,10 +54,14 @@ const PPT_ACTIONBTN_UNDERLAY_COLOR = Color('white').alpha(0.07).rgb().string();
 function Presentation(props: {
   slides: PresentationPost['slides'];
   loading?: boolean;
+  fullscreen: boolean;
+  onFullscreen?: () => void;
 }) {
   const [currIndex, setCurrIndex] = useState(0);
   const scrollRef = React.useRef(null);
   const windowDim = Dimensions.get('window');
+
+  const fullscreenPPTHeight = windowDim.height - 87;
 
   const goToIndex = (index: number) => {
     scrollRef.current?.scrollToIndex({ index: index });
@@ -66,10 +70,7 @@ function Presentation(props: {
   if (props.loading) {
     return (
       <Skeleton
-        style={pptStyles({
-          winW: windowDim.width,
-          winH: windowDim.height
-        })}
+        style={pptStyles({ winW: windowDim.width, winH: windowDim.height })}
       />
     );
   }
@@ -77,24 +78,25 @@ function Presentation(props: {
   return (
     <View
       style={[
-        pptStyles({
-          winW: windowDim.width,
-          winH: windowDim.height
-        }),
+        props.fullscreen
+          ? pptOnFullscreen(windowDim.width, fullscreenPPTHeight)
+          : pptStyles({ winW: windowDim.width, winH: windowDim.height }),
         styles.presentationWidow
       ]}
     >
       <SwiperFlatList
         data={props.slides}
+        style={props.fullscreen && sliderOnFullscreen(fullscreenPPTHeight)}
         renderItem={({ item }) => (
           <Image
             resizeMode="cover"
             resizeMethod="scale"
             source={{ uri: staticFileSrc(item.slideUrl) }}
-            style={pptStyles({
-              winW: windowDim.width,
-              winH: windowDim.height
-            })}
+            style={[
+              props.fullscreen
+                ? slideOnFullscreen(fullscreenPPTHeight)
+                : pptStyles({ winW: windowDim.width, winH: windowDim.height })
+            ]}
           />
         )}
         onChangeIndex={({ index }) => {
@@ -102,17 +104,22 @@ function Presentation(props: {
         }}
         ref={scrollRef}
       />
-      <View style={styles.presentationcontrol}>
-        <View>
+      <View
+        style={[
+          styles.presentationcontrol,
+          props.fullscreen && pptControlsOnFullscreen(windowDim.height)
+        ]}
+      >
+        <View style={{ alignItems: 'center' }}>
           <TouchableHighlight
             style={styles.pptActionBtn}
             underlayColor={PPT_ACTIONBTN_UNDERLAY_COLOR}
-            onPress={() => {}}
+            onPress={() => props.onFullscreen?.()}
           >
             <MaterialCommunityIcons name="fullscreen" size={20} color="white" />
           </TouchableHighlight>
         </View>
-        <View style={styles.imagenumberview}>
+        <View style={[styles.imagenumberview]}>
           <TouchableHighlight
             style={styles.pptActionBtn}
             underlayColor={PPT_ACTIONBTN_UNDERLAY_COLOR}
@@ -158,6 +165,9 @@ export default function PresentationDetail() {
 
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<PresentationPostScreenData>();
+
+  const [fullscreen, setFullscreen] = useState(false);
+
   useViewIncrementor(post?._id);
 
   async function fetchData() {
@@ -183,58 +193,93 @@ export default function PresentationDetail() {
 
   return (
     <ScreenWithTopBar navigation={navigation}>
-      <ScrollView>
-        <Presentation slides={post?.slides} loading={loading} />
-        <View style={styles.container}>
-          <PostTitle title={post?.title} loading={loading} />
-          <PostAuthorNTimestamp
-            style={styles.MT}
-            user={post?.postedBy}
-            timestamp={post?.postedOn}
-            loading={loading}
-          />
-          <PostInteractions
-            downVotesCount={post?.downvotes.length}
-            upvotesCount={post?.upvotes.length}
-            favourite={post?.isFavorited}
-            downVoted={post?.voted === 'down'}
-            upVoted={post?.voted === 'up'}
-            postId={post?._id}
-            postTitle={post?.title}
-            postType="presentation"
-            style={styles.MT}
-            loading={loading}
-          />
-          <PostDescription
-            description={post?.description}
-            style={styles.MT}
-            loading={loading}
-          />
-          <PostTags tags={post?.tags} style={styles.MT} loading={loading} />
-          {!loading && (
-            <>
-              <AuthorCard
-                style={styles.MT}
-                author={post?.postedBy}
-                post={{ _id: post?._id, type: 'presentation' }}
-              />
-              <PostComments
-                commentCount={post?.comments?.length}
-                comments={post?.comments}
-                postId={post?._id}
-                style={styles.MT}
-              />
-            </>
-          )}
-        </View>
+      <ScrollView contentContainerStyle={fullscreen && { flex: 1 }}>
+        <Presentation
+          slides={post?.slides}
+          fullscreen={fullscreen}
+          onFullscreen={() => setFullscreen(fs => !fs)}
+          loading={loading}
+        />
+        {!fullscreen && (
+          <View style={styles.container}>
+            <PostTitle title={post?.title} loading={loading} />
+            <PostAuthorNTimestamp
+              style={styles.MT}
+              user={post?.postedBy}
+              timestamp={post?.postedOn}
+              loading={loading}
+            />
+            <PostInteractions
+              downVotesCount={post?.downvotes.length}
+              upvotesCount={post?.upvotes.length}
+              favourite={post?.isFavorited}
+              downVoted={post?.voted === 'down'}
+              upVoted={post?.voted === 'up'}
+              postId={post?._id}
+              postTitle={post?.title}
+              postType="presentation"
+              style={styles.MT}
+              loading={loading}
+            />
+            <PostDescription
+              description={post?.description}
+              style={styles.MT}
+              loading={loading}
+            />
+            <PostTags tags={post?.tags} style={styles.MT} loading={loading} />
+            {!loading && (
+              <>
+                <AuthorCard
+                  style={styles.MT}
+                  author={post?.postedBy}
+                  post={{ _id: post?._id, type: 'presentation' }}
+                />
+                <PostComments
+                  commentCount={post?.comments?.length}
+                  comments={post?.comments}
+                  postId={post?._id}
+                  style={styles.MT}
+                />
+              </>
+            )}
+          </View>
+        )}
       </ScrollView>
     </ScreenWithTopBar>
   );
 }
 
+const pptOnFullscreen = (winWidth: number, winHeight: number) => ({
+  flex: 1,
+  display: 'flex',
+  justifyContent: 'center',
+  paddingLeft: (winWidth - winHeight / (16 / 9)) / 2
+});
+
 const pptStyles = ({ winW, winH }) => ({
   width: winW,
   height: winW / (16 / 9)
+});
+
+const slideOnFullscreen = (winHeight: number) => ({
+  width: winHeight,
+  height: winHeight / (16 / 9)
+});
+
+const sliderOnFullscreen = winHeight => {
+  return {
+    width: winHeight,
+    transform: [{ rotateZ: '-90deg' }]
+  };
+};
+
+const pptControlsOnFullscreen = winHeight => ({
+  right: 0,
+  left: null,
+  top: null,
+  bottom: null,
+  transform: [{ translateX: 299 }, { rotateZ: '-90deg' }],
+  width: winHeight * 0.8
 });
 
 const styles = StyleSheet.create({
