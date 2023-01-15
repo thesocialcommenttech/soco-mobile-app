@@ -25,7 +25,6 @@ import { PortfolioUpdateBtn } from '~/src/components/screens/portfolio/Portfolio
 import { PortfolioSubTab_ScreenProps } from '~/src/types/navigation/portfolio';
 import PortfolioDropdown from '~/src/components/screens/portfolio/PortfolioDropdown';
 import EmptyPortfolioSection from '~/src/components/screens/portfolio/EmptyPortfolioSection';
-import Color from 'color';
 
 function AddIntroVideoBtn(props: ButtonProps) {
   const windowDim = Dimensions.get('window');
