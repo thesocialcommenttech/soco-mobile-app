@@ -34,6 +34,22 @@ export default function PortfolioDropdown(props: {
         onOptionPress={showTheme}
       />
       <DropdownOption
+        optionKey="Minimal"
+        label="Minimal"
+        onOptionPress={showTheme}
+      />
+      <DropdownOption
+        optionKey="Austere"
+        label="Austere"
+        onOptionPress={showTheme}
+      />
+      <DropdownOption optionKey="Edge" label="Edge" onOptionPress={showTheme} />
+      <DropdownOption
+        optionKey="Butterfly"
+        label="Butterfly"
+        onOptionPress={showTheme}
+      />
+      {/* <DropdownOption
         optionKey="DesignerProfile1"
         label="Designer Theme"
         onOptionPress={showTheme}
@@ -48,19 +64,10 @@ export default function PortfolioDropdown(props: {
         label="Gradient Theme"
         onOptionPress={showTheme}
       />
-      <DropdownOption
-        optionKey="Minimal"
-        label="Minimal"
-        onOptionPress={showTheme}
-      />
+
       <DropdownOption
         optionKey="NavyBlue"
         label="Navy Blue"
-        onOptionPress={showTheme}
-      />
-      <DropdownOption
-        optionKey="Austere"
-        label="Austere"
         onOptionPress={showTheme}
       />
       <DropdownOption
@@ -73,7 +80,6 @@ export default function PortfolioDropdown(props: {
         label="Stealth"
         onOptionPress={showTheme}
       />
-      <DropdownOption optionKey="Edge" label="Edge" onOptionPress={showTheme} />
       <DropdownOption
         optionKey="Winsome"
         label="Winsome"
@@ -90,11 +96,7 @@ export default function PortfolioDropdown(props: {
         label="Fragment"
         onOptionPress={showTheme}
       />
-      <DropdownOption
-        optionKey="Butterfly"
-        label="Butterfly"
-        onOptionPress={showTheme}
-      />
+
       <DropdownOption
         optionKey="Serenity"
         label="Serenity"
@@ -109,7 +111,7 @@ export default function PortfolioDropdown(props: {
         optionKey="Courteous"
         label="Courteous"
         onOptionPress={showTheme}
-      />
+      /> */}
     </Bottomsheet>
   );
 }
