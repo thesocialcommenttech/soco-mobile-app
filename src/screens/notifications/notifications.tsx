@@ -1,14 +1,8 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { Colors } from '../../utils/colors';
+// import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { Black, Colors } from '../../utils/colors';
 import { ScrollView } from 'react-native-gesture-handler';
 import { getNotifications } from '../../utils/services/notification_services/getNotifications.service';
 import {
@@ -18,8 +12,11 @@ import {
 import { format } from 'timeago.js';
 import { ActivityIndicator } from 'react-native-paper';
 import { markNotificationsAsRead } from '~/src/utils/services/notification_services/markNotificationsAsRead.service';
-import { useFocusEffect } from '@react-navigation/native';
+import { Link, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { App_ScreenProps } from '~/src/types/navigation/app';
+import { navigatePostScreen } from '~/src/utils/methods';
+import { MainStackScreenProps } from '~/src/types/navigation/main';
+import { PostType } from '~/src/utils/typings/post';
 
 function NotificationItem({
   notification
@@ -39,13 +36,18 @@ function NotificationItem({
             return (
               <View style={styles.notificationTitle}>
                 <Text style={styles.notificationUserText}>
-                  @{notification.data.userID.username}
+                  <UsernameLink
+                    user_id={notification.data.userID._id}
+                    username={notification.data.userID.username}
+                  />
                   <Text style={styles.notificationText}>
                     {' '}
                     make {notification.data.postID.postType}{' '}
-                    <Text style={styles.notificationTitleText}>
-                      {notification.data.postID.title}
-                    </Text>{' '}
+                    <PostLink
+                      postId={notification.data.postID._id}
+                      postTitle={notification.data.postID.title}
+                      postType={notification.data.postID.postType}
+                    />{' '}
                     as favourite.
                   </Text>
                 </Text>
@@ -55,13 +57,18 @@ function NotificationItem({
             return (
               <View style={styles.notificationTitle}>
                 <Text style={styles.notificationUserText}>
-                  @{notification.data.userID.username}
+                  <UsernameLink
+                    user_id={notification.data.userID._id}
+                    username={notification.data.userID.username}
+                  />
                   <Text style={styles.notificationText}>
                     {' '}
                     posted a new {notification.data.postID.postType}{' '}
-                    <Text style={styles.notificationTitleText}>
-                      {notification.data.postID.title}
-                    </Text>
+                    <PostLink
+                      postId={notification.data.postID._id}
+                      postTitle={notification.data.postID.title}
+                      postType={notification.data.postID.postType}
+                    />
                   </Text>
                 </Text>
               </View>
@@ -70,13 +77,18 @@ function NotificationItem({
             return (
               <View style={styles.notificationTitle}>
                 <Text style={styles.notificationUserText}>
-                  @{notification.data.userID.username}
+                  <UsernameLink
+                    user_id={notification.data.userID._id}
+                    username={notification.data.userID.username}
+                  />
                   <Text style={styles.notificationText}>
                     {' '}
                     liked your {notification.data.postID.postType}{' '}
-                    <Text style={styles.notificationTitleText}>
-                      {notification.data.postID.title}
-                    </Text>
+                    <PostLink
+                      postId={notification.data.postID._id}
+                      postTitle={notification.data.postID.title}
+                      postType={notification.data.postID.postType}
+                    />
                   </Text>
                 </Text>
               </View>
@@ -85,13 +97,18 @@ function NotificationItem({
             return (
               <View style={styles.notificationTitle}>
                 <Text style={styles.notificationUserText}>
-                  @{notification.data.userID.username}
+                  <UsernameLink
+                    user_id={notification.data.userID._id}
+                    username={notification.data.userID.username}
+                  />
                   <Text style={styles.notificationText}>
                     {' '}
                     comments on your {notification.data.postID.postType}{' '}
-                    <Text style={styles.notificationTitleText}>
-                      {notification.data.postID.title}
-                    </Text>
+                    <PostLink
+                      postId={notification.data.postID._id}
+                      postTitle={notification.data.postID.title}
+                      postType={notification.data.postID.postType}
+                    />
                   </Text>
                 </Text>
               </View>
@@ -100,13 +117,18 @@ function NotificationItem({
             return (
               <View style={styles.notificationTitle}>
                 <Text style={styles.notificationUserText}>
-                  @{notification.data.userID.username}
+                  <UsernameLink
+                    user_id={notification.data.userID._id}
+                    username={notification.data.userID.username}
+                  />
                   <Text style={styles.notificationText}>
                     {' '}
                     shared {notification.data.postID.postType}{' '}
-                    <Text style={styles.notificationTitleText}>
-                      {notification.data.postID.title}
-                    </Text>{' '}
+                    <PostLink
+                      postId={notification.data.postID._id}
+                      postTitle={notification.data.postID.title}
+                      postType={notification.data.postID.postType}
+                    />{' '}
                     with you.
                   </Text>
                 </Text>
@@ -118,7 +140,7 @@ function NotificationItem({
                 <Text style={styles.notificationText}>
                   {notification.data.message}
                 </Text>
-                {notification.data.links?.map(link => (
+                {/* {notification.data.links?.map(link => (
                   <View>
                     {link.relativeTo === 'username' ? (
                       <TouchableOpacity
@@ -146,7 +168,7 @@ function NotificationItem({
                       </Text>
                     )}
                   </View>
-                ))}
+                ))} */}
               </View>
             );
         }
@@ -324,7 +346,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Roboto-Medium',
     // fontWeight: '700',
-    color: '#7D7987'
+    color: Black[600]
   },
   notification: {
     paddingVertical: 10,
@@ -342,8 +364,8 @@ const styles = StyleSheet.create({
   },
   notificationTimeText: {
     fontSize: 14,
-    fontFamily: 'Roboto-Medium',
-    color: Colors.Gray600
+    // fontFamily: 'Roboto-Medium',
+    color: Black[600]
   },
   notificationTitle: {
     flexDirection: 'row',
@@ -353,20 +375,20 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap'
   },
   notificationUserText: {
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium',
+    fontSize: 15,
+    // fontFamily: 'Roboto-Medium',
     color: Colors.Secondary,
     lineHeight: 22
   },
 
   notificationText: {
-    fontSize: 14,
-    color: Colors.Black,
+    fontSize: 15,
+    color: 'black',
     lineHeight: 20
   },
   notificationTitleText: {
-    fontSize: 14,
-    color: Colors.Gray600
+    // fontSize: 14,
+    color: Black[600]
   },
   loadingCt: {
     display: 'flex',
@@ -374,3 +396,40 @@ const styles = StyleSheet.create({
     padding: 20
   }
 });
+function PostLink(props: {
+  postId: string;
+  postTitle: string;
+  postType: string;
+}) {
+  const navigation = useNavigation<MainStackScreenProps['navigation']>();
+
+  return (
+    <Text
+      onPress={() =>
+        navigatePostScreen(navigation, props.postId, props.postType as PostType)
+      }
+      style={styles.notificationTitleText}
+    >
+      {props.postTitle}
+    </Text>
+  );
+}
+
+function UsernameLink(props: { user_id: string; username: string }) {
+  return (
+    <Link
+      to={{
+        screen: 'App',
+        params: {
+          screen: 'ProfileTab',
+          params: {
+            screen: 'Profile',
+            params: { user_id: props.user_id, username: props.username }
+          }
+        }
+      }}
+    >
+      @{props.username}
+    </Link>
+  );
+}
