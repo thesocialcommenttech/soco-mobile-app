@@ -25,20 +25,20 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
 
-        <intent-filter android:label="@string/intent_reset_password">
+        <intent-filter android:label="@string/intent_reset_password" android:autoVerify="true">
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https"
                   android:host="soco.co.in"/>
         </intent-filter>
-         <intent-filter android:label="@string/intent_reset_password">
-              <action android:name="android.intent.action.VIEW" />
-              <category android:name="android.intent.category.DEFAULT" />
-              <category android:name="android.intent.category.BROWSABLE" />
-               <data android:scheme="https"
-                  android:host="thesocialcomment.com"/>
-          </intent-filter>
+        <intent-filter android:label="@string/intent_reset_password" android:autoVerify="true">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https"
+                android:host="thesocialcomment.com"/>
+        </intent-filter>
       </activity>
     </application>
 </manifest>
