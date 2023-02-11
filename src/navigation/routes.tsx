@@ -112,6 +112,20 @@ export default function Routes() {
                     Post_Skill: 'skill/:title',
                     Post_Project: 'project/:title',
                     Post_Presentation: 'presentation/:title',
+                    App: {
+                      screens: {
+                        ProfileTab: {
+                          screens: {
+                            Profile: ':username/profile'
+                          }
+                        },
+                        PortfolioTab: {
+                          screens: {
+                            PortfolioTab: ':username/portfolio/*'
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }
