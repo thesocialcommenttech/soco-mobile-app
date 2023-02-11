@@ -7,11 +7,16 @@ import { loginAction } from '../store/actions/auth';
 import { IRootReducer } from '../store/reducers';
 import Logo from '~/src/assets/images/logos/thesocialcomment-logo.png';
 // import TextLogo from '~/src/assets/images/logos/image.png';
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
+import {
+  DefaultTheme,
+  getStateFromPath,
+  NavigationContainer
+} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootRouteContext } from '../contexts/root-route.context';
 import { routingInstrumentation } from '../utils/monitoring/sentry';
 import { IRootStack } from '../types/navigation/root';
+import { URL } from 'react-native-url-polyfill';
 
 const RootStack = createNativeStackNavigator();
 
@@ -84,7 +89,12 @@ export default function Routes() {
       <RootRouteContext.Provider value={RootRouteContextValue}>
         <NavigationContainer<IRootStack>
           linking={{
-            prefixes: ['https://soco.co.in', 'soco://'],
+            prefixes: [
+              'https://soco.co.in',
+              'soco://',
+              'https://thesocialcomment.com',
+              'thesocialcomment://'
+            ],
             config: {
               screens: {
                 auth: {
@@ -93,8 +103,37 @@ export default function Routes() {
                       path: 'reset-password/:hash'
                     }
                   }
+                },
+                main: {
+                  screens: {
+                    Post_Blog: 'blog/:title',
+                    Post_Artwork: 'artwork/:title',
+                    Post_Article: 'article/:title',
+                    Post_Skill: 'skill/:title',
+                    Post_Project: 'project/:title',
+                    Post_Presentation: 'presentation/:title',
+                  }
                 }
               }
+            },
+            getStateFromPath: (path, options) => {
+              // domain the prefixed only to make url valid
+              const url = new URL(`https://thesocialcomment.com${path}`);
+
+              // For post view url converting query parm pid to post_id
+              if (
+                /^\/(blog|artwork|article|skill|project|presentation)\//.test(
+                  url.pathname
+                )
+              ) {
+                const postId = url.searchParams.get('pid');
+                url.searchParams.delete('pid');
+                url.searchParams.append('post_id', postId);
+
+                path = url.pathname + url.search;
+              }
+
+              return getStateFromPath(path, options);
             }
           }}
           ref={navigationContainerRef}
