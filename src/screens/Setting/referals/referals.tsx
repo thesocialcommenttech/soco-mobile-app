@@ -22,7 +22,6 @@ import { GetUserReferredUsersResponse } from '~/src/utils/typings/user-referral-
 import Skeleton from '~/src/components/theme/Skeleton';
 
 export default function Referals() {
-  const [code] = useState('5UYRCH');
   const [data, setData] =
     useState<Pick<GetUserReferralDataResponse, 'referal' | 'referalCode'>>();
   const [referredUsers, setReferredUsers] =
@@ -82,7 +81,7 @@ export default function Referals() {
                 <TouchableOpacity
                   style={styles.codebox}
                   onPress={() => {
-                    copyToClipboard(code);
+                    copyToClipboard(data?.referalCode);
                     showToast();
                   }}
                 >
