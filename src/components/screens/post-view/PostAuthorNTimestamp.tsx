@@ -42,7 +42,7 @@ export default function PostAuthorNTimestamp(props: {
         onPress={() =>
           navigation.navigate('ProfileStack', {
             screen: 'Profile',
-            params: { username: props.user.username }
+            params: { username: props.user.username, user_id: props.user._id }
           })
         }
         style={styles.userphotoandname}
