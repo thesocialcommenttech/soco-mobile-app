@@ -25,7 +25,8 @@ import { User } from '~/src/utils/typings/user-profile_interface/getUserData.int
 import { PostType } from '~/src/utils/typings/post';
 import {
   ProfileDataProvider,
-  useProfile
+  useProfile,
+  UserProfile
 } from '~/src/state/profileScreenState';
 import Loading from '~/src/components/theme/Loading';
 import Button from '~/src/components/theme/Button';
@@ -61,9 +62,9 @@ function _ProfileScreen_() {
 
   const [posts, setPosts] = useState<GetPostsResponse['posts']>([]);
 
-  const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(true);
   const [postsLoading, setPostsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const mine = useMemo(
     () => auth.user?.username === route.params?.username,
@@ -81,25 +82,28 @@ function _ProfileScreen_() {
       auth.user?._id ?? null
     );
 
+    let user: UserProfile;
     if (result.data.success) {
-      setUserProfile({
+      user = {
         ...result.data.user,
         postTypes: result.data.user.postTypes.reduce(
           (a, c) => Object.assign(a, { [c.postType]: c }),
           {}
         ) as Record<PostType, User['postTypes'][0]>
-      });
+      };
     }
+    setUserProfile(user);
     setProfileLoading(false);
+    return user;
   };
 
-  const fetchPosts = async (pageNo = 0) => {
+  const fetchPosts = async (userId: string, pageNo = 0) => {
     setPostsLoading(true);
     const postProjection =
       'shares views postedOn link postedBy postType featureImage totalSlides description sharedPost title comments upvotes downvotes aim';
 
     const result = await getPosts(
-      route.params?.user_id ?? auth.user._id,
+      userId,
       pageNo,
       postProjection,
       pageState.pageSize
@@ -113,10 +117,9 @@ function _ProfileScreen_() {
   };
 
   const fetchScreenData = async () => {
-    setLoading(true);
     setPosts([]);
-    await Promise.all([fetchUserProfile(), fetchPosts()]);
-    setLoading(false);
+    const user = await fetchUserProfile();
+    await fetchPosts(user._id);
   };
 
   const onScroll = async ({
@@ -129,15 +132,21 @@ function _ProfileScreen_() {
       parseInt(contentSize.height, 10);
 
     if (isCloseToBottom && !postsLoading) {
-      await fetchPosts(pageState.pageNo + 1);
+      await fetchPosts(userProfile._id, pageState.pageNo + 1);
     }
+  };
+
+  const refreshScreen = async () => {
+    setIsRefreshing(true);
+    await fetchScreenData();
+    setIsRefreshing(false);
   };
 
   useEffect(() => {
     fetchScreenData();
   }, []);
 
-  if (loading) {
+  if (profileLoading) {
     return <Loading />;
   }
 
@@ -160,7 +169,7 @@ function _ProfileScreen_() {
         onScroll={({ nativeEvent }) => onScroll(nativeEvent)}
         scrollEventThrottle={20}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={fetchScreenData} />
+          <RefreshControl refreshing={isRefreshing} onRefresh={refreshScreen} />
         }
       >
         <View style={styles.coverCt}>
