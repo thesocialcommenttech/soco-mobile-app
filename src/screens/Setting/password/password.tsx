@@ -11,6 +11,8 @@ import { AuthActionTypes, setAuthToLogout } from '~/src/store/actions/auth';
 import { ThunkDispatch } from 'redux-thunk';
 import { useDispatch } from 'react-redux';
 import { IRootReducer } from '~/src/store/reducers';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 interface ChangePasswordForm {
   password: string;
@@ -39,7 +41,10 @@ export default function Password() {
     } catch (error) {
       if (error.response.data.message === 'INVALID_PASS') {
         formik.setFieldError('password', 'Password is incorrect');
+        return;
       }
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     }
     formikActions.setSubmitting(false);

@@ -17,6 +17,7 @@ import { launchImageLibrary, MediaType } from 'react-native-image-picker';
 import { staticFileSrc } from '~/src/utils/methods';
 import Video from '~/src/components/theme/Video';
 import { removePortfolioIntroVideo } from '~/src/utils/services/user-portfolio_service/removePortfolioIntroVideo.service';
+import * as Sentry from '@sentry/react-native';
 
 interface IntroVideoForm {
   video: FileObject | string;
@@ -84,6 +85,7 @@ export default function UpdateIntroVideo() {
         return imageAsset;
       }
     } catch (error) {
+      Sentry.captureException(error);
       console.error(error);
     }
   };

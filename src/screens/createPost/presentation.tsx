@@ -48,6 +48,7 @@ import { getPost } from '~/src/utils/services/user-posts_service/getPost.service
 import { staticFileSrc } from '~/src/utils/methods';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '~/src/store/reducers';
+import * as Sentry from '@sentry/react-native';
 
 interface UploadPresentationForm {
   title: string;
@@ -284,7 +285,9 @@ export default function Presentation() {
       if (!imageAsset.didCancel && imageAsset.assets.length > 0) {
         return imageAsset;
       }
-    } catch (error) {}
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 
   const insertSlidesAtLast = async () => {

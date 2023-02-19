@@ -17,6 +17,9 @@ import create from 'zustand';
 import Logo from '~/src/assets/images/logos/thesocialcomment-logo.png';
 import Textlogo from '~/src/assets/images/logos/soco-premium.png';
 import { omit } from 'lodash';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '../utils/monitoring/sentry';
+
 interface ITopBarState {
   premium: boolean;
   setPremium: (premium: boolean) => void;
@@ -40,6 +43,8 @@ function TopBar(props: { navigation: any }) {
         setPremium(result.data.user.premium);
       }
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     }
   }

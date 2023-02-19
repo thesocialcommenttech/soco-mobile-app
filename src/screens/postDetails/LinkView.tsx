@@ -21,6 +21,7 @@ import { Black, Blue } from '~/src/utils/colors';
 import { LinearProgress } from '@rneui/themed';
 import Share from 'react-native-share';
 import Clipboard from '@react-native-clipboard/clipboard';
+import * as Sentry from '@sentry/react-native';
 
 type PostScreenData = GetPostResponse<
   Pick<
@@ -101,6 +102,7 @@ export default function BlogDetail() {
         message: post.description ?? 'Have a look to this socialcomment post'
       });
     } catch (error) {
+      Sentry.captureException(error);
       Toast.show({ type: 'error', text1: 'Cannot open this link' });
     }
     setShowMoreOptions(false);

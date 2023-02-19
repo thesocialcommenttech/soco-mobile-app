@@ -25,6 +25,7 @@ import { updatePortforlioCertification } from '~/src/utils/services/user-portfol
 import { PortfolioSubScreen_ScreenProps } from '~/src/types/navigation/portfolio';
 import { file } from '~/src/lib/yup-custom-schemas';
 import { staticFileSrc } from '~/src/utils/methods';
+import * as Sentry from '@sentry/react-native';
 
 export default function AddCertificate() {
   const navigation = useNavigation();
@@ -100,7 +101,9 @@ export default function AddCertificate() {
           uri: imageAsset.assets[0].uri
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 
   async function submitCertification(

@@ -22,6 +22,8 @@ import {
   useInterestData
 } from '~/src/state/InterestSelectorState';
 import UpdateInterestModal from '~/src/components/modals/UpdateInterestModal';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 export const UserInterestCategory = memo(function (props: {
   onRemove: () => void;
@@ -92,6 +94,8 @@ export const UserInterestCategory = memo(function (props: {
         });
       }
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       toggleLoading();
     }
   }

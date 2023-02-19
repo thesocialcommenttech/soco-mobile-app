@@ -7,6 +7,8 @@ import { useProfileSpliced } from '~/src/state/profileScreenState';
 import { Input } from '../../theme/Input';
 import Button from '../../theme/Button';
 import Toast from 'react-native-toast-message';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 export default function UpdateBioModal({
   modalVisible1,
@@ -36,6 +38,8 @@ export default function UpdateBioModal({
         });
       }
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     }
     setLoading(false);

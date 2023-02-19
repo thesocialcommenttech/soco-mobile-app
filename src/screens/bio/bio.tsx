@@ -12,6 +12,8 @@ import { object, string } from 'yup';
 import Button from '~/src/components/theme/Button';
 import { useNavigation } from '@react-navigation/native';
 import { IRoot_ScreenProps } from '~/src/types/navigation/root';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 function BioScreen() {
   const navigation = useNavigation<IRoot_ScreenProps['navigation']>();
@@ -23,6 +25,8 @@ function BioScreen() {
         navigation.replace('main');
       }
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     }
   }

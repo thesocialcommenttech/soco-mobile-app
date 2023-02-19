@@ -11,6 +11,8 @@ import {
 } from '~/src/types/navigation/auth';
 import { resetUserPassword } from '~/src/utils/services/password_services/resetUserPassword.service';
 import Toast from 'react-native-toast-message';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 interface ResetPasswordForm {
   password: string;
@@ -42,12 +44,15 @@ function ResetPasswordScreen() {
           type: 'error',
           text1: 'Invalid/Expired password reset link.'
         });
+        return;
       } else {
         Toast.show({
           type: 'error',
           text1: 'Error occured! Try Again.'
         });
       }
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
     }
     formikActions.setSubmitting(false);
   }

@@ -27,6 +27,8 @@ import { useFormik } from 'formik';
 import { number, object } from 'yup';
 import produce from 'immer';
 import Toast from 'react-native-toast-message';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 export default function WalletMain() {
   const navigation =
@@ -92,6 +94,8 @@ export default function WalletMain() {
           );
         }
       } catch (error) {
+        addAxiosErrorDataBreadcrumb(error);
+        Sentry.captureException(error);
         Toast.show({ type: 'error', text1: 'Error occurred' });
       }
     }

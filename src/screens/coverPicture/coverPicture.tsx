@@ -24,6 +24,8 @@ import {
 } from '~/src/store/actions/auth';
 import { IRootReducer } from '~/src/store/reducers';
 import { IPostRegisterPageScreenProps } from '~/src/types/navigation/post-register';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 function CoverPictureScreen() {
   const navigation =
@@ -44,7 +46,9 @@ function CoverPictureScreen() {
       if (imageAsset.assets.length > 0) {
         setImage(imageAsset.assets[0]);
       }
-    } catch (error) {}
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 
   async function submitCoverImage() {
@@ -61,6 +65,8 @@ function CoverPictureScreen() {
 
       setLoading(false);
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     }
   }

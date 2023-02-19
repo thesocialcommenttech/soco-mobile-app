@@ -26,6 +26,8 @@ import { IRootReducer } from '~/src/store/reducers';
 import { ThunkDispatch } from 'redux-thunk';
 import { UpdateCoverRequest } from '~/src/utils/typings/user-profile_interface/updateCover.interface';
 import { updateCover } from '~/src/utils/services/user-profile_service/updateCover.service';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 export default function UpdateProfileCoverImageModal({
   show,
@@ -66,6 +68,8 @@ export default function UpdateProfileCoverImageModal({
         dispatch(updateUserProfileImageGlobalState(result.data.DPImageURL));
       }
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     }
     setUpdatingProfileImage(false);
@@ -80,6 +84,8 @@ export default function UpdateProfileCoverImageModal({
         updateCoverImage(result.data.coverImageURL);
       }
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     }
     setUpdatingCoverImage(false);

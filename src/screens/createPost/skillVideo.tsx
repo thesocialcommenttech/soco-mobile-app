@@ -40,6 +40,7 @@ import Loading from '~/src/components/theme/Loading';
 import { staticFileSrc } from '~/src/utils/methods';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '~/src/store/reducers';
+import * as Sentry from '@sentry/react-native';
 
 interface UploadSkillForm {
   title: string;
@@ -248,6 +249,7 @@ export default function SkillVideo() {
         return imageAsset;
       }
     } catch (error) {
+      Sentry.captureException(error);
       console.error(error);
     }
   };
