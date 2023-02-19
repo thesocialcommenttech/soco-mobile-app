@@ -20,4 +20,6 @@ declare module '@env' {
   export const STATIC_FILE_URL: string;
   export const PORTFOLIO_WEB_HOST: string;
   export const SENTRY_DSN: string;
+  export const ENV: 'development' | 'staging' | 'production';
+  export const SENTRY_TRACE_SAMPLE_RATE: number;
 }

@@ -8,6 +8,8 @@ import { object, string } from 'yup';
 import { requestResetUserPassword } from '~/src/utils/services/password_services/requestResetUserPassword.service';
 import { useNavigation } from '@react-navigation/native';
 import { IAuthStackScreenProps } from '~/src/types/navigation/auth';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 interface SendResetLinkForm {
   email: string;
@@ -29,7 +31,10 @@ function ForgotPasswordScreen() {
     } catch (error) {
       if (error.response.data.message === 'INVALID_PASS') {
         formik.setFieldError('password', 'Password is incorrect');
+        return;
       }
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     }
     formikActions.setSubmitting(false);

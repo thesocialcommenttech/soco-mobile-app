@@ -21,6 +21,8 @@ import { Input, RadioButton } from '~/src/components/theme/Input';
 import Button from '~/src/components/theme/Button';
 import { useNavigation } from '@react-navigation/native';
 import { IAuthStackScreenProps } from '~/src/types/navigation/auth';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 function RegisterTwoScreen() {
   const navigation = useNavigation<IAuthStackScreenProps['navigation']>();
@@ -68,6 +70,8 @@ function RegisterTwoScreen() {
         navigation.navigate('PostRegister', { screen: 'Categories' });
       }
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     }
   };

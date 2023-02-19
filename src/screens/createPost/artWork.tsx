@@ -31,6 +31,7 @@ import { staticFileSrc } from '~/src/utils/methods';
 import Loading from '~/src/components/theme/Loading';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '~/src/store/reducers';
+import * as Sentry from '@sentry/react-native';
 
 interface UploadArtworkForm {
   title: string;
@@ -232,7 +233,9 @@ export default function ArtWork() {
           uri: imageAsset.assets[0].uri
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 
   if (loading) {

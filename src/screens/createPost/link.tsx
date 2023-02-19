@@ -25,6 +25,8 @@ import Loading from '~/src/components/theme/Loading';
 import { staticFileSrc } from '~/src/utils/methods';
 import { useSelector } from 'react-redux';
 import { IRootReducer } from '~/src/store/reducers';
+import * as Sentry from '@sentry/react-native';
+
 interface LinkPostForm {
   title: string;
   description: string;
@@ -68,7 +70,9 @@ export default function UploadLink() {
           uri: imageAsset.assets[0].uri
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 
   async function submitLink(values: LinkPostForm) {

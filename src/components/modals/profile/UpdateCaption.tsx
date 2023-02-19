@@ -12,6 +12,8 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import { Colors } from '~/src/utils/colors';
 import { updateCaption } from '~/src/utils/services/user-profile_service/updateCaption.service';
 import { useProfileSpliced } from '~/src/state/profileScreenState';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 export default function UpdateCaptionModal({
   modalVisible,
@@ -40,6 +42,8 @@ export default function UpdateCaptionModal({
         _updateCaption(result.data.caption);
       }
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     }
     setLoading(false);

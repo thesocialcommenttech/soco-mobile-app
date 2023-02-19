@@ -18,6 +18,8 @@ import axios from 'axios';
 import { Link, useNavigation } from '@react-navigation/native';
 import logo from '~/src/assets/images/logos/thesocialcomment-logo.png';
 import { IRoot_ScreenProps } from '~/src/types/navigation/root';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 function LoginScreen() {
   const navigation = useNavigation<IRoot_ScreenProps['navigation']>();
@@ -48,13 +50,18 @@ function LoginScreen() {
         const errRes = error.response.data as LoginErrorResponse;
         if (errRes.message === 'INVALID_PASS') {
           formikActions.setFieldError('password', 'Invalid password');
+          return;
         } else if (errRes.message === '"email" must be a valid email') {
           formikActions.setFieldError('email', 'Invalid email');
+          return;
         } else if (errRes.message === 'USER_NOT_FOUND') {
           formikActions.setFieldError('password', 'Incorrect email/Password');
           formikActions.setFieldError('email', undefined);
+          return;
         }
+        addAxiosErrorDataBreadcrumb(error);
       }
+      Sentry.captureException(error);
     }
   };
 

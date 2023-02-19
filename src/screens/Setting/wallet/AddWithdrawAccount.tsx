@@ -25,6 +25,8 @@ import produce from 'immer';
 import { useNavigation } from '@react-navigation/native';
 import { Wallet_ScreenProps } from '~/src/types/navigation/wallet';
 import Toast from 'react-native-toast-message';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 export default function AddWithdrawAccount() {
   const { setWallet, wallet } = useWallet();
@@ -63,6 +65,8 @@ export default function AddWithdrawAccount() {
       }
       navigation.pop();
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       Toast.show({ type: 'error', text1: 'Error occurred' });
     }
   }

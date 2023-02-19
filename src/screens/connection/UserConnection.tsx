@@ -19,6 +19,8 @@ import { followUser } from '~/src/utils/services/follow-user_service/followUser.
 import { AxiosResponse } from 'axios';
 import { FollowUserResponse } from '~/src/utils/typings/follow-user_interface/followUser.interface';
 import { ConnectionScreenProps } from '~/src/types/navigation/connections';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 export default function UserConnection({
   user,
@@ -49,6 +51,8 @@ export default function UserConnection({
         setFollowing(!following);
       }
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     } finally {
       setLoading(false);

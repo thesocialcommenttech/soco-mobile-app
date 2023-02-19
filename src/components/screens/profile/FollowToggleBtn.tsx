@@ -8,6 +8,8 @@ import { followUser } from '~/src/utils/services/follow-user_service/followUser.
 import { unfollowUser } from '~/src/utils/services/follow-user_service/unfollowUser.service';
 import { FollowUserResponse } from '~/src/utils/typings/follow-user_interface/followUser.interface';
 import Button from '../../theme/Button';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 export function FollowToggleBtn() {
   const store = useContext(ProfileContext);
@@ -31,6 +33,8 @@ export function FollowToggleBtn() {
         });
       }
     } catch (error) {
+      addAxiosErrorDataBreadcrumb(error);
+      Sentry.captureException(error);
       console.error(error);
     } finally {
       setLoading(false);

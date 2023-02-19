@@ -17,6 +17,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { checkAvailablity } from '~/src/utils/services/user-profile_service/updateUserEmail.service';
 import { debounce } from 'lodash';
 import axios, { CancelTokenSource } from 'axios';
+import * as Sentry from '@sentry/react-native';
+import { addAxiosErrorDataBreadcrumb } from '~/src/utils/monitoring/sentry';
 
 const CustomCheckBox = (props: {
   onPress: () => void;
@@ -133,7 +135,10 @@ const RegisterOneScreen = ({ navigation }) => {
             setEmailAvialable(result.data.availablity);
             await formik.setFieldTouched('email', true);
           }
-        } catch (error) {}
+        } catch (error) {
+          addAxiosErrorDataBreadcrumb(error);
+          Sentry.captureException(error);
+        }
       } else {
         setEmailAvialable(undefined);
       }
@@ -159,7 +164,10 @@ const RegisterOneScreen = ({ navigation }) => {
             setUsernameAvialable(result.data.availablity);
             await formik.setFieldTouched('username', true);
           }
-        } catch (error) {}
+        } catch (error) {
+          addAxiosErrorDataBreadcrumb(error);
+          Sentry.captureException(error);
+        }
       } else {
         setUsernameAvialable(undefined);
       }

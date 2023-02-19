@@ -29,6 +29,7 @@ import Loading from '~/src/components/theme/Loading';
 import { staticFileSrc } from '~/src/utils/methods';
 import { Kyc } from '~/src/utils/typings/wallet_interfaces/getUserKYC.interface';
 import Color from 'color';
+import * as Sentry from '@sentry/react-native';
 
 function B(props: TextProps) {
   return (
@@ -489,7 +490,9 @@ function ImageInput(props: {
           uri: imageAsset.assets[0].uri
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 
   return (
